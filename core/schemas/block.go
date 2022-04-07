@@ -1,4 +1,4 @@
-package core
+package schemas
 
 import (
 	"math/big"

@@ -1,4 +1,4 @@
-package core
+package schemas
 
 import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCL"
@@ -24,6 +24,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/wETHGateway"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnPriceFeed"
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -38,22 +39,24 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
 
+const MaxUint = ^int64(0)
+
 type Contract struct {
-	DiscoveredAt int64    `gorm:"column:discovered_at" json:"discoveredAt"`
-	FirstLogAt   int64    `gorm:"column:firstlog_at" json:"firstLogAt"`
-	Address      string   `gorm:"primaryKey;column:address" json:"address"`
-	Disabled     bool     `gorm:"column:disabled" json:"disabled"`
-	ContractName string   `gorm:"column:type" json:"type"`
-	Client       ClientI  `gorm:"-" json:"-"`
-	ABI          *abi.ABI `gorm:"-" json:"-"`
-	VersionABI   abi.ABI  `gorm:"-" json:"-"`
+	DiscoveredAt int64        `gorm:"column:discovered_at" json:"discoveredAt"`
+	FirstLogAt   int64        `gorm:"column:firstlog_at" json:"firstLogAt"`
+	Address      string       `gorm:"primaryKey;column:address" json:"address"`
+	Disabled     bool         `gorm:"column:disabled" json:"disabled"`
+	ContractName string       `gorm:"column:type" json:"type"`
+	Client       core.ClientI `gorm:"-" json:"-"`
+	ABI          *abi.ABI     `gorm:"-" json:"-"`
+	VersionABI   abi.ABI      `gorm:"-" json:"-"`
 }
 
 func (c *Contract) Disable() {
 	c.Disabled = true
 }
 
-func NewContract(address, contractName string, discoveredAt int64, client ClientI) *Contract {
+func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
 	con := &Contract{
 		ContractName: contractName,
@@ -80,29 +83,29 @@ func GetAbi(contractName string) *abi.ABI {
 	metadataMap := map[string]*bind.MetaData{
 
 		// Configuration
-		ACL:              aCL.ACLMetaData,
-		AddressProvider:  addressProvider.AddressProviderMetaData,
-		"ACLTrait":       aCLTrait.ACLTraitMetaData,
-		ContractRegister: contractsRegister.ContractsRegisterMetaData,
+		"ACL":              aCL.ACLMetaData,
+		"AddressProvider":  addressProvider.AddressProviderMetaData,
+		"ACLTrait":         aCLTrait.ACLTraitMetaData,
+		"ContractRegister": contractsRegister.ContractsRegisterMetaData,
 
 		// Core
-		AccountFactory:  accountFactory.AccountFactoryMetaData,
-		"CreditAccount": creditAccount.CreditAccountMetaData,
-		"WETHGateway":   wETHGateway.WETHGatewayMetaData,
+		"AccountFactory": accountFactory.AccountFactoryMetaData,
+		"CreditAccount":  creditAccount.CreditAccountMetaData,
+		"WETHGateway":    wETHGateway.WETHGatewayMetaData,
 
 		// Oracle
-		PriceOracle:    &bind.MetaData{ABI: priceOracle.PriceOracleABI},
-		YearnPriceFeed: &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
+		"PriceOracle":    &bind.MetaData{ABI: priceOracle.PriceOracleABI},
+		"YearnPriceFeed": &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
 
 		// Pool
-		CreditManager:             &bind.MetaData{ABI: creditManager.CreditManagerABI},
+		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
-		CreditFilter:              &bind.MetaData{ABI: creditFilter.CreditFilterABI},
-		Pool:                      poolService.PoolServiceMetaData,
+		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
+		"Pool":                    poolService.PoolServiceMetaData,
 
 		// GetUnderlyingToken
 		"DieselToken":        dieselToken.DieselTokenMetaData,
-		GearToken:            gearToken.GearTokenMetaData,
+		"GearToken":          gearToken.GearTokenMetaData,
 		"TokenMock":          tokenMock.TokenMockMetaData,
 		"Token":              eRC20.ERC20MetaData,
 		"Uniswapv2Pool":      &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
@@ -184,8 +187,8 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if err.Error() == QueryMoreThan10000Error ||
-			strings.Contains(err.Error(), LogFilterLenError) {
+		if err.Error() == core.QueryMoreThan10000Error ||
+			strings.Contains(err.Error(), core.LogFilterLenError) {
 			middle := (fromBlock + toBlock) / 2
 
 			log.Verbosef("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
@@ -243,8 +246,8 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 	}
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if err.Error() == QueryMoreThan10000Error ||
-			strings.Contains(err.Error(), LogFilterLenError) {
+		if err.Error() == core.QueryMoreThan10000Error ||
+			strings.Contains(err.Error(), core.LogFilterLenError) {
 			middle := (fromBlock + toBlock) / 2
 			foundHigh, err := c.FindLastLogBound(middle, toBlock, topics)
 			if err != nil {
@@ -290,7 +293,7 @@ func (c *Contract) UnpackLogIntoMap(out map[string]interface{}, event string, tx
 	return abi.ParseTopicsIntoMap(out, indexed, txLog.Topics[1:])
 }
 
-func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *Json) {
+func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *core.Json) {
 	data := map[string]interface{}{}
 	if eventName == "TransferAccount" && len(txLog.Data) > 0 {
 		data = map[string]interface{}{
@@ -308,7 +311,7 @@ func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *Json
 		argNames = append(argNames, input.Name)
 	}
 	data["_order"] = argNames
-	jsonData := Json(data)
+	jsonData := core.Json(data)
 	jsonData.CheckSumAddress()
 	return c.ABI.Events[eventName].Sig, &jsonData
 }

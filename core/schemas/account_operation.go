@@ -1,4 +1,8 @@
-package core
+package schemas
+
+import (
+	"github.com/Gearbox-protocol/sdk-go/core"
+)
 
 type AccountOperation struct {
 	// Input string
@@ -13,10 +17,10 @@ type AccountOperation struct {
 	// application
 	Dapp string `gorm:"column:dapp" json:"dapp"`
 	// call/events data
-	AdapterCall bool       `gorm:"column:adapter_call" json:"adapterCall"`
-	Action      string     `gorm:"column:action" json:"action"`
-	Args        *Json      `gorm:"column:args" json:"args"`
-	Transfers   *Transfers `gorm:"column:transfers" json:"transfers"`
+	AdapterCall bool            `gorm:"column:adapter_call" json:"adapterCall"`
+	Action      string          `gorm:"column:action" json:"action"`
+	Args        *core.Json      `gorm:"column:args" json:"args"`
+	Transfers   *core.Transfers `gorm:"column:transfers" json:"transfers"`
 	// extras
 	Depth      uint8               `gorm:"column:depth" json:"depth"`
 	MainAction *int64              `gorm:"column:main_action"`
@@ -33,13 +37,13 @@ const (
 )
 
 type AccountOperationState struct {
-	ID               int64        `gorm:"primaryKey;autoincrement:true" json:"id"`
-	BlockNum         int64        `gorm:"column:block_num"`
-	LogId            int64        `gorm:"column:log_id"`
-	SessionId        string       `gorm:"column:session_id"`
-	BorrowedAmountBI *BigInt      `gorm:"column:borrowed_amount_bi"`
-	BorrowedAmount   float64      `gorm:"column:borrowed_amount"`
-	Balances         *JsonBalance `gorm:"column:balances"`
+	ID               int64             `gorm:"primaryKey;autoincrement:true" json:"id"`
+	BlockNum         int64             `gorm:"column:block_num"`
+	LogId            int64             `gorm:"column:log_id"`
+	SessionId        string            `gorm:"column:session_id"`
+	BorrowedAmountBI *core.BigInt      `gorm:"column:borrowed_amount_bi"`
+	BorrowedAmount   float64           `gorm:"column:borrowed_amount"`
+	Balances         *core.JsonBalance `gorm:"column:balances"`
 }
 
 func (AccountOperationState) TableName() string {

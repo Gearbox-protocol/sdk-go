@@ -1,24 +1,24 @@
-package core
+package schemas
 
 import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
-	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type Token struct {
-	Address  string  `gorm:"primaryKey;column:address" json:"address"`
-	Symbol   string  `gorm:"column:symbol" json:"symbol"`
-	Decimals int8    `gorm:"column:decimals" json:"decimals"`
-	client   ClientI `gorm:"-" json:"-"`
+	Address  string       `gorm:"primaryKey;column:address" json:"address"`
+	Symbol   string       `gorm:"column:symbol" json:"symbol"`
+	Decimals int8         `gorm:"column:decimals" json:"decimals"`
+	client   core.ClientI `gorm:"-" json:"-"`
 }
 
 func (Token) TableName() string {
 	return "tokens"
 }
 
-func NewToken(addr string, client ClientI) (*Token, error) {
+func NewToken(addr string, client core.ClientI) (*Token, error) {
 	token := &Token{
 		Address: addr,
 		client:  client,
@@ -46,32 +46,27 @@ func (t *Token) init() error {
 }
 
 type AllowedToken struct {
-	BlockNumber        int64   `gorm:"column:block_num;primaryKey"`
-	CreditManager      string  `gorm:"column:credit_manager;primaryKey"`
-	Token              string  `gorm:"column:token;primaryKey"`
-	LiquidityThreshold *BigInt `gorm:"column:liquiditythreshold"`
-	DisableBlock       int64   `gorm:"column:disable_block"`
+	BlockNumber        int64        `gorm:"column:block_num;primaryKey"`
+	CreditManager      string       `gorm:"column:credit_manager;primaryKey"`
+	Token              string       `gorm:"column:token;primaryKey"`
+	LiquidityThreshold *core.BigInt `gorm:"column:liquiditythreshold"`
+	DisableBlock       int64        `gorm:"column:disable_block"`
 }
 
 func (AllowedToken) TableName() string {
 	return "allowed_tokens"
 }
 
-func CompareBalance(a, b *BigInt, token *CumIndexAndUToken) bool {
-	precision := utils.GetPrecision(token.Symbol)
-	return utils.AlmostSameBigInt(a.Convert(), b.Convert(), token.Decimals-precision)
-}
-
 type TokenTransfer struct {
-	BlockNum      int64   `gorm:"column:block_num;primaryKey"`
-	LogID         uint    `gorm:"column:log_id;primaryKey"`
-	TxHash        string  `gorm:"column:tx_hash"`
-	Token         string  `gorm:"column:token"`
-	From          string  `gorm:"column:source"`
-	To            string  `gorm:"column:destination"`
-	Amount        *BigInt `gorm:"column:amount"`
-	IsFromAccount bool    `gorm:"column:isfrom_account"`
-	IsToAccount   bool    `gorm:"column:isto_account"`
+	BlockNum      int64        `gorm:"column:block_num;primaryKey"`
+	LogID         uint         `gorm:"column:log_id;primaryKey"`
+	TxHash        string       `gorm:"column:tx_hash"`
+	Token         string       `gorm:"column:token"`
+	From          string       `gorm:"column:source"`
+	To            string       `gorm:"column:destination"`
+	Amount        *core.BigInt `gorm:"column:amount"`
+	IsFromAccount bool         `gorm:"column:isfrom_account"`
+	IsToAccount   bool         `gorm:"column:isto_account"`
 }
 
 type TokenTransferList []*TokenTransfer
@@ -87,7 +82,7 @@ func (ts TokenTransferList) Swap(i, j int) {
 func (ts TokenTransferList) Less(i, j int) bool {
 	return ts[i].LogID < ts[j].LogID
 }
-func (a *TokenTransfer) equal(b *TokenTransfer) bool {
+func (a *TokenTransfer) Equal(b *TokenTransfer) bool {
 	return a.BlockNum == b.BlockNum &&
 		a.LogID == b.LogID &&
 		a.TxHash == b.TxHash &&
