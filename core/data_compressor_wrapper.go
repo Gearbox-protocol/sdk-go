@@ -3,11 +3,10 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/Gearbox-protocol/third-eye/artifacts/dataCompressor"
-	"github.com/Gearbox-protocol/third-eye/artifacts/dataCompressor/mainnet"
-	"github.com/Gearbox-protocol/third-eye/ethclient"
-	"github.com/Gearbox-protocol/third-eye/log"
-	"github.com/Gearbox-protocol/third-eye/utils"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
+	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"sort"
@@ -23,7 +22,7 @@ type DataCompressorWrapper struct {
 	dcOldKovan     *dataCompressor.DataCompressor
 	dcMainnet      *mainnet.DataCompressor
 	NameToAddr     map[string]string
-	client         ethclient.ClientI
+	client         ClientI
 	testing        *DCTesting
 }
 
@@ -31,7 +30,7 @@ var OLDKOVAN = "OLDKOVAN"
 var MAINNET = "MAINNET"
 var TESTING = "TESTING"
 
-func NewDataCompressorWrapper(client ethclient.ClientI) *DataCompressorWrapper {
+func NewDataCompressorWrapper(client ClientI) *DataCompressorWrapper {
 	return &DataCompressorWrapper{
 		mu:             &sync.Mutex{},
 		BlockNumToName: make(map[int64]string),

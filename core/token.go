@@ -1,25 +1,24 @@
 package core
 
 import (
-	"github.com/Gearbox-protocol/third-eye/artifacts/eRC20"
-	"github.com/Gearbox-protocol/third-eye/ethclient"
-	"github.com/Gearbox-protocol/third-eye/utils"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type Token struct {
-	Address  string            `gorm:"primaryKey;column:address" json:"address"`
-	Symbol   string            `gorm:"column:symbol" json:"symbol"`
-	Decimals int8              `gorm:"column:decimals" json:"decimals"`
-	client   ethclient.ClientI `gorm:"-" json:"-"`
+	Address  string  `gorm:"primaryKey;column:address" json:"address"`
+	Symbol   string  `gorm:"column:symbol" json:"symbol"`
+	Decimals int8    `gorm:"column:decimals" json:"decimals"`
+	client   ClientI `gorm:"-" json:"-"`
 }
 
 func (Token) TableName() string {
 	return "tokens"
 }
 
-func NewToken(addr string, client ethclient.ClientI) (*Token, error) {
+func NewToken(addr string, client ClientI) (*Token, error) {
 	token := &Token{
 		Address: addr,
 		client:  client,

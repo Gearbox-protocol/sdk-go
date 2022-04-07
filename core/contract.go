@@ -35,26 +35,25 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
 
 type Contract struct {
-	DiscoveredAt int64             `gorm:"column:discovered_at" json:"discoveredAt"`
-	FirstLogAt   int64             `gorm:"column:firstlog_at" json:"firstLogAt"`
-	Address      string            `gorm:"primaryKey;column:address" json:"address"`
-	Disabled     bool              `gorm:"column:disabled" json:"disabled"`
-	ContractName string            `gorm:"column:type" json:"type"`
-	Client       ethclient.ClientI `gorm:"-" json:"-"`
-	ABI          *abi.ABI          `gorm:"-" json:"-"`
-	VersionABI   abi.ABI           `gorm:"-" json:"-"`
+	DiscoveredAt int64    `gorm:"column:discovered_at" json:"discoveredAt"`
+	FirstLogAt   int64    `gorm:"column:firstlog_at" json:"firstLogAt"`
+	Address      string   `gorm:"primaryKey;column:address" json:"address"`
+	Disabled     bool     `gorm:"column:disabled" json:"disabled"`
+	ContractName string   `gorm:"column:type" json:"type"`
+	Client       ClientI  `gorm:"-" json:"-"`
+	ABI          *abi.ABI `gorm:"-" json:"-"`
+	VersionABI   abi.ABI  `gorm:"-" json:"-"`
 }
 
 func (c *Contract) Disable() {
 	c.Disabled = true
 }
 
-func NewContract(address, contractName string, discoveredAt int64, client ethclient.ClientI) *Contract {
+func NewContract(address, contractName string, discoveredAt int64, client ClientI) *Contract {
 
 	con := &Contract{
 		ContractName: contractName,

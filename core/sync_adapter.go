@@ -2,8 +2,7 @@ package core
 
 import (
 	"context"
-	"github.com/Gearbox-protocol/third-eye/ethclient"
-	"github.com/Gearbox-protocol/third-eye/log"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -135,7 +134,7 @@ func (s *SyncAdapter) AfterSyncHook(syncTill int64) {
 func (s *SyncAdapter) Query(queryTill int64) {
 }
 
-func NewSyncAdapter(addr, name string, discoveredAt int64, client ethclient.ClientI, repo RepositoryI) *SyncAdapter {
+func NewSyncAdapter(addr, name string, discoveredAt int64, client ClientI, repo RepositoryI) *SyncAdapter {
 	obj := &SyncAdapter{
 		Contract: NewContract(addr, name, discoveredAt, client),
 		Repo:     repo,

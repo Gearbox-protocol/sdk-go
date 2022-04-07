@@ -2,7 +2,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/Gearbox-protocol/third-eye/log"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"math/big"
 )
 
