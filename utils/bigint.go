@@ -87,7 +87,7 @@ func Max(a, b int64) int64 {
 }
 
 // others
-
+// number of decimal digits to compare
 func GetPrecision(symbol string) int8 {
 	switch symbol {
 	case "USDC":
