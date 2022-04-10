@@ -115,6 +115,7 @@ func ReadJson(fileName string) map[string]interface{} {
 
 func SetJson(byteValue []byte, data interface{}) {
 	d := json.NewDecoder(bytes.NewReader(byteValue))
+	// use number instead of encoding as float
 	d.UseNumber()
 	if err := d.Decode(&data); err != nil {
 		fmt.Println("error:", err)
@@ -146,11 +147,9 @@ func ConvertToListOfString(list interface{}) (accountAddrs []string) {
 }
 
 func ReadFile(fileName string) []byte {
-	jsonFile, err := os.Open(fileName)
+	jsonFile, err := os.ReadFile(fileName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	return byteValue
+	return jsonFile
 }

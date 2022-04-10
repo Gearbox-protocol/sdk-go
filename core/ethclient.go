@@ -16,6 +16,8 @@ type ClientI interface {
 	BlockNumber(ctx context.Context) (uint64, error)
 	TransactionByHash(ctx context.Context, hash common.Hash) (tx *types.Transaction, isPending bool, err error)
 	TransactionReceipt(ctx context.Context, txHash common.Hash) (*types.Receipt, error)
+	// for kovan arbitrage sync bot
+	BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error)
 	// HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error)
 	// HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 	// TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error)
@@ -24,7 +26,6 @@ type ClientI interface {
 	// SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error)
 	// SubscribeNewHead(ctx context.Context, ch chan<- *types.Header) (ethereum.Subscription, error)
 	// NetworkID(ctx context.Context) (*big.Int, error)
-	// BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error)
 	// StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
 	// CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error)
 	// NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error)
