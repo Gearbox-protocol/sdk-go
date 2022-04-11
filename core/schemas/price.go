@@ -32,6 +32,16 @@ type PriceFeed struct {
 	Price float64 `gorm:"column:price" json:"price"`
 }
 
+func (p *PriceFeed) Clone() *PriceFeed {
+	return &PriceFeed{
+		BlockNumber: p.BlockNumber,
+		Feed: p.Feed,
+		RoundId: p.RoundId,
+		IsPriceInUSD: p.IsPriceInUSD,
+		PriceBI: core.NewBigInt(p.PriceBI),
+	}
+}
+
 func (PriceFeed) TableName() string {
 	return "price_feeds"
 }
