@@ -15,7 +15,7 @@ func failOnError(err error, msg string) {
 }
 
 // Service constructor
-func NewAMQPService(chainId uint, AMPQEnable string, AMQPURL string) {
+func NewAMQPService(chainId uint, AMPQEnable string, AMQPURL, appName string) {
 	if AMPQEnable == "0" {
 		return
 	}
@@ -34,5 +34,5 @@ func NewAMQPService(chainId uint, AMPQEnable string, AMQPURL string) {
 	case 1337:
 		name = "TEST"
 	}
-	SetAMQP(ch, name)
+	SetAMQP(ch, name, appName)
 }
