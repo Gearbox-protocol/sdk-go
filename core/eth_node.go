@@ -14,7 +14,7 @@ import (
 
 type Node struct {
 	Client  ClientI
-	ChainId int64
+	chainId int64
 }
 
 func (lf *Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
@@ -50,17 +50,26 @@ func (lf *Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics
 }
 
 func (lf *Node) GetLatestBlockNumber() int64 {
+	lf.setChainId()
 	latestBlockNum, err := lf.Client.BlockNumber(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
 	blockNumToReturn := int64(latestBlockNum)
 	// skip 2 blocks ~30 sec latest block might reorder
-	if lf.ChainId != 1337 {
+	if lf.chainId != 1337 {
 		blockNumToReturn -= 4
 	}
 	log.Info("Lastest blocknumber", blockNumToReturn)
 	return blockNumToReturn
+}
+
+func (lf *Node) setChainId() {
+	if lf.chainId == 0 {
+		chainId, err := lf.Client.ChainID(context.TODO())
+		log.CheckFatal(err)
+		lf.chainId = chainId.Int64()
+	}
 }
 
 func (lf *Node) GetHeader(blockNum int64) *types.Header {
