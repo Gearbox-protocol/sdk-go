@@ -11,6 +11,8 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv2"
+	dc "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
@@ -40,7 +42,7 @@ import (
 )
 
 const MaxUint = ^int64(0)
-
+var VersionABI   abi.ABI
 type Contract struct {
 	DiscoveredAt int64        `gorm:"column:discovered_at" json:"discoveredAt"`
 	FirstLogAt   int64        `gorm:"column:firstlog_at" json:"firstLogAt"`
@@ -49,13 +51,18 @@ type Contract struct {
 	ContractName string       `gorm:"column:type" json:"type"`
 	Client       core.ClientI `gorm:"-" json:"-"`
 	ABI          *abi.ABI     `gorm:"-" json:"-"`
-	VersionABI   abi.ABI      `gorm:"-" json:"-"`
+	// VersionABI   abi.ABI      `gorm:"-" json:"-"`
 }
 
 func (c *Contract) Disable() {
 	c.Disabled = true
 }
-
+func init() {
+	abiStr := "[{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+	versionABI, err := abi.JSON(strings.NewReader(abiStr))
+	log.CheckFatal(err)
+	VersionABI = versionABI
+}
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
 	con := &Contract{
@@ -71,10 +78,7 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 	} else {
 		con.DiscoveredAt = discoveredAt
 	}
-	abiStr := "[{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
-	versionABI, err := abi.JSON(strings.NewReader(abiStr))
-	log.CheckFatal(err)
-	con.VersionABI = versionABI
+
 	return con
 }
 
@@ -96,9 +100,11 @@ func GetAbi(contractName string) *abi.ABI {
 		// Oracle
 		"PriceOracle":    &bind.MetaData{ABI: priceOracle.PriceOracleABI},
 		"YearnPriceFeed": &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
+		"DataCompressorV1": &bind.MetaData{ABI: dc.DataCompressorABI},
 
 		// Pool
 		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
+		"CreditManagerV2":           &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
 		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
 		"Pool":                    poolService.PoolServiceMetaData,
@@ -316,12 +322,12 @@ func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *core
 	return c.ABI.Events[eventName].Sig, &jsonData
 }
 
-func (c *Contract) FetchVersion(blockNum int64) int16 {
+func FetchVersion(addr string, blockNum int64, client core.ClientI) int16 {
 	var opts *bind.CallOpts
 	if blockNum != 0 {
 		opts = &bind.CallOpts{BlockNumber: big.NewInt(blockNum)}
 	}
-	contract := bind.NewBoundContract(common.HexToAddress(c.Address), c.VersionABI, c.Client, c.Client, c.Client)
+	contract := bind.NewBoundContract(common.HexToAddress(addr), VersionABI, client, client, client)
 	var out []interface{}
 	err := contract.Call(opts, &out, "version")
 	if err != nil {

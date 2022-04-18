@@ -102,12 +102,12 @@ func Error(v ...interface{}) {
 func Msgf(msg string, args ...interface{}) {
 	amqpSendf(msg, args)
 	msgFormat := DetectFunc() + msg
-	log.Printf("[AMPQ]"+msgFormat, args...)
+	log.Printf("[AMQP]"+msgFormat, args...)
 }
 
 func Msg(v ...interface{}) {
 	amqpSend(v)
-	args := []interface{}{"[AMPQ]" + DetectFunc()}
+	args := []interface{}{"[AMQP]" + DetectFunc()}
 	args = append(args, v...)
 	log.Println(args...)
 }

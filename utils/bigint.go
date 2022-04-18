@@ -111,6 +111,20 @@ func absInt64(a int64) int64 {
 	return -1 * a
 }
 
-func IntDiffMoreThanFraction(oldValue, newValue, diff int64) bool {
-	return absInt64((newValue-oldValue)/oldValue) > diff
+func absFloat64(a float64) float64 {
+	if a > 0 {
+		return a
+	}
+	return -1 * a
+}
+
+func IntDiffMoreThanFraction(oldValue, newValue int64, diff float64) bool {
+	return absFloat64(float64(newValue-oldValue))/float64(oldValue) > diff
+}
+
+func BigIntDiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
+	oldFloat := new(big.Float).SetInt(oldValue)
+	newFloat := new(big.Float).SetInt(newValue)
+	value := new(big.Float).Quo(new(big.Float).Sub(newFloat,oldFloat), oldFloat)
+	return new(big.Float).Abs(value).Cmp(diff) > 0
 }
