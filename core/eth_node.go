@@ -136,8 +136,9 @@ func getMultiCallContract(client ClientI) *multicall.Multicall {
 
 func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call) []multicall.Multicall2Result {
 	contract := getMultiCallContract(client)
-	opts := &bind.CallOpts{
-		BlockNumber: big.NewInt(blockNum),
+	opts := &bind.CallOpts{}
+	if blockNum != 0 {
+		opts.BlockNumber = big.NewInt(blockNum)
 	}
 	var result []multicall.Multicall2Result
 	var tmpCalls []multicall.Multicall2Call

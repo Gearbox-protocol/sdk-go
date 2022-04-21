@@ -19,7 +19,9 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/linearInterestRateModel"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolService"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/rewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Router"
@@ -100,6 +102,7 @@ func GetAbi(contractName string) *abi.ABI {
 		// Oracle
 		"PriceOracle":    &bind.MetaData{ABI: priceOracle.PriceOracleABI},
 		"YearnPriceFeed": &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
+		"PriceFeed": &bind.MetaData{ABI: priceFeed.PriceFeedABI},
 		"DataCompressorV1": &bind.MetaData{ABI: dc.DataCompressorABI},
 
 		// Pool
@@ -113,6 +116,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"DieselToken":        dieselToken.DieselTokenMetaData,
 		"GearToken":          gearToken.GearTokenMetaData,
 		"TokenMock":          tokenMock.TokenMockMetaData,
+		"RewardPool":         &bind.MetaData{ABI: rewardPool.RewardPoolABI},
 		"Token":              eRC20.ERC20MetaData,
 		"Uniswapv2Pool":      &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
 		"Uniswapv3Pool":      &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
