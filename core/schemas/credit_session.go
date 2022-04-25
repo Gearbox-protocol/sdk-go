@@ -13,6 +13,7 @@ const (
 )
 
 type (
+	// TODO: delete remainingfunds/ health_factor/ profit_percent / profit not required
 	CreditSession struct {
 		ID                     string            `gorm:"primaryKey" json:"sessionId"`
 		Status                 int               `json:"status"`

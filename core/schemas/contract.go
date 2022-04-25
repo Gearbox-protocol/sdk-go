@@ -12,6 +12,8 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv2"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/mainnetLido"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoMock"
 	dc "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
@@ -111,6 +113,8 @@ func GetAbi(contractName string) *abi.ABI {
 		"CreditManagerV2":           &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
 		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
+		"LidoMock":            &bind.MetaData{ABI: lidoMock.LidoMockABI},
+		"MainnetLido":            &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
 		"Pool":                    poolService.PoolServiceMetaData,
 
 		// GetUnderlyingToken
