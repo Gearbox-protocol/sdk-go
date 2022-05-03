@@ -28,7 +28,7 @@ func GetTimeoutCtx(sec int) (context.Context, context.CancelFunc) {
 	if err != nil {
 		log.Error(err)
 	}
-	ctx, cancel := context.WithTimeout(context.TODO(), timeout*time.Second)
+	ctx, cancel := context.WithTimeout(context.TODO(), timeout)
 	return ctx, cancel
 }
 
