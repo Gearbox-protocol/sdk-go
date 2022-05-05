@@ -134,7 +134,7 @@ func getMultiCallContract(client ClientI) *multicall.Multicall {
 	return contract
 }
 
-func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call) []multicall.Multicall2Result {
+func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
 	contract := getMultiCallContract(client)
 	opts := &bind.CallOpts{}
 	if blockNum != 0 {
@@ -144,8 +144,12 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 	var tmpCalls []multicall.Multicall2Call
 	callsInd := 0
 	callsLen := len(calls)
+	defaultSize := 20
+	if params != nil {
+		defaultSize = params[0]
+	}
 	for callsInd < callsLen {
-		for i := 0; i < 20 && callsInd < callsLen; i++ {
+		for i := 0; i < defaultSize && callsInd < callsLen; i++ {
 			tmpCalls = append(tmpCalls, calls[callsInd])
 			callsInd++
 		}
@@ -153,6 +157,27 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 		log.CheckFatal(err)
 		result = append(result, tmpResult...)
 		tmpCalls = []multicall.Multicall2Call{}
+	}
+	return result
+}
+
+// hardhat doesn't work with multicall
+func MakeMultiCallHardhat(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call) []multicall.Multicall2Result {
+	opts := new(bind.CallOpts)
+	if blockNum != 0 {
+		opts.BlockNumber = big.NewInt(blockNum)
+	}
+	var result []multicall.Multicall2Result
+	for _, call := range calls {
+		output, err := client.CallContract(context.TODO(), ethereum.CallMsg{From: opts.From, To: &call.Target, Data: call.CallData}, opts.BlockNumber)
+		success := true
+		if err != nil {
+			success = false
+		}
+		result = append(result, multicall.Multicall2Result{
+			Success: success,
+			ReturnData: output,
+		})
 	}
 	return result
 }
