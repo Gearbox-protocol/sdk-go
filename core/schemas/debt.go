@@ -1,8 +1,9 @@
 package schemas
 
 import (
-	"github.com/Gearbox-protocol/sdk-go/core"
 	"math/big"
+
+	"github.com/Gearbox-protocol/sdk-go/core"
 )
 
 type Debt struct {
@@ -16,6 +17,7 @@ type Debt struct {
 	CalTotalValueBI                 *core.BigInt `gorm:"column:cal_total_value_bi" json:"calTotalValue"`
 	CalBorrowedAmountPlusInterestBI *core.BigInt `gorm:"column:cal_borrowed_amt_with_interest_bi" json:"calBorrowedAmountWithInterest"`
 	CalThresholdValueBI             *core.BigInt `gorm:"column:cal_threshold_value_bi" json:"calThresholdValue"`
+	RepayAmountBI                   *core.BigInt `gorm:"-" json:"-"`
 	AmountToPoolBI                  *core.BigInt `gorm:"-" json:"-"`
 	ProfitInUSD                     float64      `gorm:"column:profit_usd" json:"profitUSD"`
 	CollateralInUSD                 float64      `gorm:"column:collateral_usd" json:"collateralUSD"`
@@ -35,8 +37,9 @@ type CurrentDebt struct {
 	CalBorrowedAmountPlusInterestBI *core.BigInt `gorm:"column:cal_borrowed_amt_with_interest_bi" json:"-"`
 	CalThresholdValue               float64      `gorm:"column:cal_threshold_value" json:"calThresholdValue"`
 	CalThresholdValueBI             *core.BigInt `gorm:"column:cal_threshold_value_bi" json:"-"`
-	AmountToPoolBI                  *core.BigInt `gorm:"column:amount_to_pool_bi" json:"-"`
-	AmountToPool                    float64      `gorm:"column:amount_to_pool" json:"amountToPool"`
+	AmountToPool                    float64      `gorm:"-" json:"amountToPool"`
+	RepayAmountBI                   *core.BigInt `gorm:"column:repay_amount_bi" json:"-"`
+	RepayAmount                     float64      `gorm:"column:repay_amount" json:"repayAmount"`
 	ProfitInUSD                     float64      `gorm:"column:profit_usd" json:"profitUSD"`
 	ProfitInUnderlying              float64      `gorm:"column:profit_underlying" json:"profitUnderlying"`
 	CollateralInUSD                 float64      `gorm:"column:collateral_usd" json:"collateralUSD"`
