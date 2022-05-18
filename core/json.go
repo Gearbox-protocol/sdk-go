@@ -4,12 +4,13 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"github.com/Gearbox-protocol/sdk-go/log"
-	"github.com/Gearbox-protocol/sdk-go/utils"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"strings"
 	"testing"
+
+	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type Json map[string]interface{}
@@ -209,7 +210,7 @@ func (addrs AddressMap) ReplaceWithVariable(key string, data interface{}) interf
 	if key == "sessionId" {
 		value, ok := data.(string)
 		if !ok {
-				log.Error("string parsing failed")
+			log.Error("string parsing failed")
 		}
 		splits := strings.Split(value, "_")
 		splits[0] = addrs[splits[0]]

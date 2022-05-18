@@ -6,7 +6,6 @@ package creditManager
 import (
 	"math/big"
 	"strings"
-	"fmt"
 
 	ethereum "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -1032,7 +1031,6 @@ func (_CreditManager *CreditManagerTransactorSession) OpenCreditAccount(amount *
 //
 // Solidity: function pause() returns()
 func (_CreditManager *CreditManagerTransactor) Pause(opts *bind.TransactOpts) (*types.Transaction, error) {
-	fmt.Println("in")
 	return _CreditManager.contract.Transact(opts, "pause")
 }
 
