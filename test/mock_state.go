@@ -1,4 +1,4 @@
-package ethclient
+package test
 
 type TestState struct {
 	Oracles []*OracleState `json:"oracles"`

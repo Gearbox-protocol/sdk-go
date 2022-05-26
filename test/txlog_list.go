@@ -1,4 +1,4 @@
-package ethclient
+package test
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
