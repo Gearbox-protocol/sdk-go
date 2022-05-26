@@ -52,7 +52,7 @@ func (t *TestClient) AddToken(tokenAddr string, decimals int8) {
 }
 
 // blocknum => event address => txlogs
-func (t *TestClient) setEvents(obj map[int64]map[string][]types.Log) {
+func (t *TestClient) SetEvents(obj map[int64]map[string][]types.Log) {
 	if t.events == nil {
 		t.events = map[int64]map[string][]types.Log{}
 	}
@@ -68,7 +68,7 @@ func (t *TestClient) setEvents(obj map[int64]map[string][]types.Log) {
 }
 
 // token => block => prices
-func (t *TestClient) setPrices(obj map[string]map[int64]*big.Int) {
+func (t *TestClient) SetPrices(obj map[string]map[int64]*big.Int) {
 	if t.prices == nil {
 		t.prices = map[string]map[int64]*big.Int{}
 	}
@@ -83,7 +83,7 @@ func (t *TestClient) setPrices(obj map[string]map[int64]*big.Int) {
 }
 
 // block => account => mask
-func (t *TestClient) setMasks(masks map[int64]map[string]*big.Int) {
+func (t *TestClient) SetMasks(masks map[int64]map[string]*big.Int) {
 	if t.masks == nil {
 		t.masks = map[int64]map[string]*big.Int{}
 	}
@@ -91,7 +91,7 @@ func (t *TestClient) setMasks(masks map[int64]map[string]*big.Int) {
 		t.masks[blockNum] = mask
 	}
 }
-func (t *TestClient) setOracleState(oracleState *OracleState) {
+func (t *TestClient) SetOracleState(oracleState *OracleState) {
 	t.state.Oracle.AddState(oracleState)
 }
 
