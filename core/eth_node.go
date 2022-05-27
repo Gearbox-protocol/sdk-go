@@ -2,14 +2,15 @@ package core
 
 import (
 	"context"
+	"math/big"
+	"strings"
+
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
-	"strings"
 )
 
 type Node struct {
@@ -178,7 +179,7 @@ func MakeMultiCallHH(client ClientI, blockNum int64, successRequired bool, calls
 		}
 		log.Info(err, output)
 		result = append(result, multicall.Multicall2Result{
-			Success: success,
+			Success:    success,
 			ReturnData: output,
 		})
 	}

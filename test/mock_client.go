@@ -128,23 +128,22 @@ func (t *TestClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery)
 		for _, address := range query.Addresses {
 			if t.events[i] != nil {
 				if len(query.Topics) > 0 {
-					switch query.Topics[0][0] {
-					case topic("Transfer(address,address,uint256)"):
+					if query.Topics[0][0] == topic("Transfer(address,address,uint256)") {
 						for _, txLog := range t.events[i][address.Hex()] {
 							if ContainsHash(query.Topics[2], txLog.Topics[2]) {
 								txLogs = append(txLogs, txLog)
 							}
 						}
-					case topic("AnswerUpdated(int256,uint256,uint256)"):
+					} else {
 						for _, txLog := range t.events[i][address.Hex()] {
-							txLogs = append(txLogs, txLog)
+							if ContainsHash(query.Topics[0], txLog.Topics[0]) {
+								txLogs = append(txLogs, txLog)
+							}
 						}
 					}
 				} else {
 					txLogs = append(txLogs, t.events[i][address.Hex()]...)
 				}
-			} else {
-				txLogs = append(txLogs, t.events[i][address.Hex()]...)
 			}
 		}
 	}
@@ -163,6 +162,25 @@ func (t *TestClient) TransactionReceipt(ctx context.Context, txHash common.Hash)
 func (t *TestClient) CodeAt(ctx context.Context, contract common.Address, blockNumber *big.Int) ([]byte, error) {
 	return nil, nil
 }
+
+// for otherCalls in call of blocks
+//
+func addrAndData(input []string) (addr string, data []string) {
+	isAddr := false
+	for len(input) > 0 {
+		entry := input[len(input)-1]
+		if entry == "" {
+			isAddr = true
+		} else if isAddr {
+			addr = entry
+		} else {
+			data = append(data, entry)
+		}
+		input = input[:len(input)-1]
+	}
+	return
+}
+
 func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
 	sig := hex.EncodeToString(call.Data[:4])
 	var blockNum int64
@@ -206,11 +224,32 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		calls := *abi.ConvertType(obj["calls"], new([]multicall.Multicall2Call)).(*[]multicall.Multicall2Call)
 		resultArray := []multicall.Multicall2Result{}
 		for _, call := range calls {
-			price := t.convertPrice(blockNum, call.CallData)
-			resultArray = append(resultArray, multicall.Multicall2Result{
-				Success:    true,
-				ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
-			})
+			switch hex.EncodeToString(call.CallData[:4]) {
+			case "b66102df":
+				price := t.convertPrice(blockNum, call.CallData)
+				resultArray = append(resultArray, multicall.Multicall2Result{
+					Success:    true,
+					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
+				})
+			case "f93f515b", "f9aa028a", "570a7af2", "2495a599":
+				interalCallSig := hex.EncodeToString(call.CallData[:4])
+				if t.otherCalls[blockNum] != nil && t.otherCalls[blockNum][interalCallSig] != nil {
+					addr, data := addrAndData(t.otherCalls[blockNum][interalCallSig])
+					if addr != "" && addr != call.Target.Hex() {
+						resultArray = append(resultArray, multicall.Multicall2Result{
+							Success:    false,
+							ReturnData: []byte{},
+						})
+					} else {
+						resultArray = append(resultArray, multicall.Multicall2Result{
+							Success:    true,
+							ReturnData: common.HexToHash(data[0]).Bytes(),
+						})
+					}
+				}
+			default:
+				panic(hex.EncodeToString(call.CallData[:4]))
+			}
 		}
 		outputData, err := method.Outputs.Pack(resultArray)
 		log.CheckFatal(err)
