@@ -3,10 +3,11 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/Gearbox-protocol/sdk-go/log"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"math/big"
 	"time"
+
+	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
 func TimeToDateEndTs(t time.Time) int64 {
@@ -41,8 +42,8 @@ func GetTimeoutOpts(blockNum int64) (*bind.CallOpts, context.CancelFunc) {
 }
 
 func Elapsed(what string) func() {
-    start := time.Now()
-    return func() {
-        log.InfoStack3(fmt.Sprintf("%s took %v", what, time.Since(start)))
-    }
+	start := time.Now()
+	return func() {
+		log.InfoStackN(3, fmt.Sprintf("%s took %v", what, time.Since(start)))
+	}
 }

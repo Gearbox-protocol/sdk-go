@@ -154,6 +154,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 			tmpCalls = append(tmpCalls, calls[callsInd])
 			callsInd++
 		}
+		log.Info(callsInd)
 		tmpResult, err := contract.TryAggregate(opts, successRequired, tmpCalls)
 		log.CheckFatal(err)
 		result = append(result, tmpResult...)

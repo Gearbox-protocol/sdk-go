@@ -2,10 +2,11 @@ package log
 
 import (
 	"fmt"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 	"runtime"
 	"testing"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var testLogModule *testing.T
@@ -68,8 +69,8 @@ func Info(v ...interface{}) {
 		testLogModule.Log(args...)
 	}
 }
-func InfoStack3(v ...interface{}) {
-	args := []interface{}{"[Info]: " + DetectFuncAtStack3()}
+func InfoStackN(n int, v ...interface{}) {
+	args := []interface{}{"[Info]: " + DetectFuncAtStackN(n)}
 	args = append(args, v...)
 	if testLogModule == nil {
 		log.Println(args...)
@@ -137,8 +138,8 @@ func DetectFunc() string {
 	_, file, line, _ := runtime.Caller(2)
 	return fmt.Sprintf(" %s:%d ", file, line)
 }
-func DetectFuncAtStack3() string {
-	_, file, line, _ := runtime.Caller(3)
+func DetectFuncAtStackN(n int) string {
+	_, file, line, _ := runtime.Caller(n)
 	return fmt.Sprintf(" %s:%d ", file, line)
 }
 

@@ -9,10 +9,11 @@ package core
 import (
 	"database/sql/driver"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"math/big"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func Topic(topic string) common.Hash {
@@ -47,9 +48,17 @@ func (a *BigInt) Cmp(b *BigInt) int {
 	return a.Convert().Cmp(b.Convert())
 }
 
+func ifZeroReturnOneBigInt(a *big.Int) *big.Int {
+	if a.Cmp(new(big.Int)) == 0 {
+		// log.InfoStackN(4, "var is zero", a)
+		return big.NewInt(1)
+	} else {
+		return a
+	}
+}
 func DiffMoreThanFraction(oldValue, newValue *BigInt, diff *big.Float) bool {
-	newFloat := new(big.Float).SetInt(newValue.Convert())
-	oldFloat := new(big.Float).SetInt(oldValue.Convert())
+	newFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(newValue.Convert()))
+	oldFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(oldValue.Convert()))
 	fractionalChange := new(big.Float).Quo(
 		new(big.Float).Sub(newFloat, oldFloat),
 		oldFloat)
