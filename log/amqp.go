@@ -25,7 +25,10 @@ func NewAMQPService(chainId uint, AMPQEnable string, AMQPURL, appName string) {
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	name := ""
+	SetAMQP(ch, GetNetworkName(chainId), appName)
+}
+
+func GetNetworkName(chainId uint) (name string) {
 	switch chainId {
 	case 42:
 		name = "KOVAN"
@@ -34,5 +37,5 @@ func NewAMQPService(chainId uint, AMPQEnable string, AMQPURL, appName string) {
 	case 1337:
 		name = "TEST"
 	}
-	SetAMQP(ch, name, appName)
+	return
 }

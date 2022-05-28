@@ -16,3 +16,24 @@ func init() {
 	WETHPrice, _ = new(big.Int).SetString("1000000000000000000", 10)
 	USDCPrice, _ = new(big.Int).SetString("100000000", 10)
 }
+
+type NetworkUI struct {
+	ExplorerUrl string
+	ChartUrl    string
+}
+
+func NetworkUIUrl(chainId uint) NetworkUI {
+	switch chainId {
+	case 1:
+		return NetworkUI{
+			ExplorerUrl: "https://etherscan.io",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
+	case 42:
+		return NetworkUI{
+			ExplorerUrl: "https://kovan.etherscan.io",
+			ChartUrl:    "https://charts.kovan.gearbox.fi",
+		}
+	}
+	return NetworkUI{}
+}
