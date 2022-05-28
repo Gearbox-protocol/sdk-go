@@ -12,6 +12,7 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -48,22 +49,16 @@ func (a *BigInt) Cmp(b *BigInt) int {
 	return a.Convert().Cmp(b.Convert())
 }
 
-func ifZeroReturnOneBigInt(a *big.Int) *big.Int {
-	if a.Cmp(new(big.Int)) == 0 {
-		// log.InfoStackN(4, "var is zero", a)
-		return big.NewInt(1)
-	} else {
-		return a
-	}
-}
 func DiffMoreThanFraction(oldValue, newValue *BigInt, diff *big.Float) bool {
-	newFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(newValue.Convert()))
-	oldFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(oldValue.Convert()))
-	fractionalChange := new(big.Float).Quo(
-		new(big.Float).Sub(newFloat, oldFloat),
-		oldFloat)
-	return new(big.Float).Abs(fractionalChange).Cmp(diff) >= 1
+	// newFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(newValue.Convert()))
+	// oldFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(oldValue.Convert()))
+	// fractionalChange := new(big.Float).Quo(
+	// 	new(big.Float).Sub(newFloat, oldFloat),
+	// 	oldFloat)
+	// return new(big.Float).Abs(fractionalChange).Cmp(diff) >= 1
+	return utils.DiffMoreThanFraction(oldValue.Convert(), newValue.Convert(), diff)
 }
+
 func ValueDifferSideOf10000(a, b *BigInt) bool {
 	return (IntGreaterThanEqualTo(a, 10000) != IntGreaterThanEqualTo(b, 10000))
 }

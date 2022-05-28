@@ -12,23 +12,23 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv2"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/mainnetLido"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoMock"
 	dc "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/linearInterestRateModel"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/mainnetLido"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolService"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/rewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Router"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Pool"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/wETHGateway"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnPriceFeed"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -47,7 +47,9 @@ import (
 )
 
 const MaxUint = ^int64(0)
-var VersionABI   abi.ABI
+
+var VersionABI abi.ABI
+
 type Contract struct {
 	DiscoveredAt int64        `gorm:"column:discovered_at" json:"discoveredAt"`
 	FirstLogAt   int64        `gorm:"column:firstlog_at" json:"firstLogAt"`
@@ -103,18 +105,18 @@ func GetAbi(contractName string) *abi.ABI {
 		"WETHGateway":    wETHGateway.WETHGatewayMetaData,
 
 		// Oracle
-		"PriceOracle":    &bind.MetaData{ABI: priceOracle.PriceOracleABI},
-		"YearnPriceFeed": &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
-		"PriceFeed": &bind.MetaData{ABI: priceFeed.PriceFeedABI},
-		"DataCompressorV1": &bind.MetaData{ABI: dc.DataCompressorABI},
+		"PriceOracle":           &bind.MetaData{ABI: priceOracle.PriceOracleABI},
+		"YearnPriceFeed":        &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
+		"PriceFeed":             &bind.MetaData{ABI: priceFeed.PriceFeedABI},
+		"DataCompressorMainnet": &bind.MetaData{ABI: dc.DataCompressorABI},
 
 		// Pool
 		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
-		"CreditManagerV2":           &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
+		"CreditManagerV2":         &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
 		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
-		"LidoMock":            &bind.MetaData{ABI: lidoMock.LidoMockABI},
-		"MainnetLido":            &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
+		"LidoMock":                &bind.MetaData{ABI: lidoMock.LidoMockABI},
+		"MainnetLido":             &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
 		"Pool":                    poolService.PoolServiceMetaData,
 
 		// GetUnderlyingToken
@@ -126,7 +128,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"Uniswapv2Pool":      &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
 		"Uniswapv3Pool":      &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
 		"Uniswapv2Router":    &bind.MetaData{ABI: uniswapv2Router.Uniswapv2RouterABI},
-		"Uniswapv2Factory":    &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
+		"Uniswapv2Factory":   &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
 		"CreditConfigurator": &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
 		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
 		"MultiCall":          &bind.MetaData{ABI: multicall.MulticallABI},
