@@ -67,10 +67,12 @@ func (rc *Client) errorHandler(err error) bool {
 		} else if strings.HasPrefix(err.Error(), "429") {
 			// log.Error("sleep because of error: ", err)
 			time.Sleep(20 * time.Second)
-		} else if strings.HasPrefix(err.Error(), "504") {
+		} else if strings.Contains(err.Error(), "504") {
 			// channel/connection is not open
 			time.Sleep(30 * time.Second)
-		} else if strings.HasPrefix(err.Error(), "--pruning=archive") {
+		} else if strings.Contains(err.Error(), "your node is running with state pruning") {
+			// this error occurs in definder state engine, when trying to get multicall data for latest blocknum
+			log.Info("sleeping for 6 secs")
 			//This request is not supported because your node is running with state pruning. Run with --pruning=archive.
 			time.Sleep(6 * time.Second)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
