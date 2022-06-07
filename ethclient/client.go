@@ -67,6 +67,12 @@ func (rc *Client) errorHandler(err error) bool {
 		} else if strings.HasPrefix(err.Error(), "429") {
 			// log.Error("sleep because of error: ", err)
 			time.Sleep(20 * time.Second)
+		} else if strings.HasPrefix(err.Error(), "504") {
+			// channel/connection is not open
+			time.Sleep(30 * time.Second)
+		} else if strings.HasPrefix(err.Error(), "--pruning=archive") {
+			//This request is not supported because your node is running with state pruning. Run with --pruning=archive.
+			time.Sleep(6 * time.Second)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
 			log.Fatal(err)
 		}
