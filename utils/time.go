@@ -20,7 +20,7 @@ func TimeToDateEndTime(t time.Time) time.Time {
 }
 
 func TimeToDate(t time.Time) string {
-	return t.Format("2006-01-02")
+	return t.UTC().Format("2006-01-02")
 }
 
 func GetTimeoutCtx(sec int) (context.Context, context.CancelFunc) {
