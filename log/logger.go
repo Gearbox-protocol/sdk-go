@@ -21,12 +21,25 @@ func Verbose(v ...interface{}) {
 	// log.Println(v...)
 }
 
-func Debugf(msg string, args ...interface{}) {
-	log.Printf("[Debug] "+msg, args...)
+func Updatef(msg string, args ...interface{}) {
+	msgFormat := "[Update] " + DetectFunc() + msg
+	amqpSendf(msgFormat, args)
+	if testLogModule == nil {
+		log.Printf(msgFormat, args...)
+	} else {
+		testLogModule.Logf(msgFormat, args...)
+	}
 }
 
-func Debug(v ...interface{}) {
-	log.Println(v...)
+func Update(v ...interface{}) {
+	args := []interface{}{"[Update]: " + DetectFunc()}
+	args = append(args, v...)
+	amqpSend(args)
+	if testLogModule == nil {
+		log.Println(args...)
+	} else {
+		testLogModule.Log(args...)
+	}
 }
 
 func Warnf(msg string, args ...interface{}) {

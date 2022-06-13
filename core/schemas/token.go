@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"fmt"
+
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -67,6 +69,11 @@ type TokenTransfer struct {
 	Amount        *core.BigInt `gorm:"column:amount"`
 	IsFromAccount bool         `gorm:"column:isfrom_account"`
 	IsToAccount   bool         `gorm:"column:isto_account"`
+}
+
+func (tt *TokenTransfer) String() string {
+	return fmt.Sprintf("DirecTokenTransfer detected at %d from %s to %s for token(%s) amount(%s)",
+		tt.BlockNum, tt.From, tt.To, tt.Token, tt.Amount)
 }
 
 type TokenTransferList []*TokenTransfer
