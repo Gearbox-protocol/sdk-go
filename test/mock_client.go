@@ -8,7 +8,7 @@ import (
 	"sort"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
-	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
@@ -217,7 +217,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		return common.HexToHash(feed.Feed).Bytes(), nil
 	} else if sig == "bce38bd7" {
 		obj := map[string]interface{}{}
-		parser := schemas.GetAbi("MultiCall")
+		parser := core.GetAbi("MultiCall")
 		method, err := parser.MethodById(call.Data[:4])
 		log.CheckFatal(err)
 		method.Inputs.UnpackIntoMap(obj, call.Data[4:])

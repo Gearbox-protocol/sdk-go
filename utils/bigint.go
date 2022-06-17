@@ -122,18 +122,18 @@ func IntDiffMoreThanFraction(oldValue, newValue int64, diff float64) bool {
 	return absFloat64(float64(newValue-oldValue))/float64(oldValue) > diff
 }
 
-func ifZeroReturnOneBigInt(a *big.Int) *big.Int {
-	if a.Cmp(new(big.Int)) == 0 {
+func ifZeroReturnOneBigInt(a *big.Float) *big.Float {
+	if a.Cmp(new(big.Float)) == 0 {
 		// log.InfoStackN(4, c"var is zero", a)
-		return big.NewInt(1)
+		return big.NewFloat(1)
 	} else {
 		return a
 	}
 }
 
 func DiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
-	oldFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(oldValue))
-	newFloat := new(big.Float).SetInt(ifZeroReturnOneBigInt(newValue))
-	value := new(big.Float).Quo(new(big.Float).Sub(newFloat, oldFloat), oldFloat)
+	oldFloat := new(big.Float).SetInt(oldValue)
+	newFloat := new(big.Float).SetInt(newValue)
+	value := new(big.Float).Quo(new(big.Float).Sub(newFloat, oldFloat), ifZeroReturnOneBigInt(oldFloat))
 	return new(big.Float).Abs(value).Cmp(diff) > 0
 }

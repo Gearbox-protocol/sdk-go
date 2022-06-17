@@ -1,19 +1,16 @@
 package utils
 
 import (
-	"bytes"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
+	"strings"
+
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"io/ioutil"
-	"os"
-	"strings"
 )
 
 func Contains(s []string, e string) bool {
@@ -68,60 +65,6 @@ func ChecksumAddr(addr string) string {
 	return common.HexToAddress(addr).Hex()
 }
 
-func ReadJsonAndSet(fileName string) []map[string]interface{} {
-	data := []map[string]interface{}{}
-	jsonFile, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
-	d.UseNumber()
-	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", err)
-	}
-	return data
-}
-func ReadJsonAndSetInterface(fileName string, data interface{}) {
-	jsonFile, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
-	d.UseNumber()
-	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", err)
-	}
-}
-
-func ReadJson(fileName string) map[string]interface{} {
-	data := map[string]interface{}{}
-	jsonFile, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
-	d.UseNumber()
-	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", err)
-	}
-	return data
-}
-
-func SetJson(byteValue []byte, data interface{}) {
-	d := json.NewDecoder(bytes.NewReader(byteValue))
-	// use number instead of encoding as float
-	d.UseNumber()
-	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", err)
-	}
-}
-
 func ConvertToListOfString(list interface{}) (accountAddrs []string) {
 	switch list.(type) {
 	case []interface{}:
@@ -144,12 +87,4 @@ func ConvertToListOfString(list interface{}) (accountAddrs []string) {
 		accountAddrs = accountList
 	}
 	return
-}
-
-func ReadFile(fileName string) []byte {
-	jsonFile, err := os.ReadFile(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return jsonFile
 }

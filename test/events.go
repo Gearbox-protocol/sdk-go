@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
-	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -54,7 +53,7 @@ func (c *TestEvent) ParseData(contractName []string, topic0 common.Hash) ([]byte
 	var event *abi.Event
 	var err error
 	for _, name := range contractName {
-		abi := schemas.GetAbi(name)
+		abi := core.GetAbi(name)
 		event, err = abi.EventByID(topic0)
 		if err == nil {
 			break
