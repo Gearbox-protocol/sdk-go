@@ -104,11 +104,17 @@ local mapFunc(running, idx, ele) =
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_SUSD_ADAPTER,
     },
+    CURVE_3CRV_ADAPTER: {
+      swapActions:: [
+        swapDetails(tokens.FRAX3CRV, [exchgs['FRAX3CRV-f']], [tokens.FRAX, tokens['3CRV']]),
+        swapDetails(tokens.LUSD3CRV, [exchgs['LUSD3CRV-f']], [tokens.LUSD, tokens['3CRV']]),
+      ],
+      tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      abi: abi.CURVE_ADAPTER,
+    },
     CURVE_ADAPTER: {
       swapActions:: [
         // Metapools
-        swapDetails(tokens.FRAX3CRV, [exchgs['FRAX3CRV-f']], [tokens.FRAX, tokens['3CRV']]),
-        swapDetails(tokens.LUSD3CRV, [exchgs['LUSD3CRV-f']], [tokens.LUSD, tokens['3CRV']]),
         //
         swapDetails(tokens.GUSD3CRV, [exchgs.GUSD3CRV_WRAPPER], [tokens.GUSD] + _3crv_tokens),
         ////////
@@ -127,6 +133,7 @@ local mapFunc(running, idx, ele) =
     UNISWAPV3_ADAPTER: {
       tokens: arrayToObj(mapFunc, _non_synthetic_assets, {}),
       exchanges: [exchgs.UNISWAPV3_ROUTER],
+      Quoter: exchgs.UNISWAPV3_QUOTER,
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV3_ADAPTER,
     },

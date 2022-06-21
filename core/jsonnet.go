@@ -29,7 +29,7 @@ func getJsonnet(file string, importedFiles map[string]string, reader readFileI) 
 		imports[k] = jsonnet.MakeContents(string(content))
 	}
 	vm.Importer(&jsonnet.MemoryImporter{
-		imports,
+		Data: imports,
 	})
 	if data, err := reader.ReadFile(file); err != nil {
 		return "", err

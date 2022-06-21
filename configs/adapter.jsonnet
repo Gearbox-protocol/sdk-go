@@ -25,6 +25,32 @@
         },
       ],
     },
+    {
+      inputs: [],
+      name: 'withdraw',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      stateMutability: 'view',
+      type: 'function',
+      name: 'decimals',
+      inputs: [],
+      outputs: [
+        {
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      gas: 3678,
+    },
   ],
   UNISWAPV2_ADAPTER: [
     {
@@ -49,6 +75,35 @@
         },
       ],
       stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'rateMinRAY',
+          type: 'uint256',
+        },
+        {
+          internalType: 'address[]',
+          name: 'path',
+          type: 'address[]',
+        },
+        {
+          internalType: 'uint256',
+          name: 'deadline',
+          type: 'uint256',
+        },
+      ],
+      name: 'swapAllTokensForTokens',
+      outputs: [
+        {
+          internalType: 'uint256[]',
+          name: 'amounts',
+          type: 'uint256[]',
+        },
+      ],
+      stateMutability: 'nonpayable',
       type: 'function',
     },
   ],
@@ -110,6 +165,29 @@
       stateMutability: 'view',
       type: 'function',
     },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'int128',
+          name: 'i',
+          type: 'int128',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      name: 'remove_liquidity_one_coin',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
   ],
   CURVE_SUSD_ADAPTER: [
     {
@@ -130,6 +208,29 @@
       payable: false,
       type: 'function',
       gas: 1680,
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'int128',
+          name: 'i',
+          type: 'int128',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      name: 'remove_liquidity_one_coin',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
     },
     {
       name: 'calc_withdraw_one_coin',
@@ -169,6 +270,93 @@
         },
       ],
       name: 'quoteExactInput',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: 'amountOut',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          components: [
+            {
+              internalType: 'bytes',
+              name: 'path',
+              type: 'bytes',
+            },
+            {
+              internalType: 'uint256',
+              name: 'deadline',
+              type: 'uint256',
+            },
+            {
+              internalType: 'uint256',
+              name: 'rateMinRAY',
+              type: 'uint256',
+            },
+          ],
+          internalType: 'structIUniswapV3Adapter.ExactAllInputParams',
+          name: 'params',
+          type: 'tuple',
+        },
+      ],
+      name: 'exactAllInput',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: 'amountOut',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          components: [
+            {
+              internalType: 'address',
+              name: 'tokenIn',
+              type: 'address',
+            },
+            {
+              internalType: 'address',
+              name: 'tokenOut',
+              type: 'address',
+            },
+            {
+              internalType: 'uint24',
+              name: 'fee',
+              type: 'uint24',
+            },
+            {
+              internalType: 'uint256',
+              name: 'deadline',
+              type: 'uint256',
+            },
+            {
+              internalType: 'uint256',
+              name: 'rateMinRAY',
+              type: 'uint256',
+            },
+            {
+              internalType: 'uint160',
+              name: 'sqrtPriceLimitX96',
+              type: 'uint160',
+            },
+          ],
+          internalType: 'structIUniswapV3Adapter.ExactAllInputSingleParams',
+          name: 'params',
+          type: 'tuple',
+        },
+      ],
+      name: 'exactAllInputSingle',
       outputs: [
         {
           internalType: 'uint256',
