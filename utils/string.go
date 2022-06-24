@@ -66,12 +66,12 @@ func ChecksumAddr(addr string) string {
 }
 
 func ConvertToListOfString(list interface{}) (accountAddrs []string) {
-	switch list.(type) {
+	switch accountList := list.(type) {
 	case []interface{}:
-		accountList, ok := list.([]interface{})
-		if !ok {
-			panic("parsing accounts list for token transfer failed")
-		}
+		// accountList, ok := list.([]interface{})
+		// if !ok {
+		// 	log.Fatal("parsing accounts list for token transfer failed")
+		// }
 		for _, account := range accountList {
 			accountAddr, ok := account.(string)
 			if !ok {
@@ -80,11 +80,13 @@ func ConvertToListOfString(list interface{}) (accountAddrs []string) {
 			accountAddrs = append(accountAddrs, accountAddr)
 		}
 	case []string:
-		accountList, ok := list.([]string)
-		if !ok {
-			panic("parsing accounts list for token transfer failed")
-		}
+		// accountList, ok := list.([]string)
+		// if !ok {
+		// 	log.Fatal("parsing accounts list for token transfer failed")
+		// }
 		accountAddrs = accountList
+	default:
+		log.Fatal("parsing accounts list for token transfer failed")
 	}
 	return
 }

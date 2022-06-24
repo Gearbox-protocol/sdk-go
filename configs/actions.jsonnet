@@ -31,6 +31,7 @@ local _green = [
   tokens.stETH,
   tokens.GUSD,
   tokens.LUSD,
+  tokens.USDT,
 ];
 local _base = [
   tokens.USDC,
@@ -76,6 +77,7 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CONVEX_ADAPTER,
+      name: 'ConvexAdapter',
     },
     YEARN_ADAPTER: {
       swapActions:: [
@@ -88,6 +90,7 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.YEARN_ADAPTER,
+      name: 'YearnAdapter',
     },
     CURVE_META_POOL_GENERIC_WRAPPER_ADAPTER: {
       swapActions:: [
@@ -96,6 +99,7 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_GENERIC_WRAPPER_ADAPTER,
+      name: 'CurveGenericWrapperAdapter',
     },
     CURVE_SUSD_ADAPTER: {
       swapActions:: [
@@ -103,6 +107,7 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_SUSD_ADAPTER,
+      name: 'CurveSUSDAdapter',
     },
     CURVE_3CRV_ADAPTER: {
       swapActions:: [
@@ -111,6 +116,7 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
+      name: 'Curve3crvAdapter',
     },
     CURVE_ADAPTER: {
       swapActions:: [
@@ -123,12 +129,14 @@ local mapFunc(running, idx, ele) =
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
+      name: 'CurveAdapter',
     },
     UNISWAPV2_ADAPTER: {
       tokens: arrayToObj(mapFunc, _non_synthetic_assets, {}),
       exchanges: [exchgs.SUSHISWAP_ROUTER, exchgs.UNISWAPV2_ROUTER],
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV2_ADAPTER,
+      name: 'UniswapV2Adapter',
     },
     UNISWAPV3_ADAPTER: {
       tokens: arrayToObj(mapFunc, _non_synthetic_assets, {}),
@@ -136,6 +144,7 @@ local mapFunc(running, idx, ele) =
       Quoter: exchgs.UNISWAPV3_QUOTER,
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV3_ADAPTER,
+      name: 'UniswapV3Adapter',
     },
   },
 }

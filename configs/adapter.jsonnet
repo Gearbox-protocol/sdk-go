@@ -188,8 +188,34 @@
       stateMutability: 'nonpayable',
       type: 'function',
     },
+    {
+      name: 'get_virtual_price',
+      outputs: [
+        {
+          type: 'uint256',
+          name: '',
+        },
+      ],
+      inputs: [],
+      stateMutability: 'view',
+      type: 'function',
+      gas: 1011891,
+    },
   ],
   CURVE_SUSD_ADAPTER: [
+    {
+      name: 'get_virtual_price',
+      outputs: [
+        {
+          type: 'uint256',
+          name: '',
+        },
+      ],
+      inputs: [],
+      stateMutability: 'view',
+      type: 'function',
+      gas: 1011891,
+    },
     {
       name: 'coins',
       outputs: [
