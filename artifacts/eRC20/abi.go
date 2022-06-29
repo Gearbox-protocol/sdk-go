@@ -220,7 +220,7 @@ func (_ERC20 *ERC20Caller) BalanceOf(opts *bind.CallOpts, account common.Address
 	if err != nil {
 		return *new(*big.Int), err
 	}
-
+	
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err

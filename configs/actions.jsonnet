@@ -30,8 +30,8 @@ local _green = [
   tokens.SUSD,
   tokens.stETH,
   tokens.GUSD,
+  // tokens.USDT,
   tokens.LUSD,
-  tokens.USDT,
 ];
 local _base = [
   tokens.USDC,
