@@ -64,17 +64,18 @@ func (rc *Client) errorHandler(err error) bool {
 		if err.Error() == "execution aborted (timeout = 10s)" {
 			log.Error("sleeping due to execution aborted (timeout = 10s)")
 			time.Sleep(2 * time.Second)
-		} else if strings.HasPrefix(err.Error(), "429") {
-			// log.Error("sleep because of error: ", err)
+		} else if strings.HasPrefix(err.Error(), "429") { // too many request
 			time.Sleep(20 * time.Second)
-		} else if strings.Contains(err.Error(), "504") {
+		} else if strings.Contains(err.Error(), "504") { // Gateway Timeout server error
 			// channel/connection is not open
 			time.Sleep(30 * time.Second)
 		} else if strings.Contains(err.Error(), "your node is running with state pruning") {
 			// this error occurs in definder state engine, when trying to get multicall data for latest blocknum
-			log.Info("sleeping for 6 secs")
+			log.Info("sleeping for 15 secs")
 			//This request is not supported because your node is running with state pruning. Run with --pruning=archive.
-			time.Sleep(6 * time.Second)
+			time.Sleep(15 * time.Second)
+		} else if err.Error() == "header not found" { // makemulticall failed with this error in definder
+			time.Sleep(15 * time.Second)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
 			log.Fatal(err)
 		}
