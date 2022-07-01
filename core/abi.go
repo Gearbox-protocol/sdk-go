@@ -18,6 +18,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoKovan"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/linearInterestRateModel"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/mainnetLido"
@@ -87,6 +88,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"CreditConfigurator": &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
 		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
 		"MultiCall":          &bind.MetaData{ABI: multicall.MulticallABI},
+		"LidoKovan":          &bind.MetaData{ABI: lidoKovan.LidoKovanABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {

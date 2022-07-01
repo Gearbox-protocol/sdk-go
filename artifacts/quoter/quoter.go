@@ -133,215 +133,28 @@ func bindQuoter(address common.Address, caller bind.ContractCaller, transactor b
 	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 }
 
-// Call invokes the (constant) contract method with params as input values and
-// sets the output to result. The result type might be a single field for simple
-// returns, a slice of interfaces for anonymous returns and a struct for named
-// returns.
-func (_Quoter *QuoterRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _Quoter.Contract.QuoterCaller.contract.Call(opts, result, method, params...)
-}
-
-// Transfer initiates a plain transaction to move funds to the contract, calling
-// its default method if one is available.
-func (_Quoter *QuoterRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoterTransactor.contract.Transfer(opts)
-}
-
-// Transact invokes the (paid) contract method with params as input values.
-func (_Quoter *QuoterRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoterTransactor.contract.Transact(opts, method, params...)
-}
-
-// Call invokes the (constant) contract method with params as input values and
-// sets the output to result. The result type might be a single field for simple
-// returns, a slice of interfaces for anonymous returns and a struct for named
-// returns.
-func (_Quoter *QuoterCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _Quoter.Contract.contract.Call(opts, result, method, params...)
-}
-
-// Transfer initiates a plain transaction to move funds to the contract, calling
-// its default method if one is available.
-func (_Quoter *QuoterTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Quoter.Contract.contract.Transfer(opts)
-}
-
-// Transact invokes the (paid) contract method with params as input values.
-func (_Quoter *QuoterTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _Quoter.Contract.contract.Transact(opts, method, params...)
-}
-
-// WETH9 is a free data retrieval call binding the contract method 0x4aa4a4fc.
-//
-// Solidity: function WETH9() view returns(address)
-func (_Quoter *QuoterCaller) WETH9(opts *bind.CallOpts) (common.Address, error) {
+////////////
+////////////
+////////////
+func (_IQuoter *QuoterCaller) QuoteExactInputSingle(opts *bind.CallOpts, tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountIn *big.Int, sqrtPriceLimitX96 *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _Quoter.contract.Call(opts, &out, "WETH9")
+	err := _IQuoter.contract.Call(opts, &out, "quoteExactInputSingle", tokenIn, tokenOut, fee, amountIn, sqrtPriceLimitX96)
 
 	if err != nil {
-		return *new(common.Address), err
+		return *new(*big.Int), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	return out0, err
-
 }
-
-// WETH9 is a free data retrieval call binding the contract method 0x4aa4a4fc.
-//
-// Solidity: function WETH9() view returns(address)
-func (_Quoter *QuoterSession) WETH9() (common.Address, error) {
-	return _Quoter.Contract.WETH9(&_Quoter.CallOpts)
-}
-
-// WETH9 is a free data retrieval call binding the contract method 0x4aa4a4fc.
-//
-// Solidity: function WETH9() view returns(address)
-func (_Quoter *QuoterCallerSession) WETH9() (common.Address, error) {
-	return _Quoter.Contract.WETH9(&_Quoter.CallOpts)
-}
-
-// Factory is a free data retrieval call binding the contract method 0xc45a0155.
-//
-// Solidity: function factory() view returns(address)
-func (_Quoter *QuoterCaller) Factory(opts *bind.CallOpts) (common.Address, error) {
+func (_IQuoter *QuoterCaller) QuoteExactOutputSingle(opts *bind.CallOpts, tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountIn *big.Int, sqrtPriceLimitX96 *big.Int) (*big.Int, error) {
 	var out []interface{}
-	err := _Quoter.contract.Call(opts, &out, "factory")
+	err := _IQuoter.contract.Call(opts, &out, "quoteExactOutputSingle", tokenIn, tokenOut, fee, amountIn, sqrtPriceLimitX96)
 
 	if err != nil {
-		return *new(common.Address), err
+		return *new(*big.Int), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	return out0, err
-
-}
-
-// Factory is a free data retrieval call binding the contract method 0xc45a0155.
-//
-// Solidity: function factory() view returns(address)
-func (_Quoter *QuoterSession) Factory() (common.Address, error) {
-	return _Quoter.Contract.Factory(&_Quoter.CallOpts)
-}
-
-// Factory is a free data retrieval call binding the contract method 0xc45a0155.
-//
-// Solidity: function factory() view returns(address)
-func (_Quoter *QuoterCallerSession) Factory() (common.Address, error) {
-	return _Quoter.Contract.Factory(&_Quoter.CallOpts)
-}
-
-// UniswapV3SwapCallback is a free data retrieval call binding the contract method 0xfa461e33.
-//
-// Solidity: function uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes path) view returns()
-func (_Quoter *QuoterCaller) UniswapV3SwapCallback(opts *bind.CallOpts, amount0Delta *big.Int, amount1Delta *big.Int, path []byte) error {
-	var out []interface{}
-	err := _Quoter.contract.Call(opts, &out, "uniswapV3SwapCallback", amount0Delta, amount1Delta, path)
-
-	if err != nil {
-		return err
-	}
-
-	return err
-
-}
-
-// UniswapV3SwapCallback is a free data retrieval call binding the contract method 0xfa461e33.
-//
-// Solidity: function uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes path) view returns()
-func (_Quoter *QuoterSession) UniswapV3SwapCallback(amount0Delta *big.Int, amount1Delta *big.Int, path []byte) error {
-	return _Quoter.Contract.UniswapV3SwapCallback(&_Quoter.CallOpts, amount0Delta, amount1Delta, path)
-}
-
-// UniswapV3SwapCallback is a free data retrieval call binding the contract method 0xfa461e33.
-//
-// Solidity: function uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes path) view returns()
-func (_Quoter *QuoterCallerSession) UniswapV3SwapCallback(amount0Delta *big.Int, amount1Delta *big.Int, path []byte) error {
-	return _Quoter.Contract.UniswapV3SwapCallback(&_Quoter.CallOpts, amount0Delta, amount1Delta, path)
-}
-
-// QuoteExactInput is a paid mutator transaction binding the contract method 0xcdca1753.
-//
-// Solidity: function quoteExactInput(bytes path, uint256 amountIn) returns(uint256 amountOut)
-func (_Quoter *QuoterTransactor) QuoteExactInput(opts *bind.TransactOpts, path []byte, amountIn *big.Int) (*types.Transaction, error) {
-	return _Quoter.contract.Transact(opts, "quoteExactInput", path, amountIn)
-}
-
-// QuoteExactInput is a paid mutator transaction binding the contract method 0xcdca1753.
-//
-// Solidity: function quoteExactInput(bytes path, uint256 amountIn) returns(uint256 amountOut)
-func (_Quoter *QuoterSession) QuoteExactInput(path []byte, amountIn *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactInput(&_Quoter.TransactOpts, path, amountIn)
-}
-
-// QuoteExactInput is a paid mutator transaction binding the contract method 0xcdca1753.
-//
-// Solidity: function quoteExactInput(bytes path, uint256 amountIn) returns(uint256 amountOut)
-func (_Quoter *QuoterTransactorSession) QuoteExactInput(path []byte, amountIn *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactInput(&_Quoter.TransactOpts, path, amountIn)
-}
-
-// QuoteExactInputSingle is a paid mutator transaction binding the contract method 0xf7729d43.
-//
-// Solidity: function quoteExactInputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint160 sqrtPriceLimitX96) returns(uint256 amountOut)
-func (_Quoter *QuoterTransactor) QuoteExactInputSingle(opts *bind.TransactOpts, tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountIn *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.contract.Transact(opts, "quoteExactInputSingle", tokenIn, tokenOut, fee, amountIn, sqrtPriceLimitX96)
-}
-
-// QuoteExactInputSingle is a paid mutator transaction binding the contract method 0xf7729d43.
-//
-// Solidity: function quoteExactInputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint160 sqrtPriceLimitX96) returns(uint256 amountOut)
-func (_Quoter *QuoterSession) QuoteExactInputSingle(tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountIn *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactInputSingle(&_Quoter.TransactOpts, tokenIn, tokenOut, fee, amountIn, sqrtPriceLimitX96)
-}
-
-// QuoteExactInputSingle is a paid mutator transaction binding the contract method 0xf7729d43.
-//
-// Solidity: function quoteExactInputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint160 sqrtPriceLimitX96) returns(uint256 amountOut)
-func (_Quoter *QuoterTransactorSession) QuoteExactInputSingle(tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountIn *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactInputSingle(&_Quoter.TransactOpts, tokenIn, tokenOut, fee, amountIn, sqrtPriceLimitX96)
-}
-
-// QuoteExactOutput is a paid mutator transaction binding the contract method 0x2f80bb1d.
-//
-// Solidity: function quoteExactOutput(bytes path, uint256 amountOut) returns(uint256 amountIn)
-func (_Quoter *QuoterTransactor) QuoteExactOutput(opts *bind.TransactOpts, path []byte, amountOut *big.Int) (*types.Transaction, error) {
-	return _Quoter.contract.Transact(opts, "quoteExactOutput", path, amountOut)
-}
-
-// QuoteExactOutput is a paid mutator transaction binding the contract method 0x2f80bb1d.
-//
-// Solidity: function quoteExactOutput(bytes path, uint256 amountOut) returns(uint256 amountIn)
-func (_Quoter *QuoterSession) QuoteExactOutput(path []byte, amountOut *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactOutput(&_Quoter.TransactOpts, path, amountOut)
-}
-
-// QuoteExactOutput is a paid mutator transaction binding the contract method 0x2f80bb1d.
-//
-// Solidity: function quoteExactOutput(bytes path, uint256 amountOut) returns(uint256 amountIn)
-func (_Quoter *QuoterTransactorSession) QuoteExactOutput(path []byte, amountOut *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactOutput(&_Quoter.TransactOpts, path, amountOut)
-}
-
-// QuoteExactOutputSingle is a paid mutator transaction binding the contract method 0x30d07f21.
-//
-// Solidity: function quoteExactOutputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountOut, uint160 sqrtPriceLimitX96) returns(uint256 amountIn)
-func (_Quoter *QuoterTransactor) QuoteExactOutputSingle(opts *bind.TransactOpts, tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountOut *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.contract.Transact(opts, "quoteExactOutputSingle", tokenIn, tokenOut, fee, amountOut, sqrtPriceLimitX96)
-}
-
-// QuoteExactOutputSingle is a paid mutator transaction binding the contract method 0x30d07f21.
-//
-// Solidity: function quoteExactOutputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountOut, uint160 sqrtPriceLimitX96) returns(uint256 amountIn)
-func (_Quoter *QuoterSession) QuoteExactOutputSingle(tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountOut *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactOutputSingle(&_Quoter.TransactOpts, tokenIn, tokenOut, fee, amountOut, sqrtPriceLimitX96)
-}
-
-// QuoteExactOutputSingle is a paid mutator transaction binding the contract method 0x30d07f21.
-//
-// Solidity: function quoteExactOutputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountOut, uint160 sqrtPriceLimitX96) returns(uint256 amountIn)
-func (_Quoter *QuoterTransactorSession) QuoteExactOutputSingle(tokenIn common.Address, tokenOut common.Address, fee *big.Int, amountOut *big.Int, sqrtPriceLimitX96 *big.Int) (*types.Transaction, error) {
-	return _Quoter.Contract.QuoteExactOutputSingle(&_Quoter.TransactOpts, tokenIn, tokenOut, fee, amountOut, sqrtPriceLimitX96)
 }
