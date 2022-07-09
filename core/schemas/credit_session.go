@@ -1,8 +1,9 @@
 package schemas
 
 import (
-	"github.com/Gearbox-protocol/sdk-go/core"
 	"math/big"
+
+	"github.com/Gearbox-protocol/sdk-go/core"
 )
 
 const (
@@ -28,7 +29,6 @@ type (
 		RemainingFunds         *core.BigInt      `gorm:"column:remaining_funds"`
 		CollateralInUSD        float64           `gorm:"<-:false;column:collateral_usd"`
 		CollateralInUnderlying float64           `gorm:"<-:false;column:collateral_underlying"`
-		HealthFactor           *core.BigInt      `gorm:"column:health_factor" json:"healthFactor"`
 		IsDirty                bool              `gorm:"-"`
 		Liquidator             string            `gorm:"liquidator"`
 		Version                int16             `gorm:"version"`
