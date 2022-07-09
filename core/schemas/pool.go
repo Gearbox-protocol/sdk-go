@@ -22,9 +22,9 @@ type UTokenAndPool struct {
 	UToken string
 }
 type PoolStat struct {
-	ID                       int64        `gorm:"primaryKey" json:"-"`
-	BlockNum                 int64        `gorm:"column:block_num" json:"blockNum"`
-	Address                  string       `gorm:"column:pool" json:"pool"`
+	ID                       int64        `json:"-"`
+	BlockNum                 int64        `gorm:"column:block_num;primaryKey" json:"blockNum"`
+	Address                  string       `gorm:"column:pool;primaryKey" json:"pool"`
 	UniqueUsers              int          `gorm:"column:unique_users" json:"uniqueUsers"`
 	DepositAPY               float64      `gorm:"column:deposit_apy" json:"depositAPY"`
 	DepositAPYBI             *core.BigInt `gorm:"column:deposit_apy_bi" json:"depositAPYBI"`
@@ -56,13 +56,13 @@ type PoolInterestData struct {
 }
 
 type PoolLedger struct {
-	Id          int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
-	BlockNumber int64        `gorm:"column:block_num" json:"blockNum"`
-	Pool        string       `gorm:"column:pool" json:"pool"`
+	Id          int64        `json:"-"`
+	BlockNumber int64        `gorm:"column:block_num;primaryKey" json:"blockNum"`
+	Pool        string       `gorm:"column:pool;primaryKey" json:"pool"`
 	User        string       `gorm:"column:user_address" json:"user"`
 	TxHash      string       `gorm:"column:tx_hash" json:"txHash"`
 	SessionId   string       `gorm:"column:session_id" json:"sessionId"`
-	LogId       uint         `gorm:"column:log_id" json:"logId"`
+	LogId       uint         `gorm:"column:log_id;primaryKey" json:"logId"`
 	Event       string       `gorm:"column:event" json:"event"`
 	AmountBI    *core.BigInt `gorm:"column:amount_bi" json:"-"`
 	Amount      float64      `gorm:"column:amount" json:"amount"`
