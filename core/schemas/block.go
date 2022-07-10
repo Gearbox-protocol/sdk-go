@@ -1,9 +1,5 @@
 package schemas
 
-import (
-	"math/big"
-)
-
 type (
 	Block struct {
 		BlockNumber             int64                     `gorm:"primaryKey;column:id" json:"blockNum"` // Block Number
@@ -20,7 +16,6 @@ type (
 		DAOOperations           []*DAOOperation           `gorm:"foreignKey:block_num" json:"daoOperations"`
 		Params                  []*Parameters             `gorm:"foreignKey:block_num" json:"params"`
 		FastCheckParams         []*FastCheckParams        `gorm:"foreignKey:block_num" json:"fastCheckParams"`
-		pnlOnCM                 map[string]*PnlOnRepay    `gorm:"-" json:"-"`
 		TreasuryTransfers       []*TreasuryTransfer       `gorm:"foreignKey:block_num" json:"treasuryTransfers"`
 		TreasurySnapshots       []*TreasurySnapshotModel2 `gorm:"foreignKey:block_num" json:"treasurySnapshots"`
 		NoSessionTokenTransfers []*TokenTransfer          `gorm:"foreignKey:block_num" json:"noSessionTokenTransfers"`
@@ -113,26 +108,6 @@ func (b *Block) GetCSS() []*CreditSessionSnapshot {
 
 func (b *Block) GetPoolStats() []*PoolStat {
 	return b.PoolStats
-}
-
-func (b *Block) AddRepayOnCM(cmAddr string, pnl *PnlOnRepay) {
-	if b.pnlOnCM == nil {
-		b.pnlOnCM = make(map[string]*PnlOnRepay)
-	}
-	oldPnl := b.pnlOnCM[cmAddr]
-	if oldPnl != nil {
-		pnl.Profit = new(big.Int).Add(oldPnl.Profit, pnl.Profit)
-		pnl.Loss = new(big.Int).Add(oldPnl.Loss, pnl.Loss)
-		pnl.BorrowedAmount = new(big.Int).Add(oldPnl.BorrowedAmount, pnl.BorrowedAmount)
-	}
-	b.pnlOnCM[cmAddr] = pnl
-}
-
-func (b *Block) GetRepayOnCM(cmAddr string) *PnlOnRepay {
-	if b.pnlOnCM == nil || b.pnlOnCM[cmAddr] == nil {
-		return nil
-	}
-	return b.pnlOnCM[cmAddr]
 }
 
 func (b *Block) GetParams() []*Parameters {

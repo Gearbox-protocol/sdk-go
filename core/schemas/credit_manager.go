@@ -1,8 +1,9 @@
 package schemas
 
 import (
-	"github.com/Gearbox-protocol/sdk-go/core"
 	"math/big"
+
+	"github.com/Gearbox-protocol/sdk-go/core"
 )
 
 func (CreditManagerState) TableName() string {
@@ -119,6 +120,7 @@ type CreditManagerStat struct {
 }
 
 type PnlOnRepay struct {
+	BlockNum       int64
 	Loss           *big.Int
 	Profit         *big.Int
 	BorrowedAmount *big.Int
