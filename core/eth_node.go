@@ -18,7 +18,7 @@ type Node struct {
 	chainId int64
 }
 
-func (lf *Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
+func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
 	query := ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetInt64(fromBlock),
 		ToBlock:   new(big.Int).SetInt64(toBlock),
@@ -73,13 +73,13 @@ func (lf *Node) setChainId() {
 	}
 }
 
-func (lf *Node) GetHeader(blockNum int64) *types.Header {
+func (lf Node) GetHeader(blockNum int64) *types.Header {
 	b, err := lf.Client.BlockByNumber(context.Background(), big.NewInt(blockNum))
 	log.CheckFatal(err)
 	return b.Header()
 }
 
-func (lf *Node) GasPrice(txHash common.Hash, baseFee *big.Int) *big.Int {
+func (lf Node) GasPrice(txHash common.Hash, baseFee *big.Int) *big.Int {
 	tx, pending, err := lf.Client.TransactionByHash(context.TODO(), txHash)
 	log.CheckFatal(err)
 	if pending {
@@ -92,19 +92,19 @@ func (lf *Node) GasPrice(txHash common.Hash, baseFee *big.Int) *big.Int {
 	}
 }
 
-func (lf *Node) EthUsed(txHash common.Hash, baseFee *big.Int) *big.Int {
+func (lf Node) EthUsed(txHash common.Hash, baseFee *big.Int) *big.Int {
 	receipt := lf.GetReceipt(txHash)
 	gasUsed := big.NewInt(int64(receipt.GasUsed))
 	return new(big.Int).Mul(lf.GasPrice(txHash, baseFee), gasUsed)
 }
 
-func (lf *Node) GetReceipt(txHash common.Hash) *types.Receipt {
+func (lf Node) GetReceipt(txHash common.Hash) *types.Receipt {
 	receipt, err := lf.Client.TransactionReceipt(context.TODO(), txHash)
 	log.CheckFatal(err)
 	return receipt
 }
 
-func (lf *Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.Address, treasuryAddrTopic []common.Hash) ([]types.Log, error) {
+func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.Address, treasuryAddrTopic []common.Hash) ([]types.Log, error) {
 	topics := [][]common.Hash{
 		{
 			Topic("Transfer(address,address,uint256)"),
