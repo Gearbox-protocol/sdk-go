@@ -105,7 +105,7 @@ func (z *BigInt) UnmarshalJSON(b []byte) error {
 	str := strings.Trim(string(b), "\"")
 	value, ok := new(big.Int).SetString(str, 10)
 	if !ok {
-		return fmt.Errorf("can unmarshal BigInt")
+		return fmt.Errorf("could not unmarshal BigInt")
 	}
 
 	*z = *(*BigInt)(value)
