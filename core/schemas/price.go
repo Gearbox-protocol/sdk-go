@@ -39,7 +39,8 @@ func (p *PriceFeed) Clone() *PriceFeed {
 		Feed:         p.Feed,
 		RoundId:      p.RoundId,
 		IsPriceInUSD: p.IsPriceInUSD,
-		PriceBI:      core.NewBigInt(p.PriceBI),
+		PriceBI:      p.PriceBI,
+		Price:        p.Price,
 	}
 }
 
