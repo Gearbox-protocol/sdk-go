@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"fmt"
+
 	"github.com/Gearbox-protocol/sdk-go/core"
 )
 
@@ -11,6 +13,12 @@ type TokenOracle struct {
 	Feed        string `gorm:"column:feed" json:"feed"`
 	Version     int16  `gorm:"column:version" json:"version"`
 	FeedType    string `gorm:"feed_type" json:"-"`
+}
+
+func (t TokenOracle) String() string {
+	return fmt.Sprintf("token %s of %s with feed %s and version %d added at %d",
+		t.Token, t.FeedType,
+		t.Feed, t.Version, t.BlockNumber)
 }
 
 func (TokenOracle) TableName() string {
