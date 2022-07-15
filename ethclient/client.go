@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -22,6 +23,7 @@ type Client struct {
 	indexInUse []bool
 	clients    []*ethclient.Client
 	sem        *semaphore.Weighted
+	chainId    int64
 }
 
 // Dial connects a client to the given URL.
@@ -95,17 +97,25 @@ func (rc *Client) Close() {
 	defer rc.sem.Release(1)
 	client.Close()
 }
-
 func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
+	// cache
+	id := atomic.LoadInt64(&(rc.chainId))
+	if id != 0 {
+		return big.NewInt(id), nil
+	}
+	// locks
 	rc.sem.Acquire(context.TODO(), 1)
 	ind := rc.setInUseAndGetClient()
 	client := rc.clients[ind]
 	defer rc.sem.Release(1)
 	defer rc.returnIndex(ind)
-	//
+	// getting the value
 	v, err := client.ChainID(ctx)
 	if rc.errorHandler(err) {
 		v, err = client.ChainID(ctx)
+	}
+	if v != nil {
+		atomic.SwapInt64(&(rc.chainId), v.Int64())
 	}
 	return v, err
 }

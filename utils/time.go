@@ -14,6 +14,7 @@ func TimeToDateEndTs(t time.Time) int64 {
 	return TimeToDateEndTime(t).Unix()
 }
 
+// convert time  to the last sec of that day time
 func TimeToDateEndTime(t time.Time) time.Time {
 	year, month, day := t.UTC().Date()
 	return time.Date(year, month, day, 23, 59, 59, 0, time.UTC)
