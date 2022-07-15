@@ -10,6 +10,7 @@ type TokenOracle struct {
 	Oracle      string `gorm:"column:oracle" json:"oracle"`
 	Feed        string `gorm:"column:feed" json:"feed"`
 	Version     int16  `gorm:"column:version" json:"version"`
+	FeedType    string `gorm:"feed_type" json:"-"`
 }
 
 func (TokenOracle) TableName() string {
@@ -34,11 +35,11 @@ type PriceFeed struct {
 
 func (p *PriceFeed) Clone() *PriceFeed {
 	return &PriceFeed{
-		BlockNumber: p.BlockNumber,
-		Feed: p.Feed,
-		RoundId: p.RoundId,
+		BlockNumber:  p.BlockNumber,
+		Feed:         p.Feed,
+		RoundId:      p.RoundId,
 		IsPriceInUSD: p.IsPriceInUSD,
-		PriceBI: core.NewBigInt(p.PriceBI),
+		PriceBI:      core.NewBigInt(p.PriceBI),
 	}
 }
 
