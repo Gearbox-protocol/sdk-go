@@ -27,6 +27,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolService"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev2"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/rewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
@@ -87,6 +88,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"Uniswapv3Pool":      &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
 		"Uniswapv2Router":    &bind.MetaData{ABI: uniswapv2Router.Uniswapv2RouterABI},
 		"Uniswapv2Factory":   &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
+		"PriceOraclev2":      &bind.MetaData{ABI: priceOraclev2.PriceOraclev2ABI},
 		"CreditConfigurator": &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
 		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
 		"MultiCall":          &bind.MetaData{ABI: multicall.MulticallABI},

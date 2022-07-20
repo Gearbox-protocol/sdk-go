@@ -190,9 +190,15 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 	if t.otherCalls[blockNum] != nil && t.otherCalls[blockNum][sig] != nil {
 		return common.HexToHash(t.otherCalls[blockNum][sig][0]).Bytes(), nil
 	}
-	// convert on priceOracle
-	if sig == "b66102df" {
+
+	// convert with credit account on priceoraclev2
+	if sig == "d6d19b27" {
+		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data[32:]))).Bytes(), nil
+
+		// convert on priceOracle
+	} else if sig == "b66102df" {
 		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data))).Bytes(), nil
+
 		// enabledmask on creditfilter for account
 		// v1 or v2 get mask
 	} else if sig == "b451cecc" || sig == "8991b2f1" {
