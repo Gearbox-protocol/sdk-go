@@ -71,7 +71,7 @@ func GetAbi(contractName string) *abi.ABI {
 
 		// Pool
 		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
-		"CreditManagerV2":         &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
+		"CreditManagerv2":         &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
 		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
 		"LidoMock":                &bind.MetaData{ABI: lidoMock.LidoMockABI},
