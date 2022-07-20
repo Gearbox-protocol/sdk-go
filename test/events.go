@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"math/big"
+	"strconv"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -72,6 +73,10 @@ func (c *TestEvent) ParseData(contractName []string, topic0 common.Hash) ([]byte
 				if !ok {
 					log.Fatalf("bigint parsing failed for %s", entry)
 				}
+			case "uint16":
+				value, err := strconv.ParseUint(splits[1], 10, 16)
+				log.CheckFatal(err)
+				arg = uint16(value)
 			case "addr":
 				arg = common.HexToAddress(entry).Hex()
 			case "bool":

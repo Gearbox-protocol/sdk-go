@@ -4,6 +4,7 @@
 package creditFacade
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -32,8 +34,14 @@ type MultiCall struct {
 	CallData []byte
 }
 
+// CreditFacadeMetaData contains all meta data concerning the CreditFacade contract.
+var CreditFacadeMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_degenNFT\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AccountTransferNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AdaptersOrCreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AllowanceFailedExpcetion\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"BalanceLessThanMinimumDesired\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowAmountOutOfLimitsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowedBlockLimitException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantLiquidateWithSuchHealthFactorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantTransferLiquidatableAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditConfiguratorOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ForbiddenDuringClosureException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"HasNoOpenedAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectCallDataException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseAndDecreaseForbiddenInOneCallException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseDebtForbiddenException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotAllowedInWhitelistedMode\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotEnoughCollateralException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TargetContractNotAllowedExpcetion\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenAlreadyAddedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooMuchTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UnknownMethodException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressOrUserAlreadyHasAccountException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"AddCollateral\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"CloseCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"DecreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"liquidator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"}],\"name\":\"LiquidateCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"MultiCallFinished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"MultiCallStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"borrowAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"OpenCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenEnabled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"TransferAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"TransferAccountAllowed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"addCollateral\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"approveAccountTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcCreditAccountHealthFactor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"hf\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcTotalValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"total\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twv\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"closeCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractICreditManagerV2\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"decreaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"degenNFT\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"enableToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalBorrowedInBlock\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"blockLastUpdate\",\"type\":\"uint64\"},{\"internalType\":\"uint128\",\"name\":\"borrowedInBlock\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"hasOpenedCreditAccount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"increaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"isTokenAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"limits\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"liquidateCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"multicall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"leverageFactor\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"borrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccountMulticall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"params\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmountPerBlock\",\"type\":\"uint128\"},{\"internalType\":\"bool\",\"name\":\"isIncreaseDebtForbidden\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"_minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"_maxBorrowedAmount\",\"type\":\"uint128\"}],\"name\":\"setCreditAccountLimits\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_mode\",\"type\":\"bool\"}],\"name\":\"setIncreaseDebtForbidden\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"newLimit\",\"type\":\"uint128\"}],\"name\":\"setLimitPerBlock\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"transferAccountOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transfersAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wethAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"whitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+}
+
 // CreditFacadeABI is the input ABI used to generate the binding from.
-const CreditFacadeABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditManager\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"AddCollateral\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"CloseCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"DecreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"liquidator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"}],\"name\":\"LiquidateCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"MultiCallFinished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"MultiCallStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"borrowAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"referralCode\",\"type\":\"uint256\"}],\"name\":\"OpenCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"TransferAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"TransferAccountAllowed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"addCollateral\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"approveAccountTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcCreditAccountHealthFactor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"hf\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcTotalValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"total\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twv\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"closeCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"contractToAdapter\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractICreditManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"decreaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"hasOpenedCreditAccount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"increaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"isTokenAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"liquidateCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"multicall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"leverageFactor\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"referralCode\",\"type\":\"uint256\"}],\"name\":\"openCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"borrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"referralCode\",\"type\":\"uint256\"}],\"name\":\"openCreditAccountMulticall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_adapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_contract\",\"type\":\"address\"}],\"name\":\"setContractToAdapter\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"transferAccountOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transfersAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wethAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+// Deprecated: Use CreditFacadeMetaData.ABI instead.
+var CreditFacadeABI = CreditFacadeMetaData.ABI
 
 // CreditFacade is an auto generated Go binding around an Ethereum contract.
 type CreditFacade struct {
@@ -222,9 +230,12 @@ func (_CreditFacade *CreditFacadeCaller) CalcTotalValue(opts *bind.CallOpts, cre
 		Total *big.Int
 		Twv   *big.Int
 	})
+	if err != nil {
+		return *outstruct, err
+	}
 
-	outstruct.Total = out[0].(*big.Int)
-	outstruct.Twv = out[1].(*big.Int)
+	outstruct.Total = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Twv = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -248,37 +259,6 @@ func (_CreditFacade *CreditFacadeCallerSession) CalcTotalValue(creditAccount com
 	Twv   *big.Int
 }, error) {
 	return _CreditFacade.Contract.CalcTotalValue(&_CreditFacade.CallOpts, creditAccount)
-}
-
-// ContractToAdapter is a free data retrieval call binding the contract method 0xfdd57645.
-//
-// Solidity: function contractToAdapter(address ) view returns(address)
-func (_CreditFacade *CreditFacadeCaller) ContractToAdapter(opts *bind.CallOpts, arg0 common.Address) (common.Address, error) {
-	var out []interface{}
-	err := _CreditFacade.contract.Call(opts, &out, "contractToAdapter", arg0)
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// ContractToAdapter is a free data retrieval call binding the contract method 0xfdd57645.
-//
-// Solidity: function contractToAdapter(address ) view returns(address)
-func (_CreditFacade *CreditFacadeSession) ContractToAdapter(arg0 common.Address) (common.Address, error) {
-	return _CreditFacade.Contract.ContractToAdapter(&_CreditFacade.CallOpts, arg0)
-}
-
-// ContractToAdapter is a free data retrieval call binding the contract method 0xfdd57645.
-//
-// Solidity: function contractToAdapter(address ) view returns(address)
-func (_CreditFacade *CreditFacadeCallerSession) ContractToAdapter(arg0 common.Address) (common.Address, error) {
-	return _CreditFacade.Contract.ContractToAdapter(&_CreditFacade.CallOpts, arg0)
 }
 
 // CreditManager is a free data retrieval call binding the contract method 0xc12c21c0.
@@ -310,6 +290,82 @@ func (_CreditFacade *CreditFacadeSession) CreditManager() (common.Address, error
 // Solidity: function creditManager() view returns(address)
 func (_CreditFacade *CreditFacadeCallerSession) CreditManager() (common.Address, error) {
 	return _CreditFacade.Contract.CreditManager(&_CreditFacade.CallOpts)
+}
+
+// DegenNFT is a free data retrieval call binding the contract method 0x9408b63f.
+//
+// Solidity: function degenNFT() view returns(address)
+func (_CreditFacade *CreditFacadeCaller) DegenNFT(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "degenNFT")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// DegenNFT is a free data retrieval call binding the contract method 0x9408b63f.
+//
+// Solidity: function degenNFT() view returns(address)
+func (_CreditFacade *CreditFacadeSession) DegenNFT() (common.Address, error) {
+	return _CreditFacade.Contract.DegenNFT(&_CreditFacade.CallOpts)
+}
+
+// DegenNFT is a free data retrieval call binding the contract method 0x9408b63f.
+//
+// Solidity: function degenNFT() view returns(address)
+func (_CreditFacade *CreditFacadeCallerSession) DegenNFT() (common.Address, error) {
+	return _CreditFacade.Contract.DegenNFT(&_CreditFacade.CallOpts)
+}
+
+// GetTotalBorrowedInBlock is a free data retrieval call binding the contract method 0x9b67ab30.
+//
+// Solidity: function getTotalBorrowedInBlock() view returns(uint64 blockLastUpdate, uint128 borrowedInBlock)
+func (_CreditFacade *CreditFacadeCaller) GetTotalBorrowedInBlock(opts *bind.CallOpts) (struct {
+	BlockLastUpdate uint64
+	BorrowedInBlock *big.Int
+}, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "getTotalBorrowedInBlock")
+
+	outstruct := new(struct {
+		BlockLastUpdate uint64
+		BorrowedInBlock *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.BlockLastUpdate = *abi.ConvertType(out[0], new(uint64)).(*uint64)
+	outstruct.BorrowedInBlock = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return *outstruct, err
+
+}
+
+// GetTotalBorrowedInBlock is a free data retrieval call binding the contract method 0x9b67ab30.
+//
+// Solidity: function getTotalBorrowedInBlock() view returns(uint64 blockLastUpdate, uint128 borrowedInBlock)
+func (_CreditFacade *CreditFacadeSession) GetTotalBorrowedInBlock() (struct {
+	BlockLastUpdate uint64
+	BorrowedInBlock *big.Int
+}, error) {
+	return _CreditFacade.Contract.GetTotalBorrowedInBlock(&_CreditFacade.CallOpts)
+}
+
+// GetTotalBorrowedInBlock is a free data retrieval call binding the contract method 0x9b67ab30.
+//
+// Solidity: function getTotalBorrowedInBlock() view returns(uint64 blockLastUpdate, uint128 borrowedInBlock)
+func (_CreditFacade *CreditFacadeCallerSession) GetTotalBorrowedInBlock() (struct {
+	BlockLastUpdate uint64
+	BorrowedInBlock *big.Int
+}, error) {
+	return _CreditFacade.Contract.GetTotalBorrowedInBlock(&_CreditFacade.CallOpts)
 }
 
 // HasOpenedCreditAccount is a free data retrieval call binding the contract method 0x256ac915.
@@ -374,6 +430,96 @@ func (_CreditFacade *CreditFacadeCallerSession) IsTokenAllowed(token common.Addr
 	return _CreditFacade.Contract.IsTokenAllowed(&_CreditFacade.CallOpts, token)
 }
 
+// Limits is a free data retrieval call binding the contract method 0x860aefcf.
+//
+// Solidity: function limits() view returns(uint128 minBorrowedAmount, uint128 maxBorrowedAmount)
+func (_CreditFacade *CreditFacadeCaller) Limits(opts *bind.CallOpts) (struct {
+	MinBorrowedAmount *big.Int
+	MaxBorrowedAmount *big.Int
+}, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "limits")
+
+	outstruct := new(struct {
+		MinBorrowedAmount *big.Int
+		MaxBorrowedAmount *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.MinBorrowedAmount = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.MaxBorrowedAmount = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return *outstruct, err
+
+}
+
+// Limits is a free data retrieval call binding the contract method 0x860aefcf.
+//
+// Solidity: function limits() view returns(uint128 minBorrowedAmount, uint128 maxBorrowedAmount)
+func (_CreditFacade *CreditFacadeSession) Limits() (struct {
+	MinBorrowedAmount *big.Int
+	MaxBorrowedAmount *big.Int
+}, error) {
+	return _CreditFacade.Contract.Limits(&_CreditFacade.CallOpts)
+}
+
+// Limits is a free data retrieval call binding the contract method 0x860aefcf.
+//
+// Solidity: function limits() view returns(uint128 minBorrowedAmount, uint128 maxBorrowedAmount)
+func (_CreditFacade *CreditFacadeCallerSession) Limits() (struct {
+	MinBorrowedAmount *big.Int
+	MaxBorrowedAmount *big.Int
+}, error) {
+	return _CreditFacade.Contract.Limits(&_CreditFacade.CallOpts)
+}
+
+// Params is a free data retrieval call binding the contract method 0xcff0ab96.
+//
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+func (_CreditFacade *CreditFacadeCaller) Params(opts *bind.CallOpts) (struct {
+	MaxBorrowedAmountPerBlock *big.Int
+	IsIncreaseDebtForbidden   bool
+}, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "params")
+
+	outstruct := new(struct {
+		MaxBorrowedAmountPerBlock *big.Int
+		IsIncreaseDebtForbidden   bool
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.MaxBorrowedAmountPerBlock = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.IsIncreaseDebtForbidden = *abi.ConvertType(out[1], new(bool)).(*bool)
+
+	return *outstruct, err
+
+}
+
+// Params is a free data retrieval call binding the contract method 0xcff0ab96.
+//
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+func (_CreditFacade *CreditFacadeSession) Params() (struct {
+	MaxBorrowedAmountPerBlock *big.Int
+	IsIncreaseDebtForbidden   bool
+}, error) {
+	return _CreditFacade.Contract.Params(&_CreditFacade.CallOpts)
+}
+
+// Params is a free data retrieval call binding the contract method 0xcff0ab96.
+//
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+func (_CreditFacade *CreditFacadeCallerSession) Params() (struct {
+	MaxBorrowedAmountPerBlock *big.Int
+	IsIncreaseDebtForbidden   bool
+}, error) {
+	return _CreditFacade.Contract.Params(&_CreditFacade.CallOpts)
+}
+
 // TransfersAllowed is a free data retrieval call binding the contract method 0xd9ccbec1.
 //
 // Solidity: function transfersAllowed(address , address ) view returns(bool)
@@ -405,12 +551,12 @@ func (_CreditFacade *CreditFacadeCallerSession) TransfersAllowed(arg0 common.Add
 	return _CreditFacade.Contract.TransfersAllowed(&_CreditFacade.CallOpts, arg0, arg1)
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditFacade *CreditFacadeCaller) UnderlyingToken(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function underlying() view returns(address)
+func (_CreditFacade *CreditFacadeCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _CreditFacade.contract.Call(opts, &out, "underlyingToken")
+	err := _CreditFacade.contract.Call(opts, &out, "underlying")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -422,18 +568,18 @@ func (_CreditFacade *CreditFacadeCaller) UnderlyingToken(opts *bind.CallOpts) (c
 
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditFacade *CreditFacadeSession) UnderlyingToken() (common.Address, error) {
-	return _CreditFacade.Contract.UnderlyingToken(&_CreditFacade.CallOpts)
+// Solidity: function underlying() view returns(address)
+func (_CreditFacade *CreditFacadeSession) Underlying() (common.Address, error) {
+	return _CreditFacade.Contract.Underlying(&_CreditFacade.CallOpts)
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditFacade *CreditFacadeCallerSession) UnderlyingToken() (common.Address, error) {
-	return _CreditFacade.Contract.UnderlyingToken(&_CreditFacade.CallOpts)
+// Solidity: function underlying() view returns(address)
+func (_CreditFacade *CreditFacadeCallerSession) Underlying() (common.Address, error) {
+	return _CreditFacade.Contract.Underlying(&_CreditFacade.CallOpts)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -498,6 +644,37 @@ func (_CreditFacade *CreditFacadeCallerSession) WethAddress() (common.Address, e
 	return _CreditFacade.Contract.WethAddress(&_CreditFacade.CallOpts)
 }
 
+// Whitelisted is a free data retrieval call binding the contract method 0x3d9287fa.
+//
+// Solidity: function whitelisted() view returns(bool)
+func (_CreditFacade *CreditFacadeCaller) Whitelisted(opts *bind.CallOpts) (bool, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "whitelisted")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// Whitelisted is a free data retrieval call binding the contract method 0x3d9287fa.
+//
+// Solidity: function whitelisted() view returns(bool)
+func (_CreditFacade *CreditFacadeSession) Whitelisted() (bool, error) {
+	return _CreditFacade.Contract.Whitelisted(&_CreditFacade.CallOpts)
+}
+
+// Whitelisted is a free data retrieval call binding the contract method 0x3d9287fa.
+//
+// Solidity: function whitelisted() view returns(bool)
+func (_CreditFacade *CreditFacadeCallerSession) Whitelisted() (bool, error) {
+	return _CreditFacade.Contract.Whitelisted(&_CreditFacade.CallOpts)
+}
+
 // AddCollateral is a paid mutator transaction binding the contract method 0x59781034.
 //
 // Solidity: function addCollateral(address onBehalfOf, address token, uint256 amount) payable returns()
@@ -519,46 +696,46 @@ func (_CreditFacade *CreditFacadeTransactorSession) AddCollateral(onBehalfOf com
 	return _CreditFacade.Contract.AddCollateral(&_CreditFacade.TransactOpts, onBehalfOf, token, amount)
 }
 
-// Approve is a paid mutator transaction binding the contract method 0x7e5465ba.
+// Approve is a paid mutator transaction binding the contract method 0xe1f21c67.
 //
-// Solidity: function approve(address targetContract, address token) returns()
-func (_CreditFacade *CreditFacadeTransactor) Approve(opts *bind.TransactOpts, targetContract common.Address, token common.Address) (*types.Transaction, error) {
-	return _CreditFacade.contract.Transact(opts, "approve", targetContract, token)
+// Solidity: function approve(address targetContract, address token, uint256 amount) returns()
+func (_CreditFacade *CreditFacadeTransactor) Approve(opts *bind.TransactOpts, targetContract common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "approve", targetContract, token, amount)
 }
 
-// Approve is a paid mutator transaction binding the contract method 0x7e5465ba.
+// Approve is a paid mutator transaction binding the contract method 0xe1f21c67.
 //
-// Solidity: function approve(address targetContract, address token) returns()
-func (_CreditFacade *CreditFacadeSession) Approve(targetContract common.Address, token common.Address) (*types.Transaction, error) {
-	return _CreditFacade.Contract.Approve(&_CreditFacade.TransactOpts, targetContract, token)
+// Solidity: function approve(address targetContract, address token, uint256 amount) returns()
+func (_CreditFacade *CreditFacadeSession) Approve(targetContract common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.Approve(&_CreditFacade.TransactOpts, targetContract, token, amount)
 }
 
-// Approve is a paid mutator transaction binding the contract method 0x7e5465ba.
+// Approve is a paid mutator transaction binding the contract method 0xe1f21c67.
 //
-// Solidity: function approve(address targetContract, address token) returns()
-func (_CreditFacade *CreditFacadeTransactorSession) Approve(targetContract common.Address, token common.Address) (*types.Transaction, error) {
-	return _CreditFacade.Contract.Approve(&_CreditFacade.TransactOpts, targetContract, token)
+// Solidity: function approve(address targetContract, address token, uint256 amount) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) Approve(targetContract common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.Approve(&_CreditFacade.TransactOpts, targetContract, token, amount)
 }
 
-// ApproveAccountTransfers is a paid mutator transaction binding the contract method 0x5f27212a.
+// ApproveAccountTransfer is a paid mutator transaction binding the contract method 0x00842b57.
 //
-// Solidity: function approveAccountTransfers(address from, bool state) returns()
-func (_CreditFacade *CreditFacadeTransactor) ApproveAccountTransfers(opts *bind.TransactOpts, from common.Address, state bool) (*types.Transaction, error) {
-	return _CreditFacade.contract.Transact(opts, "approveAccountTransfers", from, state)
+// Solidity: function approveAccountTransfer(address from, bool state) returns()
+func (_CreditFacade *CreditFacadeTransactor) ApproveAccountTransfer(opts *bind.TransactOpts, from common.Address, state bool) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "approveAccountTransfer", from, state)
 }
 
-// ApproveAccountTransfers is a paid mutator transaction binding the contract method 0x5f27212a.
+// ApproveAccountTransfer is a paid mutator transaction binding the contract method 0x00842b57.
 //
-// Solidity: function approveAccountTransfers(address from, bool state) returns()
-func (_CreditFacade *CreditFacadeSession) ApproveAccountTransfers(from common.Address, state bool) (*types.Transaction, error) {
-	return _CreditFacade.Contract.ApproveAccountTransfers(&_CreditFacade.TransactOpts, from, state)
+// Solidity: function approveAccountTransfer(address from, bool state) returns()
+func (_CreditFacade *CreditFacadeSession) ApproveAccountTransfer(from common.Address, state bool) (*types.Transaction, error) {
+	return _CreditFacade.Contract.ApproveAccountTransfer(&_CreditFacade.TransactOpts, from, state)
 }
 
-// ApproveAccountTransfers is a paid mutator transaction binding the contract method 0x5f27212a.
+// ApproveAccountTransfer is a paid mutator transaction binding the contract method 0x00842b57.
 //
-// Solidity: function approveAccountTransfers(address from, bool state) returns()
-func (_CreditFacade *CreditFacadeTransactorSession) ApproveAccountTransfers(from common.Address, state bool) (*types.Transaction, error) {
-	return _CreditFacade.Contract.ApproveAccountTransfers(&_CreditFacade.TransactOpts, from, state)
+// Solidity: function approveAccountTransfer(address from, bool state) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) ApproveAccountTransfer(from common.Address, state bool) (*types.Transaction, error) {
+	return _CreditFacade.Contract.ApproveAccountTransfer(&_CreditFacade.TransactOpts, from, state)
 }
 
 // CloseCreditAccount is a paid mutator transaction binding the contract method 0x5f73fbec.
@@ -601,6 +778,27 @@ func (_CreditFacade *CreditFacadeSession) DecreaseDebt(amount *big.Int) (*types.
 // Solidity: function decreaseDebt(uint256 amount) returns()
 func (_CreditFacade *CreditFacadeTransactorSession) DecreaseDebt(amount *big.Int) (*types.Transaction, error) {
 	return _CreditFacade.Contract.DecreaseDebt(&_CreditFacade.TransactOpts, amount)
+}
+
+// EnableToken is a paid mutator transaction binding the contract method 0xc690908a.
+//
+// Solidity: function enableToken(address token) returns()
+func (_CreditFacade *CreditFacadeTransactor) EnableToken(opts *bind.TransactOpts, token common.Address) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "enableToken", token)
+}
+
+// EnableToken is a paid mutator transaction binding the contract method 0xc690908a.
+//
+// Solidity: function enableToken(address token) returns()
+func (_CreditFacade *CreditFacadeSession) EnableToken(token common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.EnableToken(&_CreditFacade.TransactOpts, token)
+}
+
+// EnableToken is a paid mutator transaction binding the contract method 0xc690908a.
+//
+// Solidity: function enableToken(address token) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) EnableToken(token common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.EnableToken(&_CreditFacade.TransactOpts, token)
 }
 
 // IncreaseDebt is a paid mutator transaction binding the contract method 0x2b7c7b11.
@@ -666,67 +864,109 @@ func (_CreditFacade *CreditFacadeTransactorSession) Multicall(calls []MultiCall)
 	return _CreditFacade.Contract.Multicall(&_CreditFacade.TransactOpts, calls)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x5288ba4b.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x6c8f225d.
 //
-// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint256 leverageFactor, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeTransactor) OpenCreditAccount(opts *bind.TransactOpts, amount *big.Int, onBehalfOf common.Address, leverageFactor *big.Int, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint16 leverageFactor, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeTransactor) OpenCreditAccount(opts *bind.TransactOpts, amount *big.Int, onBehalfOf common.Address, leverageFactor uint16, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.contract.Transact(opts, "openCreditAccount", amount, onBehalfOf, leverageFactor, referralCode)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x5288ba4b.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x6c8f225d.
 //
-// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint256 leverageFactor, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeSession) OpenCreditAccount(amount *big.Int, onBehalfOf common.Address, leverageFactor *big.Int, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint16 leverageFactor, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeSession) OpenCreditAccount(amount *big.Int, onBehalfOf common.Address, leverageFactor uint16, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.Contract.OpenCreditAccount(&_CreditFacade.TransactOpts, amount, onBehalfOf, leverageFactor, referralCode)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x5288ba4b.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x6c8f225d.
 //
-// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint256 leverageFactor, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeTransactorSession) OpenCreditAccount(amount *big.Int, onBehalfOf common.Address, leverageFactor *big.Int, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccount(uint256 amount, address onBehalfOf, uint16 leverageFactor, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeTransactorSession) OpenCreditAccount(amount *big.Int, onBehalfOf common.Address, leverageFactor uint16, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.Contract.OpenCreditAccount(&_CreditFacade.TransactOpts, amount, onBehalfOf, leverageFactor, referralCode)
 }
 
-// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x47639fa8.
+// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x7071b7c5.
 //
-// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeTransactor) OpenCreditAccountMulticall(opts *bind.TransactOpts, borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeTransactor) OpenCreditAccountMulticall(opts *bind.TransactOpts, borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.contract.Transact(opts, "openCreditAccountMulticall", borrowedAmount, onBehalfOf, calls, referralCode)
 }
 
-// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x47639fa8.
+// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x7071b7c5.
 //
-// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeSession) OpenCreditAccountMulticall(borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeSession) OpenCreditAccountMulticall(borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.Contract.OpenCreditAccountMulticall(&_CreditFacade.TransactOpts, borrowedAmount, onBehalfOf, calls, referralCode)
 }
 
-// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x47639fa8.
+// OpenCreditAccountMulticall is a paid mutator transaction binding the contract method 0x7071b7c5.
 //
-// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint256 referralCode) payable returns()
-func (_CreditFacade *CreditFacadeTransactorSession) OpenCreditAccountMulticall(borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode *big.Int) (*types.Transaction, error) {
+// Solidity: function openCreditAccountMulticall(uint256 borrowedAmount, address onBehalfOf, (address,bytes)[] calls, uint16 referralCode) payable returns()
+func (_CreditFacade *CreditFacadeTransactorSession) OpenCreditAccountMulticall(borrowedAmount *big.Int, onBehalfOf common.Address, calls []MultiCall, referralCode uint16) (*types.Transaction, error) {
 	return _CreditFacade.Contract.OpenCreditAccountMulticall(&_CreditFacade.TransactOpts, borrowedAmount, onBehalfOf, calls, referralCode)
 }
 
-// SetContractToAdapter is a paid mutator transaction binding the contract method 0x28a144f2.
+// SetCreditAccountLimits is a paid mutator transaction binding the contract method 0x601d66f6.
 //
-// Solidity: function setContractToAdapter(address _adapter, address _contract) returns()
-func (_CreditFacade *CreditFacadeTransactor) SetContractToAdapter(opts *bind.TransactOpts, _adapter common.Address, _contract common.Address) (*types.Transaction, error) {
-	return _CreditFacade.contract.Transact(opts, "setContractToAdapter", _adapter, _contract)
+// Solidity: function setCreditAccountLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
+func (_CreditFacade *CreditFacadeTransactor) SetCreditAccountLimits(opts *bind.TransactOpts, _minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "setCreditAccountLimits", _minBorrowedAmount, _maxBorrowedAmount)
 }
 
-// SetContractToAdapter is a paid mutator transaction binding the contract method 0x28a144f2.
+// SetCreditAccountLimits is a paid mutator transaction binding the contract method 0x601d66f6.
 //
-// Solidity: function setContractToAdapter(address _adapter, address _contract) returns()
-func (_CreditFacade *CreditFacadeSession) SetContractToAdapter(_adapter common.Address, _contract common.Address) (*types.Transaction, error) {
-	return _CreditFacade.Contract.SetContractToAdapter(&_CreditFacade.TransactOpts, _adapter, _contract)
+// Solidity: function setCreditAccountLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
+func (_CreditFacade *CreditFacadeSession) SetCreditAccountLimits(_minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetCreditAccountLimits(&_CreditFacade.TransactOpts, _minBorrowedAmount, _maxBorrowedAmount)
 }
 
-// SetContractToAdapter is a paid mutator transaction binding the contract method 0x28a144f2.
+// SetCreditAccountLimits is a paid mutator transaction binding the contract method 0x601d66f6.
 //
-// Solidity: function setContractToAdapter(address _adapter, address _contract) returns()
-func (_CreditFacade *CreditFacadeTransactorSession) SetContractToAdapter(_adapter common.Address, _contract common.Address) (*types.Transaction, error) {
-	return _CreditFacade.Contract.SetContractToAdapter(&_CreditFacade.TransactOpts, _adapter, _contract)
+// Solidity: function setCreditAccountLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) SetCreditAccountLimits(_minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetCreditAccountLimits(&_CreditFacade.TransactOpts, _minBorrowedAmount, _maxBorrowedAmount)
+}
+
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
+//
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditFacade *CreditFacadeTransactor) SetIncreaseDebtForbidden(opts *bind.TransactOpts, _mode bool) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "setIncreaseDebtForbidden", _mode)
+}
+
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
+//
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditFacade *CreditFacadeSession) SetIncreaseDebtForbidden(_mode bool) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetIncreaseDebtForbidden(&_CreditFacade.TransactOpts, _mode)
+}
+
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
+//
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) SetIncreaseDebtForbidden(_mode bool) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetIncreaseDebtForbidden(&_CreditFacade.TransactOpts, _mode)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditFacade *CreditFacadeTransactor) SetLimitPerBlock(opts *bind.TransactOpts, newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "setLimitPerBlock", newLimit)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditFacade *CreditFacadeSession) SetLimitPerBlock(newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetLimitPerBlock(&_CreditFacade.TransactOpts, newLimit)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) SetLimitPerBlock(newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetLimitPerBlock(&_CreditFacade.TransactOpts, newLimit)
 }
 
 // TransferAccountOwnership is a paid mutator transaction binding the contract method 0x5019e20a.
@@ -900,6 +1140,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseAddCollateral(log types.Log) (*C
 	if err := _CreditFacade.contract.UnpackLog(event, "AddCollateral", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1052,6 +1293,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseCloseCreditAccount(log types.Log
 	if err := _CreditFacade.contract.UnpackLog(event, "CloseCreditAccount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1196,6 +1438,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseDecreaseBorrowedAmount(log types
 	if err := _CreditFacade.contract.UnpackLog(event, "DecreaseBorrowedAmount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1340,6 +1583,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseIncreaseBorrowedAmount(log types
 	if err := _CreditFacade.contract.UnpackLog(event, "IncreaseBorrowedAmount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1502,6 +1746,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseLiquidateCreditAccount(log types
 	if err := _CreditFacade.contract.UnpackLog(event, "LiquidateCreditAccount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1634,6 +1879,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseMultiCallFinished(log types.Log)
 	if err := _CreditFacade.contract.UnpackLog(event, "MultiCallFinished", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1777,6 +2023,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseMultiCallStarted(log types.Log) 
 	if err := _CreditFacade.contract.UnpackLog(event, "MultiCallStarted", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1852,13 +2099,13 @@ type CreditFacadeOpenCreditAccount struct {
 	OnBehalfOf    common.Address
 	CreditAccount common.Address
 	BorrowAmount  *big.Int
-	ReferralCode  *big.Int
+	ReferralCode  uint16
 	Raw           types.Log // Blockchain specific contextual infos
 }
 
-// FilterOpenCreditAccount is a free log retrieval operation binding the contract event 0xb74d1a34ced5680126a90a8c87ca8dfb02bf84b1921cc56349df6501fad30326.
+// FilterOpenCreditAccount is a free log retrieval operation binding the contract event 0xfa2baf5d3eb95569f312f22477b246f9d4c50276f1cb3ded8e1aeadcbc07a763.
 //
-// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint256 referralCode)
+// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint16 referralCode)
 func (_CreditFacade *CreditFacadeFilterer) FilterOpenCreditAccount(opts *bind.FilterOpts, onBehalfOf []common.Address, creditAccount []common.Address) (*CreditFacadeOpenCreditAccountIterator, error) {
 
 	var onBehalfOfRule []interface{}
@@ -1877,9 +2124,9 @@ func (_CreditFacade *CreditFacadeFilterer) FilterOpenCreditAccount(opts *bind.Fi
 	return &CreditFacadeOpenCreditAccountIterator{contract: _CreditFacade.contract, event: "OpenCreditAccount", logs: logs, sub: sub}, nil
 }
 
-// WatchOpenCreditAccount is a free log subscription operation binding the contract event 0xb74d1a34ced5680126a90a8c87ca8dfb02bf84b1921cc56349df6501fad30326.
+// WatchOpenCreditAccount is a free log subscription operation binding the contract event 0xfa2baf5d3eb95569f312f22477b246f9d4c50276f1cb3ded8e1aeadcbc07a763.
 //
-// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint256 referralCode)
+// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint16 referralCode)
 func (_CreditFacade *CreditFacadeFilterer) WatchOpenCreditAccount(opts *bind.WatchOpts, sink chan<- *CreditFacadeOpenCreditAccount, onBehalfOf []common.Address, creditAccount []common.Address) (event.Subscription, error) {
 
 	var onBehalfOfRule []interface{}
@@ -1923,14 +2170,150 @@ func (_CreditFacade *CreditFacadeFilterer) WatchOpenCreditAccount(opts *bind.Wat
 	}), nil
 }
 
-// ParseOpenCreditAccount is a log parse operation binding the contract event 0xb74d1a34ced5680126a90a8c87ca8dfb02bf84b1921cc56349df6501fad30326.
+// ParseOpenCreditAccount is a log parse operation binding the contract event 0xfa2baf5d3eb95569f312f22477b246f9d4c50276f1cb3ded8e1aeadcbc07a763.
 //
-// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint256 referralCode)
+// Solidity: event OpenCreditAccount(address indexed onBehalfOf, address indexed creditAccount, uint256 borrowAmount, uint16 referralCode)
 func (_CreditFacade *CreditFacadeFilterer) ParseOpenCreditAccount(log types.Log) (*CreditFacadeOpenCreditAccount, error) {
 	event := new(CreditFacadeOpenCreditAccount)
 	if err := _CreditFacade.contract.UnpackLog(event, "OpenCreditAccount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
+	return event, nil
+}
+
+// CreditFacadeTokenEnabledIterator is returned from FilterTokenEnabled and is used to iterate over the raw logs and unpacked data for TokenEnabled events raised by the CreditFacade contract.
+type CreditFacadeTokenEnabledIterator struct {
+	Event *CreditFacadeTokenEnabled // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *CreditFacadeTokenEnabledIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(CreditFacadeTokenEnabled)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(CreditFacadeTokenEnabled)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *CreditFacadeTokenEnabledIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *CreditFacadeTokenEnabledIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// CreditFacadeTokenEnabled represents a TokenEnabled event raised by the CreditFacade contract.
+type CreditFacadeTokenEnabled struct {
+	CreditAccount common.Address
+	Token         common.Address
+	Raw           types.Log // Blockchain specific contextual infos
+}
+
+// FilterTokenEnabled is a free log retrieval operation binding the contract event 0xdf498aa1c340e992665d6fb4f3be8436d452c45a630cb6d7fab7963da39bac87.
+//
+// Solidity: event TokenEnabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) FilterTokenEnabled(opts *bind.FilterOpts) (*CreditFacadeTokenEnabledIterator, error) {
+
+	logs, sub, err := _CreditFacade.contract.FilterLogs(opts, "TokenEnabled")
+	if err != nil {
+		return nil, err
+	}
+	return &CreditFacadeTokenEnabledIterator{contract: _CreditFacade.contract, event: "TokenEnabled", logs: logs, sub: sub}, nil
+}
+
+// WatchTokenEnabled is a free log subscription operation binding the contract event 0xdf498aa1c340e992665d6fb4f3be8436d452c45a630cb6d7fab7963da39bac87.
+//
+// Solidity: event TokenEnabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) WatchTokenEnabled(opts *bind.WatchOpts, sink chan<- *CreditFacadeTokenEnabled) (event.Subscription, error) {
+
+	logs, sub, err := _CreditFacade.contract.WatchLogs(opts, "TokenEnabled")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(CreditFacadeTokenEnabled)
+				if err := _CreditFacade.contract.UnpackLog(event, "TokenEnabled", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseTokenEnabled is a log parse operation binding the contract event 0xdf498aa1c340e992665d6fb4f3be8436d452c45a630cb6d7fab7963da39bac87.
+//
+// Solidity: event TokenEnabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) ParseTokenEnabled(log types.Log) (*CreditFacadeTokenEnabled, error) {
+	event := new(CreditFacadeTokenEnabled)
+	if err := _CreditFacade.contract.UnpackLog(event, "TokenEnabled", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2083,6 +2466,7 @@ func (_CreditFacade *CreditFacadeFilterer) ParseTransferAccount(log types.Log) (
 	if err := _CreditFacade.contract.UnpackLog(event, "TransferAccount", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2236,5 +2620,6 @@ func (_CreditFacade *CreditFacadeFilterer) ParseTransferAccountAllowed(log types
 	if err := _CreditFacade.contract.UnpackLog(event, "TransferAccountAllowed", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

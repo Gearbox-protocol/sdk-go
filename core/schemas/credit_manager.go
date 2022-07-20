@@ -134,6 +134,10 @@ type TransferAccountAllowed struct {
 	LogId       int64  `gorm:"column:log_id;primaryKey"`
 }
 
+func (TransferAccountAllowed) TableName() string {
+	return "transfer_account_allowed"
+}
+
 type Protocol struct {
 	Id            string `gorm:"primaryKey;column:id;autoincrement:true" json:"-"`
 	Protocol      string `gorm:"column:protocol" json:"protocol"`
