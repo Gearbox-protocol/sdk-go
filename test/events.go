@@ -60,7 +60,9 @@ func (c *TestEvent) ParseData(contractName []string, topic0 common.Hash) ([]byte
 			break
 		}
 	}
-	log.CheckFatal(err)
+	if err != nil {
+		log.Fatal(err, topic0)
+	}
 	var args []interface{}
 	for _, entry := range c.Data {
 		var arg interface{}

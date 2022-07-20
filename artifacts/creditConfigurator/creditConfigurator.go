@@ -4,6 +4,7 @@
 package creditConfigurator
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 
@@ -17,6 +18,7 @@ import (
 
 // Reference imports to suppress errors if they are not otherwise used.
 var (
+	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
@@ -26,8 +28,28 @@ var (
 	_ = event.NewSubscription
 )
 
+// CollateralToken is an auto generated low-level Go binding around an user-defined struct.
+type CollateralToken struct {
+	Token                common.Address
+	LiquidationThreshold uint16
+}
+
+// CreditManagerOpts is an auto generated low-level Go binding around an user-defined struct.
+type CreditManagerOpts struct {
+	MinBorrowedAmount *big.Int
+	MaxBorrowedAmount *big.Int
+	CollateralTokens  []CollateralToken
+	DegenNFT          common.Address
+}
+
+// CreditConfiguratorMetaData contains all meta data concerning the CreditConfigurator contract.
+var CreditConfiguratorMetaData = &bind.MetaData{
+	ABI: "[{\"inputs\":[{\"internalType\":\"contractCreditManager\",\"name\":\"_creditManager\",\"type\":\"address\"},{\"internalType\":\"contractCreditFacade\",\"name\":\"_creditFacade\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint128\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"liquidationThreshold\",\"type\":\"uint16\"}],\"internalType\":\"structCollateralToken[]\",\"name\":\"collateralTokens\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"degenNFT\",\"type\":\"address\"}],\"internalType\":\"structCreditManagerOpts\",\"name\":\"opts\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AdapterUsedTwiceException\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"AddressIsNotContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotConfiguratorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotUnPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ChiThresholdMoreOneException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ContractNotInAllowedList\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditManagerOrFacadeUsedAsAllowContractsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"DegenNFTnotSetException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"FastCheckNotCoverCollateralDropException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncompatibleContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectFeesException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectLimitsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectLiquidationThresholdException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectPriceFeedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectTokenContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SetLTForUnderlyingException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"protocol\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"adapter\",\"type\":\"address\"}],\"name\":\"ContractAllowed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"protocol\",\"type\":\"address\"}],\"name\":\"ContractForbidden\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newCreditConfigurator\",\"type\":\"address\"}],\"name\":\"CreditConfiguratorUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newCreditFacade\",\"type\":\"address\"}],\"name\":\"CreditFacadeUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"name\":\"DegenModeUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"feeInterest\",\"type\":\"uint16\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"feeLiquidation\",\"type\":\"uint16\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"liquidationPremium\",\"type\":\"uint16\"}],\"name\":\"FeesUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"name\":\"IncreaseDebtModeUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"name\":\"LimitPerBlockUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBorrowedAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint256\"}],\"name\":\"LimitsUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newPriceOracle\",\"type\":\"address\"}],\"name\":\"PriceOracleUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenAllowed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenForbidden\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"liquidityThreshold\",\"type\":\"uint16\"}],\"name\":\"TokenLiquidationThresholdUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_acl\",\"outputs\":[{\"internalType\":\"contractACL\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"liquidationThreshold\",\"type\":\"uint16\"}],\"name\":\"addCollateralToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"addressProvider\",\"outputs\":[{\"internalType\":\"contractIAddressProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"adapter\",\"type\":\"address\"}],\"name\":\"allowContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"allowToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"}],\"name\":\"allowedContracts\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"allowedContractsCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditFacade\",\"outputs\":[{\"internalType\":\"contractCreditFacade\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractCreditManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"}],\"name\":\"forbidContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"forbidToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"_feeInterest\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_feeLiquidation\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_liquidationPremium\",\"type\":\"uint16\"}],\"name\":\"setFees\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_mode\",\"type\":\"bool\"}],\"name\":\"setIncreaseDebtForbidden\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"newLimit\",\"type\":\"uint128\"}],\"name\":\"setLimitPerBlock\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"_minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"_maxBorrowedAmount\",\"type\":\"uint128\"}],\"name\":\"setLimits\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"liquidationThreshold\",\"type\":\"uint16\"}],\"name\":\"setLiquidationThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditConfigurator\",\"type\":\"address\"}],\"name\":\"upgradeCreditConfigurator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditFacade\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"migrateLimits\",\"type\":\"bool\"}],\"name\":\"upgradeCreditFacade\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"upgradePriceOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+}
+
 // CreditConfiguratorABI is the input ABI used to generate the binding from.
-const CreditConfiguratorABI = "[{\"inputs\":[{\"internalType\":\"contractCreditManager\",\"name\":\"_creditManager\",\"type\":\"address\"},{\"internalType\":\"contractCreditFacade\",\"name\":\"_creditFacade\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"minBorrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"liquidationThreshold\",\"type\":\"uint256\"}],\"internalType\":\"structAllowedToken[]\",\"name\":\"allowedTokens\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"enumAdapterType\",\"name\":\"adapterType\",\"type\":\"uint8\"}],\"internalType\":\"structAdapterConfig[]\",\"name\":\"adapters\",\"type\":\"tuple[]\"}],\"internalType\":\"structCreditManagerOpts\",\"name\":\"opts\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"protocol\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"adapter\",\"type\":\"address\"}],\"name\":\"ContractAllowed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"protocol\",\"type\":\"address\"}],\"name\":\"ContractForbidden\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newCreditConfigurator\",\"type\":\"address\"}],\"name\":\"CreditConfiguratorUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newCreditFacade\",\"type\":\"address\"}],\"name\":\"CreditFacadeUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"chiThreshold\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fastCheckDelay\",\"type\":\"uint256\"}],\"name\":\"FastCheckParametersUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"feeInterest\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"feeLiquidation\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"liquidationPremium\",\"type\":\"uint256\"}],\"name\":\"FeesUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBorrowedAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint256\"}],\"name\":\"LimitsUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newPriceOracle\",\"type\":\"address\"}],\"name\":\"PriceOracleUpgraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenAllowed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenForbidden\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"liquidityThreshold\",\"type\":\"uint256\"}],\"name\":\"TokenLiquidationThresholdUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"addTokenToAllowedList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"addressProvider\",\"outputs\":[{\"internalType\":\"contractAddressProvider\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"adapter\",\"type\":\"address\"}],\"name\":\"allowContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"allowToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"}],\"name\":\"allowedContracts\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"allowedContractsCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"percentage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"times\",\"type\":\"uint256\"}],\"name\":\"calcMaxPossibleDrop\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditFacade\",\"outputs\":[{\"internalType\":\"contractCreditFacade\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractCreditManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"}],\"name\":\"forbidContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"forbidToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_chiThreshold\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_hfCheckInterval\",\"type\":\"uint256\"}],\"name\":\"setFastCheckParameters\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_feeInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_feeLiquidation\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_liquidationPremium\",\"type\":\"uint256\"}],\"name\":\"setFees\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minBorrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxBorrowedAmount\",\"type\":\"uint256\"}],\"name\":\"setLimits\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"liquidationThreshold\",\"type\":\"uint256\"}],\"name\":\"setLiquidationThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditConfigurator\",\"type\":\"address\"}],\"name\":\"upgradeConfigurator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditFacade\",\"type\":\"address\"}],\"name\":\"upgradeCreditFacade\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"upgradePriceOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+// Deprecated: Use CreditConfiguratorMetaData.ABI instead.
+var CreditConfiguratorABI = CreditConfiguratorMetaData.ABI
 
 // CreditConfigurator is an auto generated Go binding around an Ethereum contract.
 type CreditConfigurator struct {
@@ -171,6 +193,37 @@ func (_CreditConfigurator *CreditConfiguratorTransactorRaw) Transact(opts *bind.
 	return _CreditConfigurator.Contract.contract.Transact(opts, method, params...)
 }
 
+// Acl is a free data retrieval call binding the contract method 0xa50cf2c8.
+//
+// Solidity: function _acl() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorCaller) Acl(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _CreditConfigurator.contract.Call(opts, &out, "_acl")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Acl is a free data retrieval call binding the contract method 0xa50cf2c8.
+//
+// Solidity: function _acl() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorSession) Acl() (common.Address, error) {
+	return _CreditConfigurator.Contract.Acl(&_CreditConfigurator.CallOpts)
+}
+
+// Acl is a free data retrieval call binding the contract method 0xa50cf2c8.
+//
+// Solidity: function _acl() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorCallerSession) Acl() (common.Address, error) {
+	return _CreditConfigurator.Contract.Acl(&_CreditConfigurator.CallOpts)
+}
+
 // AddressProvider is a free data retrieval call binding the contract method 0x2954018c.
 //
 // Solidity: function addressProvider() view returns(address)
@@ -262,37 +315,6 @@ func (_CreditConfigurator *CreditConfiguratorSession) AllowedContractsCount() (*
 // Solidity: function allowedContractsCount() view returns(uint256)
 func (_CreditConfigurator *CreditConfiguratorCallerSession) AllowedContractsCount() (*big.Int, error) {
 	return _CreditConfigurator.Contract.AllowedContractsCount(&_CreditConfigurator.CallOpts)
-}
-
-// CalcMaxPossibleDrop is a free data retrieval call binding the contract method 0xb3c61943.
-//
-// Solidity: function calcMaxPossibleDrop(uint256 percentage, uint256 times) pure returns(uint256 value)
-func (_CreditConfigurator *CreditConfiguratorCaller) CalcMaxPossibleDrop(opts *bind.CallOpts, percentage *big.Int, times *big.Int) (*big.Int, error) {
-	var out []interface{}
-	err := _CreditConfigurator.contract.Call(opts, &out, "calcMaxPossibleDrop", percentage, times)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// CalcMaxPossibleDrop is a free data retrieval call binding the contract method 0xb3c61943.
-//
-// Solidity: function calcMaxPossibleDrop(uint256 percentage, uint256 times) pure returns(uint256 value)
-func (_CreditConfigurator *CreditConfiguratorSession) CalcMaxPossibleDrop(percentage *big.Int, times *big.Int) (*big.Int, error) {
-	return _CreditConfigurator.Contract.CalcMaxPossibleDrop(&_CreditConfigurator.CallOpts, percentage, times)
-}
-
-// CalcMaxPossibleDrop is a free data retrieval call binding the contract method 0xb3c61943.
-//
-// Solidity: function calcMaxPossibleDrop(uint256 percentage, uint256 times) pure returns(uint256 value)
-func (_CreditConfigurator *CreditConfiguratorCallerSession) CalcMaxPossibleDrop(percentage *big.Int, times *big.Int) (*big.Int, error) {
-	return _CreditConfigurator.Contract.CalcMaxPossibleDrop(&_CreditConfigurator.CallOpts, percentage, times)
 }
 
 // CreditFacade is a free data retrieval call binding the contract method 0x2f7a1881.
@@ -388,12 +410,12 @@ func (_CreditConfigurator *CreditConfiguratorCallerSession) Paused() (bool, erro
 	return _CreditConfigurator.Contract.Paused(&_CreditConfigurator.CallOpts)
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditConfigurator *CreditConfiguratorCaller) UnderlyingToken(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function underlying() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorCaller) Underlying(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _CreditConfigurator.contract.Call(opts, &out, "underlyingToken")
+	err := _CreditConfigurator.contract.Call(opts, &out, "underlying")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -405,18 +427,18 @@ func (_CreditConfigurator *CreditConfiguratorCaller) UnderlyingToken(opts *bind.
 
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditConfigurator *CreditConfiguratorSession) UnderlyingToken() (common.Address, error) {
-	return _CreditConfigurator.Contract.UnderlyingToken(&_CreditConfigurator.CallOpts)
+// Solidity: function underlying() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorSession) Underlying() (common.Address, error) {
+	return _CreditConfigurator.Contract.Underlying(&_CreditConfigurator.CallOpts)
 }
 
-// UnderlyingToken is a free data retrieval call binding the contract method 0x2495a599.
+// Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
 //
-// Solidity: function underlyingToken() view returns(address)
-func (_CreditConfigurator *CreditConfiguratorCallerSession) UnderlyingToken() (common.Address, error) {
-	return _CreditConfigurator.Contract.UnderlyingToken(&_CreditConfigurator.CallOpts)
+// Solidity: function underlying() view returns(address)
+func (_CreditConfigurator *CreditConfiguratorCallerSession) Underlying() (common.Address, error) {
+	return _CreditConfigurator.Contract.Underlying(&_CreditConfigurator.CallOpts)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -450,25 +472,25 @@ func (_CreditConfigurator *CreditConfiguratorCallerSession) Version() (*big.Int,
 	return _CreditConfigurator.Contract.Version(&_CreditConfigurator.CallOpts)
 }
 
-// AddTokenToAllowedList is a paid mutator transaction binding the contract method 0xdadfb98b.
+// AddCollateralToken is a paid mutator transaction binding the contract method 0x3e7c88d6.
 //
-// Solidity: function addTokenToAllowedList(address token) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) AddTokenToAllowedList(opts *bind.TransactOpts, token common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.contract.Transact(opts, "addTokenToAllowedList", token)
+// Solidity: function addCollateralToken(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) AddCollateralToken(opts *bind.TransactOpts, token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
+	return _CreditConfigurator.contract.Transact(opts, "addCollateralToken", token, liquidationThreshold)
 }
 
-// AddTokenToAllowedList is a paid mutator transaction binding the contract method 0xdadfb98b.
+// AddCollateralToken is a paid mutator transaction binding the contract method 0x3e7c88d6.
 //
-// Solidity: function addTokenToAllowedList(address token) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) AddTokenToAllowedList(token common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.AddTokenToAllowedList(&_CreditConfigurator.TransactOpts, token)
+// Solidity: function addCollateralToken(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) AddCollateralToken(token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.AddCollateralToken(&_CreditConfigurator.TransactOpts, token, liquidationThreshold)
 }
 
-// AddTokenToAllowedList is a paid mutator transaction binding the contract method 0xdadfb98b.
+// AddCollateralToken is a paid mutator transaction binding the contract method 0x3e7c88d6.
 //
-// Solidity: function addTokenToAllowedList(address token) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) AddTokenToAllowedList(token common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.AddTokenToAllowedList(&_CreditConfigurator.TransactOpts, token)
+// Solidity: function addCollateralToken(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) AddCollateralToken(token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.AddCollateralToken(&_CreditConfigurator.TransactOpts, token, liquidationThreshold)
 }
 
 // AllowContract is a paid mutator transaction binding the contract method 0x7bccacee.
@@ -576,87 +598,108 @@ func (_CreditConfigurator *CreditConfiguratorTransactorSession) Pause() (*types.
 	return _CreditConfigurator.Contract.Pause(&_CreditConfigurator.TransactOpts)
 }
 
-// SetFastCheckParameters is a paid mutator transaction binding the contract method 0x62061c6d.
+// SetFees is a paid mutator transaction binding the contract method 0x534c6bcb.
 //
-// Solidity: function setFastCheckParameters(uint256 _chiThreshold, uint256 _hfCheckInterval) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) SetFastCheckParameters(opts *bind.TransactOpts, _chiThreshold *big.Int, _hfCheckInterval *big.Int) (*types.Transaction, error) {
-	return _CreditConfigurator.contract.Transact(opts, "setFastCheckParameters", _chiThreshold, _hfCheckInterval)
-}
-
-// SetFastCheckParameters is a paid mutator transaction binding the contract method 0x62061c6d.
-//
-// Solidity: function setFastCheckParameters(uint256 _chiThreshold, uint256 _hfCheckInterval) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) SetFastCheckParameters(_chiThreshold *big.Int, _hfCheckInterval *big.Int) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.SetFastCheckParameters(&_CreditConfigurator.TransactOpts, _chiThreshold, _hfCheckInterval)
-}
-
-// SetFastCheckParameters is a paid mutator transaction binding the contract method 0x62061c6d.
-//
-// Solidity: function setFastCheckParameters(uint256 _chiThreshold, uint256 _hfCheckInterval) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetFastCheckParameters(_chiThreshold *big.Int, _hfCheckInterval *big.Int) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.SetFastCheckParameters(&_CreditConfigurator.TransactOpts, _chiThreshold, _hfCheckInterval)
-}
-
-// SetFees is a paid mutator transaction binding the contract method 0xcec10c11.
-//
-// Solidity: function setFees(uint256 _feeInterest, uint256 _feeLiquidation, uint256 _liquidationPremium) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) SetFees(opts *bind.TransactOpts, _feeInterest *big.Int, _feeLiquidation *big.Int, _liquidationPremium *big.Int) (*types.Transaction, error) {
+// Solidity: function setFees(uint16 _feeInterest, uint16 _feeLiquidation, uint16 _liquidationPremium) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) SetFees(opts *bind.TransactOpts, _feeInterest uint16, _feeLiquidation uint16, _liquidationPremium uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.contract.Transact(opts, "setFees", _feeInterest, _feeLiquidation, _liquidationPremium)
 }
 
-// SetFees is a paid mutator transaction binding the contract method 0xcec10c11.
+// SetFees is a paid mutator transaction binding the contract method 0x534c6bcb.
 //
-// Solidity: function setFees(uint256 _feeInterest, uint256 _feeLiquidation, uint256 _liquidationPremium) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) SetFees(_feeInterest *big.Int, _feeLiquidation *big.Int, _liquidationPremium *big.Int) (*types.Transaction, error) {
+// Solidity: function setFees(uint16 _feeInterest, uint16 _feeLiquidation, uint16 _liquidationPremium) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) SetFees(_feeInterest uint16, _feeLiquidation uint16, _liquidationPremium uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetFees(&_CreditConfigurator.TransactOpts, _feeInterest, _feeLiquidation, _liquidationPremium)
 }
 
-// SetFees is a paid mutator transaction binding the contract method 0xcec10c11.
+// SetFees is a paid mutator transaction binding the contract method 0x534c6bcb.
 //
-// Solidity: function setFees(uint256 _feeInterest, uint256 _feeLiquidation, uint256 _liquidationPremium) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetFees(_feeInterest *big.Int, _feeLiquidation *big.Int, _liquidationPremium *big.Int) (*types.Transaction, error) {
+// Solidity: function setFees(uint16 _feeInterest, uint16 _feeLiquidation, uint16 _liquidationPremium) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetFees(_feeInterest uint16, _feeLiquidation uint16, _liquidationPremium uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetFees(&_CreditConfigurator.TransactOpts, _feeInterest, _feeLiquidation, _liquidationPremium)
 }
 
-// SetLimits is a paid mutator transaction binding the contract method 0xc4590d3f.
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
 //
-// Solidity: function setLimits(uint256 _minBorrowedAmount, uint256 _maxBorrowedAmount) returns()
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) SetIncreaseDebtForbidden(opts *bind.TransactOpts, _mode bool) (*types.Transaction, error) {
+	return _CreditConfigurator.contract.Transact(opts, "setIncreaseDebtForbidden", _mode)
+}
+
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
+//
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) SetIncreaseDebtForbidden(_mode bool) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.SetIncreaseDebtForbidden(&_CreditConfigurator.TransactOpts, _mode)
+}
+
+// SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
+//
+// Solidity: function setIncreaseDebtForbidden(bool _mode) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetIncreaseDebtForbidden(_mode bool) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.SetIncreaseDebtForbidden(&_CreditConfigurator.TransactOpts, _mode)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) SetLimitPerBlock(opts *bind.TransactOpts, newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditConfigurator.contract.Transact(opts, "setLimitPerBlock", newLimit)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) SetLimitPerBlock(newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.SetLimitPerBlock(&_CreditConfigurator.TransactOpts, newLimit)
+}
+
+// SetLimitPerBlock is a paid mutator transaction binding the contract method 0x9c55a054.
+//
+// Solidity: function setLimitPerBlock(uint128 newLimit) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetLimitPerBlock(newLimit *big.Int) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.SetLimitPerBlock(&_CreditConfigurator.TransactOpts, newLimit)
+}
+
+// SetLimits is a paid mutator transaction binding the contract method 0x9f1c5069.
+//
+// Solidity: function setLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
 func (_CreditConfigurator *CreditConfiguratorTransactor) SetLimits(opts *bind.TransactOpts, _minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
 	return _CreditConfigurator.contract.Transact(opts, "setLimits", _minBorrowedAmount, _maxBorrowedAmount)
 }
 
-// SetLimits is a paid mutator transaction binding the contract method 0xc4590d3f.
+// SetLimits is a paid mutator transaction binding the contract method 0x9f1c5069.
 //
-// Solidity: function setLimits(uint256 _minBorrowedAmount, uint256 _maxBorrowedAmount) returns()
+// Solidity: function setLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
 func (_CreditConfigurator *CreditConfiguratorSession) SetLimits(_minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetLimits(&_CreditConfigurator.TransactOpts, _minBorrowedAmount, _maxBorrowedAmount)
 }
 
-// SetLimits is a paid mutator transaction binding the contract method 0xc4590d3f.
+// SetLimits is a paid mutator transaction binding the contract method 0x9f1c5069.
 //
-// Solidity: function setLimits(uint256 _minBorrowedAmount, uint256 _maxBorrowedAmount) returns()
+// Solidity: function setLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
 func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetLimits(_minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetLimits(&_CreditConfigurator.TransactOpts, _minBorrowedAmount, _maxBorrowedAmount)
 }
 
-// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0x0e30428d.
+// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0xa70bc542.
 //
-// Solidity: function setLiquidationThreshold(address token, uint256 liquidationThreshold) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) SetLiquidationThreshold(opts *bind.TransactOpts, token common.Address, liquidationThreshold *big.Int) (*types.Transaction, error) {
+// Solidity: function setLiquidationThreshold(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) SetLiquidationThreshold(opts *bind.TransactOpts, token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.contract.Transact(opts, "setLiquidationThreshold", token, liquidationThreshold)
 }
 
-// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0x0e30428d.
+// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0xa70bc542.
 //
-// Solidity: function setLiquidationThreshold(address token, uint256 liquidationThreshold) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) SetLiquidationThreshold(token common.Address, liquidationThreshold *big.Int) (*types.Transaction, error) {
+// Solidity: function setLiquidationThreshold(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) SetLiquidationThreshold(token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetLiquidationThreshold(&_CreditConfigurator.TransactOpts, token, liquidationThreshold)
 }
 
-// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0x0e30428d.
+// SetLiquidationThreshold is a paid mutator transaction binding the contract method 0xa70bc542.
 //
-// Solidity: function setLiquidationThreshold(address token, uint256 liquidationThreshold) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetLiquidationThreshold(token common.Address, liquidationThreshold *big.Int) (*types.Transaction, error) {
+// Solidity: function setLiquidationThreshold(address token, uint16 liquidationThreshold) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) SetLiquidationThreshold(token common.Address, liquidationThreshold uint16) (*types.Transaction, error) {
 	return _CreditConfigurator.Contract.SetLiquidationThreshold(&_CreditConfigurator.TransactOpts, token, liquidationThreshold)
 }
 
@@ -681,46 +724,46 @@ func (_CreditConfigurator *CreditConfiguratorTransactorSession) Unpause() (*type
 	return _CreditConfigurator.Contract.Unpause(&_CreditConfigurator.TransactOpts)
 }
 
-// UpgradeConfigurator is a paid mutator transaction binding the contract method 0xbbbae6ab.
+// UpgradeCreditConfigurator is a paid mutator transaction binding the contract method 0x456e0742.
 //
-// Solidity: function upgradeConfigurator(address _creditConfigurator) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) UpgradeConfigurator(opts *bind.TransactOpts, _creditConfigurator common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.contract.Transact(opts, "upgradeConfigurator", _creditConfigurator)
+// Solidity: function upgradeCreditConfigurator(address _creditConfigurator) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) UpgradeCreditConfigurator(opts *bind.TransactOpts, _creditConfigurator common.Address) (*types.Transaction, error) {
+	return _CreditConfigurator.contract.Transact(opts, "upgradeCreditConfigurator", _creditConfigurator)
 }
 
-// UpgradeConfigurator is a paid mutator transaction binding the contract method 0xbbbae6ab.
+// UpgradeCreditConfigurator is a paid mutator transaction binding the contract method 0x456e0742.
 //
-// Solidity: function upgradeConfigurator(address _creditConfigurator) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) UpgradeConfigurator(_creditConfigurator common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.UpgradeConfigurator(&_CreditConfigurator.TransactOpts, _creditConfigurator)
+// Solidity: function upgradeCreditConfigurator(address _creditConfigurator) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) UpgradeCreditConfigurator(_creditConfigurator common.Address) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.UpgradeCreditConfigurator(&_CreditConfigurator.TransactOpts, _creditConfigurator)
 }
 
-// UpgradeConfigurator is a paid mutator transaction binding the contract method 0xbbbae6ab.
+// UpgradeCreditConfigurator is a paid mutator transaction binding the contract method 0x456e0742.
 //
-// Solidity: function upgradeConfigurator(address _creditConfigurator) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) UpgradeConfigurator(_creditConfigurator common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.UpgradeConfigurator(&_CreditConfigurator.TransactOpts, _creditConfigurator)
+// Solidity: function upgradeCreditConfigurator(address _creditConfigurator) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) UpgradeCreditConfigurator(_creditConfigurator common.Address) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.UpgradeCreditConfigurator(&_CreditConfigurator.TransactOpts, _creditConfigurator)
 }
 
-// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x693ce7f5.
+// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x526a41e8.
 //
-// Solidity: function upgradeCreditFacade(address _creditFacade) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactor) UpgradeCreditFacade(opts *bind.TransactOpts, _creditFacade common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.contract.Transact(opts, "upgradeCreditFacade", _creditFacade)
+// Solidity: function upgradeCreditFacade(address _creditFacade, bool migrateLimits) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactor) UpgradeCreditFacade(opts *bind.TransactOpts, _creditFacade common.Address, migrateLimits bool) (*types.Transaction, error) {
+	return _CreditConfigurator.contract.Transact(opts, "upgradeCreditFacade", _creditFacade, migrateLimits)
 }
 
-// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x693ce7f5.
+// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x526a41e8.
 //
-// Solidity: function upgradeCreditFacade(address _creditFacade) returns()
-func (_CreditConfigurator *CreditConfiguratorSession) UpgradeCreditFacade(_creditFacade common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.UpgradeCreditFacade(&_CreditConfigurator.TransactOpts, _creditFacade)
+// Solidity: function upgradeCreditFacade(address _creditFacade, bool migrateLimits) returns()
+func (_CreditConfigurator *CreditConfiguratorSession) UpgradeCreditFacade(_creditFacade common.Address, migrateLimits bool) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.UpgradeCreditFacade(&_CreditConfigurator.TransactOpts, _creditFacade, migrateLimits)
 }
 
-// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x693ce7f5.
+// UpgradeCreditFacade is a paid mutator transaction binding the contract method 0x526a41e8.
 //
-// Solidity: function upgradeCreditFacade(address _creditFacade) returns()
-func (_CreditConfigurator *CreditConfiguratorTransactorSession) UpgradeCreditFacade(_creditFacade common.Address) (*types.Transaction, error) {
-	return _CreditConfigurator.Contract.UpgradeCreditFacade(&_CreditConfigurator.TransactOpts, _creditFacade)
+// Solidity: function upgradeCreditFacade(address _creditFacade, bool migrateLimits) returns()
+func (_CreditConfigurator *CreditConfiguratorTransactorSession) UpgradeCreditFacade(_creditFacade common.Address, migrateLimits bool) (*types.Transaction, error) {
+	return _CreditConfigurator.Contract.UpgradeCreditFacade(&_CreditConfigurator.TransactOpts, _creditFacade, migrateLimits)
 }
 
 // UpgradePriceOracle is a paid mutator transaction binding the contract method 0xf0527ac6.
@@ -893,6 +936,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseContractAllowed(log 
 	if err := _CreditConfigurator.contract.UnpackLog(event, "ContractAllowed", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1036,6 +1080,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseContractForbidden(lo
 	if err := _CreditConfigurator.contract.UnpackLog(event, "ContractForbidden", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1179,6 +1224,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseCreditConfiguratorUp
 	if err := _CreditConfigurator.contract.UnpackLog(event, "CreditConfiguratorUpgraded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1322,12 +1368,13 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseCreditFacadeUpgraded
 	if err := _CreditConfigurator.contract.UnpackLog(event, "CreditFacadeUpgraded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
-// CreditConfiguratorFastCheckParametersUpdatedIterator is returned from FilterFastCheckParametersUpdated and is used to iterate over the raw logs and unpacked data for FastCheckParametersUpdated events raised by the CreditConfigurator contract.
-type CreditConfiguratorFastCheckParametersUpdatedIterator struct {
-	Event *CreditConfiguratorFastCheckParametersUpdated // Event containing the contract specifics and raw log
+// CreditConfiguratorDegenModeUpdatedIterator is returned from FilterDegenModeUpdated and is used to iterate over the raw logs and unpacked data for DegenModeUpdated events raised by the CreditConfigurator contract.
+type CreditConfiguratorDegenModeUpdatedIterator struct {
+	Event *CreditConfiguratorDegenModeUpdated // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1341,7 +1388,7 @@ type CreditConfiguratorFastCheckParametersUpdatedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Next() bool {
+func (it *CreditConfiguratorDegenModeUpdatedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1350,7 +1397,7 @@ func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(CreditConfiguratorFastCheckParametersUpdated)
+			it.Event = new(CreditConfiguratorDegenModeUpdated)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1365,7 +1412,7 @@ func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(CreditConfiguratorFastCheckParametersUpdated)
+		it.Event = new(CreditConfiguratorDegenModeUpdated)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1381,42 +1428,41 @@ func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Error() error {
+func (it *CreditConfiguratorDegenModeUpdatedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *CreditConfiguratorFastCheckParametersUpdatedIterator) Close() error {
+func (it *CreditConfiguratorDegenModeUpdatedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// CreditConfiguratorFastCheckParametersUpdated represents a FastCheckParametersUpdated event raised by the CreditConfigurator contract.
-type CreditConfiguratorFastCheckParametersUpdated struct {
-	ChiThreshold   *big.Int
-	FastCheckDelay *big.Int
-	Raw            types.Log // Blockchain specific contextual infos
+// CreditConfiguratorDegenModeUpdated represents a DegenModeUpdated event raised by the CreditConfigurator contract.
+type CreditConfiguratorDegenModeUpdated struct {
+	Arg0 bool
+	Raw  types.Log // Blockchain specific contextual infos
 }
 
-// FilterFastCheckParametersUpdated is a free log retrieval operation binding the contract event 0x86c4e28f8d9aa63f858bc3a8f0c0bbed25c8e045c4ac2e280eedc497246fdf29.
+// FilterDegenModeUpdated is a free log retrieval operation binding the contract event 0x58790fa9acf6d2945872a1c9a13aa9983af92345ab3c7b0c41afe45f02ac27fa.
 //
-// Solidity: event FastCheckParametersUpdated(uint256 chiThreshold, uint256 fastCheckDelay)
-func (_CreditConfigurator *CreditConfiguratorFilterer) FilterFastCheckParametersUpdated(opts *bind.FilterOpts) (*CreditConfiguratorFastCheckParametersUpdatedIterator, error) {
+// Solidity: event DegenModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) FilterDegenModeUpdated(opts *bind.FilterOpts) (*CreditConfiguratorDegenModeUpdatedIterator, error) {
 
-	logs, sub, err := _CreditConfigurator.contract.FilterLogs(opts, "FastCheckParametersUpdated")
+	logs, sub, err := _CreditConfigurator.contract.FilterLogs(opts, "DegenModeUpdated")
 	if err != nil {
 		return nil, err
 	}
-	return &CreditConfiguratorFastCheckParametersUpdatedIterator{contract: _CreditConfigurator.contract, event: "FastCheckParametersUpdated", logs: logs, sub: sub}, nil
+	return &CreditConfiguratorDegenModeUpdatedIterator{contract: _CreditConfigurator.contract, event: "DegenModeUpdated", logs: logs, sub: sub}, nil
 }
 
-// WatchFastCheckParametersUpdated is a free log subscription operation binding the contract event 0x86c4e28f8d9aa63f858bc3a8f0c0bbed25c8e045c4ac2e280eedc497246fdf29.
+// WatchDegenModeUpdated is a free log subscription operation binding the contract event 0x58790fa9acf6d2945872a1c9a13aa9983af92345ab3c7b0c41afe45f02ac27fa.
 //
-// Solidity: event FastCheckParametersUpdated(uint256 chiThreshold, uint256 fastCheckDelay)
-func (_CreditConfigurator *CreditConfiguratorFilterer) WatchFastCheckParametersUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorFastCheckParametersUpdated) (event.Subscription, error) {
+// Solidity: event DegenModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) WatchDegenModeUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorDegenModeUpdated) (event.Subscription, error) {
 
-	logs, sub, err := _CreditConfigurator.contract.WatchLogs(opts, "FastCheckParametersUpdated")
+	logs, sub, err := _CreditConfigurator.contract.WatchLogs(opts, "DegenModeUpdated")
 	if err != nil {
 		return nil, err
 	}
@@ -1426,8 +1472,8 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) WatchFastCheckParametersU
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(CreditConfiguratorFastCheckParametersUpdated)
-				if err := _CreditConfigurator.contract.UnpackLog(event, "FastCheckParametersUpdated", log); err != nil {
+				event := new(CreditConfiguratorDegenModeUpdated)
+				if err := _CreditConfigurator.contract.UnpackLog(event, "DegenModeUpdated", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1448,14 +1494,15 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) WatchFastCheckParametersU
 	}), nil
 }
 
-// ParseFastCheckParametersUpdated is a log parse operation binding the contract event 0x86c4e28f8d9aa63f858bc3a8f0c0bbed25c8e045c4ac2e280eedc497246fdf29.
+// ParseDegenModeUpdated is a log parse operation binding the contract event 0x58790fa9acf6d2945872a1c9a13aa9983af92345ab3c7b0c41afe45f02ac27fa.
 //
-// Solidity: event FastCheckParametersUpdated(uint256 chiThreshold, uint256 fastCheckDelay)
-func (_CreditConfigurator *CreditConfiguratorFilterer) ParseFastCheckParametersUpdated(log types.Log) (*CreditConfiguratorFastCheckParametersUpdated, error) {
-	event := new(CreditConfiguratorFastCheckParametersUpdated)
-	if err := _CreditConfigurator.contract.UnpackLog(event, "FastCheckParametersUpdated", log); err != nil {
+// Solidity: event DegenModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) ParseDegenModeUpdated(log types.Log) (*CreditConfiguratorDegenModeUpdated, error) {
+	event := new(CreditConfiguratorDegenModeUpdated)
+	if err := _CreditConfigurator.contract.UnpackLog(event, "DegenModeUpdated", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1528,15 +1575,15 @@ func (it *CreditConfiguratorFeesUpdatedIterator) Close() error {
 
 // CreditConfiguratorFeesUpdated represents a FeesUpdated event raised by the CreditConfigurator contract.
 type CreditConfiguratorFeesUpdated struct {
-	FeeInterest        *big.Int
-	FeeLiquidation     *big.Int
-	LiquidationPremium *big.Int
+	FeeInterest        uint16
+	FeeLiquidation     uint16
+	LiquidationPremium uint16
 	Raw                types.Log // Blockchain specific contextual infos
 }
 
-// FilterFeesUpdated is a free log retrieval operation binding the contract event 0xcf8a1e1d5f09cf3c97dbb653cd9a4d7aace9292fbc1bb8211febf2d400febbdd.
+// FilterFeesUpdated is a free log retrieval operation binding the contract event 0xb3ef341b591e573ddca7176a74bb92c8e453cce6d6885fcd6a544c2385d3811f.
 //
-// Solidity: event FeesUpdated(uint256 feeInterest, uint256 feeLiquidation, uint256 liquidationPremium)
+// Solidity: event FeesUpdated(uint16 feeInterest, uint16 feeLiquidation, uint16 liquidationPremium)
 func (_CreditConfigurator *CreditConfiguratorFilterer) FilterFeesUpdated(opts *bind.FilterOpts) (*CreditConfiguratorFeesUpdatedIterator, error) {
 
 	logs, sub, err := _CreditConfigurator.contract.FilterLogs(opts, "FeesUpdated")
@@ -1546,9 +1593,9 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) FilterFeesUpdated(opts *b
 	return &CreditConfiguratorFeesUpdatedIterator{contract: _CreditConfigurator.contract, event: "FeesUpdated", logs: logs, sub: sub}, nil
 }
 
-// WatchFeesUpdated is a free log subscription operation binding the contract event 0xcf8a1e1d5f09cf3c97dbb653cd9a4d7aace9292fbc1bb8211febf2d400febbdd.
+// WatchFeesUpdated is a free log subscription operation binding the contract event 0xb3ef341b591e573ddca7176a74bb92c8e453cce6d6885fcd6a544c2385d3811f.
 //
-// Solidity: event FeesUpdated(uint256 feeInterest, uint256 feeLiquidation, uint256 liquidationPremium)
+// Solidity: event FeesUpdated(uint16 feeInterest, uint16 feeLiquidation, uint16 liquidationPremium)
 func (_CreditConfigurator *CreditConfiguratorFilterer) WatchFeesUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorFeesUpdated) (event.Subscription, error) {
 
 	logs, sub, err := _CreditConfigurator.contract.WatchLogs(opts, "FeesUpdated")
@@ -1583,14 +1630,283 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) WatchFeesUpdated(opts *bi
 	}), nil
 }
 
-// ParseFeesUpdated is a log parse operation binding the contract event 0xcf8a1e1d5f09cf3c97dbb653cd9a4d7aace9292fbc1bb8211febf2d400febbdd.
+// ParseFeesUpdated is a log parse operation binding the contract event 0xb3ef341b591e573ddca7176a74bb92c8e453cce6d6885fcd6a544c2385d3811f.
 //
-// Solidity: event FeesUpdated(uint256 feeInterest, uint256 feeLiquidation, uint256 liquidationPremium)
+// Solidity: event FeesUpdated(uint16 feeInterest, uint16 feeLiquidation, uint16 liquidationPremium)
 func (_CreditConfigurator *CreditConfiguratorFilterer) ParseFeesUpdated(log types.Log) (*CreditConfiguratorFeesUpdated, error) {
 	event := new(CreditConfiguratorFeesUpdated)
 	if err := _CreditConfigurator.contract.UnpackLog(event, "FeesUpdated", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
+	return event, nil
+}
+
+// CreditConfiguratorIncreaseDebtModeUpdatedIterator is returned from FilterIncreaseDebtModeUpdated and is used to iterate over the raw logs and unpacked data for IncreaseDebtModeUpdated events raised by the CreditConfigurator contract.
+type CreditConfiguratorIncreaseDebtModeUpdatedIterator struct {
+	Event *CreditConfiguratorIncreaseDebtModeUpdated // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *CreditConfiguratorIncreaseDebtModeUpdatedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(CreditConfiguratorIncreaseDebtModeUpdated)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(CreditConfiguratorIncreaseDebtModeUpdated)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *CreditConfiguratorIncreaseDebtModeUpdatedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *CreditConfiguratorIncreaseDebtModeUpdatedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// CreditConfiguratorIncreaseDebtModeUpdated represents a IncreaseDebtModeUpdated event raised by the CreditConfigurator contract.
+type CreditConfiguratorIncreaseDebtModeUpdated struct {
+	Arg0 bool
+	Raw  types.Log // Blockchain specific contextual infos
+}
+
+// FilterIncreaseDebtModeUpdated is a free log retrieval operation binding the contract event 0xf97ba903470ff3262b4a68a938fe81def401bac1bd742169d2e8d5c4ed2185d3.
+//
+// Solidity: event IncreaseDebtModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) FilterIncreaseDebtModeUpdated(opts *bind.FilterOpts) (*CreditConfiguratorIncreaseDebtModeUpdatedIterator, error) {
+
+	logs, sub, err := _CreditConfigurator.contract.FilterLogs(opts, "IncreaseDebtModeUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return &CreditConfiguratorIncreaseDebtModeUpdatedIterator{contract: _CreditConfigurator.contract, event: "IncreaseDebtModeUpdated", logs: logs, sub: sub}, nil
+}
+
+// WatchIncreaseDebtModeUpdated is a free log subscription operation binding the contract event 0xf97ba903470ff3262b4a68a938fe81def401bac1bd742169d2e8d5c4ed2185d3.
+//
+// Solidity: event IncreaseDebtModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) WatchIncreaseDebtModeUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorIncreaseDebtModeUpdated) (event.Subscription, error) {
+
+	logs, sub, err := _CreditConfigurator.contract.WatchLogs(opts, "IncreaseDebtModeUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(CreditConfiguratorIncreaseDebtModeUpdated)
+				if err := _CreditConfigurator.contract.UnpackLog(event, "IncreaseDebtModeUpdated", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseIncreaseDebtModeUpdated is a log parse operation binding the contract event 0xf97ba903470ff3262b4a68a938fe81def401bac1bd742169d2e8d5c4ed2185d3.
+//
+// Solidity: event IncreaseDebtModeUpdated(bool arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) ParseIncreaseDebtModeUpdated(log types.Log) (*CreditConfiguratorIncreaseDebtModeUpdated, error) {
+	event := new(CreditConfiguratorIncreaseDebtModeUpdated)
+	if err := _CreditConfigurator.contract.UnpackLog(event, "IncreaseDebtModeUpdated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// CreditConfiguratorLimitPerBlockUpdatedIterator is returned from FilterLimitPerBlockUpdated and is used to iterate over the raw logs and unpacked data for LimitPerBlockUpdated events raised by the CreditConfigurator contract.
+type CreditConfiguratorLimitPerBlockUpdatedIterator struct {
+	Event *CreditConfiguratorLimitPerBlockUpdated // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *CreditConfiguratorLimitPerBlockUpdatedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(CreditConfiguratorLimitPerBlockUpdated)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(CreditConfiguratorLimitPerBlockUpdated)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *CreditConfiguratorLimitPerBlockUpdatedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *CreditConfiguratorLimitPerBlockUpdatedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// CreditConfiguratorLimitPerBlockUpdated represents a LimitPerBlockUpdated event raised by the CreditConfigurator contract.
+type CreditConfiguratorLimitPerBlockUpdated struct {
+	Arg0 *big.Int
+	Raw  types.Log // Blockchain specific contextual infos
+}
+
+// FilterLimitPerBlockUpdated is a free log retrieval operation binding the contract event 0xa030eec20ae970821387224ec3bb15b4bd22b89bfb86dc4d2b3827aa3d99e48d.
+//
+// Solidity: event LimitPerBlockUpdated(uint128 arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) FilterLimitPerBlockUpdated(opts *bind.FilterOpts) (*CreditConfiguratorLimitPerBlockUpdatedIterator, error) {
+
+	logs, sub, err := _CreditConfigurator.contract.FilterLogs(opts, "LimitPerBlockUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return &CreditConfiguratorLimitPerBlockUpdatedIterator{contract: _CreditConfigurator.contract, event: "LimitPerBlockUpdated", logs: logs, sub: sub}, nil
+}
+
+// WatchLimitPerBlockUpdated is a free log subscription operation binding the contract event 0xa030eec20ae970821387224ec3bb15b4bd22b89bfb86dc4d2b3827aa3d99e48d.
+//
+// Solidity: event LimitPerBlockUpdated(uint128 arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) WatchLimitPerBlockUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorLimitPerBlockUpdated) (event.Subscription, error) {
+
+	logs, sub, err := _CreditConfigurator.contract.WatchLogs(opts, "LimitPerBlockUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(CreditConfiguratorLimitPerBlockUpdated)
+				if err := _CreditConfigurator.contract.UnpackLog(event, "LimitPerBlockUpdated", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseLimitPerBlockUpdated is a log parse operation binding the contract event 0xa030eec20ae970821387224ec3bb15b4bd22b89bfb86dc4d2b3827aa3d99e48d.
+//
+// Solidity: event LimitPerBlockUpdated(uint128 arg0)
+func (_CreditConfigurator *CreditConfiguratorFilterer) ParseLimitPerBlockUpdated(log types.Log) (*CreditConfiguratorLimitPerBlockUpdated, error) {
+	event := new(CreditConfiguratorLimitPerBlockUpdated)
+	if err := _CreditConfigurator.contract.UnpackLog(event, "LimitPerBlockUpdated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1725,6 +2041,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseLimitsUpdated(log ty
 	if err := _CreditConfigurator.contract.UnpackLog(event, "LimitsUpdated", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -1858,6 +2175,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParsePaused(log types.Log
 	if err := _CreditConfigurator.contract.UnpackLog(event, "Paused", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2001,6 +2319,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParsePriceOracleUpgraded(
 	if err := _CreditConfigurator.contract.UnpackLog(event, "PriceOracleUpgraded", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2144,6 +2463,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseTokenAllowed(log typ
 	if err := _CreditConfigurator.contract.UnpackLog(event, "TokenAllowed", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2287,6 +2607,7 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseTokenForbidden(log t
 	if err := _CreditConfigurator.contract.UnpackLog(event, "TokenForbidden", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2360,13 +2681,13 @@ func (it *CreditConfiguratorTokenLiquidationThresholdUpdatedIterator) Close() er
 // CreditConfiguratorTokenLiquidationThresholdUpdated represents a TokenLiquidationThresholdUpdated event raised by the CreditConfigurator contract.
 type CreditConfiguratorTokenLiquidationThresholdUpdated struct {
 	Token              common.Address
-	LiquidityThreshold *big.Int
+	LiquidityThreshold uint16
 	Raw                types.Log // Blockchain specific contextual infos
 }
 
-// FilterTokenLiquidationThresholdUpdated is a free log retrieval operation binding the contract event 0xd5e67007f7834ddcc2f493b83810f7c6ab74e1bba7b88847f6d4adf9e03fbe82.
+// FilterTokenLiquidationThresholdUpdated is a free log retrieval operation binding the contract event 0x94525be3f877fb3bb3d260299de56a31f86aaacb06ccba90e4fbedcb693ac650.
 //
-// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint256 liquidityThreshold)
+// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint16 liquidityThreshold)
 func (_CreditConfigurator *CreditConfiguratorFilterer) FilterTokenLiquidationThresholdUpdated(opts *bind.FilterOpts, token []common.Address) (*CreditConfiguratorTokenLiquidationThresholdUpdatedIterator, error) {
 
 	var tokenRule []interface{}
@@ -2381,9 +2702,9 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) FilterTokenLiquidationThr
 	return &CreditConfiguratorTokenLiquidationThresholdUpdatedIterator{contract: _CreditConfigurator.contract, event: "TokenLiquidationThresholdUpdated", logs: logs, sub: sub}, nil
 }
 
-// WatchTokenLiquidationThresholdUpdated is a free log subscription operation binding the contract event 0xd5e67007f7834ddcc2f493b83810f7c6ab74e1bba7b88847f6d4adf9e03fbe82.
+// WatchTokenLiquidationThresholdUpdated is a free log subscription operation binding the contract event 0x94525be3f877fb3bb3d260299de56a31f86aaacb06ccba90e4fbedcb693ac650.
 //
-// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint256 liquidityThreshold)
+// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint16 liquidityThreshold)
 func (_CreditConfigurator *CreditConfiguratorFilterer) WatchTokenLiquidationThresholdUpdated(opts *bind.WatchOpts, sink chan<- *CreditConfiguratorTokenLiquidationThresholdUpdated, token []common.Address) (event.Subscription, error) {
 
 	var tokenRule []interface{}
@@ -2423,14 +2744,15 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) WatchTokenLiquidationThre
 	}), nil
 }
 
-// ParseTokenLiquidationThresholdUpdated is a log parse operation binding the contract event 0xd5e67007f7834ddcc2f493b83810f7c6ab74e1bba7b88847f6d4adf9e03fbe82.
+// ParseTokenLiquidationThresholdUpdated is a log parse operation binding the contract event 0x94525be3f877fb3bb3d260299de56a31f86aaacb06ccba90e4fbedcb693ac650.
 //
-// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint256 liquidityThreshold)
+// Solidity: event TokenLiquidationThresholdUpdated(address indexed token, uint16 liquidityThreshold)
 func (_CreditConfigurator *CreditConfiguratorFilterer) ParseTokenLiquidationThresholdUpdated(log types.Log) (*CreditConfiguratorTokenLiquidationThresholdUpdated, error) {
 	event := new(CreditConfiguratorTokenLiquidationThresholdUpdated)
 	if err := _CreditConfigurator.contract.UnpackLog(event, "TokenLiquidationThresholdUpdated", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -2564,5 +2886,6 @@ func (_CreditConfigurator *CreditConfiguratorFilterer) ParseUnpaused(log types.L
 	if err := _CreditConfigurator.contract.UnpackLog(event, "Unpaused", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }

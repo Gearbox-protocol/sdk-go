@@ -82,6 +82,6 @@ const (
 	LimitsUpdated
 	FeesUpdated
 	CreditFacadeUpgraded
-	CreditConfiguratorUpgraded
+	NewConfigurator
 	LTUpdated
 )
