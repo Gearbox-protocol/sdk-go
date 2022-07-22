@@ -193,8 +193,14 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 
 	// convert with credit account on priceoraclev2
 	if sig == "d6d19b27" {
+		// only skip the creditaccount bytes, not for the sig
+		// as convertPrice will itself skip 4 bytes for sig and the value of these first 4 bytes of data doesn't matter
 		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data[32:]))).Bytes(), nil
-
+		// getprice on priceoracle
+	} else if sig == "ac41865a" {
+		// credit account and then token
+		tokenAddr := common.BytesToAddress(call.Data[4+32:]).Hex()
+		return common.HexToHash(fmt.Sprintf("%x", t.getPrice(blockNum, tokenAddr))).Bytes(), nil
 		// convert on priceOracle
 	} else if sig == "b66102df" {
 		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data))).Bytes(), nil
@@ -221,7 +227,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		oracle := call.To.Hex()
 		feed := t.state.Oracle.GetState(oracle, int(index.Int64()))
 		return common.HexToHash(feed.Feed).Bytes(), nil
-	} else if sig == "bce38bd7" {
+	} else if sig == "bce38bd7" { // multicall sig
 		obj := map[string]interface{}{}
 		parser := core.GetAbi("MultiCall")
 		method, err := parser.MethodById(call.Data[:4])
@@ -231,8 +237,15 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		resultArray := []multicall.Multicall2Result{}
 		for _, call := range calls {
 			switch hex.EncodeToString(call.CallData[:4]) {
-			case "b66102df":
+			case "b66102df": // convert on priceoracle v1
 				price := t.convertPrice(blockNum, call.CallData)
+				resultArray = append(resultArray, multicall.Multicall2Result{
+					Success:    true,
+					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
+				})
+			case "ac41865a": // get price  on priceoracle v2
+				tokenAddr := common.BytesToAddress(call.CallData[4+32:]).Hex()
+				price := t.getPrice(blockNum, tokenAddr)
 				resultArray = append(resultArray, multicall.Multicall2Result{
 					Success:    true,
 					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
