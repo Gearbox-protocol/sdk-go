@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package dataCompressorV2
+package dataCompressorv2
 
 import (
 	"math/big"

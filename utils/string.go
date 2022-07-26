@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -28,14 +27,12 @@ func ToJson(obj interface{}) string {
 	return string(str)
 }
 
-func GetCreditManagerEventIds() []string {
+func Events() []string {
 	var ids []string
-	if a, err := abi.JSON(strings.NewReader(creditManager.CreditManagerABI)); err == nil {
+	if a, err := abi.JSON(strings.NewReader(creditFacade.CreditFacadeABI)); err == nil {
 		for _, event := range a.Events {
-			// log.Info(event.RawName, event.ID.Hex())
-			// if event.RawName != "ExecuteOrder" {
+			log.Info(event.RawName, event.ID.Hex())
 			ids = append(ids, event.ID.Hex())
-			// }
 		}
 	}
 	return ids

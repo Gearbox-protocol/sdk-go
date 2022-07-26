@@ -38,10 +38,10 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) error {
 	defer cancel()
 	receipt, err := bind.WaitMined(ctx, p.Client, tx)
 	if err != nil {
-		return fmt.Errorf("Tx failed for %s: %s", job, err.Error())
+		return fmt.Errorf("tx failed for %s: %s", job, err.Error())
 	}
 	if receipt.Status != types.ReceiptStatusSuccessful {
-		return fmt.Errorf("Tx not successful for %s %+v", job, receipt)
+		return fmt.Errorf("tx not successful for %s %+v", job, receipt)
 	}
 	log.Msgf("%s TxHash: %s/tx/%s.", job, NetworkUIUrl(uint(p.ChainId)).ExplorerUrl, receipt.TxHash.Hex())
 	return nil

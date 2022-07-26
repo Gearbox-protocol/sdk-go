@@ -14,7 +14,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv2"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorV2"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 	mainnetDC "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
@@ -67,7 +67,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"YearnPriceFeed":        &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
 		"PriceFeed":             &bind.MetaData{ABI: priceFeed.PriceFeedABI},
 		"DataCompressorMainnet": &bind.MetaData{ABI: mainnetDC.DataCompressorABI},
-		"DataCompressorV2":      &bind.MetaData{ABI: dataCompressorV2.DataCompressorV2ABI},
+		"DataCompressorV2":      &bind.MetaData{ABI: dataCompressorv2.DataCompressorV2ABI},
 
 		// Pool
 		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},

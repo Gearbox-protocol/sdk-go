@@ -31,7 +31,7 @@ func (z *Json) Scan(value interface{}) error {
 		*z = Json(out)
 		return err
 	default:
-		return fmt.Errorf("Could not scan type %T", t)
+		return fmt.Errorf("could not scan type %T", t)
 	}
 }
 
@@ -57,7 +57,7 @@ func (z *JsonBalance) Scan(value interface{}) error {
 		*z = out
 		return err
 	default:
-		return fmt.Errorf("Could not scan type %T", t)
+		return fmt.Errorf("could not scan type %T", t)
 	}
 }
 
@@ -104,7 +104,7 @@ func (z *JsonBigIntMap) Scan(value interface{}) error {
 		*z = out
 		return err
 	default:
-		return fmt.Errorf("Could not scan type %T", t)
+		return fmt.Errorf("could not scan type %T", t)
 	}
 }
 
@@ -126,7 +126,7 @@ func (z *JsonFloatMap) Scan(value interface{}) error {
 		*z = out
 		return err
 	default:
-		return fmt.Errorf("Could not scan type %T", t)
+		return fmt.Errorf("could not scan type %T", t)
 	}
 }
 
@@ -151,27 +151,15 @@ func (addrs AddressMap) checkIfAddress(v string) string {
 type AddressMap map[string]string
 
 func (addrs AddressMap) checkInterface(data interface{}, t *testing.T) interface{} {
-	switch data.(type) {
+	switch value := data.(type) {
 	case string:
-		value, ok := data.(string)
-		if !ok {
-			t.Error("string parsing failed")
-		}
 		return addrs.checkIfAddress(value)
 	case []interface{}:
-		value, ok := data.([]interface{})
-		if !ok {
-			t.Error("[]interface{} parsing failed")
-		}
 		for i, entry := range value {
 			value[i] = addrs.checkInterface(entry, t)
 		}
 		return value
 	case map[string]interface{}:
-		value, ok := data.(map[string]interface{})
-		if !ok {
-			t.Error("map[string]interface{} parsing failed")
-		}
 		for key, entry := range value {
 			newKey := addrs.checkIfAddress(key)
 			if newKey != key {
@@ -216,30 +204,18 @@ func (addrs AddressMap) ReplaceWithVariable(key string, data interface{}) interf
 		splits[0] = addrs[splits[0]]
 		return strings.Join(splits, "_")
 	}
-	switch data.(type) {
+	switch value := data.(type) {
 	case string:
-		value, ok := data.(string)
-		if !ok {
-			log.Error("string parsing failed")
-		}
 		answer := addrs[value]
 		if answer != "" {
 			return answer
 		}
 	case []interface{}:
-		value, ok := data.([]interface{})
-		if !ok {
-			log.Error("[]interface{} parsing failed")
-		}
 		for i, entry := range value {
 			value[i] = addrs.ReplaceWithVariable(key, entry)
 		}
 		return value
 	case map[string]interface{}:
-		value, ok := data.(map[string]interface{})
-		if !ok {
-			log.Error("map[string]interface{} parsing failed")
-		}
 		obj := Json(value)
 		obj.ReplaceWithVariable(addrs)
 		return obj
@@ -272,27 +248,15 @@ func (z *Json) CheckSumAddress() {
 }
 
 func fixAddress(data interface{}) interface{} {
-	switch data.(type) {
+	switch value := data.(type) {
 	case common.Address:
-		value, ok := data.(common.Address)
-		if !ok {
-			log.Error("common.Address parsing failed")
-		}
 		return value.Hex()
 	case string:
-		value, ok := data.(string)
-		if !ok {
-			log.Error("string parsing failed")
-		}
 		if len(value) == 42 && value[:2] == "0x" {
 			log.Info(value)
 			return common.HexToAddress(value).Hex()
 		}
 	case []interface{}:
-		value, ok := data.([]interface{})
-		if !ok {
-			log.Error("[]interface{} parsing failed")
-		}
 		for i, entry := range value {
 			value[i] = fixAddress(entry)
 		}

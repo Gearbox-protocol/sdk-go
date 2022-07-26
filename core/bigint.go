@@ -87,11 +87,11 @@ func (z *BigInt) Scan(value interface{}) error {
 	case string:
 		v, ok := new(big.Int).SetString(value.(string), 10)
 		if !ok {
-			return fmt.Errorf("Could not scan type %T into BigInt", t)
+			return fmt.Errorf("could not scan type %T into BigInt", t)
 		}
 		*z = *(*BigInt)(v)
 	default:
-		return fmt.Errorf("Could not scan type %T into BigInt", t)
+		return fmt.Errorf("could not scan type %T into BigInt", t)
 	}
 
 	return nil

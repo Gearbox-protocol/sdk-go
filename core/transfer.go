@@ -5,9 +5,10 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"github.com/Gearbox-protocol/sdk-go/utils"
 	"math/big"
 	"strings"
+
+	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 type Transfers map[string]*big.Int
@@ -34,11 +35,10 @@ func (src *Transfers) Value() (driver.Value, error) {
 
 func (dst *Transfers) Scan(value interface{}) error {
 	hstore := NewHstore()
-	fmt.Println("aanil != nil")
 	if err := hstore.Scan(value); err != nil {
 		return err
 	}
-	var transfers map[string]*big.Int
+	transfers := map[string]*big.Int{}
 	for key, val := range hstore.GetMap() {
 		if intval, ok := new(big.Int).SetString(val, 10); !ok {
 			return fmt.Errorf("")

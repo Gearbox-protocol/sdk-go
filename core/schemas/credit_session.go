@@ -26,12 +26,15 @@ type (
 		InitialAmount          *core.BigInt      `json:"initialAmount"`
 		BorrowedAmount         *core.BigInt      `json:"borrowedAmount"`
 		Balances               *core.JsonBalance `gorm:"column:balances"`
-		RemainingFunds         *core.BigInt      `gorm:"column:remaining_funds"`
 		CollateralInUSD        float64           `gorm:"<-:false;column:collateral_usd"`
 		CollateralInUnderlying float64           `gorm:"<-:false;column:collateral_underlying"`
 		IsDirty                bool              `gorm:"-"`
 		Liquidator             string            `gorm:"liquidator"`
 		Version                int16             `gorm:"version"`
+		// v1 liquidte and close use remainingFunds for debt calculation
+		// v2 liquidate also uses it for calculation
+		// it shouldn't be directly used in API
+		RemainingFunds *core.BigInt `gorm:"column:remaining_funds"`
 	}
 
 	CreditAccountData struct {
