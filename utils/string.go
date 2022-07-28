@@ -27,16 +27,6 @@ func ToJson(obj interface{}) string {
 	return string(str)
 }
 
-func Events() []string {
-	var ids []string
-	if a, err := abi.JSON(strings.NewReader(creditFacade.CreditFacadeABI)); err == nil {
-		for _, event := range a.Events {
-			log.Info(event.RawName, event.ID.Hex())
-			ids = append(ids, event.ID.Hex())
-		}
-	}
-	return ids
-}
 func Method() {
 	if a, err := abi.JSON(strings.NewReader(creditFacade.CreditFacadeABI)); err == nil {
 		for name, method := range a.Methods {
