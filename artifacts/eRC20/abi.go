@@ -313,7 +313,6 @@ func (_ERC20 *ERC20Caller) Symbol(opts *bind.CallOpts) (string, error) {
 	if err != nil {
 		return *new(string), err
 	}
-
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err

@@ -9,6 +9,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
@@ -28,13 +29,13 @@ type TestClient struct {
 	state    *StateManager
 	USDCAddr string
 	WETHAddr string
-	token    map[string]int8
+	token    map[string]*schemas.Token
 }
 
 func NewTestClient() *TestClient {
 	return &TestClient{
 		events: make(map[int64]map[string][]types.Log),
-		token:  map[string]int8{},
+		token:  make(map[string]*schemas.Token),
 		state:  NewStateManager(),
 	}
 }
@@ -134,9 +135,21 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 	if data := t.state.GetOtherCall(blockNum, sig, *call.To); data != "" {
 		return common.HexToHash(data).Bytes(), nil
 	}
-
-	// convert with credit account on priceoraclev2
-	if sig == "d6d19b27" {
+	if sig == "95d89b41" { // symbol
+		sym := t.token[call.To.Hex()].Symbol
+		zeroBytes := make([]byte, 96)
+		zeroBytes[31] = 32
+		zeroBytes[63] = byte(len(sym))
+		for i, r := range sym {
+			zeroBytes[64+i] = byte(r)
+		}
+		return zeroBytes, nil
+	} else if sig == "313ce567" { // decimals
+		decimals := t.token[call.To.Hex()].Decimals
+		zeroBytes := make([]byte, 32)
+		zeroBytes[31] = byte(decimals)
+		return zeroBytes, nil
+	} else if sig == "d6d19b27" { // convert with credit account on priceoraclev2
 		// only skip the creditaccount bytes, not for the sig
 		// as convertPrice will itself skip 4 bytes for sig and the value of these first 4 bytes of data doesn't matter
 		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data[32:]))).Bytes(), nil
@@ -227,10 +240,10 @@ func (t *TestClient) convertPrice(blockNum int64, data []byte) *big.Int {
 	}
 	s += 32
 	token0 := common.BytesToAddress(data[s : s+32]).Hex()
-	decimalT0 := t.token[token0]
+	decimalT0 := t.token[token0].Decimals
 	s += 32
 	token1 := common.BytesToAddress(data[s : s+32]).Hex()
-	decimalT1 := t.token[token1]
+	decimalT1 := t.token[token1].Decimals
 	price0 := t.getPrice(blockNum, token0)
 	price1 := t.getPrice(blockNum, token1)
 	newAmount := new(big.Int).Mul(amount, price0)

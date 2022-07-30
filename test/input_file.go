@@ -1,6 +1,7 @@
 package test
 
 import (
+	"math/big"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -54,11 +55,15 @@ type TokenFile struct {
 	Tokens []*schemas.Token `json:"tokens"`
 }
 
+func (*TokenFile) Merge(TestInputI) {
+
+}
+
 func (file *TestInput) AddToClient(client *TestClient, addrMap core.AddressMap) {
 	// load tokens
 	if tokenFilePath := file.MockFiles["tokens"]; tokenFilePath != "" {
 		obj := &TokenFile{}
-		utils.ReadJsonAndSetInterface(tokenFilePath, obj)
+		addAddressSetJson(tokenFilePath, obj, addrMap, nil)
 		for _, tokenObj := range obj.Tokens {
 			switch tokenObj.Symbol {
 			case "USDC":
@@ -66,7 +71,7 @@ func (file *TestInput) AddToClient(client *TestClient, addrMap core.AddressMap) 
 			case "WETH":
 				client.SetWETH(tokenObj.Address)
 			}
-			client.AddToken(tokenObj.Address, tokenObj.Decimals)
+			client.AddToken(tokenObj)
 		}
 	}
 	// blockNum  -> funcsig -> call response data
@@ -79,6 +84,7 @@ func (file *TestInput) AddToClient(client *TestClient, addrMap core.AddressMap) 
 	}
 	// load events in client
 	events := map[int64]map[string][]types.Log{}
+	accountMask := map[int64]map[string]*big.Int{}
 
 	for blockNum, block := range file.Blocks {
 		otherCalls[blockNum] = block.Calls.OtherCalls
@@ -91,7 +97,16 @@ func (file *TestInput) AddToClient(client *TestClient, addrMap core.AddressMap) 
 			txLog.BlockNumber = uint64(blockNum)
 			events[blockNum][event.Address] = append(events[blockNum][event.Address], txLog)
 		}
+		// get masks
+		for _, maskDetails := range block.Calls.Masks {
+			if accountMask[blockNum] == nil {
+				accountMask[blockNum] = make(map[string]*big.Int)
+			}
+			accountMask[blockNum][maskDetails.Account] = maskDetails.Mask.Convert()
+
+		}
 	}
+	client.SetMasks(accountMask)
 	client.SetState(&file.States, otherCalls)
 	client.SetEvents(events)
 }

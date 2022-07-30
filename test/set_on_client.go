@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"sort"
 
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -17,8 +18,11 @@ func (t *TestClient) SetState(state *TestState, calls map[int64]OtherCalls) {
 	t.state.addState(state, calls)
 }
 
-func (t *TestClient) AddToken(tokenAddr string, decimals int8) {
-	t.token[tokenAddr] = decimals
+func (t *TestClient) AddToken(token *schemas.Token) {
+	t.token[token.Address] = token
+}
+func (t TestClient) GetToken() map[string]*schemas.Token {
+	return t.token
 }
 
 // blocknum => event address => txlogs
