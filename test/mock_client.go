@@ -20,79 +20,23 @@ import (
 
 type TestClient struct {
 	// Blocks map[int64]BlockInput
-	blockNums  []int64
-	events     map[int64]map[string][]types.Log
-	prices     map[string]map[int64]*big.Int
-	masks      map[int64]map[string]*big.Int
-	state      *StateStore
-	USDCAddr   string
-	WETHAddr   string
-	token      map[string]int8
-	otherCalls map[int64]map[string][]string
+	blockNums []int64
+	// blockNum
+	events   map[int64]map[string][]types.Log
+	prices   map[string]map[int64]*big.Int
+	masks    map[int64]map[string]*big.Int
+	state    *StateManager
+	USDCAddr string
+	WETHAddr string
+	token    map[string]int8
 }
 
-func (t *TestClient) SetUSDC(addr string) {
-	t.USDCAddr = addr
-}
-func (t *TestClient) SetWETH(addr string) {
-	t.WETHAddr = addr
-}
-func (t *TestClient) SetOtherCalls(calls map[int64]map[string][]string) {
-	t.otherCalls = calls
-}
 func NewTestClient() *TestClient {
 	return &TestClient{
 		events: make(map[int64]map[string][]types.Log),
 		token:  map[string]int8{},
-		state:  NewStateStore(),
+		state:  NewStateManager(),
 	}
-}
-func (t *TestClient) AddToken(tokenAddr string, decimals int8) {
-	t.token[tokenAddr] = decimals
-}
-
-// blocknum => event address => txlogs
-func (t *TestClient) SetEvents(obj map[int64]map[string][]types.Log) {
-	if t.events == nil {
-		t.events = map[int64]map[string][]types.Log{}
-	}
-	for blockNum, logs := range obj {
-		t.events[blockNum] = logs
-	}
-	blockNums := []int64{}
-	for blockNum := range t.events {
-		blockNums = append(blockNums, blockNum)
-	}
-	sort.Slice(blockNums, func(i, j int) bool { return blockNums[i] < blockNums[j] })
-	t.blockNums = blockNums
-}
-
-// token => block => prices
-func (t *TestClient) SetPrices(obj map[string]map[int64]*big.Int) {
-	if t.prices == nil {
-		t.prices = map[string]map[int64]*big.Int{}
-	}
-	for token, block := range obj {
-		if t.prices[token] == nil {
-			t.prices[token] = map[int64]*big.Int{}
-		}
-		for blockNum, price := range block {
-			t.prices[token][blockNum] = price
-		}
-	}
-}
-
-// block => account => mask
-func (t *TestClient) SetMasks(masks map[int64]map[string]*big.Int) {
-	if t.masks == nil {
-		t.masks = map[int64]map[string]*big.Int{}
-	}
-	for blockNum, mask := range masks {
-		t.masks[blockNum] = mask
-	}
-}
-func (t *TestClient) SetOracleState(oracleState *OracleState) {
-	t.state.Oracle.AddState(oracleState)
 }
 
 func (t *TestClient) ChainID(ctx context.Context) (*big.Int, error) {
@@ -127,21 +71,21 @@ func (t *TestClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery)
 	for i := query.FromBlock.Int64(); i <= toBlock; i++ {
 		for _, address := range query.Addresses {
 			if t.events[i] != nil {
-				if len(query.Topics) > 0 {
+				if len(query.Topics) > 0 { // if topic is present  for transfer
 					if query.Topics[0][0] == topic("Transfer(address,address,uint256)") {
 						for _, txLog := range t.events[i][address.Hex()] {
 							if ContainsHash(query.Topics[2], txLog.Topics[2]) {
 								txLogs = append(txLogs, txLog)
 							}
 						}
-					} else {
+					} else { // for other tokens
 						for _, txLog := range t.events[i][address.Hex()] {
 							if ContainsHash(query.Topics[0], txLog.Topics[0]) {
 								txLogs = append(txLogs, txLog)
 							}
 						}
 					}
-				} else {
+				} else { // no topic
 					txLogs = append(txLogs, t.events[i][address.Hex()]...)
 				}
 			}
@@ -187,8 +131,8 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 	if blockNumber != nil {
 		blockNum = blockNumber.Int64()
 	}
-	if t.otherCalls[blockNum] != nil && t.otherCalls[blockNum][sig] != nil {
-		return common.HexToHash(t.otherCalls[blockNum][sig][0]).Bytes(), nil
+	if data := t.state.GetOtherCall(blockNum, sig, *call.To); data != "" {
+		return common.HexToHash(data).Bytes(), nil
 	}
 
 	// convert with credit account on priceoraclev2
@@ -214,8 +158,8 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		return common.HexToHash(fmt.Sprintf("%x", mask)).Bytes(), nil
 		// phaseId
 	} else if sig == "58303b10" {
-		oracle := call.To.Hex()
-		index := t.state.Oracle.GetIndex(oracle, blockNum)
+		oracle := *call.To
+		index := t.state.OracleMgr.GetIndex(oracle, blockNum)
 		return common.HexToHash(fmt.Sprintf("%x", index)).Bytes(), nil
 		// current phase aggregator
 	} else if sig == "c1597304" {
@@ -224,8 +168,8 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		if !ok {
 			log.Fatal("oracle:%s data: %s", call.To, call.Data)
 		}
-		oracle := call.To.Hex()
-		feed := t.state.Oracle.GetState(oracle, int(index.Int64()))
+		oracle := *call.To
+		feed := t.state.OracleMgr.GetState(oracle, int(index.Int64()))
 		return common.HexToHash(feed.Feed).Bytes(), nil
 	} else if sig == "bce38bd7" { // multicall sig
 		obj := map[string]interface{}{}
@@ -250,24 +194,22 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 					Success:    true,
 					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
 				})
-			case "f93f515b", "f9aa028a", "570a7af2", "2495a599":
+			case "f93f515b", "f9aa028a", "570a7af2", "2495a599", "6f307dc3", "2f7a1881":
+				// creditFilter, creditConfigurator, poolService, underlyingToken, underlying, creditFacade
 				interalCallSig := hex.EncodeToString(call.CallData[:4])
-				if t.otherCalls[blockNum] != nil && t.otherCalls[blockNum][interalCallSig] != nil {
-					addr, data := addrAndData(t.otherCalls[blockNum][interalCallSig])
-					if addr != "" && addr != call.Target.Hex() {
-						resultArray = append(resultArray, multicall.Multicall2Result{
-							Success:    false,
-							ReturnData: []byte{},
-						})
-					} else {
-						resultArray = append(resultArray, multicall.Multicall2Result{
-							Success:    true,
-							ReturnData: common.HexToHash(data[0]).Bytes(),
-						})
-					}
+				if data := t.state.GetOtherCall(blockNum, interalCallSig, call.Target); data == "" {
+					resultArray = append(resultArray, multicall.Multicall2Result{
+						Success:    false,
+						ReturnData: []byte{},
+					})
+				} else {
+					resultArray = append(resultArray, multicall.Multicall2Result{
+						Success:    true,
+						ReturnData: common.HexToHash(data).Bytes(),
+					})
 				}
 			default:
-				panic(hex.EncodeToString(call.CallData[:4]))
+				panic(fmt.Sprintf("sig %s and target %s", hex.EncodeToString(call.CallData[:4]), call.Target))
 			}
 		}
 		outputData, err := method.Outputs.Pack(resultArray)
