@@ -9,6 +9,7 @@ local NULL_ADDR = '0x0000000000000000000000000000000000000000';
   //
   // CRV4 token and pool have different address: no wrapper and no base pool, non meta pools
   //
+  network: 'mainnet',
   tokens: {
     ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',  // it is used at some places though ETH is not a token.
     ///////////////////////////
@@ -98,15 +99,18 @@ local NULL_ADDR = '0x0000000000000000000000000000000000000000';
     ///////////////////////////
     // curve meta pools
     ///////////////////////////
-    'LUSD3CRV-f': '0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA',  // CRV1
-    'FRAX3CRV-f': '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B',  //// CRV1
-    GUSD3CRV_WRAPPER: '0x64448B78561690B70E17CBE8029a3e5c1bB7136e',  // CRV2 wrapper over curve pool 0x4f062658eaaf2c1ccf8c8e36d6824cdf41167956
-    'crvPlain3andSUSD-f': '0xFCBa3E75865d2d561BE8D220616520c171F12851',  // CRV3
+    LUSD3CRV_POOL: '0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA',  // CRV1
+    FRAX3CRV_POOL: '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B',  //// CRV1
+    GUSD3CRV_POOL: '0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956',
+    // GUSD3CRV_WRAPPER: '0x64448B78561690B70E17CBE8029a3e5c1bB7136e',  // CRV2 wrapper over curve pool 0x4f062658eaaf2c1ccf8c8e36d6824cdf41167956
+    crvPlain3andSUSD_POOL: '0xFCBa3E75865d2d561BE8D220616520c171F12851',  // CRV3
     ///////////////////////////
     // curve pools
     ///////////////////////////
-    'steCRV-f': '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',  //CRV4
-    '3CRV-f': '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',  //CRV4
+    CURVE_STETH_GATEWAY: '0xB949Ef5b39164537ee97BF17b968e465368C97AD',
+    steCRV_POOL: '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',  //CRV4
+    //
+    '3CRV_POOL': '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',  //CRV4
     ///////////////////////////
     // AMM
     ///////////////////////////

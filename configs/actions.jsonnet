@@ -41,10 +41,11 @@ local _base = [
 ];
 local _3crv_tokens = [tokens.DAI, tokens.USDC, tokens.USDT];
 local _non_synthetic_assets = _red + _yellow + _green + _base;
-local swapDetails(inToken, exchanges, outTokens) = {
+local swapDetails(inToken, exchanges, outTokens, transactContract=NULL_ADDR) = {
   inToken: inToken,
   exchanges: exchanges,
   outTokens: outTokens,
+  transactContract: transactContract,
 };
 
 local arrayToObj(func, arr, init) =
@@ -86,33 +87,35 @@ local mapFunc(running, idx, ele) =
         swapDetails(tokens.yvUSDC, [tokens.yvUSDC], [tokens.USDC]),
         swapDetails(tokens.yvWETH, [tokens.yvWETH], [tokens.WETH]),
         swapDetails(tokens.yvWBTC, [tokens.yvWBTC], [tokens.WBTC]),
-        swapDetails(tokens.yvSTETH, [tokens.yvSTETH], [tokens.stETH]),
+        if tokens.yvSTETH != NULL_ADDR then swapDetails(tokens.yvSTETH, [tokens.yvSTETH], [tokens.stETH]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.YEARN_ADAPTER,
       name: 'YearnAdapter',
     },
-    CURVE_META_POOL_GENERIC_WRAPPER_ADAPTER: {
-      swapActions:: [
-        swapDetails(tokens.FRAX3CRV, [exchgs['FRAX3CRV-f']], [tokens.FRAX] + _3crv_tokens),
-        swapDetails(tokens.LUSD3CRV, [exchgs['LUSD3CRV-f']], [tokens.LUSD] + _3crv_tokens),
-      ],
-      tokens: arrayToObj(mapFunc, self.swapActions, {}),
-      abi: abi.CURVE_GENERIC_WRAPPER_ADAPTER,
-      name: 'CurveGenericWrapperAdapter',
-    },
+    // CURVE_META_POOL_GENERIC_WRAPPER_ADAPTER: {
+    //   swapActions:: [
+    //     swapDetails(tokens.FRAX3CRV, [exchgs.FRAX3CRV_POOL], [tokens.FRAX] + _3crv_tokens),
+    //     swapDetails(tokens.LUSD3CRV, [exchgs.LUSD3CRV_POOL], [tokens.LUSD] + _3crv_tokens),
+    //   ],
+    //   tokens: arrayToObj(mapFunc, self.swapActions, {}),
+    //   abi: abi.CURVE_GENERIC_WRAPPER_ADAPTER,
+    //   name: 'CurveGenericWrapperAdapter',
+    // },
     CURVE_SUSD_ADAPTER: {
       swapActions:: [
-        swapDetails(tokens.crvPlain3andSUSD, [exchgs['crvPlain3andSUSD-f']], _3crv_tokens + [tokens.SUSD]),
+        swapDetails(tokens.crvPlain3andSUSD, [exchgs.crvPlain3andSUSD_POOL], _3crv_tokens + [tokens.SUSD]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
-      abi: abi.CURVE_SUSD_ADAPTER,
+      // coins func on mainnet has arg of uint128 type
+      abi: if store.network == 'kovan' then abi.CURVE_ADAPTER else abi.CURVE_SUSD_ADAPTER,
       name: 'CurveSUSDAdapter',
     },
     CURVE_3CRV_ADAPTER: {
       swapActions:: [
-        swapDetails(tokens.FRAX3CRV, [exchgs['FRAX3CRV-f']], [tokens.FRAX, tokens['3CRV']]),
-        swapDetails(tokens.LUSD3CRV, [exchgs['LUSD3CRV-f']], [tokens.LUSD, tokens['3CRV']]),
+        swapDetails(tokens.GUSD3CRV, [exchgs.GUSD3CRV_POOL], [tokens.GUSD, tokens['3CRV']]),
+        swapDetails(tokens.FRAX3CRV, [exchgs.FRAX3CRV_POOL], [tokens.FRAX, tokens['3CRV']]),
+        swapDetails(tokens.LUSD3CRV, [exchgs.LUSD3CRV_POOL], [tokens.LUSD, tokens['3CRV']]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
@@ -122,10 +125,10 @@ local mapFunc(running, idx, ele) =
       swapActions:: [
         // Metapools
         //
-        swapDetails(tokens.GUSD3CRV, [exchgs.GUSD3CRV_WRAPPER], [tokens.GUSD] + _3crv_tokens),
+        // swapDetails(tokens.GUSD3CRV, [exchgs.GUSD3CRV_WRAPPER], [tokens.GUSD] + _3crv_tokens),
         ////////
-        swapDetails(tokens['3CRV'], [exchgs['3CRV-f']], _3crv_tokens),
-        swapDetails(tokens.steCRV, [exchgs['steCRV-f']], [tokens.ETH, tokens.stETH]),
+        swapDetails(tokens['3CRV'], [exchgs['3CRV_POOL']], _3crv_tokens),
+        swapDetails(tokens.steCRV, [exchgs.steCRV_POOL], [tokens.WETH, tokens.stETH], exchgs.CURVE_STETH_GATEWAY),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
