@@ -109,7 +109,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if err.Error() == core.QueryMoreThan10000Error ||
+		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.LogFilterLenError) {
 			middle := (fromBlock + toBlock) / 2
 
@@ -168,7 +168,7 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 	}
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if err.Error() == core.QueryMoreThan10000Error ||
+		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.LogFilterLenError) {
 			middle := (fromBlock + toBlock) / 2
 			foundHigh, err := c.FindLastLogBound(middle, toBlock, topics)

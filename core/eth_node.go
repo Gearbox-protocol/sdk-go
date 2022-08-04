@@ -29,7 +29,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if err.Error() == QueryMoreThan10000Error ||
+		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), LogFilterLenError) ||
 			err.Error() == LogFilterQueryTimeout {
 			middle := (fromBlock + toBlock) / 2
