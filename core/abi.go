@@ -35,6 +35,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Router"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/wETHGateway"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnAdapter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnPriceFeed"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -93,6 +94,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
 		"MultiCall":          &bind.MetaData{ABI: multicall.MulticallABI},
 		"LidoKovan":          &bind.MetaData{ABI: lidoKovan.LidoKovanABI},
+		"YearnAdapter":       &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {
