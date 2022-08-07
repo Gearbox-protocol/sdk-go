@@ -167,11 +167,11 @@
     },
     {
       inputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+        // {
+        //   internalType: 'uint256',
+        //   name: '',
+        //   type: 'uint256',
+        // },
         {
           internalType: 'int128',
           name: 'i',
@@ -183,7 +183,7 @@
           type: 'uint256',
         },
       ],
-      name: 'remove_liquidity_one_coin',
+      name: 'remove_all_liquidity_one_coin',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
@@ -237,11 +237,11 @@
     },
     {
       inputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+        // {
+        //   internalType: 'uint256',
+        //   name: '',
+        //   type: 'uint256',
+        // },
         {
           internalType: 'int128',
           name: 'i',
@@ -253,7 +253,7 @@
           type: 'uint256',
         },
       ],
-      name: 'remove_liquidity_one_coin',
+      name: 'remove_all_liquidity_one_coin',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
