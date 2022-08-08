@@ -103,8 +103,10 @@ local mapFunc(running, idx, ele) =
     //   name: 'CurveGenericWrapperAdapter',
     // },
     CURVE_SUSD_ADAPTER: {
+      // there are susd pool and  deposit contracts.
+      // pool contract doesn't have add liquidity in one coin. So we are using deposit contract.
       swapActions:: [
-        swapDetails(tokens.crvPlain3andSUSD, [exchgs.crvPlain3andSUSD_POOL], _3crv_tokens + [tokens.SUSD]),
+        swapDetails(tokens.crvPlain3andSUSD, [exchgs.crvPlain3andSUSD_DEPOSIT], _3crv_tokens + [tokens.SUSD]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       // coins func on mainnet has arg of uint128 type
@@ -123,12 +125,11 @@ local mapFunc(running, idx, ele) =
     },
     CURVE_ADAPTER: {
       swapActions:: [
-        // Metapools
-        //
-        // swapDetails(tokens.GUSD3CRV, [exchgs.GUSD3CRV_WRAPPER], [tokens.GUSD] + _3crv_tokens),
         ////////
-        swapDetails(tokens['3CRV'], [exchgs['3CRV_POOL']], _3crv_tokens),
+        // gateway has the method for dealing with wrapper eth. whereas pool deals with native eth.
+        // pool contract is needed for calc_withdraw_one_coin function.
         swapDetails(tokens.steCRV, [exchgs.steCRV_POOL], [tokens.WETH, tokens.stETH], exchgs.CURVE_STETH_GATEWAY),
+        swapDetails(tokens['3CRV'], [exchgs['3CRV_POOL']], _3crv_tokens),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
