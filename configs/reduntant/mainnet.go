@@ -33,11 +33,11 @@ var mainnet = Config{
 		///////////////////////////
 		// convex curve pools
 		///////////////////////////
-		"cvx_FRAX3CRV_PHTM":         "",
-		"cvx_3CRV_PHTM":             "",
-		"cvx_GUSD3CRV_PHTM":         "",
-		"cvx_crvPlain3andSUSD_PHTM": "",
-		"cvx_stETH_PHTM":            "",
+		"stkcvxFRAX3CRV":         "",
+		"stkcvxsteCRV":           "",
+		"stkcvx3Crv":             "",
+		"stkcvxcrvPlain3andSUSD": "",
+		"stkcvxgusd3CRV":         "",
 		///////////////////////////
 		// curve meta pools
 		///////////////////////////

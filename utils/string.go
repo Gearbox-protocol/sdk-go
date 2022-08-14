@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -28,7 +28,7 @@ func ToJson(obj interface{}) string {
 }
 
 func Method() {
-	if a, err := abi.JSON(strings.NewReader(creditFacade.CreditFacadeABI)); err == nil {
+	if a, err := abi.JSON(strings.NewReader(dataCompressorv2.DataCompressorv2ABI)); err == nil {
 		for name, method := range a.Methods {
 			log.Info(name, method.RawName, method.Name, method.Sig, hex.EncodeToString(method.ID))
 		}

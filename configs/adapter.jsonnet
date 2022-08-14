@@ -280,7 +280,104 @@
       type: 'function',
     },
   ],
-  CONVEX_ADAPTER: [],
+  CONVEX_ADAPTER: [
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: '_pid',
+          type: 'uint256',
+        },
+      ],
+      name: 'withdrawAll',
+      outputs: [
+        {
+          internalType: 'bool',
+          name: '',
+          type: 'bool',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [],
+      name: 'extraRewardsLength',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'i',
+          type: 'uint256',
+        },
+      ],
+      name: 'extraRewards',
+      outputs: [
+        {
+          internalType: 'address',
+          name: '',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [],
+      name: 'rewardToken',
+      outputs: [
+        {
+          internalType: 'contract IERC20',
+          name: '',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'account',
+          type: 'address',
+        },
+      ],
+      name: 'earned',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'bool',
+          name: 'claim',
+          type: 'bool',
+        },
+      ],
+      name: 'withdrawAllAndUnwrap',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
   UNISWAPV3_ADAPTER: [
     {
       inputs: [

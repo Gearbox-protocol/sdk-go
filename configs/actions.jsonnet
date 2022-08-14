@@ -1,8 +1,13 @@
+// - 3plaincrvSUSD - There is a pool and deposit contract for susd. pool contract doesn't have add liquidity in one coin. So we are using deposit contract.
+// - STETHcrv - There is a pool and gateway contract. gateway has the method for dealing with wrapper eth. whereas pool deals with native eth. pool contract is needed for calc_withdraw_one_coin function.
+// - NormalCurveAsset: For these we only need to track the pool contract. They also have either special wrapper or a generic wrapper contract over them for directly withdrawing to underlying asset like DAI, USDC, USDT. Not these are not needed with current design.
+
 local NULL_ADDR = '0x0000000000000000000000000000000000000000';
 local abi = import 'adapter.jsonnet';
 local store = import 'mainnet.jsonnet';
 local tokens = store.tokens;
 local exchgs = store.exchanges;
+local ids = store.ids;
 local _red = [
   tokens.SUSHI,
   tokens.UNI,
@@ -70,14 +75,27 @@ local mapFunc(running, idx, ele) =
   adapters: {
     CONVEX_ADAPTER: {
       swapActions:: [
-        swapDetails(tokens.cvx_FRAX3CRV_PHTM, [exchgs.cvx_FRAX3CRV], [tokens.FRAX3CRV]),
-        swapDetails(tokens.cvx_3CRV_PHTM, exchgs.cvx_3CRV, [tokens['3CRV']]),
-        swapDetails(tokens.cvx_stETH_PHTM, [exchgs.cvx_stETH], [tokens.stETH]),
-        swapDetails(tokens.cvx_crvPlain3andSUSD_PHTM, [exchgs.cvx_crvPlain3andSUSD], [tokens.crvPlain3andSUSD]),
-        swapDetails(tokens.cvx_GUSD3CRV_PHTM, [exchgs.cvx_GUSD3CRV], [tokens.GUSD3CRV]),
+        swapDetails(tokens.stkcvxFRAX3CRV, [exchgs.CONVEX_FRAX3CRV_POOL], [tokens.FRAX3CRV]),
+        swapDetails(tokens.stkcvxsteCRV, [exchgs.CONVEX_STECRV_POOL], [tokens.stETH]),
+        swapDetails(tokens.stkcvxgusd3CRV, [exchgs.CONVEX_GUSD_POOL], [tokens.GUSD3CRV]),
+        swapDetails(tokens.stkcvxcrvPlain3andSUSD, [exchgs.CONVEX_SUSD_POOL], [tokens.crvPlain3andSUSD]),
+        swapDetails(tokens.stkcvx3Crv, [exchgs.CONVEX_3CRV_POOL], [tokens['3CRV']]),
+        //
+        swapDetails(tokens.stkcvxLUSD3CRV, [exchgs.CONVEX_LUSD3CRV_POOL], [tokens.cvxLUSD3CRV]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      CvxToLPTokens: {
+        [tokens.cvxFRAX3CRV]: { pid: ids.cvxFRAX3CRV, lptoken: tokens.FRAX3CRV },
+        [tokens.cvxsteCRV]: { pid: ids.cvxsteCRV, lptoken: tokens.steCRV },
+        [tokens.cvxgusd3CRV]: { pid: ids.cvxgusd3CRV, lptoken: tokens.GUSD3CRV },
+        [tokens.cvxcrvPlain3andSUSD]: { pid: ids.cvxcrvPlain3andSUSD, lptoken: tokens.crvPlain3andSUSD },
+        [tokens.cvx3Crv]: { pid: ids.cvx3Crv, lptoken: tokens['3CRV'] },
+        //
+        [tokens.cvxLUSD3CRV]: { pid: ids.cvxLUSD3CRV, lptoken: tokens.LUSD3CRV },
+      },
+      booster: exchgs.CONVEX_BOOSTER,
       abi: abi.CONVEX_ADAPTER,
+      crvToken: tokens.CRV,
       name: 'ConvexAdapter',
     },
     YEARN_ADAPTER: {
@@ -87,6 +105,7 @@ local mapFunc(running, idx, ele) =
         swapDetails(tokens.yvUSDC, [tokens.yvUSDC], [tokens.USDC]),
         swapDetails(tokens.yvWETH, [tokens.yvWETH], [tokens.WETH]),
         swapDetails(tokens.yvWBTC, [tokens.yvWBTC], [tokens.WBTC]),
+        swapDetails(tokens.yvCurve_stETH, [tokens.yvCurve_stETH], [tokens.steCRV]),
         if tokens.yvSTETH != NULL_ADDR then swapDetails(tokens.yvSTETH, [tokens.yvSTETH], [tokens.stETH]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
@@ -102,6 +121,7 @@ local mapFunc(running, idx, ele) =
     //   abi: abi.CURVE_GENERIC_WRAPPER_ADAPTER,
     //   name: 'CurveGenericWrapperAdapter',
     // },
+    // GUSD3CRV_WRAPPER: '0x64448B78561690B70E17CBE8029a3e5c1bB7136e',  // CRV2 wrapper over curve pool 0x4f062658eaaf2c1ccf8c8e36d6824cdf41167956
     CURVE_SUSD_ADAPTER: {
       // there are susd pool and  deposit contracts.
       // pool contract doesn't have add liquidity in one coin. So we are using deposit contract.
