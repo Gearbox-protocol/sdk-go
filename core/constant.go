@@ -2,6 +2,8 @@ package core
 
 import (
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const LogFilterLenError = "Log response size exceeded. You can make eth_getLogs requests with up to a 2K block range and no limit on the response size, or you can request any block range with a cap of 10K logs in the response."
@@ -21,6 +23,8 @@ type NetworkUI struct {
 	ExplorerUrl string
 	ChartUrl    string
 }
+
+var NULL_ADDR = common.Address{}
 
 func NetworkUIUrl(chainId uint) NetworkUI {
 	switch chainId {

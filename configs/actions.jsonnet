@@ -76,7 +76,7 @@ local mapFunc(running, idx, ele) =
     CONVEX_ADAPTER: {
       swapActions:: [
         swapDetails(tokens.stkcvxFRAX3CRV, [exchgs.CONVEX_FRAX3CRV_POOL], [tokens.FRAX3CRV]),
-        swapDetails(tokens.stkcvxsteCRV, [exchgs.CONVEX_STECRV_POOL], [tokens.stETH]),
+        swapDetails(tokens.stkcvxsteCRV, [exchgs.CONVEX_STECRV_POOL], [tokens.steCRV]),
         swapDetails(tokens.stkcvxgusd3CRV, [exchgs.CONVEX_GUSD_POOL], [tokens.GUSD3CRV]),
         swapDetails(tokens.stkcvxcrvPlain3andSUSD, [exchgs.CONVEX_SUSD_POOL], [tokens.crvPlain3andSUSD]),
         swapDetails(tokens.stkcvx3Crv, [exchgs.CONVEX_3CRV_POOL], [tokens['3CRV']]),
@@ -169,6 +169,7 @@ local mapFunc(running, idx, ele) =
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV3_ADAPTER,
       name: 'UniswapV3Adapter',
+      factory: exchgs.UNISWAPV3_FACTORY,
     },
   },
 }

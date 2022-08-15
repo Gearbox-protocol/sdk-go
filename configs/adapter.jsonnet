@@ -382,6 +382,35 @@
     {
       inputs: [
         {
+          internalType: 'address',
+          name: '',
+          type: 'address',
+        },
+        {
+          internalType: 'address',
+          name: '',
+          type: 'address',
+        },
+        {
+          internalType: 'uint24',
+          name: '',
+          type: 'uint24',
+        },
+      ],
+      name: 'getPool',
+      outputs: [
+        {
+          internalType: 'address',
+          name: '',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
           internalType: 'bytes',
           name: 'path',
           type: 'bytes',
@@ -480,6 +509,45 @@
         },
       ],
       name: 'exactAllInputSingle',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: 'amountOut',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'tokenIn',
+          type: 'address',
+        },
+        {
+          internalType: 'address',
+          name: 'tokenOut',
+          type: 'address',
+        },
+        {
+          internalType: 'uint24',
+          name: 'fee',
+          type: 'uint24',
+        },
+        {
+          internalType: 'uint256',
+          name: 'amountIn',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint160',
+          name: 'sqrtPriceLimitX96',
+          type: 'uint160',
+        },
+      ],
+      name: 'quoteExactInputSingle',
       outputs: [
         {
           internalType: 'uint256',
