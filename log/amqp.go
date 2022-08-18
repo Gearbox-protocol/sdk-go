@@ -32,6 +32,8 @@ func GetNetworkName(chainId uint) (name string) {
 	switch chainId {
 	case 42:
 		name = "KOVAN"
+	case 5:
+		name = "GOERLI"
 	case 1:
 		name = "MAINNET"
 	case 1337:

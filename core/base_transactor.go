@@ -43,6 +43,15 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) error {
 	if receipt.Status != types.ReceiptStatusSuccessful {
 		return fmt.Errorf("tx not successful for %s %+v", job, receipt)
 	}
-	log.Msgf("%s TxHash: %s/tx/%s.", job, NetworkUIUrl(uint(p.ChainId)).ExplorerUrl, receipt.TxHash.Hex())
+	ethUsed, gasUsed := p.getEthUsed(receipt)
+	log.Msgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(uint(p.ChainId)).ExplorerUrl, receipt.TxHash.Hex(),
+		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
 	return nil
+}
+
+func (p *BaseTransactor) getEthUsed(receipt *types.Receipt) (*big.Int, uint64) {
+	node := Node{Client: p.Client}
+	header, err := p.Client.HeaderByNumber(context.TODO(), big.NewInt(receipt.BlockNumber.Int64()))
+	log.CheckFatal(err)
+	return node.EthUsed(receipt.TxHash, header.BaseFee), receipt.GasUsed
 }

@@ -33,10 +33,15 @@ func NetworkUIUrl(chainId uint) NetworkUI {
 			ExplorerUrl: "https://etherscan.io",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
-	case 42:
+	case 42: // kovan
 		return NetworkUI{
 			ExplorerUrl: "https://kovan.etherscan.io",
 			ChartUrl:    "https://charts.kovan.gearbox.fi",
+		}
+	case 5: // goerli
+		return NetworkUI{
+			ExplorerUrl: "https://goerli.etherscan.io",
+			ChartUrl:    "https://charts.goerli.gearbox.fi",
 		}
 	}
 	return NetworkUI{}
