@@ -194,6 +194,10 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		resultArray := []multicall.Multicall2Result{}
 		for _, call := range calls {
 			switch hex.EncodeToString(call.CallData[:4]) {
+			case "f875365d": // observer token
+				resultArray = append(resultArray, multicall.Multicall2Result{
+					Success: false,
+				})
 			case "b66102df": // convert on priceoracle v1
 				price := t.convertPrice(blockNum, call.CallData)
 				resultArray = append(resultArray, multicall.Multicall2Result{
