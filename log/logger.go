@@ -171,9 +171,9 @@ func CheckFatal(err error) {
 var ch *amqp.Channel
 var netName, appName string
 
-func SetAMQP(_ch *amqp.Channel, name string, appName_ string) {
+func SetAMQP(_ch *amqp.Channel, netName_ string, appName_ string) {
 	ch = _ch
-	netName = name
+	netName = netName_
 	appName = appName_
 }
 func amqpSend(v []interface{}) {

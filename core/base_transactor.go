@@ -33,20 +33,20 @@ func NewBaseTransactor(privateKey string, client ClientI) *BaseTransactor {
 	}
 }
 
-func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) error {
+func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Receipt, error) {
 	ctx, cancel := utils.GetTimeoutCtx(60)
 	defer cancel()
 	receipt, err := bind.WaitMined(ctx, p.Client, tx)
 	if err != nil {
-		return fmt.Errorf("tx failed for %s: %s", job, err.Error())
+		return receipt, fmt.Errorf("tx failed for %s: %s", job, err.Error())
 	}
 	if receipt.Status != types.ReceiptStatusSuccessful {
-		return fmt.Errorf("tx not successful for %s %+v", job, receipt)
+		return receipt, fmt.Errorf("tx not successful for %s %+v", job, receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
 	log.Msgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(uint(p.ChainId)).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
-	return nil
+	return receipt, nil
 }
 
 func (p *BaseTransactor) getEthUsed(receipt *types.Receipt) (*big.Int, uint64) {
