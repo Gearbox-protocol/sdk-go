@@ -65,35 +65,36 @@ func (c *TestEvent) ParseData(contractName []string, topic0 common.Hash) ([]byte
 	}
 	var args []interface{}
 	for _, entry := range c.Data {
-		var arg interface{}
-		splits := strings.Split(entry, ":")
-		if len(splits) == 2 {
-			var ok bool
-			switch splits[0] {
-			case "bigint":
-				arg, ok = new(big.Int).SetString(splits[1], 10)
-				if !ok {
-					log.Fatalf("bigint parsing failed for %s", entry)
-				}
-			case "uint16":
-				value, err := strconv.ParseUint(splits[1], 10, 16)
-				log.CheckFatal(err)
-				arg = uint16(value)
-			case "addr":
-				arg = common.HexToAddress(entry).Hex()
-			case "bool":
-				if splits[1] == "1" {
-					arg = true
-				} else {
-					arg = false
-				}
-			}
-		} else {
-			arg = common.HexToAddress(entry)
-		}
-		args = append(args, arg)
+		args = append(args, dataToArg(entry))
 	}
 	return event.Inputs.NonIndexed().Pack(args...)
+}
+
+func dataToArg(entry string) (arg interface{}) {
+	splits := strings.Split(entry, ":")
+	if len(splits) == 2 {
+		var ok bool
+		switch splits[0] {
+		case "bigint":
+			arg, ok = new(big.Int).SetString(splits[1], 10)
+			if !ok {
+				log.Fatalf("bigint parsing failed for %s", entry)
+			}
+		case "uint16":
+			value, err := strconv.ParseUint(splits[1], 10, 16)
+			log.CheckFatal(err)
+			arg = uint16(value)
+		case "bool":
+			if splits[1] == "1" {
+				arg = true
+			} else {
+				arg = false
+			}
+		}
+	} else {
+		arg = common.HexToAddress(entry)
+	}
+	return arg
 }
 
 type TestEvent struct {

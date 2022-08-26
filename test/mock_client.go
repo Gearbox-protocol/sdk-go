@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -193,7 +194,8 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		calls := *abi.ConvertType(obj["calls"], new([]multicall.Multicall2Call)).(*[]multicall.Multicall2Call)
 		resultArray := []multicall.Multicall2Result{}
 		for _, call := range calls {
-			switch hex.EncodeToString(call.CallData[:4]) {
+			internalCallSig := hex.EncodeToString(call.CallData[:4])
+			switch internalCallSig {
 			case "f875365d": // observer token
 				resultArray = append(resultArray, multicall.Multicall2Result{
 					Success: false,
@@ -211,18 +213,55 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 					Success:    true,
 					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
 				})
-			case "f93f515b", "f9aa028a", "570a7af2", "2495a599", "6f307dc3", "2f7a1881":
-				// creditFilter, creditConfigurator, poolService, underlyingToken, underlying, creditFacade
-				interalCallSig := hex.EncodeToString(call.CallData[:4])
-				if data := t.state.GetOtherCall(blockNum, interalCallSig, call.Target); data == "" {
+			case "f93f515b", // creditFilter
+				"f9aa028a", //creditConfigurator
+				"570a7af2", //poolService
+				"2495a599", //underlyingToken
+				"6f307dc3", //underlying
+				"2f7a1881", //creditFacade
+				"313ce567", // decimals
+				"70a08231", // balanceOf
+				"feaf968c", // latestRoundData
+				"95d89b41": // symbol
+				if data := t.state.GetOtherCall(blockNum, internalCallSig, call.Target); data == "" {
 					resultArray = append(resultArray, multicall.Multicall2Result{
 						Success:    false,
 						ReturnData: []byte{},
 					})
 				} else {
+					splits := strings.Split(data, ":")
+					var tmpBytes []byte
+					if len(splits) == 2 {
+						switch splits[0] {
+						case "bigint":
+							arg, ok := new(big.Int).SetString(splits[1], 10)
+							if !ok {
+								log.Fatalf("bigint parsing failed for %s", data)
+							}
+							tmpBytes = common.BytesToHash(arg.Bytes()).Bytes()
+						}
+					} else {
+						tmpBytes = common.HexToHash(data).Bytes()
+					}
+					var ansBytes []byte
+					switch internalCallSig {
+					case "feaf968c": // latestRoundData
+						ansBytes = make([]byte, 32*5)
+						copy(ansBytes[32:], tmpBytes)
+					case "95d89b41": // symbol
+						zeroBytes := make([]byte, 96)
+						zeroBytes[31] = 32
+						zeroBytes[63] = byte(len(data))
+						for i, r := range data {
+							zeroBytes[64+i] = byte(r)
+						}
+						ansBytes = zeroBytes
+					default:
+						ansBytes = tmpBytes
+					}
 					resultArray = append(resultArray, multicall.Multicall2Result{
 						Success:    true,
-						ReturnData: common.HexToHash(data).Bytes(),
+						ReturnData: ansBytes,
 					})
 				}
 			default:
@@ -260,13 +299,13 @@ func (t *TestClient) BalanceAt(ctx context.Context, account common.Address, bloc
 }
 func (t *TestClient) getPrice(blockNum int64, tokenAddr string) *big.Int {
 	if t.prices[tokenAddr] != nil {
-		var lastprice *big.Int
-		for currentNum, price := range t.prices[tokenAddr] {
-			if currentNum <= blockNum {
-				lastprice = price
+		var ansBlockNum int64
+		for currentNum := range t.prices[tokenAddr] {
+			if currentNum <= blockNum && ansBlockNum < currentNum {
+				ansBlockNum = currentNum
 			}
 		}
-		return lastprice
+		return t.prices[tokenAddr][ansBlockNum]
 	} else if tokenAddr == t.WETHAddr { // only for v1
 		value, _ := new(big.Int).SetString("1000000000000000000", 10)
 		return value

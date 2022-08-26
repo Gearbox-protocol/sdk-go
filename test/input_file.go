@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"math/big"
 	"strings"
 
@@ -109,4 +110,21 @@ func (file *TestInput) AddToClient(client *TestClient, addrMap core.AddressMap) 
 	client.SetMasks(accountMask)
 	client.SetState(&file.States, otherCalls)
 	client.SetEvents(events)
+}
+
+// for matching state with the expected output
+func ReplaceWithVariable(obj interface{}, addrMap core.AddressMap) core.Json {
+	bytes, err := json.Marshal(obj)
+	log.CheckFatal(err)
+	addrToVariable := core.AddressMap{}
+	// TODO: FIX FOR HASH
+	for variable, addr := range addrMap {
+		addrToVariable[addr] = "#" + variable
+		addrToVariable[strings.ToLower(addr)] = "#" + variable
+	}
+	outputJson := core.Json{}
+	err = json.Unmarshal(bytes, &outputJson)
+	log.CheckFatal(err)
+	outputJson.ReplaceWithVariable(addrToVariable)
+	return outputJson
 }

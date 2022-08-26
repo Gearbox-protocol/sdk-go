@@ -103,5 +103,6 @@ func (p *Pauser) pauseMulticallRPC(ch chan error) {
 	if err := p.Client.SendTransaction(context.TODO(), tx); err != nil {
 		ch <- err
 	}
-	ch <- p.WaitForTx("Pausing contracts", tx)
+	_, err = p.WaitForTx("Pausing contracts", tx)
+	ch <- err
 }

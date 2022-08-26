@@ -15,16 +15,17 @@ func ReadFile(fileName string) []byte {
 	return jsonFile
 }
 
-func ReadJsonAndSet(fileName string) []map[string]interface{} {
-	data := []map[string]interface{}{}
-	byteValue := ReadFile(fileName)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
-	d.UseNumber()
-	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", err)
-	}
-	return data
-}
+// func ReadJsonAndSet(fileName string) []map[string]interface{} {
+// 	data := []map[string]interface{}{}
+// 	byteValue := ReadFile(fileName)
+// 	d := json.NewDecoder(bytes.NewReader(byteValue))
+// 	d.UseNumber()
+// 	if err := d.Decode(&data); err != nil {
+// 		fmt.Println("error:", err)
+// 	}
+// 	return data
+// }
+
 func ReadJsonAndSetInterface(fileName string, data interface{}) {
 	byteValue := ReadFile(fileName)
 	d := json.NewDecoder(bytes.NewReader(byteValue))
