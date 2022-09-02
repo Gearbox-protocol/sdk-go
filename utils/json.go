@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -27,8 +28,12 @@ func ReadFile(fileName string) []byte {
 // }
 
 func ReadJsonAndSetInterface(fileName string, data interface{}) {
-	byteValue := ReadFile(fileName)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
+	reader := bytes.NewReader(ReadFile(fileName))
+	ReadJsonReaderAndSetInterface(reader, data)
+}
+
+func ReadJsonReaderAndSetInterface(reader io.Reader, data interface{}) {
+	d := json.NewDecoder(reader)
 	d.UseNumber()
 	if err := d.Decode(&data); err != nil {
 		fmt.Println("error:", err)
@@ -36,9 +41,12 @@ func ReadJsonAndSetInterface(fileName string, data interface{}) {
 }
 
 func ReadJson(fileName string) map[string]interface{} {
-	data := map[string]interface{}{}
 	byteValue := ReadFile(fileName)
-	d := json.NewDecoder(bytes.NewReader(byteValue))
+	return ReadJsonReader(bytes.NewReader(byteValue))
+}
+func ReadJsonReader(reader io.Reader) map[string]interface{} {
+	data := map[string]interface{}{}
+	d := json.NewDecoder(reader)
 	d.UseNumber()
 	if err := d.Decode(&data); err != nil {
 		fmt.Println("error:", err)

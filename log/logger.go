@@ -15,10 +15,12 @@ func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
 func Verbosef(msg string, args ...interface{}) {
-	// log.Printf(msg, args...)
+	log.Printf(DetectFunc()+msg, args...)
 }
 func Verbose(v ...interface{}) {
-	// log.Println(v...)
+	x := []interface{}{DetectFunc()}
+	x = append(x, v...)
+	log.Println(x...)
 }
 
 func Updatef(msg string, args ...interface{}) {
