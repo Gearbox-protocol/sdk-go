@@ -36,7 +36,7 @@ type PriceFeedConfig struct {
 
 // PriceOraclev2MetaData contains all meta data concerning the PriceOraclev2 contract.
 var PriceOraclev2MetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addressProvider\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"internalType\":\"structPriceFeedConfig[]\",\"name\":\"defaults\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"AddressIsNotContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotConfiguratorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotUnPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ChainPriceStaleException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectPriceFeedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectTokenContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"PriceFeedRequiresAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"PriceOracleNotExistsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroPriceException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"NewPriceFeed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_acl\",\"outputs\":[{\"internalType\":\"contractACL\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"addPriceFeed\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenFrom\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenTo\",\"type\":\"address\"}],\"name\":\"convert\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"convertFromUSD\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"convertToUSD\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amountFrom\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenFrom\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amountTo\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenTo\",\"type\":\"address\"}],\"name\":\"fastCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"collateralTo\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"priceFeeds\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"priceFeedsWithFlags\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"dependsOnAddress\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"skipCheck\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addressProvider\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"internalType\":\"structPriceFeedConfig[]\",\"name\":\"defaults\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"AddressIsNotContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotConfiguratorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotUnPausableAdminException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ChainPriceStaleException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectPriceFeedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectTokenContractException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"PriceOracleNotExistsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroPriceException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"NewPriceFeed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_acl\",\"outputs\":[{\"internalType\":\"contractIACL\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"name\":\"addPriceFeed\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenFrom\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenTo\",\"type\":\"address\"}],\"name\":\"convert\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"convertFromUSD\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"convertToUSD\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amountFrom\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenFrom\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amountTo\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenTo\",\"type\":\"address\"}],\"name\":\"fastCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralFrom\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"collateralTo\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"priceFeeds\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"priceFeedsWithFlags\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"priceFeed\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"skipCheck\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // PriceOraclev2ABI is the input ABI used to generate the binding from.
@@ -216,12 +216,12 @@ func (_PriceOraclev2 *PriceOraclev2CallerSession) Acl() (common.Address, error) 
 	return _PriceOraclev2.Contract.Acl(&_PriceOraclev2.CallOpts)
 }
 
-// Convert is a free data retrieval call binding the contract method 0xd6d19b27.
+// Convert is a free data retrieval call binding the contract method 0xb66102df.
 //
-// Solidity: function convert(address creditAccount, uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Caller) Convert(opts *bind.CallOpts, creditAccount common.Address, amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
+// Solidity: function convert(uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Caller) Convert(opts *bind.CallOpts, amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _PriceOraclev2.contract.Call(opts, &out, "convert", creditAccount, amount, tokenFrom, tokenTo)
+	err := _PriceOraclev2.contract.Call(opts, &out, "convert", amount, tokenFrom, tokenTo)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -233,26 +233,26 @@ func (_PriceOraclev2 *PriceOraclev2Caller) Convert(opts *bind.CallOpts, creditAc
 
 }
 
-// Convert is a free data retrieval call binding the contract method 0xd6d19b27.
+// Convert is a free data retrieval call binding the contract method 0xb66102df.
 //
-// Solidity: function convert(address creditAccount, uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Session) Convert(creditAccount common.Address, amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.Convert(&_PriceOraclev2.CallOpts, creditAccount, amount, tokenFrom, tokenTo)
+// Solidity: function convert(uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Session) Convert(amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.Convert(&_PriceOraclev2.CallOpts, amount, tokenFrom, tokenTo)
 }
 
-// Convert is a free data retrieval call binding the contract method 0xd6d19b27.
+// Convert is a free data retrieval call binding the contract method 0xb66102df.
 //
-// Solidity: function convert(address creditAccount, uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2CallerSession) Convert(creditAccount common.Address, amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.Convert(&_PriceOraclev2.CallOpts, creditAccount, amount, tokenFrom, tokenTo)
+// Solidity: function convert(uint256 amount, address tokenFrom, address tokenTo) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2CallerSession) Convert(amount *big.Int, tokenFrom common.Address, tokenTo common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.Convert(&_PriceOraclev2.CallOpts, amount, tokenFrom, tokenTo)
 }
 
-// ConvertFromUSD is a free data retrieval call binding the contract method 0x902003df.
+// ConvertFromUSD is a free data retrieval call binding the contract method 0x7afb0104.
 //
-// Solidity: function convertFromUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Caller) ConvertFromUSD(opts *bind.CallOpts, creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
+// Solidity: function convertFromUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Caller) ConvertFromUSD(opts *bind.CallOpts, amount *big.Int, token common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _PriceOraclev2.contract.Call(opts, &out, "convertFromUSD", creditAccount, amount, token)
+	err := _PriceOraclev2.contract.Call(opts, &out, "convertFromUSD", amount, token)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -264,26 +264,26 @@ func (_PriceOraclev2 *PriceOraclev2Caller) ConvertFromUSD(opts *bind.CallOpts, c
 
 }
 
-// ConvertFromUSD is a free data retrieval call binding the contract method 0x902003df.
+// ConvertFromUSD is a free data retrieval call binding the contract method 0x7afb0104.
 //
-// Solidity: function convertFromUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Session) ConvertFromUSD(creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.ConvertFromUSD(&_PriceOraclev2.CallOpts, creditAccount, amount, token)
+// Solidity: function convertFromUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Session) ConvertFromUSD(amount *big.Int, token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.ConvertFromUSD(&_PriceOraclev2.CallOpts, amount, token)
 }
 
-// ConvertFromUSD is a free data retrieval call binding the contract method 0x902003df.
+// ConvertFromUSD is a free data retrieval call binding the contract method 0x7afb0104.
 //
-// Solidity: function convertFromUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2CallerSession) ConvertFromUSD(creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.ConvertFromUSD(&_PriceOraclev2.CallOpts, creditAccount, amount, token)
+// Solidity: function convertFromUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2CallerSession) ConvertFromUSD(amount *big.Int, token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.ConvertFromUSD(&_PriceOraclev2.CallOpts, amount, token)
 }
 
-// ConvertToUSD is a free data retrieval call binding the contract method 0x5b461005.
+// ConvertToUSD is a free data retrieval call binding the contract method 0xf9a65030.
 //
-// Solidity: function convertToUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Caller) ConvertToUSD(opts *bind.CallOpts, creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
+// Solidity: function convertToUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Caller) ConvertToUSD(opts *bind.CallOpts, amount *big.Int, token common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _PriceOraclev2.contract.Call(opts, &out, "convertToUSD", creditAccount, amount, token)
+	err := _PriceOraclev2.contract.Call(opts, &out, "convertToUSD", amount, token)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -295,49 +295,18 @@ func (_PriceOraclev2 *PriceOraclev2Caller) ConvertToUSD(opts *bind.CallOpts, cre
 
 }
 
-// ConvertToUSD is a free data retrieval call binding the contract method 0x5b461005.
+// ConvertToUSD is a free data retrieval call binding the contract method 0xf9a65030.
 //
-// Solidity: function convertToUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Session) ConvertToUSD(creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.ConvertToUSD(&_PriceOraclev2.CallOpts, creditAccount, amount, token)
+// Solidity: function convertToUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2Session) ConvertToUSD(amount *big.Int, token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.ConvertToUSD(&_PriceOraclev2.CallOpts, amount, token)
 }
 
-// ConvertToUSD is a free data retrieval call binding the contract method 0x5b461005.
+// ConvertToUSD is a free data retrieval call binding the contract method 0xf9a65030.
 //
-// Solidity: function convertToUSD(address creditAccount, uint256 amount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2CallerSession) ConvertToUSD(creditAccount common.Address, amount *big.Int, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.ConvertToUSD(&_PriceOraclev2.CallOpts, creditAccount, amount, token)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0xd449a832.
-//
-// Solidity: function decimals(address ) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Caller) Decimals(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
-	var out []interface{}
-	err := _PriceOraclev2.contract.Call(opts, &out, "decimals", arg0)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// Decimals is a free data retrieval call binding the contract method 0xd449a832.
-//
-// Solidity: function decimals(address ) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Session) Decimals(arg0 common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.Decimals(&_PriceOraclev2.CallOpts, arg0)
-}
-
-// Decimals is a free data retrieval call binding the contract method 0xd449a832.
-//
-// Solidity: function decimals(address ) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2CallerSession) Decimals(arg0 common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.Decimals(&_PriceOraclev2.CallOpts, arg0)
+// Solidity: function convertToUSD(uint256 amount, address token) view returns(uint256)
+func (_PriceOraclev2 *PriceOraclev2CallerSession) ConvertToUSD(amount *big.Int, token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.ConvertToUSD(&_PriceOraclev2.CallOpts, amount, token)
 }
 
 // FastCheck is a free data retrieval call binding the contract method 0x5cecbd0e.
@@ -385,12 +354,12 @@ func (_PriceOraclev2 *PriceOraclev2CallerSession) FastCheck(amountFrom *big.Int,
 	return _PriceOraclev2.Contract.FastCheck(&_PriceOraclev2.CallOpts, amountFrom, tokenFrom, amountTo, tokenTo)
 }
 
-// GetPrice is a free data retrieval call binding the contract method 0xac41865a.
+// GetPrice is a free data retrieval call binding the contract method 0x41976e09.
 //
-// Solidity: function getPrice(address creditAccount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Caller) GetPrice(opts *bind.CallOpts, creditAccount common.Address, token common.Address) (*big.Int, error) {
+// Solidity: function getPrice(address token) view returns(uint256 price)
+func (_PriceOraclev2 *PriceOraclev2Caller) GetPrice(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _PriceOraclev2.contract.Call(opts, &out, "getPrice", creditAccount, token)
+	err := _PriceOraclev2.contract.Call(opts, &out, "getPrice", token)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -402,18 +371,18 @@ func (_PriceOraclev2 *PriceOraclev2Caller) GetPrice(opts *bind.CallOpts, creditA
 
 }
 
-// GetPrice is a free data retrieval call binding the contract method 0xac41865a.
+// GetPrice is a free data retrieval call binding the contract method 0x41976e09.
 //
-// Solidity: function getPrice(address creditAccount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2Session) GetPrice(creditAccount common.Address, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.GetPrice(&_PriceOraclev2.CallOpts, creditAccount, token)
+// Solidity: function getPrice(address token) view returns(uint256 price)
+func (_PriceOraclev2 *PriceOraclev2Session) GetPrice(token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.GetPrice(&_PriceOraclev2.CallOpts, token)
 }
 
-// GetPrice is a free data retrieval call binding the contract method 0xac41865a.
+// GetPrice is a free data retrieval call binding the contract method 0x41976e09.
 //
-// Solidity: function getPrice(address creditAccount, address token) view returns(uint256)
-func (_PriceOraclev2 *PriceOraclev2CallerSession) GetPrice(creditAccount common.Address, token common.Address) (*big.Int, error) {
-	return _PriceOraclev2.Contract.GetPrice(&_PriceOraclev2.CallOpts, creditAccount, token)
+// Solidity: function getPrice(address token) view returns(uint256 price)
+func (_PriceOraclev2 *PriceOraclev2CallerSession) GetPrice(token common.Address) (*big.Int, error) {
+	return _PriceOraclev2.Contract.GetPrice(&_PriceOraclev2.CallOpts, token)
 }
 
 // Paused is a free data retrieval call binding the contract method 0x5c975abb.
@@ -480,27 +449,27 @@ func (_PriceOraclev2 *PriceOraclev2CallerSession) PriceFeeds(token common.Addres
 
 // PriceFeedsWithFlags is a free data retrieval call binding the contract method 0xf190e5fa.
 //
-// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool dependsOnAddress, bool skipCheck)
+// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool skipCheck, uint256 decimals)
 func (_PriceOraclev2 *PriceOraclev2Caller) PriceFeedsWithFlags(opts *bind.CallOpts, token common.Address) (struct {
-	PriceFeed        common.Address
-	DependsOnAddress bool
-	SkipCheck        bool
+	PriceFeed common.Address
+	SkipCheck bool
+	Decimals  *big.Int
 }, error) {
 	var out []interface{}
 	err := _PriceOraclev2.contract.Call(opts, &out, "priceFeedsWithFlags", token)
 
 	outstruct := new(struct {
-		PriceFeed        common.Address
-		DependsOnAddress bool
-		SkipCheck        bool
+		PriceFeed common.Address
+		SkipCheck bool
+		Decimals  *big.Int
 	})
 	if err != nil {
 		return *outstruct, err
 	}
 
 	outstruct.PriceFeed = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-	outstruct.DependsOnAddress = *abi.ConvertType(out[1], new(bool)).(*bool)
-	outstruct.SkipCheck = *abi.ConvertType(out[2], new(bool)).(*bool)
+	outstruct.SkipCheck = *abi.ConvertType(out[1], new(bool)).(*bool)
+	outstruct.Decimals = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -508,22 +477,22 @@ func (_PriceOraclev2 *PriceOraclev2Caller) PriceFeedsWithFlags(opts *bind.CallOp
 
 // PriceFeedsWithFlags is a free data retrieval call binding the contract method 0xf190e5fa.
 //
-// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool dependsOnAddress, bool skipCheck)
+// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool skipCheck, uint256 decimals)
 func (_PriceOraclev2 *PriceOraclev2Session) PriceFeedsWithFlags(token common.Address) (struct {
-	PriceFeed        common.Address
-	DependsOnAddress bool
-	SkipCheck        bool
+	PriceFeed common.Address
+	SkipCheck bool
+	Decimals  *big.Int
 }, error) {
 	return _PriceOraclev2.Contract.PriceFeedsWithFlags(&_PriceOraclev2.CallOpts, token)
 }
 
 // PriceFeedsWithFlags is a free data retrieval call binding the contract method 0xf190e5fa.
 //
-// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool dependsOnAddress, bool skipCheck)
+// Solidity: function priceFeedsWithFlags(address token) view returns(address priceFeed, bool skipCheck, uint256 decimals)
 func (_PriceOraclev2 *PriceOraclev2CallerSession) PriceFeedsWithFlags(token common.Address) (struct {
-	PriceFeed        common.Address
-	DependsOnAddress bool
-	SkipCheck        bool
+	PriceFeed common.Address
+	SkipCheck bool
+	Decimals  *big.Int
 }, error) {
 	return _PriceOraclev2.Contract.PriceFeedsWithFlags(&_PriceOraclev2.CallOpts, token)
 }
