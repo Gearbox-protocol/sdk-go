@@ -154,10 +154,13 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		// only skip the creditaccount bytes, not for the sig
 		// as convertPrice will itself skip 4 bytes for sig and the value of these first 4 bytes of data doesn't matter
 		return common.HexToHash(fmt.Sprintf("%x", t.convertPrice(blockNum, call.Data[32:]))).Bytes(), nil
-		// getprice on priceoracle
+		// getprice on priceoracle with nft support taking credit account is arg
 	} else if sig == "ac41865a" {
 		// credit account and then token
 		tokenAddr := common.BytesToAddress(call.Data[4+32:]).Hex()
+		return common.HexToHash(fmt.Sprintf("%x", t.getPrice(blockNum, tokenAddr))).Bytes(), nil
+	} else if sig == "41976e09" {
+		tokenAddr := common.BytesToAddress(call.Data[4:]).Hex()
 		return common.HexToHash(fmt.Sprintf("%x", t.getPrice(blockNum, tokenAddr))).Bytes(), nil
 		// convert on priceOracle
 	} else if sig == "b66102df" {
@@ -206,8 +209,15 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 					Success:    true,
 					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
 				})
-			case "ac41865a": // get price  on priceoracle v2
+			case "ac41865a": // get price  on priceoracle v2 with credit account
 				tokenAddr := common.BytesToAddress(call.CallData[4+32:]).Hex()
+				price := t.getPrice(blockNum, tokenAddr)
+				resultArray = append(resultArray, multicall.Multicall2Result{
+					Success:    true,
+					ReturnData: common.HexToHash(fmt.Sprintf("%x", price)).Bytes(),
+				})
+			case "41976e09": // getprice  on priceoracle v2
+				tokenAddr := common.BytesToAddress(call.CallData[4:]).Hex()
 				price := t.getPrice(blockNum, tokenAddr)
 				resultArray = append(resultArray, multicall.Multicall2Result{
 					Success:    true,
