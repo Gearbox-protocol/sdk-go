@@ -33,7 +33,9 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Router"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Pool"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv3Router"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/wETHGateway"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnAdapter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/yearnPriceFeed"
@@ -51,7 +53,9 @@ func GetAbi(contractName string) *abi.ABI {
 		return getABI(data)
 	}
 	metadataMap := map[string]*bind.MetaData{
-
+		////////////////
+		// common
+		////////////////
 		// Configuration
 		"ACL":              aCL.ACLMetaData,
 		"AddressProvider":  addressProvider.AddressProviderMetaData,
@@ -64,37 +68,51 @@ func GetAbi(contractName string) *abi.ABI {
 		"WETHGateway":    wETHGateway.WETHGatewayMetaData,
 
 		// Oracle
-		"PriceOracle":           &bind.MetaData{ABI: priceOracle.PriceOracleABI},
 		"YearnPriceFeed":        &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
 		"PriceFeed":             &bind.MetaData{ABI: priceFeed.PriceFeedABI},
 		"DataCompressorMainnet": &bind.MetaData{ABI: mainnetDC.DataCompressorABI},
 		"DataCompressorV2":      &bind.MetaData{ABI: dataCompressorv2.DataCompressorv2ABI},
 
-		// Pool
+		// tokens
+		"DieselToken": dieselToken.DieselTokenMetaData,
+		"GearToken":   gearToken.GearTokenMetaData,
+		"TokenMock":   tokenMock.TokenMockMetaData,
+		"Token":       eRC20.ERC20MetaData,
+
+		//////////////
+		// v1
+		//////////////
+		"PriceOracle":             &bind.MetaData{ABI: priceOracle.PriceOracleABI},
 		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
 		"CreditManagerv2":         &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
 		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
-		"LidoMock":                &bind.MetaData{ABI: lidoMock.LidoMockABI},
-		"MainnetLido":             &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
 		"Pool":                    poolService.PoolServiceMetaData,
 
-		// GetUnderlyingToken
-		"DieselToken":        dieselToken.DieselTokenMetaData,
-		"GearToken":          gearToken.GearTokenMetaData,
-		"TokenMock":          tokenMock.TokenMockMetaData,
-		"RewardPool":         &bind.MetaData{ABI: rewardPool.RewardPoolABI},
-		"Token":              eRC20.ERC20MetaData,
-		"Uniswapv2Pool":      &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
-		"Uniswapv3Pool":      &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
-		"Uniswapv2Router":    &bind.MetaData{ABI: uniswapv2Router.Uniswapv2RouterABI},
-		"Uniswapv2Factory":   &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
+		//////////////
+		// v2
+		//////////////
 		"PriceOraclev2":      &bind.MetaData{ABI: priceOraclev2.PriceOraclev2ABI},
 		"CreditConfigurator": &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
 		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
-		"MultiCall":          &bind.MetaData{ABI: multicall.MulticallABI},
-		"LidoKovan":          &bind.MetaData{ABI: lidoKovan.LidoKovanABI},
-		"YearnAdapter":       &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
+		// multicall
+		"MultiCall": &bind.MetaData{ABI: multicall.MulticallABI},
+		//
+		"Uniswapv3Pool":    &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
+		"Uniswapv3Router":  &bind.MetaData{ABI: uniswapv3Router.Uniswapv3RouterABI},
+		"Uniswapv3Factory": &bind.MetaData{ABI: uniswapv3Factory.Uniswapv3FactoryABI},
+		//
+		"Uniswapv2Pool":    &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
+		"Uniswapv2Router":  &bind.MetaData{ABI: uniswapv2Router.Uniswapv2RouterABI},
+		"Uniswapv2Factory": &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
+		//
+		"LidoMock":    &bind.MetaData{ABI: lidoMock.LidoMockABI},
+		"MainnetLido": &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
+		"LidoKovan":   &bind.MetaData{ABI: lidoKovan.LidoKovanABI},
+		//
+		"YearnAdapter": &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
+		// convex for liquidator calculation
+		"RewardPool": &bind.MetaData{ABI: rewardPool.RewardPoolABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {

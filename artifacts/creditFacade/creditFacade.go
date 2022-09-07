@@ -36,7 +36,7 @@ type MultiCall struct {
 
 // CreditFacadeMetaData contains all meta data concerning the CreditFacade contract.
 var CreditFacadeMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_degenNFT\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AccountTransferNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AdaptersOrCreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AllowanceFailedExpcetion\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"BalanceLessThanMinimumDesired\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowAmountOutOfLimitsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowedBlockLimitException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantLiquidateWithSuchHealthFactorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantTransferLiquidatableAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditConfiguratorOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ForbiddenDuringClosureException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"HasNoOpenedAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectCallDataException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseAndDecreaseForbiddenInOneCallException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseDebtForbiddenException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotAllowedInWhitelistedMode\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotEnoughCollateralException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TargetContractNotAllowedExpcetion\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenAlreadyAddedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooMuchTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UnknownMethodException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressOrUserAlreadyHasAccountException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"AddCollateral\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"CloseCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"DecreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"liquidator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"}],\"name\":\"LiquidateCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"MultiCallFinished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"MultiCallStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"borrowAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"OpenCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenEnabled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"TransferAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"TransferAccountAllowed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"addCollateral\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"approveAccountTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcCreditAccountHealthFactor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"hf\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcTotalValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"total\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twv\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"closeCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractICreditManagerV2\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"decreaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"degenNFT\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"enableToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalBorrowedInBlock\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"blockLastUpdate\",\"type\":\"uint64\"},{\"internalType\":\"uint128\",\"name\":\"borrowedInBlock\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"hasOpenedCreditAccount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"increaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"isTokenAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"limits\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"liquidateCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"multicall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"leverageFactor\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"borrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccountMulticall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"params\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmountPerBlock\",\"type\":\"uint128\"},{\"internalType\":\"bool\",\"name\":\"isIncreaseDebtForbidden\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"_minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"_maxBorrowedAmount\",\"type\":\"uint128\"}],\"name\":\"setCreditAccountLimits\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_mode\",\"type\":\"bool\"}],\"name\":\"setIncreaseDebtForbidden\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"newLimit\",\"type\":\"uint128\"}],\"name\":\"setLimitPerBlock\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"transferAccountOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transfersAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wethAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"whitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_degenNFT\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_expirable\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AccountTransferNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ActionProhibitedWithForbiddenTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AdaptersOrCreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AllowanceFailedException\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"BalanceLessThanMinimumDesiredException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowAmountOutOfLimitsException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"BorrowedBlockLimitException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantLiquidateNonExpiredException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantLiquidateWithSuchHealthFactorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CantTransferLiquidatableAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditConfiguratorOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditFacadeOnlyException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ExpectedBalancesAlreadySetException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ForbiddenDuringClosureException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"HasNoOpenedAccountException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectCallDataException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseAndDecreaseForbiddenInOneCallException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncreaseDebtForbiddenException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotAllowedInWhitelistedMode\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotAllowedWhenNotExpirableException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotEnoughCollateralException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"OpenAccountNotAllowedAfterExpirationException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrancyLockException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TargetContractNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenAlreadyAddedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooManyEnabledTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooManyTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UnknownMethodException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressOrUserAlreadyHasAccountException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"AddCollateral\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"CloseCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"DecreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncreaseBorrowedAmount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"liquidator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"}],\"name\":\"LiquidateCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"liquidator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"}],\"name\":\"LiquidateExpiredCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"MultiCallFinished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"MultiCallStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"borrowAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"OpenCreditAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenDisabled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"TokenEnabled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"TransferAccount\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"TransferAccountAllowed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"addCollateral\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"addToUpgradeable\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"state\",\"type\":\"bool\"}],\"name\":\"approveAccountTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcCreditAccountHealthFactor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"hf\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"calcTotalValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"total\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twv\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"closeCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditManager\",\"outputs\":[{\"internalType\":\"contractICreditManagerV2\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"decreaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"degenNFT\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"enableToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expirable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalBorrowedInBlock\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"blockLastUpdate\",\"type\":\"uint64\"},{\"internalType\":\"uint128\",\"name\":\"borrowedInBlock\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"name\":\"hasOpenedCreditAccount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"increaseDebt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"isTokenAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"isUpgradeableContract\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"limits\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmount\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"liquidateCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokenMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertWETH\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"liquidateExpiredCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"name\":\"multicall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"leverageFactor\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccount\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"borrowedAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"},{\"internalType\":\"uint16\",\"name\":\"referralCode\",\"type\":\"uint16\"}],\"name\":\"openCreditAccountMulticall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"params\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"maxBorrowedAmountPerBlock\",\"type\":\"uint128\"},{\"internalType\":\"bool\",\"name\":\"isIncreaseDebtForbidden\",\"type\":\"bool\"},{\"internalType\":\"uint40\",\"name\":\"expirationDate\",\"type\":\"uint40\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"removeFromUpgradeable\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"_minBorrowedAmount\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"_maxBorrowedAmount\",\"type\":\"uint128\"}],\"name\":\"setCreditAccountLimits\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint40\",\"name\":\"newExpirationDate\",\"type\":\"uint40\"}],\"name\":\"setExpirationDate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_mode\",\"type\":\"bool\"}],\"name\":\"setIncreaseDebtForbidden\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"newLimit\",\"type\":\"uint128\"}],\"name\":\"setLimitPerBlock\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"transferAccountOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transfersAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"upgradeableContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"upgradeableContractsList\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wethAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"whitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // CreditFacadeABI is the input ABI used to generate the binding from.
@@ -323,6 +323,37 @@ func (_CreditFacade *CreditFacadeCallerSession) DegenNFT() (common.Address, erro
 	return _CreditFacade.Contract.DegenNFT(&_CreditFacade.CallOpts)
 }
 
+// Expirable is a free data retrieval call binding the contract method 0xb1836d32.
+//
+// Solidity: function expirable() view returns(bool)
+func (_CreditFacade *CreditFacadeCaller) Expirable(opts *bind.CallOpts) (bool, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "expirable")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// Expirable is a free data retrieval call binding the contract method 0xb1836d32.
+//
+// Solidity: function expirable() view returns(bool)
+func (_CreditFacade *CreditFacadeSession) Expirable() (bool, error) {
+	return _CreditFacade.Contract.Expirable(&_CreditFacade.CallOpts)
+}
+
+// Expirable is a free data retrieval call binding the contract method 0xb1836d32.
+//
+// Solidity: function expirable() view returns(bool)
+func (_CreditFacade *CreditFacadeCallerSession) Expirable() (bool, error) {
+	return _CreditFacade.Contract.Expirable(&_CreditFacade.CallOpts)
+}
+
 // GetTotalBorrowedInBlock is a free data retrieval call binding the contract method 0x9b67ab30.
 //
 // Solidity: function getTotalBorrowedInBlock() view returns(uint64 blockLastUpdate, uint128 borrowedInBlock)
@@ -430,6 +461,37 @@ func (_CreditFacade *CreditFacadeCallerSession) IsTokenAllowed(token common.Addr
 	return _CreditFacade.Contract.IsTokenAllowed(&_CreditFacade.CallOpts, token)
 }
 
+// IsUpgradeableContract is a free data retrieval call binding the contract method 0x6d19b486.
+//
+// Solidity: function isUpgradeableContract(address addr) view returns(bool)
+func (_CreditFacade *CreditFacadeCaller) IsUpgradeableContract(opts *bind.CallOpts, addr common.Address) (bool, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "isUpgradeableContract", addr)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// IsUpgradeableContract is a free data retrieval call binding the contract method 0x6d19b486.
+//
+// Solidity: function isUpgradeableContract(address addr) view returns(bool)
+func (_CreditFacade *CreditFacadeSession) IsUpgradeableContract(addr common.Address) (bool, error) {
+	return _CreditFacade.Contract.IsUpgradeableContract(&_CreditFacade.CallOpts, addr)
+}
+
+// IsUpgradeableContract is a free data retrieval call binding the contract method 0x6d19b486.
+//
+// Solidity: function isUpgradeableContract(address addr) view returns(bool)
+func (_CreditFacade *CreditFacadeCallerSession) IsUpgradeableContract(addr common.Address) (bool, error) {
+	return _CreditFacade.Contract.IsUpgradeableContract(&_CreditFacade.CallOpts, addr)
+}
+
 // Limits is a free data retrieval call binding the contract method 0x860aefcf.
 //
 // Solidity: function limits() view returns(uint128 minBorrowedAmount, uint128 maxBorrowedAmount)
@@ -477,10 +539,11 @@ func (_CreditFacade *CreditFacadeCallerSession) Limits() (struct {
 
 // Params is a free data retrieval call binding the contract method 0xcff0ab96.
 //
-// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden, uint40 expirationDate)
 func (_CreditFacade *CreditFacadeCaller) Params(opts *bind.CallOpts) (struct {
 	MaxBorrowedAmountPerBlock *big.Int
 	IsIncreaseDebtForbidden   bool
+	ExpirationDate            *big.Int
 }, error) {
 	var out []interface{}
 	err := _CreditFacade.contract.Call(opts, &out, "params")
@@ -488,6 +551,7 @@ func (_CreditFacade *CreditFacadeCaller) Params(opts *bind.CallOpts) (struct {
 	outstruct := new(struct {
 		MaxBorrowedAmountPerBlock *big.Int
 		IsIncreaseDebtForbidden   bool
+		ExpirationDate            *big.Int
 	})
 	if err != nil {
 		return *outstruct, err
@@ -495,6 +559,7 @@ func (_CreditFacade *CreditFacadeCaller) Params(opts *bind.CallOpts) (struct {
 
 	outstruct.MaxBorrowedAmountPerBlock = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	outstruct.IsIncreaseDebtForbidden = *abi.ConvertType(out[1], new(bool)).(*bool)
+	outstruct.ExpirationDate = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -502,20 +567,22 @@ func (_CreditFacade *CreditFacadeCaller) Params(opts *bind.CallOpts) (struct {
 
 // Params is a free data retrieval call binding the contract method 0xcff0ab96.
 //
-// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden, uint40 expirationDate)
 func (_CreditFacade *CreditFacadeSession) Params() (struct {
 	MaxBorrowedAmountPerBlock *big.Int
 	IsIncreaseDebtForbidden   bool
+	ExpirationDate            *big.Int
 }, error) {
 	return _CreditFacade.Contract.Params(&_CreditFacade.CallOpts)
 }
 
 // Params is a free data retrieval call binding the contract method 0xcff0ab96.
 //
-// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden)
+// Solidity: function params() view returns(uint128 maxBorrowedAmountPerBlock, bool isIncreaseDebtForbidden, uint40 expirationDate)
 func (_CreditFacade *CreditFacadeCallerSession) Params() (struct {
 	MaxBorrowedAmountPerBlock *big.Int
 	IsIncreaseDebtForbidden   bool
+	ExpirationDate            *big.Int
 }, error) {
 	return _CreditFacade.Contract.Params(&_CreditFacade.CallOpts)
 }
@@ -580,6 +647,68 @@ func (_CreditFacade *CreditFacadeSession) Underlying() (common.Address, error) {
 // Solidity: function underlying() view returns(address)
 func (_CreditFacade *CreditFacadeCallerSession) Underlying() (common.Address, error) {
 	return _CreditFacade.Contract.Underlying(&_CreditFacade.CallOpts)
+}
+
+// UpgradeableContract is a free data retrieval call binding the contract method 0x79c0ef91.
+//
+// Solidity: function upgradeableContract(uint256 index) view returns(address)
+func (_CreditFacade *CreditFacadeCaller) UpgradeableContract(opts *bind.CallOpts, index *big.Int) (common.Address, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "upgradeableContract", index)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// UpgradeableContract is a free data retrieval call binding the contract method 0x79c0ef91.
+//
+// Solidity: function upgradeableContract(uint256 index) view returns(address)
+func (_CreditFacade *CreditFacadeSession) UpgradeableContract(index *big.Int) (common.Address, error) {
+	return _CreditFacade.Contract.UpgradeableContract(&_CreditFacade.CallOpts, index)
+}
+
+// UpgradeableContract is a free data retrieval call binding the contract method 0x79c0ef91.
+//
+// Solidity: function upgradeableContract(uint256 index) view returns(address)
+func (_CreditFacade *CreditFacadeCallerSession) UpgradeableContract(index *big.Int) (common.Address, error) {
+	return _CreditFacade.Contract.UpgradeableContract(&_CreditFacade.CallOpts, index)
+}
+
+// UpgradeableContractsList is a free data retrieval call binding the contract method 0x9be0536a.
+//
+// Solidity: function upgradeableContractsList() view returns(address[])
+func (_CreditFacade *CreditFacadeCaller) UpgradeableContractsList(opts *bind.CallOpts) ([]common.Address, error) {
+	var out []interface{}
+	err := _CreditFacade.contract.Call(opts, &out, "upgradeableContractsList")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// UpgradeableContractsList is a free data retrieval call binding the contract method 0x9be0536a.
+//
+// Solidity: function upgradeableContractsList() view returns(address[])
+func (_CreditFacade *CreditFacadeSession) UpgradeableContractsList() ([]common.Address, error) {
+	return _CreditFacade.Contract.UpgradeableContractsList(&_CreditFacade.CallOpts)
+}
+
+// UpgradeableContractsList is a free data retrieval call binding the contract method 0x9be0536a.
+//
+// Solidity: function upgradeableContractsList() view returns(address[])
+func (_CreditFacade *CreditFacadeCallerSession) UpgradeableContractsList() ([]common.Address, error) {
+	return _CreditFacade.Contract.UpgradeableContractsList(&_CreditFacade.CallOpts)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -694,6 +823,27 @@ func (_CreditFacade *CreditFacadeSession) AddCollateral(onBehalfOf common.Addres
 // Solidity: function addCollateral(address onBehalfOf, address token, uint256 amount) payable returns()
 func (_CreditFacade *CreditFacadeTransactorSession) AddCollateral(onBehalfOf common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _CreditFacade.Contract.AddCollateral(&_CreditFacade.TransactOpts, onBehalfOf, token, amount)
+}
+
+// AddToUpgradeable is a paid mutator transaction binding the contract method 0xb55bb84b.
+//
+// Solidity: function addToUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeTransactor) AddToUpgradeable(opts *bind.TransactOpts, addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "addToUpgradeable", addr)
+}
+
+// AddToUpgradeable is a paid mutator transaction binding the contract method 0xb55bb84b.
+//
+// Solidity: function addToUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeSession) AddToUpgradeable(addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.AddToUpgradeable(&_CreditFacade.TransactOpts, addr)
+}
+
+// AddToUpgradeable is a paid mutator transaction binding the contract method 0xb55bb84b.
+//
+// Solidity: function addToUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) AddToUpgradeable(addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.AddToUpgradeable(&_CreditFacade.TransactOpts, addr)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0xe1f21c67.
@@ -843,6 +993,27 @@ func (_CreditFacade *CreditFacadeTransactorSession) LiquidateCreditAccount(borro
 	return _CreditFacade.Contract.LiquidateCreditAccount(&_CreditFacade.TransactOpts, borrower, to, skipTokenMask, convertWETH, calls)
 }
 
+// LiquidateExpiredCreditAccount is a paid mutator transaction binding the contract method 0x82871ace.
+//
+// Solidity: function liquidateExpiredCreditAccount(address borrower, address to, uint256 skipTokenMask, bool convertWETH, (address,bytes)[] calls) payable returns()
+func (_CreditFacade *CreditFacadeTransactor) LiquidateExpiredCreditAccount(opts *bind.TransactOpts, borrower common.Address, to common.Address, skipTokenMask *big.Int, convertWETH bool, calls []MultiCall) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "liquidateExpiredCreditAccount", borrower, to, skipTokenMask, convertWETH, calls)
+}
+
+// LiquidateExpiredCreditAccount is a paid mutator transaction binding the contract method 0x82871ace.
+//
+// Solidity: function liquidateExpiredCreditAccount(address borrower, address to, uint256 skipTokenMask, bool convertWETH, (address,bytes)[] calls) payable returns()
+func (_CreditFacade *CreditFacadeSession) LiquidateExpiredCreditAccount(borrower common.Address, to common.Address, skipTokenMask *big.Int, convertWETH bool, calls []MultiCall) (*types.Transaction, error) {
+	return _CreditFacade.Contract.LiquidateExpiredCreditAccount(&_CreditFacade.TransactOpts, borrower, to, skipTokenMask, convertWETH, calls)
+}
+
+// LiquidateExpiredCreditAccount is a paid mutator transaction binding the contract method 0x82871ace.
+//
+// Solidity: function liquidateExpiredCreditAccount(address borrower, address to, uint256 skipTokenMask, bool convertWETH, (address,bytes)[] calls) payable returns()
+func (_CreditFacade *CreditFacadeTransactorSession) LiquidateExpiredCreditAccount(borrower common.Address, to common.Address, skipTokenMask *big.Int, convertWETH bool, calls []MultiCall) (*types.Transaction, error) {
+	return _CreditFacade.Contract.LiquidateExpiredCreditAccount(&_CreditFacade.TransactOpts, borrower, to, skipTokenMask, convertWETH, calls)
+}
+
 // Multicall is a paid mutator transaction binding the contract method 0xcaa5c23f.
 //
 // Solidity: function multicall((address,bytes)[] calls) payable returns()
@@ -906,6 +1077,27 @@ func (_CreditFacade *CreditFacadeTransactorSession) OpenCreditAccountMulticall(b
 	return _CreditFacade.Contract.OpenCreditAccountMulticall(&_CreditFacade.TransactOpts, borrowedAmount, onBehalfOf, calls, referralCode)
 }
 
+// RemoveFromUpgradeable is a paid mutator transaction binding the contract method 0xdcf65482.
+//
+// Solidity: function removeFromUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeTransactor) RemoveFromUpgradeable(opts *bind.TransactOpts, addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "removeFromUpgradeable", addr)
+}
+
+// RemoveFromUpgradeable is a paid mutator transaction binding the contract method 0xdcf65482.
+//
+// Solidity: function removeFromUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeSession) RemoveFromUpgradeable(addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.RemoveFromUpgradeable(&_CreditFacade.TransactOpts, addr)
+}
+
+// RemoveFromUpgradeable is a paid mutator transaction binding the contract method 0xdcf65482.
+//
+// Solidity: function removeFromUpgradeable(address addr) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) RemoveFromUpgradeable(addr common.Address) (*types.Transaction, error) {
+	return _CreditFacade.Contract.RemoveFromUpgradeable(&_CreditFacade.TransactOpts, addr)
+}
+
 // SetCreditAccountLimits is a paid mutator transaction binding the contract method 0x601d66f6.
 //
 // Solidity: function setCreditAccountLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
@@ -925,6 +1117,27 @@ func (_CreditFacade *CreditFacadeSession) SetCreditAccountLimits(_minBorrowedAmo
 // Solidity: function setCreditAccountLimits(uint128 _minBorrowedAmount, uint128 _maxBorrowedAmount) returns()
 func (_CreditFacade *CreditFacadeTransactorSession) SetCreditAccountLimits(_minBorrowedAmount *big.Int, _maxBorrowedAmount *big.Int) (*types.Transaction, error) {
 	return _CreditFacade.Contract.SetCreditAccountLimits(&_CreditFacade.TransactOpts, _minBorrowedAmount, _maxBorrowedAmount)
+}
+
+// SetExpirationDate is a paid mutator transaction binding the contract method 0xeb9606df.
+//
+// Solidity: function setExpirationDate(uint40 newExpirationDate) returns()
+func (_CreditFacade *CreditFacadeTransactor) SetExpirationDate(opts *bind.TransactOpts, newExpirationDate *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.contract.Transact(opts, "setExpirationDate", newExpirationDate)
+}
+
+// SetExpirationDate is a paid mutator transaction binding the contract method 0xeb9606df.
+//
+// Solidity: function setExpirationDate(uint40 newExpirationDate) returns()
+func (_CreditFacade *CreditFacadeSession) SetExpirationDate(newExpirationDate *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetExpirationDate(&_CreditFacade.TransactOpts, newExpirationDate)
+}
+
+// SetExpirationDate is a paid mutator transaction binding the contract method 0xeb9606df.
+//
+// Solidity: function setExpirationDate(uint40 newExpirationDate) returns()
+func (_CreditFacade *CreditFacadeTransactorSession) SetExpirationDate(newExpirationDate *big.Int) (*types.Transaction, error) {
+	return _CreditFacade.Contract.SetExpirationDate(&_CreditFacade.TransactOpts, newExpirationDate)
 }
 
 // SetIncreaseDebtForbidden is a paid mutator transaction binding the contract method 0xffd9b907.
@@ -1750,6 +1963,169 @@ func (_CreditFacade *CreditFacadeFilterer) ParseLiquidateCreditAccount(log types
 	return event, nil
 }
 
+// CreditFacadeLiquidateExpiredCreditAccountIterator is returned from FilterLiquidateExpiredCreditAccount and is used to iterate over the raw logs and unpacked data for LiquidateExpiredCreditAccount events raised by the CreditFacade contract.
+type CreditFacadeLiquidateExpiredCreditAccountIterator struct {
+	Event *CreditFacadeLiquidateExpiredCreditAccount // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *CreditFacadeLiquidateExpiredCreditAccountIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(CreditFacadeLiquidateExpiredCreditAccount)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(CreditFacadeLiquidateExpiredCreditAccount)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *CreditFacadeLiquidateExpiredCreditAccountIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *CreditFacadeLiquidateExpiredCreditAccountIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// CreditFacadeLiquidateExpiredCreditAccount represents a LiquidateExpiredCreditAccount event raised by the CreditFacade contract.
+type CreditFacadeLiquidateExpiredCreditAccount struct {
+	Owner          common.Address
+	Liquidator     common.Address
+	To             common.Address
+	RemainingFunds *big.Int
+	Raw            types.Log // Blockchain specific contextual infos
+}
+
+// FilterLiquidateExpiredCreditAccount is a free log retrieval operation binding the contract event 0xfada13ff2d5e1a1d9da37ad4a4130893b34e3c69c32b17f87ec31fd661b86707.
+//
+// Solidity: event LiquidateExpiredCreditAccount(address indexed owner, address indexed liquidator, address indexed to, uint256 remainingFunds)
+func (_CreditFacade *CreditFacadeFilterer) FilterLiquidateExpiredCreditAccount(opts *bind.FilterOpts, owner []common.Address, liquidator []common.Address, to []common.Address) (*CreditFacadeLiquidateExpiredCreditAccountIterator, error) {
+
+	var ownerRule []interface{}
+	for _, ownerItem := range owner {
+		ownerRule = append(ownerRule, ownerItem)
+	}
+	var liquidatorRule []interface{}
+	for _, liquidatorItem := range liquidator {
+		liquidatorRule = append(liquidatorRule, liquidatorItem)
+	}
+	var toRule []interface{}
+	for _, toItem := range to {
+		toRule = append(toRule, toItem)
+	}
+
+	logs, sub, err := _CreditFacade.contract.FilterLogs(opts, "LiquidateExpiredCreditAccount", ownerRule, liquidatorRule, toRule)
+	if err != nil {
+		return nil, err
+	}
+	return &CreditFacadeLiquidateExpiredCreditAccountIterator{contract: _CreditFacade.contract, event: "LiquidateExpiredCreditAccount", logs: logs, sub: sub}, nil
+}
+
+// WatchLiquidateExpiredCreditAccount is a free log subscription operation binding the contract event 0xfada13ff2d5e1a1d9da37ad4a4130893b34e3c69c32b17f87ec31fd661b86707.
+//
+// Solidity: event LiquidateExpiredCreditAccount(address indexed owner, address indexed liquidator, address indexed to, uint256 remainingFunds)
+func (_CreditFacade *CreditFacadeFilterer) WatchLiquidateExpiredCreditAccount(opts *bind.WatchOpts, sink chan<- *CreditFacadeLiquidateExpiredCreditAccount, owner []common.Address, liquidator []common.Address, to []common.Address) (event.Subscription, error) {
+
+	var ownerRule []interface{}
+	for _, ownerItem := range owner {
+		ownerRule = append(ownerRule, ownerItem)
+	}
+	var liquidatorRule []interface{}
+	for _, liquidatorItem := range liquidator {
+		liquidatorRule = append(liquidatorRule, liquidatorItem)
+	}
+	var toRule []interface{}
+	for _, toItem := range to {
+		toRule = append(toRule, toItem)
+	}
+
+	logs, sub, err := _CreditFacade.contract.WatchLogs(opts, "LiquidateExpiredCreditAccount", ownerRule, liquidatorRule, toRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(CreditFacadeLiquidateExpiredCreditAccount)
+				if err := _CreditFacade.contract.UnpackLog(event, "LiquidateExpiredCreditAccount", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseLiquidateExpiredCreditAccount is a log parse operation binding the contract event 0xfada13ff2d5e1a1d9da37ad4a4130893b34e3c69c32b17f87ec31fd661b86707.
+//
+// Solidity: event LiquidateExpiredCreditAccount(address indexed owner, address indexed liquidator, address indexed to, uint256 remainingFunds)
+func (_CreditFacade *CreditFacadeFilterer) ParseLiquidateExpiredCreditAccount(log types.Log) (*CreditFacadeLiquidateExpiredCreditAccount, error) {
+	event := new(CreditFacadeLiquidateExpiredCreditAccount)
+	if err := _CreditFacade.contract.UnpackLog(event, "LiquidateExpiredCreditAccount", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
 // CreditFacadeMultiCallFinishedIterator is returned from FilterMultiCallFinished and is used to iterate over the raw logs and unpacked data for MultiCallFinished events raised by the CreditFacade contract.
 type CreditFacadeMultiCallFinishedIterator struct {
 	Event *CreditFacadeMultiCallFinished // Event containing the contract specifics and raw log
@@ -2176,6 +2552,141 @@ func (_CreditFacade *CreditFacadeFilterer) WatchOpenCreditAccount(opts *bind.Wat
 func (_CreditFacade *CreditFacadeFilterer) ParseOpenCreditAccount(log types.Log) (*CreditFacadeOpenCreditAccount, error) {
 	event := new(CreditFacadeOpenCreditAccount)
 	if err := _CreditFacade.contract.UnpackLog(event, "OpenCreditAccount", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// CreditFacadeTokenDisabledIterator is returned from FilterTokenDisabled and is used to iterate over the raw logs and unpacked data for TokenDisabled events raised by the CreditFacade contract.
+type CreditFacadeTokenDisabledIterator struct {
+	Event *CreditFacadeTokenDisabled // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *CreditFacadeTokenDisabledIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(CreditFacadeTokenDisabled)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(CreditFacadeTokenDisabled)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *CreditFacadeTokenDisabledIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *CreditFacadeTokenDisabledIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// CreditFacadeTokenDisabled represents a TokenDisabled event raised by the CreditFacade contract.
+type CreditFacadeTokenDisabled struct {
+	CreditAccount common.Address
+	Token         common.Address
+	Raw           types.Log // Blockchain specific contextual infos
+}
+
+// FilterTokenDisabled is a free log retrieval operation binding the contract event 0x69db9e9764da61b6681b89fb0f5be018506e0342036e56b59c3015a620d60977.
+//
+// Solidity: event TokenDisabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) FilterTokenDisabled(opts *bind.FilterOpts) (*CreditFacadeTokenDisabledIterator, error) {
+
+	logs, sub, err := _CreditFacade.contract.FilterLogs(opts, "TokenDisabled")
+	if err != nil {
+		return nil, err
+	}
+	return &CreditFacadeTokenDisabledIterator{contract: _CreditFacade.contract, event: "TokenDisabled", logs: logs, sub: sub}, nil
+}
+
+// WatchTokenDisabled is a free log subscription operation binding the contract event 0x69db9e9764da61b6681b89fb0f5be018506e0342036e56b59c3015a620d60977.
+//
+// Solidity: event TokenDisabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) WatchTokenDisabled(opts *bind.WatchOpts, sink chan<- *CreditFacadeTokenDisabled) (event.Subscription, error) {
+
+	logs, sub, err := _CreditFacade.contract.WatchLogs(opts, "TokenDisabled")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(CreditFacadeTokenDisabled)
+				if err := _CreditFacade.contract.UnpackLog(event, "TokenDisabled", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseTokenDisabled is a log parse operation binding the contract event 0x69db9e9764da61b6681b89fb0f5be018506e0342036e56b59c3015a620d60977.
+//
+// Solidity: event TokenDisabled(address creditAccount, address token)
+func (_CreditFacade *CreditFacadeFilterer) ParseTokenDisabled(log types.Log) (*CreditFacadeTokenDisabled, error) {
+	event := new(CreditFacadeTokenDisabled)
+	if err := _CreditFacade.contract.UnpackLog(event, "TokenDisabled", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
