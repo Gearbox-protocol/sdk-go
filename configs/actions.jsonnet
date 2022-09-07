@@ -46,11 +46,12 @@ local _base = [
 ];
 local _3crv_tokens = [tokens.DAI, tokens.USDC, tokens.USDT];
 local _non_synthetic_assets = _red + _yellow + _green + _base;
-local swapDetails(inToken, exchanges, outTokens, transactContract=NULL_ADDR) = {
+local swapDetails(inToken, exchanges, outTokens, transactContract=NULL_ADDR, checkContract=NULL_ADDR) = {
   inToken: inToken,
   exchanges: exchanges,
   outTokens: outTokens,
   transactContract: transactContract,
+  checkContract: checkContract,
 };
 
 local arrayToObj(func, arr, init) =
@@ -111,6 +112,7 @@ local mapFunc(running, idx, ele) =
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.YEARN_ADAPTER,
       name: 'YearnAdapter',
+      useInt8Decimals: store.network == 'goerli',
     },
     // CURVE_META_POOL_GENERIC_WRAPPER_ADAPTER: {
     //   swapActions:: [
@@ -126,7 +128,7 @@ local mapFunc(running, idx, ele) =
       // there are susd pool and  deposit contracts.
       // pool contract doesn't have add liquidity in one coin. So we are using deposit contract.
       swapActions:: [
-        swapDetails(tokens.crvPlain3andSUSD, [exchgs.crvPlain3andSUSD_DEPOSIT], _3crv_tokens + [tokens.SUSD]),
+        swapDetails(tokens.crvPlain3andSUSD, [exchgs.crvPlain3andSUSD_DEPOSIT], _3crv_tokens + [tokens.SUSD], NULL_ADDR, exchgs.CURVE_SUSD_POOL),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       // coins func on mainnet has arg of uint128 type
@@ -148,7 +150,7 @@ local mapFunc(running, idx, ele) =
         ////////
         // gateway has the method for dealing with wrapper eth. whereas pool deals with native eth.
         // pool contract is needed for calc_withdraw_one_coin function.
-        swapDetails(tokens.steCRV, [exchgs.steCRV_POOL], [tokens.WETH, tokens.stETH], exchgs.CURVE_STETH_GATEWAY),
+        swapDetails(tokens.steCRV, [exchgs.steCRV_POOL], [tokens.WETH, tokens.stETH], exchgs.CURVE_STETH_GATEWAY, exchgs.CURVE_STETH_GATEWAY),
         swapDetails(tokens['3CRV'], [exchgs['3CRV_POOL']], _3crv_tokens),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
