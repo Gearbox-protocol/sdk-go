@@ -7,7 +7,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 
 	"github.com/ethereum/go-ethereum"
@@ -26,8 +25,12 @@ type Client struct {
 	chainId    int64
 }
 
+func (c *Client) SetChainId(id int64) {
+	c.chainId = id
+}
+
 // Dial connects a client to the given URL.
-func Dial(rawurl string) (core.ClientI, error) {
+func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	var l int64 = int64(len(urls))
 	c := &Client{
