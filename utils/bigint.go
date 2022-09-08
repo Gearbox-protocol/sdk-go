@@ -137,26 +137,3 @@ func DiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
 	value := new(big.Float).Quo(new(big.Float).Sub(newFloat, oldFloat), ifZeroReturnOneBigInt(oldFloat))
 	return new(big.Float).Abs(value).Cmp(diff) > 0
 }
-
-//
-func squareIt(a *big.Int) *big.Int {
-	return new(big.Int).Mul(a, a)
-}
-
-// uni v3 slot to price in base
-// returns price in usdc or weth, base is usdc/weth
-// if base is token1: [(slot0**2 *Token0decimals)/2**192]
-// if base is token0: [(2**192 *Token1decimals)/slot0**2]
-func Univ3SlotToPriceInBase(slot0 *big.Int, baseIsToken1 bool, decimals int8) *big.Int {
-	normalizeFactor := new(big.Int).Exp(big.NewInt(2), big.NewInt(96*2), nil)
-	//
-	price := squareIt(slot0)
-	if baseIsToken1 {
-		price = GetInt64(price, -1*decimals)
-		price = new(big.Int).Quo(price, normalizeFactor)
-	} else {
-		price = GetInt64(normalizeFactor, -1*decimals)
-		price = new(big.Int).Quo(normalizeFactor, price)
-	}
-	return price
-}
