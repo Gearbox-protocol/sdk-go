@@ -1,6 +1,6 @@
 module github.com/Gearbox-protocol/sdk-go
 
-go 1.17
+go 1.18
 
 require (
 	github.com/ethereum/go-ethereum v1.10.17
@@ -30,3 +30,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
+
+// ambiguous import solve
+// https://rizalgowandy.medium.com/go-mod-cheat-sheet-2a79efc10a52
+replace github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.1
