@@ -35,7 +35,7 @@ local _green = [
   tokens.SUSD,
   tokens.stETH,
   tokens.GUSD,
-  // tokens.USDT,
+  tokens.USDT,
   tokens.LUSD,
 ];
 local _base = [
@@ -82,7 +82,7 @@ local mapFunc(running, idx, ele) =
         swapDetails(tokens.stkcvxcrvPlain3andSUSD, [exchgs.CONVEX_SUSD_POOL], [tokens.crvPlain3andSUSD]),
         swapDetails(tokens.stkcvx3Crv, [exchgs.CONVEX_3CRV_POOL], [tokens['3CRV']]),
         //
-        swapDetails(tokens.stkcvxLUSD3CRV, [exchgs.CONVEX_LUSD3CRV_POOL], [tokens.cvxLUSD3CRV]),
+        swapDetails(tokens.stkcvxLUSD3CRV, [exchgs.CONVEX_LUSD3CRV_POOL], [tokens.LUSD3CRV]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       CvxToLPTokens: {

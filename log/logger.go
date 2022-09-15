@@ -3,6 +3,7 @@ package log
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"testing"
 
@@ -149,9 +150,21 @@ func Fatal(v ...interface{}) {
 	}
 }
 
+var cwdLen int
+
 func DetectFunc() string {
+	if cwdLen == 0 {
+		s, _ := os.Getwd()
+		for i := len(s) - 1; i >= 0; i-- {
+			if s[i] == '/' {
+				cwdLen = i + 1
+				break
+			}
+		}
+
+	}
 	_, file, line, _ := runtime.Caller(2)
-	return fmt.Sprintf(" %s:%d ", file, line)
+	return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
 }
 func DetectFuncAtStackN(n int) string {
 	_, file, line, _ := runtime.Caller(n)
