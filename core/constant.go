@@ -46,3 +46,5 @@ func NetworkUIUrl(chainId uint) NetworkUI {
 	}
 	return NetworkUI{}
 }
+
+var MAX_BIG_INT = new(big.Int).Sub(new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil), big.NewInt(1))
