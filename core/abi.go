@@ -24,6 +24,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/linearInterestRateModel"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/mainnetLido"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/nonFungiblePosManager"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolService"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
@@ -113,6 +114,8 @@ func GetAbi(contractName string) *abi.ABI {
 		"YearnAdapter": &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
 		// convex for liquidator calculation
 		"RewardPool": &bind.MetaData{ABI: rewardPool.RewardPoolABI},
+		// v3 pos for synctron
+		"NonFungiblePosManager": &bind.MetaData{ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {
