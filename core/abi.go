@@ -119,12 +119,12 @@ func GetAbi(contractName string) *abi.ABI {
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {
-		panic("ABI for %s doesn't exists")
+		panic("ABI  doesn't exists for " + contractName)
 	}
 
 	abi, err := abiStr.GetAbi()
 	if err != nil {
-		log.Infof("Cant get ABI for %s", contractName)
+		log.Infof("Cant get ABI for %s" + contractName)
 		log.Fatal(err)
 	}
 
