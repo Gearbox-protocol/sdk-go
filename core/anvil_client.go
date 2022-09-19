@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"math/big"
 	"net/http"
-	"strconv"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/common"
@@ -108,19 +107,17 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	return common.HexToHash(result.(string))
 }
 
-func (anvil *AnvilClient) TakeSnapshot() int64 {
+func (anvil *AnvilClient) TakeSnapshot() string {
 	body := getRequestBody("evm_snapshot")
 	result, err := anvil.makeRequest(body)
 	log.CheckFatal(err)
-	id, err := strconv.ParseInt(result.(string), 16, 64)
-	log.CheckFatal(err)
-	return id
+	return result.(string)
 }
-func (anvil *AnvilClient) RevertSnapshot(id int64) {
-	body := getRequestBody("evm_snapshot", id)
+func (anvil *AnvilClient) RevertSnapshot(id string) {
+	body := getRequestBody("evm_revert", id)
 	result, err := anvil.makeRequest(body)
 	if err != nil {
-		log.Fatal("Snapshot revert to %d failed with %s", id, err)
+		log.Fatalf("Snapshot revert to %d failed with %s", id, err)
 	}
 	if !result.(bool) {
 		log.Fatal("revert %d to failed", id)

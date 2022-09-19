@@ -11,6 +11,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfigurator"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadeExtended"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManager"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv2"
@@ -93,9 +94,10 @@ func GetAbi(contractName string) *abi.ABI {
 		//////////////
 		// v2
 		//////////////
-		"PriceOraclev2":      &bind.MetaData{ABI: priceOraclev2.PriceOraclev2ABI},
-		"CreditConfigurator": &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
-		"CreditFacade":       &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
+		"PriceOraclev2":        &bind.MetaData{ABI: priceOraclev2.PriceOraclev2ABI},
+		"CreditConfigurator":   &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
+		"CreditFacade":         &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
+		"CreditFacadeExtended": &bind.MetaData{ABI: creditFacadeExtended.CreditFacadeExtendedABI},
 		// multicall
 		"MultiCall": &bind.MetaData{ABI: multicall.MulticallABI},
 		//
