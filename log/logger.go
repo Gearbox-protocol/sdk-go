@@ -16,12 +16,20 @@ func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
 func Verbosef(msg string, args ...interface{}) {
-	log.Printf(DetectFunc()+msg, args...)
+	if testLogModule == nil {
+		log.Printf(DetectFunc()+msg, args...)
+	} else {
+		testLogModule.Logf(DetectFunc()+msg, args...)
+	}
 }
 func Verbose(v ...interface{}) {
 	x := []interface{}{DetectFunc()}
 	x = append(x, v...)
-	log.Println(x...)
+	if testLogModule == nil {
+		log.Println(x...)
+	} else {
+		testLogModule.Log(x...)
+	}
 }
 
 func Updatef(msg string, args ...interface{}) {
