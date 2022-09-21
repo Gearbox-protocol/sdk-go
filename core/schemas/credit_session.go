@@ -11,7 +11,13 @@ const (
 	Closed
 	Repaid
 	Liquidated
+	LiquidateExpired
+	LiquidatePaused
 )
+
+func IsStatusLiquidated(status int) bool {
+	return status == Liquidated || status == LiquidateExpired || status == LiquidatePaused
+}
 
 type (
 	// TODO: delete remainingfunds/ health_factor/ profit_percent / profit not required

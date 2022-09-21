@@ -6,12 +6,12 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
-func CalCloseAmount(params *Parameters, version int16, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func CalCloseAmount(params *Parameters, version int16, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	switch version {
 	case 1:
-		return calCloseAmountV1(params, totalValue, isLiquidated, borrowedAmountWithInterest, borrowedAmount)
+		return calCloseAmountV1(params, totalValue, IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
 	case 2:
-		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, isLiquidated, borrowedAmountWithInterest, borrowedAmount)
+		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, borrowedAmountWithInterest, borrowedAmount)
 	}
 	return
 }
@@ -50,7 +50,7 @@ func calCloseAmountV1(params *Parameters, totalValue *big.Int, isLiquidated bool
 	return
 }
 
-func calCloseAmountV2(params *Parameters, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func calCloseAmountV2(params *Parameters, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
@@ -61,10 +61,21 @@ func calCloseAmountV2(params *Parameters, totalValue *big.Int, isLiquidated bool
 	)
 	amountToPool = new(big.Int).Add(amountToPool, borrowedAmountWithInterest)
 
-	if isLiquidated {
-		totalFunds := utils.PercentMul(totalValue, params.LiquidationDiscount.Convert())
-		liquidationFeeToPool := utils.PercentMul(totalValue, params.FeeLiquidation.Convert())
-		amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
+	if IsStatusLiquidated(closureStatus) {
+		var totalFunds *big.Int
+		switch closureStatus {
+		case Liquidated:
+			totalFunds = utils.PercentMul(totalValue, params.LiquidationDiscount.Convert())
+			liquidationFeeToPool := utils.PercentMul(totalValue, params.FeeLiquidation.Convert())
+			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
+		case LiquidateExpired:
+			totalFunds = utils.PercentMul(totalValue, params.LiquidationDiscountExpired.Convert())
+			liquidationFeeToPool := utils.PercentMul(totalValue, params.FeeLiquidationExpired.Convert())
+			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
+		case LiquidatePaused:
+			totalFunds = totalValue
+		}
+		//
 		if totalFunds.Cmp(amountToPool) > 0 {
 			remainingFunds = new(big.Int).Sub(totalFunds, new(big.Int).Add(amountToPool, big.NewInt(1)))
 		} else {

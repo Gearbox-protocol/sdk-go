@@ -84,4 +84,14 @@ const (
 	CreditFacadeUpgraded
 	NewConfigurator
 	LTUpdated
+	//
+	PriceOracleUpgraded
+	IncreaseDebtForbiddenModeChanged
+	LimitPerBlockUpdated
+	AddedToUpgradeable
+	RemovedFromUpgradeable
+	ExpirationDateUpdated
+	MaxEnabledTokensUpdated
+	EmergencyLiquidatorAdded
+	EmergencyLiquidatorRemoved
 )

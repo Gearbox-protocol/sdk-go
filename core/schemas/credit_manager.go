@@ -47,24 +47,28 @@ type CreditManagerData struct {
 }
 
 type Parameters struct {
-	BlockNum            int64        `gorm:"column:block_num;primaryKey"`
-	CreditManager       string       `gorm:"column:credit_manager;primaryKey"`
-	MinAmount           *core.BigInt `gorm:"column:min_amount"`
-	MaxAmount           *core.BigInt `gorm:"column:max_amount"`
-	MaxLeverage         *core.BigInt `gorm:"column:max_leverage"`
-	FeeInterest         *core.BigInt `gorm:"column:fee_interest"`
-	FeeLiquidation      *core.BigInt `gorm:"column:fee_liquidation"`
-	LiquidationDiscount *core.BigInt `gorm:"column:liq_discount"`
+	BlockNum                   int64        `gorm:"column:block_num;primaryKey"`
+	CreditManager              string       `gorm:"column:credit_manager;primaryKey"`
+	MinAmount                  *core.BigInt `gorm:"column:min_amount"`
+	MaxAmount                  *core.BigInt `gorm:"column:max_amount"`
+	MaxLeverage                *core.BigInt `gorm:"column:max_leverage"`
+	FeeInterest                *core.BigInt `gorm:"column:fee_interest"`
+	FeeLiquidation             *core.BigInt `gorm:"column:fee_liquidation"`
+	LiquidationDiscount        *core.BigInt `gorm:"column:liq_discount"`
+	FeeLiquidationExpired      *core.BigInt `gorm:"column:fee_liq_expired"`
+	LiquidationDiscountExpired *core.BigInt `gorm:"column:liq_discount_expired"`
 }
 
 func NewParameters() *Parameters {
 	return &Parameters{
-		MinAmount:           (*core.BigInt)(big.NewInt(0)),
-		MaxAmount:           (*core.BigInt)(big.NewInt(0)),
-		MaxLeverage:         (*core.BigInt)(big.NewInt(0)),
-		FeeInterest:         (*core.BigInt)(big.NewInt(0)),
-		FeeLiquidation:      (*core.BigInt)(big.NewInt(0)),
-		LiquidationDiscount: (*core.BigInt)(big.NewInt(0)),
+		MinAmount:                  (*core.BigInt)(big.NewInt(0)),
+		MaxAmount:                  (*core.BigInt)(big.NewInt(0)),
+		MaxLeverage:                (*core.BigInt)(big.NewInt(0)),
+		FeeInterest:                (*core.BigInt)(big.NewInt(0)),
+		FeeLiquidation:             (*core.BigInt)(big.NewInt(0)),
+		LiquidationDiscount:        (*core.BigInt)(big.NewInt(0)),
+		FeeLiquidationExpired:      (*core.BigInt)(big.NewInt(0)),
+		LiquidationDiscountExpired: (*core.BigInt)(big.NewInt(0)),
 	}
 }
 
