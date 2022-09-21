@@ -28,7 +28,7 @@ type TestAccountCallData struct {
 	InUse                      bool               `json:"inUse"`
 	CreditManager              string             `json:"creditManager"`
 	UnderlyingToken            string             `json:"underlyingToken"`
-	BorrowedAmountPlusInterest *core.BigInt       `json:"borrowAmountPlusInterest"`
+	BorrowedAmountPlusInterest *core.BigInt       `json:"borrowedAmountPlusInterest"`
 	TotalValue                 *core.BigInt       `json:"totalValue"`
 	HealthFactor               *core.BigInt       `json:"healthFactor"`
 	BorrowRate                 *core.BigInt       `json:"borrowRate"`

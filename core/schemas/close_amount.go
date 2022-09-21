@@ -21,7 +21,7 @@ func calCloseAmountV1(params *Parameters, totalValue *big.Int, isLiquidated bool
 	remainingFunds = new(big.Int)
 	var totalFunds *big.Int
 	if isLiquidated {
-		totalFunds = utils.PercentMul(totalValue, params.LiquidationDiscount.Convert())
+		totalFunds = utils.PercentMulByUInt16(totalValue, params.LiquidationDiscount)
 	} else {
 		totalFunds = totalValue
 	}
@@ -31,11 +31,11 @@ func calCloseAmountV1(params *Parameters, totalValue *big.Int, isLiquidated bool
 		loss = new(big.Int).Sub(borrowedAmountWithInterest, amountToPool)
 	} else {
 		if isLiquidated {
-			amountToPool = utils.PercentMul(totalFunds, params.FeeLiquidation.Convert())
+			amountToPool = utils.PercentMulByUInt16(totalFunds, params.FeeLiquidation)
 			amountToPool = new(big.Int).Add(borrowedAmountWithInterest, amountToPool)
 		} else {
 			interestAmt := new(big.Int).Sub(borrowedAmountWithInterest, borrowedAmount)
-			fee := utils.PercentMul(interestAmt, params.FeeInterest.Convert())
+			fee := utils.PercentMulByUInt16(interestAmt, params.FeeInterest)
 			amountToPool = new(big.Int).Add(borrowedAmountWithInterest, fee)
 		}
 
@@ -55,9 +55,9 @@ func calCloseAmountV2(params *Parameters, totalValue *big.Int, closureStatus int
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
 
-	amountToPool = utils.PercentMul(
+	amountToPool = utils.PercentMulByUInt16(
 		new(big.Int).Sub(borrowedAmountWithInterest, borrowedAmount),
-		params.FeeInterest.Convert(),
+		params.FeeInterest,
 	)
 	amountToPool = new(big.Int).Add(amountToPool, borrowedAmountWithInterest)
 
@@ -65,12 +65,12 @@ func calCloseAmountV2(params *Parameters, totalValue *big.Int, closureStatus int
 		var totalFunds *big.Int
 		switch closureStatus {
 		case Liquidated:
-			totalFunds = utils.PercentMul(totalValue, params.LiquidationDiscount.Convert())
-			liquidationFeeToPool := utils.PercentMul(totalValue, params.FeeLiquidation.Convert())
+			totalFunds = utils.PercentMulByUInt16(totalValue, params.LiquidationDiscount)
+			liquidationFeeToPool := utils.PercentMulByUInt16(totalValue, params.FeeLiquidation)
 			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
 		case LiquidateExpired:
-			totalFunds = utils.PercentMul(totalValue, params.LiquidationDiscountExpired.Convert())
-			liquidationFeeToPool := utils.PercentMul(totalValue, params.FeeLiquidationExpired.Convert())
+			totalFunds = utils.PercentMulByUInt16(totalValue, params.LiquidationDiscountExpired)
+			liquidationFeeToPool := utils.PercentMulByUInt16(totalValue, params.FeeLiquidationExpired)
 			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
 		case LiquidatePaused:
 			totalFunds = totalValue

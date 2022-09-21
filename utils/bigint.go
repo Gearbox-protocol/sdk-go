@@ -29,6 +29,9 @@ func PercentMul(a, b *big.Int) *big.Int {
 	ans := new(big.Int).Mul(a, b)
 	return new(big.Int).Quo(ans, big.NewInt(10000))
 }
+func PercentMulByUInt16(a *big.Int, percent uint16) *big.Int {
+	return PercentMul(a, big.NewInt(int64(percent)))
+}
 
 func GetFloat64Decimal(num *big.Int, decimals int8) float64 {
 	floatBorrowedAmount, _ := GetFloat64(num, decimals).Float64()

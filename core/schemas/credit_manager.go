@@ -52,34 +52,36 @@ type Parameters struct {
 	MinAmount                  *core.BigInt `gorm:"column:min_amount"`
 	MaxAmount                  *core.BigInt `gorm:"column:max_amount"`
 	MaxLeverage                *core.BigInt `gorm:"column:max_leverage"`
-	FeeInterest                *core.BigInt `gorm:"column:fee_interest"`
-	FeeLiquidation             *core.BigInt `gorm:"column:fee_liquidation"`
-	LiquidationDiscount        *core.BigInt `gorm:"column:liq_discount"`
-	FeeLiquidationExpired      *core.BigInt `gorm:"column:fee_liq_expired"`
-	LiquidationDiscountExpired *core.BigInt `gorm:"column:liq_discount_expired"`
+	FeeInterest                uint16       `gorm:"column:fee_interest"`
+	FeeLiquidation             uint16       `gorm:"column:fee_liquidation"`
+	LiquidationDiscount        uint16       `gorm:"column:liq_discount"`
+	FeeLiquidationExpired      uint16       `gorm:"column:fee_liq_expired"`
+	LiquidationDiscountExpired uint16       `gorm:"column:liq_discount_expired"`
 }
 
 func NewParameters() *Parameters {
 	return &Parameters{
-		MinAmount:                  (*core.BigInt)(big.NewInt(0)),
-		MaxAmount:                  (*core.BigInt)(big.NewInt(0)),
-		MaxLeverage:                (*core.BigInt)(big.NewInt(0)),
-		FeeInterest:                (*core.BigInt)(big.NewInt(0)),
-		FeeLiquidation:             (*core.BigInt)(big.NewInt(0)),
-		LiquidationDiscount:        (*core.BigInt)(big.NewInt(0)),
-		FeeLiquidationExpired:      (*core.BigInt)(big.NewInt(0)),
-		LiquidationDiscountExpired: (*core.BigInt)(big.NewInt(0)),
+		MinAmount:   (*core.BigInt)(big.NewInt(0)),
+		MaxAmount:   (*core.BigInt)(big.NewInt(0)),
+		MaxLeverage: (*core.BigInt)(big.NewInt(0)),
 	}
 }
 
-func (old *Parameters) Diff(new *Parameters) *core.Json {
+func (old *Parameters) Diffv2(new *Parameters) *core.Json {
+	obj := old.Diffv1(new)
+	(*obj)["feeLiquidationExpired"] = []uint16{old.FeeLiquidationExpired, new.FeeLiquidationExpired}
+	(*obj)["liquidationDiscountExpired"] = []uint16{old.LiquidationDiscountExpired, new.LiquidationDiscountExpired}
+	return obj
+}
+
+func (old *Parameters) Diffv1(new *Parameters) *core.Json {
 	obj := core.Json{}
 	obj["minAmount"] = []*core.BigInt{old.MinAmount, new.MinAmount}
 	obj["maxAmount"] = []*core.BigInt{old.MaxAmount, new.MaxAmount}
 	obj["maxLeverage"] = []*core.BigInt{old.MaxLeverage, new.MaxLeverage}
-	obj["feeInterest"] = []*core.BigInt{old.FeeInterest, new.FeeInterest}
-	obj["feeLiquidation"] = []*core.BigInt{old.FeeLiquidation, new.FeeLiquidation}
-	obj["LiquidationDiscount"] = []*core.BigInt{old.LiquidationDiscount, new.LiquidationDiscount}
+	obj["feeInterest"] = []uint16{old.FeeInterest, new.FeeInterest}
+	obj["feeLiquidation"] = []uint16{old.FeeLiquidation, new.FeeLiquidation}
+	obj["liquidationDiscount"] = []uint16{old.LiquidationDiscount, new.LiquidationDiscount}
 	return &obj
 }
 
