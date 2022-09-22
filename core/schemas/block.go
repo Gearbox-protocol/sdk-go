@@ -91,6 +91,14 @@ func (b *Block) GetPriceFeeds() []*PriceFeed {
 }
 
 func (b *Block) AddParameters(params *Parameters) {
+	lenOfParams := len(b.Params)
+	if lenOfParams > 0 {
+		// if there are two params for same creditmanager if same block use the last one.
+		if b.Params[lenOfParams-1].CreditManager == params.CreditManager {
+			b.Params[lenOfParams-1] = params
+			return
+		}
+	}
 	b.Params = append(b.Params, params)
 }
 

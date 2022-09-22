@@ -19,7 +19,6 @@ type CreditManagerState struct {
 	MaxLeverageFactor int64             `gorm:"column:max_leverage"`
 	MinAmount         *core.BigInt      `gorm:"column:min_amount"`
 	MaxAmount         *core.BigInt      `gorm:"column:max_amount"`
-	FeeInterest       int64             `gorm:"column:fee_interest"`
 	Sessions          map[string]string `gorm:"-" json:"-"`
 	Paused            bool              `gorm:"paused"`
 }
@@ -56,7 +55,7 @@ type Parameters struct {
 	FeeInterest                uint16       `gorm:"column:fee_interest"`
 	FeeLiquidation             uint16       `gorm:"column:fee_liquidation"`
 	LiquidationDiscount        uint16       `gorm:"column:liq_discount"`
-	FeeLiquidationExpired      uint16       `gorm:"column:fee_liq_expired"`
+	FeeLiquidationExpired      uint16       `gorm:"column:fee_liquidation_expired"`
 	LiquidationDiscountExpired uint16       `gorm:"column:liq_discount_expired"`
 }
 
