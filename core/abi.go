@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCLTrait"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/accountFactory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addressProvider"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/baseRewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/contractsRegister"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfigurator"
@@ -30,7 +31,6 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev2"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/rewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Pool"
@@ -115,7 +115,7 @@ func GetAbi(contractName string) *abi.ABI {
 		//
 		"YearnAdapter": &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
 		// convex for liquidator calculation
-		"RewardPool": &bind.MetaData{ABI: rewardPool.RewardPoolABI},
+		"BaseRewardPool": &bind.MetaData{ABI: baseRewardPool.BaseRewardPoolABI},
 		// v3 pos for synctron
 		"NonFungiblePosManager": &bind.MetaData{ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
 	}

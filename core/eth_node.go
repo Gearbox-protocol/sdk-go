@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"math/big"
-	"sort"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
@@ -48,10 +47,10 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			return logs, nil
 		}
 	}
-	sort.SliceStable(logs, func(i, j int) bool {
-		return logs[i].BlockNumber < logs[j].BlockNumber ||
-			(logs[i].BlockNumber == logs[j].BlockNumber && logs[i].Index < logs[j].Index)
-	})
+	// sort.SliceStable(logs, func(i, j int) bool {
+	// 	return logs[i].BlockNumber < logs[j].BlockNumber ||
+	// 		(logs[i].BlockNumber == logs[j].BlockNumber && logs[i].Index < logs[j].Index)
+	// })
 	return logs, err
 }
 
