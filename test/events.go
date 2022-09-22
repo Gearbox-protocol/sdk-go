@@ -15,6 +15,12 @@ import (
 
 func (c *TestEvent) Process(contractName string) types.Log {
 	topic0 := core.Topic(c.Topics[0])
+	// for data
+	data, err := c.ParseData([]string{contractName}, topic0)
+	if err != nil {
+		log.Fatal(c.Topics[0], err, contractName)
+	}
+	// for topics
 	c.Topics[0] = topic0.Hex()
 	var topics []common.Hash
 	for _, value := range c.Topics {
@@ -34,8 +40,6 @@ func (c *TestEvent) Process(contractName string) types.Log {
 		}
 		topics = append(topics, common.HexToHash(newTopic))
 	}
-	data, err := c.ParseData([]string{contractName}, topic0)
-	log.CheckFatal(err)
 	return types.Log{
 		Data:    data,
 		Topics:  topics,
@@ -84,6 +88,10 @@ func dataToArg(entry string) (arg interface{}) {
 			value, err := strconv.ParseUint(splits[1], 10, 16)
 			log.CheckFatal(err)
 			arg = uint16(value)
+		case "uint8":
+			value, err := strconv.ParseUint(splits[1], 10, 16)
+			log.CheckFatal(err)
+			arg = uint8(value)
 		case "bool":
 			if splits[1] == "1" {
 				arg = true

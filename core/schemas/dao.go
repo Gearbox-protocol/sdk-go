@@ -85,13 +85,12 @@ const (
 	NewConfigurator
 	LTUpdated
 	//
-	PriceOracleUpgraded
 	IncreaseDebtForbiddenModeChanged
+	ExpirationDateUpdated
+	MaxEnabledTokensUpdated
 	LimitPerBlockUpdated
 	AddedToUpgradeable
 	RemovedFromUpgradeable
-	ExpirationDateUpdated
-	MaxEnabledTokensUpdated
 	EmergencyLiquidatorAdded
 	EmergencyLiquidatorRemoved
 )
