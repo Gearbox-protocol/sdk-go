@@ -126,9 +126,10 @@ type CreditManagerStat struct {
 }
 
 type PnlOnRepay struct {
-	BlockNum       int64
-	Loss           *big.Int
-	Profit         *big.Int
+	BlockNum int64
+	Loss     *big.Int
+	Profit   *big.Int
+	// repaid borrow amount
 	BorrowedAmount *big.Int
 }
 

@@ -41,6 +41,16 @@ type PriceFeed struct {
 	Price float64 `gorm:"column:price" json:"price"`
 }
 
+func (pf PriceFeed) String() string {
+	return fmt.Sprintf("Feed(%s) at block %d for token %s with Price %f. IsUSD: %v",
+		pf.Feed,
+		pf.BlockNumber,
+		pf.Token,
+		pf.Price,
+		pf.IsPriceInUSD,
+	)
+}
+
 func (p *PriceFeed) Clone() *PriceFeed {
 	return &PriceFeed{
 		BlockNumber:  p.BlockNumber,
