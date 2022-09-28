@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"testing"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -16,6 +17,7 @@ func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
 func Verbosef(msg string, args ...interface{}) {
+	debug.PrintStack()
 	if testLogModule == nil {
 		log.Printf(DetectFunc()+msg, args...)
 	} else {

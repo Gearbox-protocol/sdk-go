@@ -9,21 +9,17 @@ local tokens = store.tokens;
 local exchgs = store.exchanges;
 local ids = store.ids;
 local _red = [
-  tokens.SUSHI,
   tokens.UNI,
   tokens['1INCH'],
   tokens.YFI,
-  tokens.FTM,
   tokens.AAVE,
   tokens.DPI,
-  tokens.LUNA,
   tokens.COMP,
   tokens.LINK,
 ];
 local _yellow = [
   tokens.SNX,
   tokens.LQTY,
-  tokens.SPELL,
   tokens.CVX,
   tokens.LDO,
   tokens.FXS,
