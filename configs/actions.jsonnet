@@ -162,6 +162,24 @@ local mapFunc(running, idx, ele) =
       abi: abi.CURVE_ADAPTER,
       name: 'CurveAdapter',
     },
+    // only valid for weth/stweth pair
+    CURVE_SWAPPER: {
+      swapActions:: [
+        swapDetails(tokens.WETH, [exchgs.CURVE_STETH_GATEWAY], [tokens.stETH]),
+      ],
+      tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      abi: abi.CURVE_SWAPPER,
+      name: 'CurveSwapper',
+    },
+    // only valid for weth/stweth pair
+    LIDO_SWAPPER: {
+      swapActions:: [
+        swapDetails(tokens.WETH, [exchgs.LIDO_STETH_GATEWAY], [tokens.stETH]),
+      ],
+      tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      abi: abi.LIDO_SWAPPER,
+      name: 'LidoSwapper',
+    },
     UNISWAPV2_ADAPTER: {
       tokens: arrayToObj(mapFunc, _non_synthetic_assets, {}),
       exchanges: [exchgs.SUSHISWAP_ROUTER, exchgs.UNISWAPV2_ROUTER],

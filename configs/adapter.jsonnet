@@ -1,4 +1,70 @@
 {
+  CURVE_SWAPPER: [
+    {
+      inputs: [
+        {
+          internalType: 'int128',
+          name: 'i',
+          type: 'int128',
+        },
+        {
+          internalType: 'int128',
+          name: 'j',
+          type: 'int128',
+        },
+        {
+          internalType: 'uint256',
+          name: 'rateMinRAY',
+          type: 'uint256',
+        },
+      ],
+      name: 'exchange_all',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      name: 'get_dy',
+      outputs: [
+        {
+          type: 'uint256',
+          name: '',
+        },
+      ],
+      inputs: [
+        {
+          type: 'int128',
+          name: 'i',
+        },
+        {
+          type: 'int128',
+          name: 'j',
+        },
+        {
+          type: 'uint256',
+          name: 'dx',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+      gas: 2654541,
+    },
+  ],
+  LIDO_SWAPPER: [
+    {
+      inputs: [],
+      name: 'submitAll',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: 'result',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
   WRAPPER_STETH_ADAPTER: [
     {
       inputs: [
