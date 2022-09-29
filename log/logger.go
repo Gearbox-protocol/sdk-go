@@ -17,7 +17,6 @@ func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
 func Verbosef(msg string, args ...interface{}) {
-	debug.PrintStack()
 	if testLogModule == nil {
 		log.Printf(DetectFunc()+msg, args...)
 	} else {
@@ -140,6 +139,7 @@ func Msg(v ...interface{}) {
 }
 
 func Fatalf(msg string, args ...interface{}) {
+	debug.PrintStack()
 	msgFormat := "[Fatal]: " + DetectFunc() + msg
 	amqpSendf(msgFormat, args)
 	if testLogModule == nil {
@@ -150,6 +150,7 @@ func Fatalf(msg string, args ...interface{}) {
 }
 
 func Fatal(v ...interface{}) {
+	debug.PrintStack()
 	args := []interface{}{"[Fatal]: " + DetectFunc()}
 	args = append(args, v...)
 	amqpSend(args)

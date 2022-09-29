@@ -70,14 +70,25 @@ local mapFunc(running, idx, ele) =
 
 {
   adapters: {
-    WRAPPER_STETH_ADAPTER: {
+    WRAP_STETH_ADAPTER: {
       swapActions:: [
-        swapDetails(tokens.wstETH, [tokens.wstETH], [tokens.stETH]),
         swapDetails(tokens.stETH, [tokens.wstETH], [tokens.wstETH]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.WRAPPER_STETH_ADAPTER,
-      name: 'WrapperAdapter',
+      transactMethodName: 'wrapAll',
+      getAmountMethodName: 'getWstETHByStETH',
+      name: 'WrapSTETHAdapter',
+    },
+    UNWRAP_WSTETH_ADAPTER: {
+      swapActions:: [
+        swapDetails(tokens.wstETH, [tokens.wstETH], [tokens.stETH]),
+      ],
+      tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      getAmountMethodName: 'getStETHByWstETH',
+      transactMethodName: 'unwrapAll',
+      abi: abi.WRAPPER_STETH_ADAPTER,
+      name: 'UnrapWSTETHAdapter',
     },
     CONVEX_ADAPTER: {
       swapActions:: [
@@ -165,7 +176,8 @@ local mapFunc(running, idx, ele) =
     // only valid for weth/stweth pair
     CURVE_SWAPPER: {
       swapActions:: [
-        swapDetails(tokens.WETH, [exchgs.CURVE_STETH_GATEWAY], [tokens.stETH]),
+        // check address is wstETH
+        swapDetails(tokens.WETH, [exchgs.CURVE_STETH_GATEWAY], [tokens.stETH], NULL_ADDR, tokens.wstETH),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_SWAPPER,
@@ -174,7 +186,8 @@ local mapFunc(running, idx, ele) =
     // only valid for weth/stweth pair
     LIDO_SWAPPER: {
       swapActions:: [
-        swapDetails(tokens.WETH, [exchgs.LIDO_STETH_GATEWAY], [tokens.stETH]),
+        // check address is WETH
+        swapDetails(tokens.WETH, [exchgs.LIDO_STETH_GATEWAY], [tokens.stETH], NULL_ADDR, tokens.wstETH),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.LIDO_SWAPPER,
@@ -185,8 +198,10 @@ local mapFunc(running, idx, ele) =
       exchanges: [exchgs.SUSHISWAP_ROUTER, exchgs.UNISWAPV2_ROUTER],
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV2_ADAPTER,
-      weth: tokens.WETH,
       name: 'UniswapV2Adapter',
+      //
+      weth: tokens.WETH,
+      wstETHNotAllowedInTokens: [tokens.WETH, tokens.stETH],
     },
     UNISWAPV3_ADAPTER: {
       tokens: arrayToObj(mapFunc, _non_synthetic_assets, {}),
@@ -195,8 +210,10 @@ local mapFunc(running, idx, ele) =
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV3_ADAPTER,
       name: 'UniswapV3Adapter',
-      weth: tokens.WETH,
       factory: exchgs.UNISWAPV3_FACTORY,
+      //
+      weth: tokens.WETH,
+      wstETHNotAllowedInTokens: [tokens.WETH, tokens.stETH],
     },
   },
 }
