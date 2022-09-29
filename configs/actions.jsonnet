@@ -70,6 +70,15 @@ local mapFunc(running, idx, ele) =
 
 {
   adapters: {
+    WRAPPER_STETH_ADAPTER: {
+      swapActions:: [
+        swapDetails(tokens.wstETH, [tokens.wstETH], [tokens.stETH]),
+        swapDetails(tokens.stETH, [tokens.wstETH], [tokens.wstETH]),
+      ],
+      tokens: arrayToObj(mapFunc, self.swapActions, {}),
+      abi: abi.WRAPPER_STETH_ADAPTER,
+      name: 'WrapperAdapter',
+    },
     CONVEX_ADAPTER: {
       swapActions:: [
         swapDetails(tokens.stkcvxFRAX3CRV, [exchgs.CONVEX_FRAX3CRV_POOL], [tokens.FRAX3CRV]),
@@ -158,6 +167,7 @@ local mapFunc(running, idx, ele) =
       exchanges: [exchgs.SUSHISWAP_ROUTER, exchgs.UNISWAPV2_ROUTER],
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV2_ADAPTER,
+      weth: tokens.WETH,
       name: 'UniswapV2Adapter',
     },
     UNISWAPV3_ADAPTER: {
@@ -167,6 +177,7 @@ local mapFunc(running, idx, ele) =
       intermediaryTokens: [tokens.WETH, tokens.USDC, tokens.DAI, tokens.WBTC],
       abi: abi.UNISWAPV3_ADAPTER,
       name: 'UniswapV3Adapter',
+      weth: tokens.WETH,
       factory: exchgs.UNISWAPV3_FACTORY,
     },
   },
