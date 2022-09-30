@@ -117,13 +117,13 @@ local mapFunc(running, idx, ele) =
     },
     YEARN_ADAPTER: {
       swapActions:: [
+        // if tokens.yvSTETH != NULL_ADDR then swapDetails(tokens.yvSTETH, [tokens.yvSTETH], [tokens.stETH]),
         swapDetails(tokens.yvCURVE_FRAX, [tokens.yvCURVE_FRAX], [tokens.FRAX3CRV]),
         swapDetails(tokens.yvDAI, [tokens.yvDAI], [tokens.DAI]),
         swapDetails(tokens.yvUSDC, [tokens.yvUSDC], [tokens.USDC]),
         swapDetails(tokens.yvWETH, [tokens.yvWETH], [tokens.WETH]),
         swapDetails(tokens.yvWBTC, [tokens.yvWBTC], [tokens.WBTC]),
         swapDetails(tokens.yvCurve_stETH, [tokens.yvCurve_stETH], [tokens.steCRV]),
-        if tokens.yvSTETH != NULL_ADDR then swapDetails(tokens.yvSTETH, [tokens.yvSTETH], [tokens.stETH]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.YEARN_ADAPTER,
