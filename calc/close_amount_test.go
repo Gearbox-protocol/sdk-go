@@ -1,21 +1,22 @@
-package schemas
+package calc
 
 import (
 	"testing"
 
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 func TestCalcCloseAmount(t *testing.T) {
 	amountToPool, remainingFunds, profit, loss := CalCloseAmount(
-		&Parameters{
+		&schemas.Parameters{
 			FeeInterest:         100,
 			FeeLiquidation:      200,
 			LiquidationDiscount: 9500,
 		},
 		2,
 		utils.StringToInt("2003445408514560318103"),
-		Liquidated,
+		schemas.Liquidated,
 		utils.StringToInt("2000036753743938235"),
 		utils.StringToInt("1999999990917566710"),
 	)

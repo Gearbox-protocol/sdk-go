@@ -1,21 +1,22 @@
-package schemas
+package calc
 
 import (
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
-func CalCloseAmount(params *Parameters, version int16, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func CalCloseAmount(params *schemas.Parameters, version int16, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	switch version {
 	case 1:
-		return calCloseAmountV1(params, totalValue, IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
+		return calCloseAmountV1(params, totalValue, schemas.IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
 	case 2:
 		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, borrowedAmountWithInterest, borrowedAmount)
 	}
 	return
 }
-func calCloseAmountV1(params *Parameters, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
@@ -50,7 +51,7 @@ func calCloseAmountV1(params *Parameters, totalValue *big.Int, isLiquidated bool
 	return
 }
 
-func calCloseAmountV2(params *Parameters, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
@@ -61,18 +62,18 @@ func calCloseAmountV2(params *Parameters, totalValue *big.Int, closureStatus int
 	)
 	amountToPool = new(big.Int).Add(amountToPool, borrowedAmountWithInterest)
 
-	if IsStatusLiquidated(closureStatus) {
+	if schemas.IsStatusLiquidated(closureStatus) {
 		var totalFunds *big.Int
 		switch closureStatus {
-		case Liquidated:
+		case schemas.Liquidated:
 			totalFunds = utils.PercentMulByUInt16(totalValue, params.LiquidationDiscount)
 			liquidationFeeToPool := utils.PercentMulByUInt16(totalValue, params.FeeLiquidation)
 			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
-		case LiquidateExpired:
+		case schemas.LiquidateExpired:
 			totalFunds = utils.PercentMulByUInt16(totalValue, params.LiquidationDiscountExpired)
 			liquidationFeeToPool := utils.PercentMulByUInt16(totalValue, params.FeeLiquidationExpired)
 			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
-		case LiquidatePaused:
+		case schemas.LiquidatePaused:
 			totalFunds = totalValue
 		}
 		//

@@ -36,11 +36,11 @@ func (z *Json) Scan(value interface{}) error {
 }
 
 type BalanceType struct {
-	BI *BigInt `json:"BI"`
-	F  float64 `json:"F"`
-	// linked get fetched for data compressor is if this token is allowed on credit manager
-	// we change it to the mask bit
-	Linked bool `json:"linked"` // there has been a credit manager event /swap/addcollateral/borrow for this token
+	Token     string  `json:"token"`
+	BI        *BigInt `json:"BI"`
+	F         float64 `json:"F"`
+	IsAllowed bool    `json:"isAllowed"`
+	IsEnabled bool    `json:"isEnabled"` // based on mask
 }
 
 type JsonBalance map[string]*BalanceType
@@ -65,9 +65,10 @@ func (j *JsonBalance) Copy() *JsonBalance {
 	var newJB = make(JsonBalance)
 	for k, v := range (map[string]*BalanceType)(*j) {
 		newJB[k] = &BalanceType{
-			BI:     NewBigInt(v.BI),
-			F:      v.F,
-			Linked: v.Linked,
+			BI:        NewBigInt(v.BI),
+			F:         v.F,
+			IsAllowed: v.IsAllowed,
+			IsEnabled: v.IsEnabled,
 		}
 	}
 	return &newJB

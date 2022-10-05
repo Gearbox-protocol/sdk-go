@@ -17,5 +17,13 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+    - name: Generate Test files
+      uses: actions/cache@v2
+      id: cache-jsonnet-test  # give it a name for checking the cache hit-or-not
+      with:
+        path: ./inputs/  # what we cache: the folder
+        key: ${{ runner.os }}-${{ hashFiles('./jsonnet/**') }}
+    - run: go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0 && ./generate-test.sh
+      if: steps.cache-jsonnet-test.outputs.cache-hit != 'true'
     - name: Test lib build
-      run: go vet ./...   && go test ./core/schemas && go test ./test && go test ./utils
+      run: go vet ./...   && go test ./calc && go test ./test && go test ./utils
