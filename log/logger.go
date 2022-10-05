@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"testing"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -175,7 +176,13 @@ func DetectFunc() string {
 
 	}
 	_, file, line, _ := runtime.Caller(2)
-	return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
+	if ind := strings.IndexRune(file, '@'); ind == -1 {
+		return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
+	} else {
+		remainingPath := file[ind+1:]
+		extraInd := strings.IndexRune(remainingPath, '/')
+		return fmt.Sprintf(" %s:%d ", remainingPath[extraInd+1:], line)
+	}
 }
 func DetectFuncAtStackN(n int) string {
 	_, file, line, _ := runtime.Caller(n)
