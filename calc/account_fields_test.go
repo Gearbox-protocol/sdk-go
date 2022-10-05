@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -53,12 +54,14 @@ type CalcFieldsParams struct {
 	Version         int16
 	CumIndexOfPool  *core.BigInt
 	UnderlyingToken common.Address
+	FeeInterest     uint16
 	//
 	////
 	store
 	Account account
 }
 
+// for v1
 func TestCalcFields(t *testing.T) {
 	//
 	input := CalcFieldsParams{}
@@ -71,7 +74,7 @@ func TestCalcFields(t *testing.T) {
 		input.Account,
 		input.CumIndexOfPool.Convert(),
 		input.UnderlyingToken.Hex(),
-		0,
+		input.FeeInterest,
 	)
 	if calHF.Cmp(utils.StringToInt("13225")) != 0 {
 		t.Fatalf("calculated HF(%d) is wrong", calHF)
@@ -83,6 +86,36 @@ func TestCalcFields(t *testing.T) {
 		t.Fatalf("calculated totalvalue(%d) is wrong", calTotalValue)
 	}
 	if calThresholdValue.Cmp(utils.StringToInt("11002442022")) != 0 {
+		t.Fatalf("calculated thresholdvalue(%d) is wrong", calThresholdValue)
+	}
+}
+
+// for v2
+func TestCalcFieldsWithFeeInterest(t *testing.T) {
+	log.SetTestLogging(t)
+	//
+	input := CalcFieldsParams{}
+	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields_v2.json", &input)
+	// //
+
+	calHF, calBorrowAmountPLusInterest, calTotalValue, calThresholdValue := Calculator{Store: input.store}.CalcAccountFields(
+		input.Version,
+		0,
+		input.Account,
+		input.CumIndexOfPool.Convert(),
+		input.UnderlyingToken.Hex(),
+		input.FeeInterest,
+	)
+	if calHF.Cmp(utils.StringToInt("2725195")) != 0 {
+		t.Fatalf("calculated HF(%d) is wrong", calHF)
+	}
+	if calBorrowAmountPLusInterest.Cmp(utils.StringToInt("5000005939012910508")) != 0 {
+		t.Fatalf("calculated borrowedamount + interest(%d) is wrong", calBorrowAmountPLusInterest)
+	}
+	if calTotalValue.Cmp(utils.StringToInt("1651636475399519415042")) != 0 {
+		t.Fatalf("calculated totalvalue(%d) is wrong", calTotalValue)
+	}
+	if calThresholdValue.Cmp(utils.StringToInt("1362600092204603517410")) != 0 {
 		t.Fatalf("calculated thresholdvalue(%d) is wrong", calThresholdValue)
 	}
 }

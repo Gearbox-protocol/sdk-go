@@ -37,10 +37,11 @@ func (z *Json) Scan(value interface{}) error {
 
 type BalanceType struct {
 	Token     string  `json:"token"`
-	BI        *BigInt `json:"BI"`
-	F         float64 `json:"F"`
 	IsAllowed bool    `json:"isAllowed"`
 	IsEnabled bool    `json:"isEnabled"` // based on mask
+	BI        *BigInt `json:"BI"`
+	// not used in liquidator
+	F float64 `json:"F"`
 }
 
 type JsonBalance map[string]*BalanceType

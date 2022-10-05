@@ -161,4 +161,5 @@
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { decimals: 18 },
     '0x26F7D7509490B292AFBB0443A7A371d345B5f684': { decimals: 6 },
   },
+  FeeInterest: 0,
 }
