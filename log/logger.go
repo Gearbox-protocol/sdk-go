@@ -17,6 +17,13 @@ var testLogModule *testing.T
 func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
+
+// verbose
+// warn
+// info
+// error
+// msg
+// fatal
 func Verbosef(msg string, args ...interface{}) {
 	if testLogModule == nil {
 		log.Printf(DetectFunc()+msg, args...)
@@ -31,27 +38,6 @@ func Verbose(v ...interface{}) {
 		log.Println(x...)
 	} else {
 		testLogModule.Log(x...)
-	}
-}
-
-func Updatef(msg string, args ...interface{}) {
-	msgFormat := "[Update] " + DetectFunc() + msg
-	amqpSendf(msgFormat, args)
-	if testLogModule == nil {
-		log.Printf(msgFormat, args...)
-	} else {
-		testLogModule.Logf(msgFormat, args...)
-	}
-}
-
-func Update(v ...interface{}) {
-	args := []interface{}{"[Update]: " + DetectFunc()}
-	args = append(args, v...)
-	amqpSend(args)
-	if testLogModule == nil {
-		log.Println(args...)
-	} else {
-		testLogModule.Log(args...)
 	}
 }
 
