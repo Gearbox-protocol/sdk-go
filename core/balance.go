@@ -44,8 +44,25 @@ type CoreIntBalance struct {
 	F         float64 `json:"F"`
 	Ind       int     `json:"ind"`
 }
+
+func (b CoreIntBalance) HasBalanceMoreThanOne() bool {
+	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
+}
+
 type DBBalanceFormat map[string]CoreIntBalance
 
+func (j DBBalanceFormat) ToBalanceType() map[string]BalanceType {
+	m := map[string]BalanceType{}
+	for token, bal := range j {
+		m[token] = BalanceType{
+			Ind:       bal.Ind,
+			BI:        bal.BI.Convert(),
+			IsAllowed: bal.IsAllowed,
+			IsEnabled: bal.IsEnabled,
+		}
+	}
+	return m
+}
 func (j DBBalanceFormat) Value() (driver.Value, error) {
 	return json.Marshal(j)
 }

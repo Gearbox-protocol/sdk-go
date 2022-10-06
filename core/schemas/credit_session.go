@@ -65,13 +65,14 @@ type (
 		Since                 int64
 	}
 	CreditSessionSnapshot struct {
-		ID                     int64                 `gorm:"primaryKey;autoincrement:true" json:"-"`
-		BlockNum               int64                 `gorm:"column:block_num" json:"blockNum"`
-		SessionId              string                `gorm:"column:session_id" json:"sessionId"`
-		BorrowedAmountBI       *core.BigInt          `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
-		BorrowedAmount         float64               `gorm:"column:borrowed_amount" json:"borrowedAmount"`
-		TotalValueBI           *core.BigInt          `gorm:"column:total_value_bi" json:"totalValueBI"`
-		TotalValue             float64               `gorm:"column:total_value" json:"totalValue"`
+		ID               int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
+		BlockNum         int64        `gorm:"column:block_num" json:"blockNum"`
+		SessionId        string       `gorm:"column:session_id" json:"sessionId"`
+		BorrowedAmountBI *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
+		BorrowedAmount   float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
+		TotalValueBI     *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
+		TotalValue       float64      `gorm:"column:total_value" json:"totalValue"`
+		// enabled can be false but amount is always non -zero
 		Balances               *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
 		Borrower               string                `gorm:"column:borrower" json:"borrower"`
 		CollateralInUSD        float64               `gorm:"column:collateral_usd" json:"collateralInUSD"`
