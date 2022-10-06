@@ -39,13 +39,13 @@ const (
 )
 
 type AccountOperationState struct {
-	ID               int64             `gorm:"primaryKey;autoincrement:true" json:"id"`
-	BlockNum         int64             `gorm:"column:block_num"`
-	LogId            int64             `gorm:"column:log_id"`
-	SessionId        string            `gorm:"column:session_id"`
-	BorrowedAmountBI *core.BigInt      `gorm:"column:borrowed_amount_bi"`
-	BorrowedAmount   float64           `gorm:"column:borrowed_amount"`
-	Balances         *core.JsonBalance `gorm:"column:balances"`
+	ID               int64                 `gorm:"primaryKey;autoincrement:true" json:"id"`
+	BlockNum         int64                 `gorm:"column:block_num"`
+	LogId            int64                 `gorm:"column:log_id"`
+	SessionId        string                `gorm:"column:session_id"`
+	BorrowedAmountBI *core.BigInt          `gorm:"column:borrowed_amount_bi"`
+	BorrowedAmount   float64               `gorm:"column:borrowed_amount"`
+	Balances         *core.DBBalanceFormat `gorm:"column:balances"`
 }
 
 func (AccountOperationState) TableName() string {

@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -15,7 +16,7 @@ type account struct {
 	CM              string
 	BorrowedAmount  *big.Int
 	CumulativeIndex *big.Int
-	Balances        []core.BalanceType
+	Balances        []dataCompressorv2.TokenBalance
 }
 
 func (a account) GetCM() string {
@@ -29,8 +30,8 @@ func (a account) GetBorrowedAmount() *big.Int {
 func (a account) GetCumulativeIndex() *big.Int {
 	return a.CumulativeIndex
 }
-func (a account) GetBalances() []core.BalanceType {
-	return a.Balances
+func (a account) GetBalances() map[string]core.BalanceType {
+	return core.ConvertToBalanceType(a.Balances)
 }
 
 type store struct {

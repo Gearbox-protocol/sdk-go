@@ -40,6 +40,10 @@ func ReadJsonReaderAndSetInterface(reader io.Reader, data interface{}) {
 	}
 }
 
+// map passed with reference can't be expected to have data filled in it
+// that's why we are getting the data as return variable
+//
+//
 func ReadJson(fileName string) map[string]interface{} {
 	byteValue := ReadFile(fileName)
 	return ReadJsonReader(bytes.NewReader(byteValue))

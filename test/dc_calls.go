@@ -20,6 +20,7 @@ type TestTokenBalance struct {
 	Token     string       `json:"token"`
 	Balance   *core.BigInt `json:"balance"`
 	IsAllowed bool         `json:"isAllowed"`
+	IsEnabled bool         `json:"isEnabled"`
 }
 
 type TestAccountCallData struct {

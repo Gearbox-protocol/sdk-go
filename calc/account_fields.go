@@ -16,7 +16,7 @@ type TokenDetailsForCalcI interface {
 
 type AccountForCalcI interface {
 	GetCM() string
-	GetBalances() []core.BalanceType
+	GetBalances() map[string]core.BalanceType
 	GetBorrowedAmount() *big.Int
 	GetCumulativeIndex() *big.Int
 }
@@ -32,11 +32,11 @@ func (c Calculator) CalcAccountFields(version int16, blockNum int64,
 	calThresholdValueInUSD := new(big.Int)
 	calTotalValueInUSD := new(big.Int)
 	// calculate the debt parameters
-	for _, balance := range account.GetBalances() {
-		if balance.IsAllowed && balance.IsEnabled && balance.BI.Convert().Cmp(big.NewInt(1)) > 0 {
+	for token, balance := range account.GetBalances() {
+		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
-			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), balance.Token, version, blockNum)
-			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(account.GetCM(), balance.Token))
+			tokenValueInUSD := c.convertToUSD(balance.BI, token, version, blockNum)
+			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
 			calTotalValueInUSD = new(big.Int).Add(calTotalValueInUSD, tokenValueInUSD)

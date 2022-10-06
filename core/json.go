@@ -4,7 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"strings"
 	"testing"
 
@@ -35,59 +34,7 @@ func (z *Json) Scan(value interface{}) error {
 	}
 }
 
-type BalanceType struct {
-	Token     string  `json:"token"`
-	IsAllowed bool    `json:"isAllowed"`
-	IsEnabled bool    `json:"isEnabled"` // based on mask
-	BI        *BigInt `json:"BI"`
-	// not used in liquidator
-	F float64 `json:"F"`
-}
-
-type JsonBalance map[string]*BalanceType
-
-func (j *JsonBalance) Value() (driver.Value, error) {
-	return json.Marshal(j)
-}
-
-func (z *JsonBalance) Scan(value interface{}) error {
-	out := JsonBalance{}
-	switch t := value.(type) {
-	case []byte:
-		err := json.Unmarshal(value.([]byte), &out)
-		*z = out
-		return err
-	default:
-		return fmt.Errorf("could not scan type %T", t)
-	}
-}
-
-func (j *JsonBalance) Copy() *JsonBalance {
-	var newJB = make(JsonBalance)
-	for k, v := range (map[string]*BalanceType)(*j) {
-		newJB[k] = &BalanceType{
-			BI:        NewBigInt(v.BI),
-			F:         v.F,
-			IsAllowed: v.IsAllowed,
-			IsEnabled: v.IsEnabled,
-		}
-	}
-	return &newJB
-}
-
-func (j *JsonBalance) ValueInUnderlying(underlyingToken string, uDecimals int8, prices JsonFloatMap) *big.Int {
-	var total float64
-	priceOfUnderlying := prices[underlyingToken]
-	for token, bal := range *j {
-		tokenPrice := prices[token]
-		value := (bal.F * tokenPrice) / priceOfUnderlying
-		total += value
-	}
-	valueInFloat := new(big.Float).Mul(big.NewFloat(total), utils.GetExpFloat(uDecimals))
-	remainingFunds, _ := valueInFloat.Int(nil)
-	return remainingFunds
-}
-
+//
 type JsonBigIntMap map[string]*BigInt
 
 func (j *JsonBigIntMap) Value() (driver.Value, error) {
