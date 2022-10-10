@@ -93,6 +93,7 @@ local mapFunc(running, idx, ele) =
     CONVEX_ADAPTER: {
       swapActions:: [
         swapDetails(tokens.stkcvxFRAX3CRV, [exchgs.CONVEX_FRAX3CRV_POOL], [tokens.FRAX3CRV]),
+        swapDetails(tokens.stkcvxcrvFRAX, [exchgs.CONVEX_FRAX_USDC_POOL], [tokens.crvFRAX]),
         swapDetails(tokens.stkcvxsteCRV, [exchgs.CONVEX_STECRV_POOL], [tokens.steCRV]),
         swapDetails(tokens.stkcvxgusd3CRV, [exchgs.CONVEX_GUSD_POOL], [tokens.GUSD3CRV]),
         swapDetails(tokens.stkcvxcrvPlain3andSUSD, [exchgs.CONVEX_SUSD_POOL], [tokens.crvPlain3andSUSD]),
@@ -103,6 +104,7 @@ local mapFunc(running, idx, ele) =
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       CvxToLPTokens: {
         [tokens.cvxFRAX3CRV]: { pid: ids.cvxFRAX3CRV, lptoken: tokens.FRAX3CRV },
+        [tokens.cvxcrvFRAX]: { pid: ids.cvxcrvFRAX, lptoken: tokens.crvFRAX },
         [tokens.cvxsteCRV]: { pid: ids.cvxsteCRV, lptoken: tokens.steCRV },
         [tokens.cvxgusd3CRV]: { pid: ids.cvxgusd3CRV, lptoken: tokens.GUSD3CRV },
         [tokens.cvxcrvPlain3andSUSD]: { pid: ids.cvxcrvPlain3andSUSD, lptoken: tokens.crvPlain3andSUSD },
@@ -168,6 +170,8 @@ local mapFunc(running, idx, ele) =
         // pool contract is needed for calc_withdraw_one_coin function.
         swapDetails(tokens.steCRV, [exchgs.steCRV_POOL], [tokens.WETH, tokens.stETH], exchgs.CURVE_STETH_GATEWAY, exchgs.CURVE_STETH_GATEWAY),
         swapDetails(tokens['3CRV'], [exchgs['3CRV_POOL']], _3crv_tokens),
+        // frax and usdc tokens
+        swapDetails(tokens.crvFRAX, [exchgs.CURVE_FRAX_USDC_POOL], [tokens.FRAX, tokens.USDC]),
       ],
       tokens: arrayToObj(mapFunc, self.swapActions, {}),
       abi: abi.CURVE_ADAPTER,
