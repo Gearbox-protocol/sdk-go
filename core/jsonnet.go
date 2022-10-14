@@ -7,42 +7,66 @@ import (
 	"github.com/google/go-jsonnet"
 )
 
-type rf struct {
+type JsonnetImports struct {
+	Embedded map[string]string
+	Files    map[string]string
 }
 
-func (rf) ReadFile(file string) ([]byte, error) {
-	return os.ReadFile(file)
-}
-
-type readFileI interface {
-	ReadFile(file string) ([]byte, error)
-}
-
-func getJsonnet(file string, importedFiles map[string]string, reader readFileI) (string, error) {
+func getJsonnetFile(mainFileData string, importedFiles JsonnetImports) (string, error) {
 	vm := jsonnet.MakeVM()
 	imports := map[string]jsonnet.Contents{}
-	for k, imporedFile := range importedFiles {
-		content, err := reader.ReadFile(imporedFile)
-		if err != nil {
-			return "", err
-		}
-		imports[k] = jsonnet.MakeContents(string(content))
+	if err := getJsonnetFileImports(importedFiles.Files, imports); err != nil {
+		return "", err
 	}
+	if err := getEmbeddedJsonnetImports(importedFiles.Embedded, imports); err != nil {
+		return "", err
+	}
+	//
 	vm.Importer(&jsonnet.MemoryImporter{
 		Data: imports,
 	})
-	if data, err := reader.ReadFile(file); err != nil {
-		return "", err
-	} else if jsonStr, err := vm.EvaluateAnonymousSnippet("sample.jsonnet", string(data)); err == nil {
+	//
+	if jsonStr, err := vm.EvaluateAnonymousSnippet("sample.jsonnet", mainFileData); err == nil {
 		return jsonStr, nil
 	} else {
 		return "", err
 	}
 }
 
-func GetJsonnet(file string, importedFiles map[string]string) (string, error) {
-	return getJsonnet(file, importedFiles, rf{})
+func getJsonnetFileImports(importedFiles map[string]string, imports map[string]jsonnet.Contents) error {
+	for k, importedFile := range importedFiles {
+		content, err := os.ReadFile(importedFile)
+		if err != nil {
+			return err
+		}
+		imports[k] = jsonnet.MakeContents(string(content))
+	}
+	return nil
 }
-func GetEmbeddedJsonnet(file string, importedFiles map[string]string) (string, error) {
-	return getJsonnet(file, importedFiles, configs.Configs)
+
+func getEmbeddedJsonnetImports(importedFiles map[string]string, imports map[string]jsonnet.Contents) error {
+	embeddedFiles := configs.Configs
+	for k, importedFile := range importedFiles {
+		content, err := embeddedFiles.ReadFile(importedFile)
+		if err != nil {
+			return err
+		}
+		imports[k] = jsonnet.MakeContents(string(content))
+	}
+	return nil
+}
+
+func GetJsonnetFile(mainFile string, importedFiles JsonnetImports) (string, error) {
+	if mainFileData, err := os.ReadFile(mainFile); err != nil {
+		return "", err
+	} else {
+		return getJsonnetFile(string(mainFileData), importedFiles)
+	}
+}
+func GetEmbeddedJsonnet(mainFile string, importedFiles JsonnetImports) (string, error) {
+	if mainFileData, err := configs.Configs.ReadFile(mainFile); err != nil {
+		return "", err
+	} else {
+		return getJsonnetFile(string(mainFileData), importedFiles)
+	}
 }

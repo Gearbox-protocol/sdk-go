@@ -15,7 +15,7 @@ type SymTOAddrStore struct {
 }
 
 func GetSymToAddrStore(fileName string) *SymTOAddrStore {
-	data, err := GetEmbeddedJsonnet(fileName, nil)
+	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
 	log.CheckFatal(err)
 	store := &SymTOAddrStore{}
 	err = json.Unmarshal([]byte(data), store)
