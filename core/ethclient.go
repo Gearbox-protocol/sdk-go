@@ -18,6 +18,9 @@ type ClientI interface {
 	TransactionReceipt(ctx context.Context, txHash common.Hash) (*types.Receipt, error)
 	// for kovan arbitrage sync bot
 	BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error)
+	// pendingNonceAt can lead to issues where the next tx will have (max pending tx nonce+1)
+	NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error)
+	//
 	// HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error)
 	// HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 	// TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error)
@@ -28,7 +31,6 @@ type ClientI interface {
 	// NetworkID(ctx context.Context) (*big.Int, error)
 	// StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
 	// CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error)
-	// NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error)
 	// FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error)
 	// SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error)
 	// PendingBalanceAt(ctx context.Context, account common.Address) (*big.Int, error)
