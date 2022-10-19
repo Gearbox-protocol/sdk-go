@@ -148,33 +148,6 @@ func Fatal(v ...interface{}) {
 	}
 }
 
-var cwdLen int
-
-func DetectFunc() string {
-	if cwdLen == 0 {
-		s, _ := os.Getwd()
-		for i := len(s) - 1; i >= 0; i-- {
-			if s[i] == '/' {
-				cwdLen = i + 1
-				break
-			}
-		}
-
-	}
-	_, file, line, _ := runtime.Caller(2)
-	if ind := strings.IndexRune(file, '@'); ind == -1 {
-		return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
-	} else {
-		remainingPath := file[ind+1:]
-		extraInd := strings.IndexRune(remainingPath, '/')
-		return fmt.Sprintf(" %s:%d ", remainingPath[extraInd+1:], line)
-	}
-}
-func DetectFuncAtStackN(n int) string {
-	_, file, line, _ := runtime.Caller(n)
-	return fmt.Sprintf(" %s:%d ", file, line)
-}
-
 func CheckFatal(err error) {
 	args := []interface{}{"[Fatal]: " + DetectFunc(), err}
 	if err != nil {
@@ -219,4 +192,32 @@ func send(message string) {
 	if err != nil {
 		log.Println("Cant sent notification", err)
 	}
+}
+
+////
+var cwdLen int
+
+func DetectFunc() string {
+	if cwdLen == 0 {
+		s, _ := os.Getwd()
+		for i := len(s) - 1; i >= 0; i-- {
+			if s[i] == '/' {
+				cwdLen = i + 1
+				break
+			}
+		}
+
+	}
+	_, file, line, _ := runtime.Caller(2)
+	if ind := strings.IndexRune(file, '@'); ind == -1 {
+		return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
+	} else {
+		remainingPath := file[ind+1:]
+		extraInd := strings.IndexRune(remainingPath, '/')
+		return fmt.Sprintf(" %s:%d ", remainingPath[extraInd+1:], line)
+	}
+}
+func DetectFuncAtStackN(n int) string {
+	_, file, line, _ := runtime.Caller(n)
+	return fmt.Sprintf(" %s:%d ", file, line)
 }

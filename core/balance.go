@@ -11,6 +11,7 @@ import (
 )
 
 type BalanceType struct {
+	// not important field is not used for any calculation
 	IsAllowed bool     `json:"isAllowed"`
 	IsEnabled bool     `json:"isEnabled"` // based on mask
 	BI        *big.Int `json:"BI"`
@@ -25,7 +26,7 @@ func (b BalanceType) HasBalanceMoreThanOne() bool {
 func ConvertToBalanceType(dcv2Balances []dataCompressorv2.TokenBalance) map[string]BalanceType {
 	m := map[string]BalanceType{}
 	for ind, entry := range dcv2Balances {
-		if entry.IsAllowed && entry.IsEnabled {
+		if entry.IsEnabled {
 			m[entry.Token.Hex()] = BalanceType{
 				IsAllowed: entry.IsAllowed,
 				IsEnabled: entry.IsEnabled,
@@ -38,6 +39,7 @@ func ConvertToBalanceType(dcv2Balances []dataCompressorv2.TokenBalance) map[stri
 }
 
 type CoreIntBalance struct {
+	// not important field is not used for any calculation
 	IsAllowed bool    `json:"isAllowed"`
 	IsEnabled bool    `json:"isEnabled"`
 	BI        *BigInt `json:"BI"`

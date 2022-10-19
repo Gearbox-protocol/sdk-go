@@ -100,6 +100,12 @@ func (rc *Client) Close() {
 	defer rc.sem.Release(1)
 	client.Close()
 }
+func dontMsgOn429(err error) error {
+	if err != nil && strings.HasPrefix(err.Error(), "429") {
+		log.Fatal(err)
+	}
+	return err
+}
 func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	// cache
 	id := atomic.LoadInt64(&(rc.chainId))
@@ -120,7 +126,7 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	if v != nil {
 		atomic.SwapInt64(&(rc.chainId), v.Int64())
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Block, error) {
@@ -134,7 +140,7 @@ func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Blo
 	if rc.errorHandler(err) {
 		v, err = client.BlockByHash(ctx, hash)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
@@ -148,7 +154,7 @@ func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Bl
 	if rc.errorHandler(err) {
 		v, err = client.BlockByNumber(ctx, number)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) BlockNumber(ctx context.Context) (uint64, error) {
@@ -162,7 +168,7 @@ func (rc *Client) BlockNumber(ctx context.Context) (uint64, error) {
 	if rc.errorHandler(err) {
 		v, err = client.BlockNumber(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error) {
@@ -176,7 +182,7 @@ func (rc *Client) HeaderByHash(ctx context.Context, hash common.Hash) (*types.He
 	if rc.errorHandler(err) {
 		v, err = client.HeaderByHash(ctx, hash)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error) {
@@ -190,7 +196,7 @@ func (rc *Client) HeaderByNumber(ctx context.Context, number *big.Int) (*types.H
 	if rc.errorHandler(err) {
 		v, err = client.HeaderByNumber(ctx, number)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 // TransactionByHash returns the transaction with the given hash.
@@ -205,7 +211,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (tx *
 	if rc.errorHandler(err) {
 		a, b, err = client.TransactionByHash(ctx, hash)
 	}
-	return a, b, err
+	return a, b, dontMsgOn429(err)
 }
 
 func (rc *Client) TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error) {
@@ -219,7 +225,7 @@ func (rc *Client) TransactionSender(ctx context.Context, tx *types.Transaction, 
 	if rc.errorHandler(err) {
 		v, err = client.TransactionSender(ctx, tx, block, index)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 // TransactionCount returns the total number of transactions in the given block.
@@ -234,7 +240,7 @@ func (rc *Client) TransactionCount(ctx context.Context, blockHash common.Hash) (
 	if rc.errorHandler(err) {
 		v, err = client.TransactionCount(ctx, blockHash)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 // TransactionInBlock returns a single transaction at index in the given block.
@@ -249,7 +255,7 @@ func (rc *Client) TransactionInBlock(ctx context.Context, blockHash common.Hash,
 	if rc.errorHandler(err) {
 		v, err = client.TransactionInBlock(ctx, blockHash, index)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) TransactionReceipt(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
@@ -263,7 +269,7 @@ func (rc *Client) TransactionReceipt(ctx context.Context, txHash common.Hash) (*
 	if rc.errorHandler(err) {
 		v, err = client.TransactionReceipt(ctx, txHash)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error) {
@@ -277,7 +283,7 @@ func (rc *Client) SyncProgress(ctx context.Context) (*ethereum.SyncProgress, err
 	if rc.errorHandler(err) {
 		v, err = client.SyncProgress(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SubscribeNewHead(ctx context.Context, ch chan<- *types.Header) (ethereum.Subscription, error) {
@@ -291,7 +297,7 @@ func (rc *Client) SubscribeNewHead(ctx context.Context, ch chan<- *types.Header)
 	if rc.errorHandler(err) {
 		v, err = client.SubscribeNewHead(ctx, ch)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) NetworkID(ctx context.Context) (*big.Int, error) {
@@ -305,7 +311,7 @@ func (rc *Client) NetworkID(ctx context.Context) (*big.Int, error) {
 	if rc.errorHandler(err) {
 		v, err = client.NetworkID(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error) {
@@ -319,7 +325,7 @@ func (rc *Client) BalanceAt(ctx context.Context, account common.Address, blockNu
 	if rc.errorHandler(err) {
 		v, err = client.BalanceAt(ctx, account, blockNumber)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error) {
@@ -333,7 +339,7 @@ func (rc *Client) StorageAt(ctx context.Context, account common.Address, key com
 	if rc.errorHandler(err) {
 		v, err = client.StorageAt(ctx, account, key, blockNumber)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error) {
@@ -347,7 +353,7 @@ func (rc *Client) CodeAt(ctx context.Context, account common.Address, blockNumbe
 	if rc.errorHandler(err) {
 		v, err = client.CodeAt(ctx, account, blockNumber)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error) {
@@ -361,7 +367,7 @@ func (rc *Client) NonceAt(ctx context.Context, account common.Address, blockNumb
 	if rc.errorHandler(err) {
 		v, err = client.NonceAt(ctx, account, blockNumber)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
@@ -375,7 +381,7 @@ func (rc *Client) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]typ
 	if rc.errorHandler(err) {
 		v, err = client.FilterLogs(ctx, q)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
@@ -389,7 +395,7 @@ func (rc *Client) SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuer
 	if rc.errorHandler(err) {
 		v, err = client.SubscribeFilterLogs(ctx, q, ch)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingBalanceAt(ctx context.Context, account common.Address) (*big.Int, error) {
@@ -403,7 +409,7 @@ func (rc *Client) PendingBalanceAt(ctx context.Context, account common.Address) 
 	if rc.errorHandler(err) {
 		v, err = client.PendingBalanceAt(ctx, account)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingStorageAt(ctx context.Context, account common.Address, key common.Hash) ([]byte, error) {
@@ -417,7 +423,7 @@ func (rc *Client) PendingStorageAt(ctx context.Context, account common.Address, 
 	if rc.errorHandler(err) {
 		v, err = client.PendingStorageAt(ctx, account, key)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingCodeAt(ctx context.Context, account common.Address) ([]byte, error) {
@@ -431,7 +437,7 @@ func (rc *Client) PendingCodeAt(ctx context.Context, account common.Address) ([]
 	if rc.errorHandler(err) {
 		v, err = client.PendingCodeAt(ctx, account)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingNonceAt(ctx context.Context, account common.Address) (uint64, error) {
@@ -445,7 +451,7 @@ func (rc *Client) PendingNonceAt(ctx context.Context, account common.Address) (u
 	if rc.errorHandler(err) {
 		v, err = client.PendingNonceAt(ctx, account)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingTransactionCount(ctx context.Context) (uint, error) {
@@ -459,7 +465,7 @@ func (rc *Client) PendingTransactionCount(ctx context.Context) (uint, error) {
 	if rc.errorHandler(err) {
 		v, err = client.PendingTransactionCount(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) CallContract(ctx context.Context, msg ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
@@ -473,7 +479,7 @@ func (rc *Client) CallContract(ctx context.Context, msg ethereum.CallMsg, blockN
 	if rc.errorHandler(err) {
 		v, err = client.CallContract(ctx, msg, blockNumber)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) PendingCallContract(ctx context.Context, msg ethereum.CallMsg) ([]byte, error) {
@@ -487,7 +493,7 @@ func (rc *Client) PendingCallContract(ctx context.Context, msg ethereum.CallMsg)
 	if rc.errorHandler(err) {
 		v, err = client.PendingCallContract(ctx, msg)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
@@ -501,7 +507,7 @@ func (rc *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 	if rc.errorHandler(err) {
 		v, err = client.SuggestGasPrice(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SuggestGasTipCap(ctx context.Context) (*big.Int, error) {
@@ -515,7 +521,7 @@ func (rc *Client) SuggestGasTipCap(ctx context.Context) (*big.Int, error) {
 	if rc.errorHandler(err) {
 		v, err = client.SuggestGasTipCap(ctx)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error) {
@@ -529,7 +535,7 @@ func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64
 	if rc.errorHandler(err) {
 		v, err = client.EstimateGas(ctx, msg)
 	}
-	return v, err
+	return v, dontMsgOn429(err)
 }
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
@@ -543,5 +549,5 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 	if rc.errorHandler(err) {
 		err = client.SendTransaction(ctx, tx)
 	}
-	return err
+	return dontMsgOn429(err)
 }

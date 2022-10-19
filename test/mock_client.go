@@ -347,6 +347,9 @@ func (t *TestClient) EstimateGas(ctx context.Context, call ethereum.CallMsg) (ga
 func (t *TestClient) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	return nil
 }
+func (t *TestClient) NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error) {
+	return 0, nil
+}
 
 func (t *TestClient) SubscribeFilterLogs(ctx context.Context, query ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
 	return nil, nil
