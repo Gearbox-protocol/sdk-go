@@ -59,8 +59,23 @@ func (z *JsonBigIntMap) Scan(value interface{}) error {
 
 type JsonFloatMap map[string]float64
 
-func (j *JsonFloatMap) Value() (driver.Value, error) {
-	return json.Marshal(j)
+func (z *JsonFloatMap) Value() (driver.Value, error) {
+	return json.Marshal(z)
+}
+
+func (z JsonFloatMap) Copy() *JsonFloatMap {
+	obj := JsonFloatMap{}
+	for token, amount := range z {
+		obj[token] = amount
+	}
+	return &obj
+}
+
+func (z JsonFloatMap) ValueInUSD(prices JsonFloatMap) (valueInUSD float64) {
+	for token, amount := range z {
+		valueInUSD += amount * prices[token]
+	}
+	return
 }
 
 func (z *JsonFloatMap) Scan(value interface{}) error {

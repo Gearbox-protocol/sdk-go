@@ -74,11 +74,13 @@ func (b *Block) AddTreasuryTransfer(tt *TreasuryTransfer) {
 
 func (b *Block) AddTreasurySnapshot(tss *TreasurySnapshot) {
 	b.TreasurySnapshots = append(b.TreasurySnapshots, &TreasurySnapshotModel2{
-		BlockNum:    tss.BlockNum,
-		Date:        tss.Date,
-		PricesInUSD: tss.PricesInUSD,
-		ValueInUSD:  tss.ValueInUSD,
-		Balances:    tss.Balances,
+		BlockNum:              tss.BlockNum,
+		Date:                  tss.Date,
+		PricesInUSD:           tss.PricesInUSD,
+		ValueInUSD:            tss.ValueInUSD,
+		OperationalValueInUSD: tss.OperationalValueInUSD,
+		Balances:              tss.Balances,
+		OperationalBalances:   tss.OperationalBalances,
 	})
 }
 
