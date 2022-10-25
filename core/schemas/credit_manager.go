@@ -13,14 +13,15 @@ func (CreditManagerState) TableName() string {
 type CreditManagerState struct {
 	CreditManagerData
 	Address           string            `gorm:"primaryKey" json:"address"`
-	IsWETH            bool              `gorm:"is_weth"`
+	IsWETH            bool              `gorm:"column:is_weth"`
 	PoolAddress       string            `gorm:"column:pool_address" json:"pool"`
 	UnderlyingToken   string            `gorm:"column:underlying_token" json:"underlyingToken"`
 	MaxLeverageFactor int64             `gorm:"column:max_leverage"`
 	MinAmount         *core.BigInt      `gorm:"column:min_amount"`
 	MaxAmount         *core.BigInt      `gorm:"column:max_amount"`
 	Sessions          map[string]string `gorm:"-" json:"-"`
-	Paused            bool              `gorm:"paused"`
+	Paused            bool              `gorm:"column:paused"`
+	Version           int16             `gorm:"column:_version"`
 }
 
 type CreditManagerData struct {
