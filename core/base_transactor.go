@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/howeyc/gopass"
 )
 
 type BaseTransactor struct {
@@ -22,6 +24,12 @@ func NewBaseTransactor(privateKey string, client ClientI) *BaseTransactor {
 	chainId, err := client.ChainID(context.TODO())
 	log.CheckFatal(err)
 	//
+	if strings.HasPrefix(privateKey, "enc:") {
+		fmt.Printf("Enter password:")
+		password, err := gopass.GetPasswd()
+		log.CheckFatal(err)
+		privateKey = utils.Decrypt(strings.Split(privateKey, ":")[1], password)
+	}
 	wallet := GetWallet(privateKey)
 	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId.Int64()))
 	log.CheckFatal(err)
