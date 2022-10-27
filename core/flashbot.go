@@ -30,6 +30,12 @@ func NewFlashbotsTransactor(flashbotRelay string) *FlashbotsTransactor {
 	}
 }
 
+type BundleInfo struct {
+	BlockNumber int64
+	Stats       flashbotsrpc.FlashbotsGetBundleStatsResponse
+	SendBundle  flashbotsrpc.FlashbotsSendBundleResponse
+}
+
 func (p *FlashbotsTransactor) Send(blockNum int64, txs []*types.Transaction) error {
 	var txStrs []string
 	for _, tx := range txs {
@@ -38,11 +44,12 @@ func (p *FlashbotsTransactor) Send(blockNum int64, txs []*types.Transaction) err
 		txStr := hexutil.Encode(b)
 		txStrs = append(txStrs, txStr)
 	}
+	blockNumStr := fmt.Sprintf("0x%x", blockNum)
 	sendBundleArgs := flashbotsrpc.FlashbotsSendBundleRequest{
 		Txs:         txStrs,
-		BlockNumber: fmt.Sprintf("0x%x", blockNum),
+		BlockNumber: blockNumStr,
 	}
-	result, err := p.RPC.FlashbotsSendBundle(p.sigKey, sendBundleArgs)
+	sendBundleResult, err := p.RPC.FlashbotsSendBundle(p.sigKey, sendBundleArgs)
 	if err != nil {
 		if errors.Is(err, flashbotsrpc.ErrRelayErrorResponse) {
 			// ErrRelayErrorResponse means it's a standard Flashbots relay error response, so probably a user error, rather than JSON or network error
@@ -52,6 +59,20 @@ func (p *FlashbotsTransactor) Send(blockNum int64, txs []*types.Transaction) err
 		}
 		return err
 	}
-	log.Msgf("Sucessfully paused contracts at %d tx: ", blockNum, utils.ToJson(result))
+
+	statsResult, err := p.RPC.FlashbotsGetBundleStats(p.sigKey, flashbotsrpc.FlashbotsGetBundleStatsParam{
+		BlockNumber: blockNumStr,
+		BundleHash:  sendBundleResult.BundleHash,
+	})
+	if err != nil {
+		return err
+	}
+	bInfo := BundleInfo{
+		SendBundle:  sendBundleResult,
+		Stats:       statsResult,
+		BlockNumber: blockNum,
+	}
+	log.Info(utils.ToJson(bInfo))
+	log.Msgf("Sucessfully paused contracts via flashbot relay at %d bundle(%s)", blockNum, sendBundleResult.BundleHash)
 	return nil
 }
