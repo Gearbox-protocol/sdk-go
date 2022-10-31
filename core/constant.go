@@ -26,7 +26,7 @@ type NetworkUI struct {
 
 var NULL_ADDR = common.Address{}
 
-func NetworkUIUrl(chainId uint) NetworkUI {
+func NetworkUIUrl(chainId int64) NetworkUI {
 	switch chainId {
 	case 1:
 		return NetworkUI{

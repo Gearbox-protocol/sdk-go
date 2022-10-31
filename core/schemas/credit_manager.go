@@ -36,15 +36,17 @@ type CreditManagerData struct {
 	TotalLiquidatedAccounts int          `gorm:"column:total_liquidated_accounts"`
 	UniqueUsers             int          `gorm:"column:unique_users"`
 	TotalBorrowed           float64      `gorm:"column:total_borrowed"`
-	TotalBorrowedBI         *core.BigInt `gorm:"column:total_borrowed_bi"`
-	CumulativeBorrowed      float64      `gorm:"column:cumulative_borrowed"`
-	CumulativeBorrowedBI    *core.BigInt `gorm:"column:cumulative_borrowed_bi"`
-	TotalRepaid             float64      `gorm:"column:total_repaid"`
-	TotalRepaidBI           *core.BigInt `gorm:"column:total_repaid_bi"`
-	TotalProfit             float64      `gorm:"column:total_profit"`
-	TotalProfitBI           *core.BigInt `gorm:"column:total_profit_bi"`
-	TotalLosses             float64      `gorm:"column:total_losses"`
-	TotalLossesBI           *core.BigInt `gorm:"column:total_losses_bi"`
+	// increase -> in open creditaccount (CMStatsOnOpenAccount), in increaseBorrowAmount v1/v2
+	// decreased -> when pool repay is emitted, subtract borrowAmount in event(this doesn't include fees and interest)
+	TotalBorrowedBI      *core.BigInt `gorm:"column:total_borrowed_bi"`
+	CumulativeBorrowed   float64      `gorm:"column:cumulative_borrowed"`
+	CumulativeBorrowedBI *core.BigInt `gorm:"column:cumulative_borrowed_bi"`
+	TotalRepaid          float64      `gorm:"column:total_repaid"`
+	TotalRepaidBI        *core.BigInt `gorm:"column:total_repaid_bi"`
+	TotalProfit          float64      `gorm:"column:total_profit"`
+	TotalProfitBI        *core.BigInt `gorm:"column:total_profit_bi"`
+	TotalLosses          float64      `gorm:"column:total_losses"`
+	TotalLossesBI        *core.BigInt `gorm:"column:total_losses_bi"`
 }
 
 type Parameters struct {
@@ -128,9 +130,11 @@ type CreditManagerStat struct {
 
 type PnlOnRepay struct {
 	BlockNum int64
-	Loss     *big.Int
-	Profit   *big.Int
-	// repaid borrow amount
+	// loss in underlying token
+	Loss *big.Int
+	// profit in underlying token
+	Profit *big.Int
+	// borrowed amount is in underlying token, repaid borrow amount
 	BorrowedAmount *big.Int
 }
 
