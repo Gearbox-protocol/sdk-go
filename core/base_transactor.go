@@ -14,12 +14,13 @@ import (
 )
 
 type BaseTransactor struct {
-	Topts   *bind.TransactOpts
-	Client  ClientI
-	ChainId int64
+	Topts      *bind.TransactOpts
+	Client     ClientI
+	ChainId    int64
+	timeoutSec int
 }
 
-func NewBaseTransactor(privateKey string, client ClientI) *BaseTransactor {
+func NewBaseTransactor(privateKey string, client ClientI, timeoutSec int) *BaseTransactor {
 	//
 	chainId, err := client.ChainID(context.TODO())
 	log.CheckFatal(err)
@@ -35,14 +36,15 @@ func NewBaseTransactor(privateKey string, client ClientI) *BaseTransactor {
 	log.CheckFatal(err)
 	//
 	return &BaseTransactor{
-		Topts:   topts,
-		Client:  client,
-		ChainId: chainId.Int64(),
+		Topts:      topts,
+		Client:     client,
+		ChainId:    chainId.Int64(),
+		timeoutSec: timeoutSec,
 	}
 }
 
 func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Receipt, error) {
-	ctx, cancel := utils.GetTimeoutCtx(60)
+	ctx, cancel := utils.GetTimeoutCtx(p.timeoutSec)
 	defer cancel()
 	receipt, err := bind.WaitMined(ctx, p.Client, tx)
 	if err != nil {
