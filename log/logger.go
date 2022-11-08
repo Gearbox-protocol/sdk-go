@@ -43,7 +43,7 @@ func Verbose(v ...interface{}) {
 
 func Warnf(msg string, args ...interface{}) {
 	msgFormat := "[Warn] " + DetectFunc() + msg
-	amqpSendf(msgFormat, args)
+	amqpSendf(msgFormat, false, args)
 	if testLogModule == nil {
 		log.Printf(msgFormat, args...)
 	} else {
@@ -54,7 +54,7 @@ func Warnf(msg string, args ...interface{}) {
 func Warn(v ...interface{}) {
 	args := []interface{}{"[Warn]: " + DetectFunc()}
 	args = append(args, v...)
-	amqpSend(args)
+	amqpSend(args, false)
 	if testLogModule == nil {
 		log.Println(args...)
 	} else {
@@ -93,7 +93,7 @@ func InfoStackN(n int, v ...interface{}) {
 
 func Errorf(msg string, args ...interface{}) {
 	msgFormat := "[Error]: " + DetectFunc() + msg
-	amqpSendf(msgFormat, args)
+	amqpSendf(msgFormat, true, args)
 	if testLogModule == nil {
 		log.Printf(msgFormat, args...)
 	} else {
@@ -104,7 +104,7 @@ func Errorf(msg string, args ...interface{}) {
 func Error(v ...interface{}) {
 	args := []interface{}{"[Error]: " + DetectFunc()}
 	args = append(args, v...)
-	amqpSend(args)
+	amqpSend(args, true)
 	if testLogModule == nil {
 		log.Println(args...)
 	} else {
@@ -113,13 +113,13 @@ func Error(v ...interface{}) {
 }
 
 func Msgf(msg string, args ...interface{}) {
-	amqpSendf(msg, args)
+	amqpSendf(msg, false, args)
 	msgFormat := DetectFunc() + msg
 	log.Printf("[AMQP]"+msgFormat, args...)
 }
 
 func Msg(v ...interface{}) {
-	amqpSend(v)
+	amqpSend(v, false)
 	args := []interface{}{"[AMQP]" + DetectFunc()}
 	args = append(args, v...)
 	log.Println(args...)
@@ -128,7 +128,7 @@ func Msg(v ...interface{}) {
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
 	msgFormat := "[Fatal]: " + DetectFunc() + msg
-	amqpSendf(msgFormat, args)
+	amqpSendf(msgFormat, true, args)
 	if testLogModule == nil {
 		log.Fatalf(msgFormat, args...)
 	} else {
@@ -140,7 +140,7 @@ func Fatal(v ...interface{}) {
 	debug.PrintStack()
 	args := []interface{}{"[Fatal]: " + DetectFunc()}
 	args = append(args, v...)
-	amqpSend(args)
+	amqpSend(args, true)
 	if testLogModule == nil {
 		log.Fatal(args...)
 	} else {
@@ -151,7 +151,7 @@ func Fatal(v ...interface{}) {
 func CheckFatal(err error) {
 	args := []interface{}{"[Fatal]: " + DetectFunc(), err}
 	if err != nil {
-		amqpSend(args)
+		amqpSend(args, true)
 		if testLogModule == nil {
 			log.Fatal(args...)
 		} else {
@@ -168,15 +168,15 @@ func SetAMQP(_ch *amqp.Channel, netName_ string, appName_ string) {
 	netName = netName_
 	appName = appName_
 }
-func amqpSend(v []interface{}) {
+func amqpSend(v []interface{}, important bool) {
 	alert := fmt.Sprint(v...)
-	send(alert)
+	send(alert, important)
 }
-func amqpSendf(msg string, args []interface{}) {
+func amqpSendf(msg string, important bool, args []interface{}) {
 	alert := fmt.Sprintf(msg, args...)
-	send(alert)
+	send(alert, important)
 }
-func send(message string) {
+func send(message string, important bool) {
 	if ch == nil {
 		return
 	}
@@ -188,6 +188,9 @@ func send(message string) {
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(fmt.Sprintf("[%s]%s:", netName, appName) + message),
+			Headers: amqp.Table{
+				"important": important,
+			},
 		})
 	if err != nil {
 		log.Println("Cant sent notification", err)
