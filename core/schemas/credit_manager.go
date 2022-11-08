@@ -25,8 +25,6 @@ type CreditManagerState struct {
 }
 
 type CreditManagerData struct {
-	BorrowRateBI            *core.BigInt `gorm:"column:borrow_rate_bi" `
-	BorrowRate              float64      `gorm:"column:borrow_rate"`
 	AvailableLiquidityBI    *core.BigInt `gorm:"column:available_liquidity_bi"`
 	AvailableLiquidity      float64      `gorm:"column:available_liquidity"`
 	OpenedAccountsCount     int          `gorm:"column:opened_accounts_count"`
