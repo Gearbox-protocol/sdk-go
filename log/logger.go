@@ -191,13 +191,14 @@ func send(message string, important bool) {
 			Headers: amqp.Table{
 				"important": important,
 			},
+			AppId: appName,
 		})
 	if err != nil {
 		log.Println("Cant sent notification", err)
 	}
 }
 
-////
+// //
 var cwdLen int
 
 func DetectFunc() string {
