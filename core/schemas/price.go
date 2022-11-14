@@ -81,3 +81,15 @@ func (ts SortedPriceFeed) Swap(i, j int) {
 func (ts SortedPriceFeed) Less(i, j int) bool {
 	return ts[i].BlockNumber < ts[j].BlockNumber
 }
+
+type TokenCurrentPrice struct {
+	PriceBI  *core.BigInt `gorm:"column:price_bi"`
+	Price    float64      `gorm:"column:price"`
+	BlockNum int64        `gorm:"column:block_num"`
+	Token    string       `gorm:"column:token;primaryKey" json:"token"`
+	Updated  bool         `gorm:"-"`
+}
+
+func (TokenCurrentPrice) TableName() string {
+	return "token_current_price"
+}
