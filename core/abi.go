@@ -46,10 +46,13 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
+var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"srcToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"dstToken\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"useWrappers\",\"type\":\"bool\"}],\"name\":\"getRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"weightedRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
-		"Version": versionABI,
-		"Pauser":  pauserABI,
+		"Version":     versionABI,
+		"Pauser":      pauserABI,
+		"1InchOracle": inchOracleABI,
 	}
 	if data := abiMap[contractName]; data != "" {
 		return getABI(data)
