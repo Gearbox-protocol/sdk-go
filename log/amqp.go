@@ -15,17 +15,18 @@ func failOnError(err error, msg string) {
 }
 
 // Service constructor
-func NewAMQPService(chainId int64, AMPQEnable string, AMQPURL, appName string) {
-	if AMPQEnable == "0" {
+func NewAMQPService(amqpEnable string, amqpUrl string, logConfig LoggingConfig) {
+	if amqpEnable == "0" {
 		return
 	}
-	conn, err := amqp.Dial(AMQPURL)
+	//
+	conn, err := amqp.Dial(amqpUrl)
 	failOnError(err, "Failed to connect to RabbitMQ")
-	//defer conn.Close()
-
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	SetAMQP(ch, GetNetworkName(chainId), appName)
+	//
+	logConfig.Channel = ch
+	_logConfig = logConfig
 }
 
 func GetNetworkName(chainId int64) (name string) {

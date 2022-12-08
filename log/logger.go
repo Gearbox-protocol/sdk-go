@@ -162,14 +162,15 @@ func CheckFatal(err error) {
 	}
 }
 
-var ch *amqp.Channel
-var netName, appName string
+var _logConfig LoggingConfig
 
-func SetAMQP(_ch *amqp.Channel, netName_ string, appName_ string) {
-	ch = _ch
-	netName = netName_
-	appName = appName_
+type LoggingConfig struct {
+	Network  string
+	Exchange string
+	App      string
+	Channel  *amqp.Channel
 }
+
 func amqpSend(important bool, v []interface{}) {
 	alert := fmt.Sprint(v...)
 	send(important, alert)
@@ -179,17 +180,17 @@ func amqpSendf(important bool, msg string, args []interface{}) {
 	send(important, alert)
 }
 func send(important bool, message string) {
-	if ch == nil {
+	if _logConfig.Channel == nil {
 		return
 	}
-	err := ch.Publish(
-		"TelegramBot", // exchange
-		netName,       // routing key
-		false,         // mandatory
-		false,         // immediate
+	err := _logConfig.Channel.Publish(
+		_logConfig.Exchange, // exchange
+		_logConfig.Network,  // routing key
+		false,               // mandatory
+		false,               // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(appName + ": " + message),
+			Body:        []byte(_logConfig.App + ": " + message),
 			Headers:     amqp.Table{"important": important},
 		})
 	if err != nil {
