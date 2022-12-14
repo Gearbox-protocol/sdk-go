@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/common"
@@ -33,4 +34,9 @@ func GetAddrToSymbol(fileName string) map[common.Address]Symbol {
 		addrToName[exchg] = Symbol(name)
 	}
 	return addrToName
+}
+
+func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	return GetSymToAddrStore(fileName)
 }

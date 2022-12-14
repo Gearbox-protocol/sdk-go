@@ -151,14 +151,8 @@ func Fatal(v ...interface{}) {
 }
 
 func CheckFatal(err error) {
-	args := []interface{}{"[Fatal]: " + DetectFunc(), err}
 	if err != nil {
-		amqpSend(false, args)
-		if testLogModule == nil {
-			log.Fatal(args...)
-		} else {
-			testLogModule.Fatal(args...)
-		}
+		Fatal(err)
 	}
 }
 
