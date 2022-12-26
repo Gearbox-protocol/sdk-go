@@ -4,9 +4,11 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"os"
+	"reflect"
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -28,7 +30,7 @@ func ToJson(obj interface{}) string {
 }
 
 func Method() {
-	if a, err := abi.JSON(strings.NewReader(dataCompressorv2.DataCompressorv2ABI)); err == nil {
+	if a, err := abi.JSON(strings.NewReader(creditFacade.CreditFacadeABI)); err == nil {
 		for name, method := range a.Methods {
 			log.Info(name, method.RawName, method.Name, method.Sig, hex.EncodeToString(method.ID))
 		}
@@ -76,4 +78,24 @@ func ConvertToListOfString(list interface{}) (accountAddrs []string) {
 		log.Fatal("parsing accounts list for token transfer failed")
 	}
 	return
+}
+
+func GetEnvOrDefault(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
+func ReadFromEnv(val interface{}) {
+	rv := reflect.ValueOf(val).Elem()
+	num := rv.NumField()
+	for i := 0; i < num; i++ {
+		envValue := rv.Type().Field(i).Tag.Get("env")
+		defaultValue := rv.Type().Field(i).Tag.Get("default")
+		if envValue != "" {
+			value := strings.Replace(GetEnvOrDefault(envValue, defaultValue), "\\n", "\n", -1)
+			rv.Field(i).SetString(value)
+		}
+	}
 }

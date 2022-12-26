@@ -21,8 +21,6 @@ type AccountOperation struct {
 	Action      string          `gorm:"column:action" json:"action"`
 	Args        *core.Json      `gorm:"column:args" json:"args"`
 	Transfers   *core.Transfers `gorm:"column:transfers" json:"transfers"`
-	// extras
-	Depth uint8 `gorm:"column:depth" json:"depth"`
 	// Note that MainAction is pointer to int64
 	// this avoids a foreign key violation, else  0 will be inserted for this column, which is foreign key violation.
 	MainAction *int64              `gorm:"column:main_action"`
