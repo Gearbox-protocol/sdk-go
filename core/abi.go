@@ -73,10 +73,10 @@ func GetAbi(contractName string) *abi.ABI {
 		"WETHGateway":    wETHGateway.WETHGatewayMetaData,
 
 		// Oracle
-		"YearnPriceFeed":        &bind.MetaData{ABI: yearnPriceFeed.YearnPriceFeedABI},
-		"PriceFeed":             &bind.MetaData{ABI: priceFeed.PriceFeedABI},
-		"DataCompressorMainnet": &bind.MetaData{ABI: mainnetDC.DataCompressorABI},
-		"DataCompressorV2":      &bind.MetaData{ABI: dataCompressorv2.DataCompressorv2ABI},
+		"YearnPriceFeed":        {ABI: yearnPriceFeed.YearnPriceFeedABI},
+		"PriceFeed":             {ABI: priceFeed.PriceFeedABI},
+		"DataCompressorMainnet": {ABI: mainnetDC.DataCompressorABI},
+		"DataCompressorV2":      {ABI: dataCompressorv2.DataCompressorv2ABI},
 
 		// tokens
 		"DieselToken": dieselToken.DieselTokenMetaData,
@@ -87,40 +87,40 @@ func GetAbi(contractName string) *abi.ABI {
 		//////////////
 		// v1
 		//////////////
-		"PriceOracle":             &bind.MetaData{ABI: priceOracle.PriceOracleABI},
-		"CreditManager":           &bind.MetaData{ABI: creditManager.CreditManagerABI},
-		"CreditManagerv2":         &bind.MetaData{ABI: creditManagerv2.CreditManagerv2ABI},
+		"PriceOracle":             {ABI: priceOracle.PriceOracleABI},
+		"CreditManager":           {ABI: creditManager.CreditManagerABI},
+		"CreditManagerv2":         {ABI: creditManagerv2.CreditManagerv2ABI},
 		"LinearInterestRateModel": linearInterestRateModel.LinearInterestRateModelMetaData,
-		"CreditFilter":            &bind.MetaData{ABI: creditFilter.CreditFilterABI},
+		"CreditFilter":            {ABI: creditFilter.CreditFilterABI},
 		"Pool":                    poolService.PoolServiceMetaData,
 
 		//////////////
 		// v2
 		//////////////
-		"PriceOraclev2":        &bind.MetaData{ABI: priceOraclev2.PriceOraclev2ABI},
-		"CreditConfigurator":   &bind.MetaData{ABI: creditConfigurator.CreditConfiguratorABI},
-		"CreditFacade":         &bind.MetaData{ABI: creditFacade.CreditFacadeABI},
-		"CreditFacadeExtended": &bind.MetaData{ABI: creditFacadeExtended.CreditFacadeExtendedABI},
+		"PriceOraclev2":        {ABI: priceOraclev2.PriceOraclev2ABI},
+		"CreditConfigurator":   {ABI: creditConfigurator.CreditConfiguratorABI},
+		"CreditFacade":         {ABI: creditFacade.CreditFacadeABI},
+		"CreditFacadeExtended": {ABI: creditFacadeExtended.CreditFacadeExtendedABI},
 		// multicall
-		"MultiCall": &bind.MetaData{ABI: multicall.MulticallABI},
+		"MultiCall": {ABI: multicall.MulticallABI},
 		//
-		"Uniswapv3Pool":    &bind.MetaData{ABI: uniswapv3Pool.Uniswapv3PoolABI},
-		"Uniswapv3Router":  &bind.MetaData{ABI: uniswapv3Router.Uniswapv3RouterABI},
-		"Uniswapv3Factory": &bind.MetaData{ABI: uniswapv3Factory.Uniswapv3FactoryABI},
+		"Uniswapv3Pool":    {ABI: uniswapv3Pool.Uniswapv3PoolABI},
+		"Uniswapv3Router":  {ABI: uniswapv3Router.Uniswapv3RouterABI},
+		"Uniswapv3Factory": {ABI: uniswapv3Factory.Uniswapv3FactoryABI},
 		//
-		"Uniswapv2Pool":    &bind.MetaData{ABI: uniswapv2Pool.Uniswapv2PoolABI},
-		"Uniswapv2Router":  &bind.MetaData{ABI: uniswapv2Router.Uniswapv2RouterABI},
-		"Uniswapv2Factory": &bind.MetaData{ABI: uniswapv2Factory.Uniswapv2FactoryABI},
+		"Uniswapv2Pool":    {ABI: uniswapv2Pool.Uniswapv2PoolABI},
+		"Uniswapv2Router":  {ABI: uniswapv2Router.Uniswapv2RouterABI},
+		"Uniswapv2Factory": {ABI: uniswapv2Factory.Uniswapv2FactoryABI},
 		//
-		"LidoMock":    &bind.MetaData{ABI: lidoMock.LidoMockABI},
-		"MainnetLido": &bind.MetaData{ABI: mainnetLido.MainnetLidoABI},
-		"LidoKovan":   &bind.MetaData{ABI: lidoKovan.LidoKovanABI},
+		"LidoMock":    {ABI: lidoMock.LidoMockABI},
+		"MainnetLido": {ABI: mainnetLido.MainnetLidoABI},
+		"LidoKovan":   {ABI: lidoKovan.LidoKovanABI},
 		//
-		"YearnAdapter": &bind.MetaData{ABI: yearnAdapter.YearnAdapterABI},
+		"YearnAdapter": {ABI: yearnAdapter.YearnAdapterABI},
 		// convex for liquidator calculation
-		"BaseRewardPool": &bind.MetaData{ABI: baseRewardPool.BaseRewardPoolABI},
+		"BaseRewardPool": {ABI: baseRewardPool.BaseRewardPoolABI},
 		// v3 pos for synctron
-		"NonFungiblePosManager": &bind.MetaData{ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
+		"NonFungiblePosManager": {ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {

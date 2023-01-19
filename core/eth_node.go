@@ -145,26 +145,23 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 	if blockNum != 0 {
 		opts.BlockNumber = big.NewInt(blockNum)
 	}
-	var result []multicall.Multicall2Result
-	var tmpCalls []multicall.Multicall2Call
-	callsInd := 0
-	callsLen := len(calls)
 	defaultSize := 20
 	if params != nil {
 		defaultSize = params[0]
 	}
+	//
+	callsInd := 0
+	callsLen := len(calls)
+	result := make([]multicall.Multicall2Result, 0, len(calls))
 	for callsInd < callsLen {
-		for i := 0; i < defaultSize && callsInd < callsLen; i++ {
-			tmpCalls = append(tmpCalls, calls[callsInd])
-			callsInd++
+		next := callsInd + defaultSize
+		if next > callsLen {
+			next = callsLen
 		}
-		// log.Info(callsInd)
-		tmpResult, err := contract.TryAggregate(opts, successRequired, tmpCalls)
-		if err != nil {
-			log.Fatal(err)
-		}
+		tmpResult, err := contract.TryAggregate(opts, successRequired, calls[callsInd:next])
+		log.CheckFatal(err)
 		result = append(result, tmpResult...)
-		tmpCalls = []multicall.Multicall2Call{}
+		callsInd += defaultSize
 	}
 	return result
 }

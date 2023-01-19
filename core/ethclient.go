@@ -2,8 +2,11 @@ package core
 
 import (
 	"context"
+	"encoding/hex"
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -44,4 +47,20 @@ type ClientI interface {
 	// SuggestGasTipCap(ctx context.Context) (*big.Int, error)
 	// EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error)
 	// SendTransaction(ctx context.Context, tx *types.Transaction) error
+}
+
+func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
+	data, err := hex.DecodeString(sigStr) // enabledTokens
+	log.CheckFatal(err)
+	data = append(data, extra...)
+	//
+	msg := ethereum.CallMsg{
+		To:   &to,
+		Data: data,
+	}
+	var blockBI *big.Int
+	if blockNum != 0 {
+		blockBI = big.NewInt(blockNum)
+	}
+	return client.CallContract(context.TODO(), msg, blockBI)
 }
