@@ -45,13 +45,13 @@ type CoreIntBalance struct {
 	BI        *BigInt `json:"BI"`
 	F         float64 `json:"F"`
 	Ind       int     `json:"ind"`
-}
+} // @name CoreIntBalance
 
 func (b CoreIntBalance) HasBalanceMoreThanOne() bool {
 	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
 }
 
-type DBBalanceFormat map[string]CoreIntBalance
+type DBBalanceFormat map[string]CoreIntBalance // @name DBBalanceFormat
 
 func (j DBBalanceFormat) ToBalanceType() map[string]BalanceType {
 	m := map[string]BalanceType{}

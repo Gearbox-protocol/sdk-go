@@ -21,7 +21,7 @@ func Topic(topic string) common.Hash {
 	return crypto.Keccak256Hash([]byte(topic))
 }
 
-type BigInt big.Int
+type BigInt big.Int // @name BigInt
 
 func (z *BigInt) Convert() *big.Int {
 	return (*big.Int)(z)
