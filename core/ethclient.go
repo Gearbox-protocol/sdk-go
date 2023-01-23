@@ -49,6 +49,7 @@ type ClientI interface {
 	// SendTransaction(ctx context.Context, tx *types.Transaction) error
 }
 
+// only use for calls that return address(20 bytes) or (amount 32 bytes) basically datatype uint256
 func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
 	data, err := hex.DecodeString(sigStr) // enabledTokens
 	log.CheckFatal(err)
@@ -62,5 +63,9 @@ func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, bl
 	if blockNum != 0 {
 		blockBI = big.NewInt(blockNum)
 	}
-	return client.CallContract(context.TODO(), msg, blockBI)
+	bytes, err := client.CallContract(context.TODO(), msg, blockBI)
+	if len(bytes) > 32 {
+		bytes = bytes[:32]
+	}
+	return bytes, err
 }
