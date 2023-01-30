@@ -8,8 +8,6 @@ import (
 	"runtime/debug"
 	"strings"
 	"testing"
-
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var testLogModule *testing.T
@@ -18,71 +16,63 @@ func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
 
+func printf(severity, msg string, args ...interface{}) string {
+	_log := fmt.Sprintf("["+severity+"]: "+DetectFuncAtStackN(3)+msg, args...)
+	if testLogModule == nil {
+		log.Println(_log)
+	} else {
+		testLogModule.Log(_log)
+	}
+	return _log
+}
+func println(severity string, args ...interface{}) string {
+	x := []interface{}{"[" + severity + "]: ", DetectFuncAtStackN(3)}
+	x = append(x, args...)
+	_log := fmt.Sprintln(x...)
+	if testLogModule == nil {
+		log.Printf(_log)
+	} else {
+		testLogModule.Logf(_log)
+	}
+	return _log
+}
+
+// ---- Don't send to amqp
 // verbose
 // info
-// ---- Logs
+// ----- To channel Alerts
 // warn
 // error
 // msg
-// ----- Alerts
 // fatal
+// ----- Risk condition alerts
+// Alert
 func Verbosef(msg string, args ...interface{}) {
-	if testLogModule == nil {
-		log.Printf(DetectFunc()+msg, args...)
-	} else {
-		testLogModule.Logf(DetectFunc()+msg, args...)
-	}
+	printf("Debug", msg, args...)
 }
-func Verbose(v ...interface{}) {
-	x := []interface{}{DetectFunc()}
-	x = append(x, v...)
-	if testLogModule == nil {
-		log.Println(x...)
-	} else {
-		testLogModule.Log(x...)
-	}
+func Verbose(args ...interface{}) {
+	println("Debug", args...)
 }
 
+//
 func Warnf(msg string, args ...interface{}) {
-	msgFormat := "[Warn] " + DetectFunc() + msg
-	amqpSendf(true, msgFormat, args)
-	if testLogModule == nil {
-		log.Printf(msgFormat, args...)
-	} else {
-		testLogModule.Logf(msgFormat, args...)
-	}
+	_log := printf("Warn", msg, args...)
+	send(true, _log)
 }
 
-func Warn(v ...interface{}) {
-	args := []interface{}{"[Warn]: " + DetectFunc()}
-	args = append(args, v...)
-	amqpSend(true, args)
-	if testLogModule == nil {
-		log.Println(args...)
-	} else {
-		testLogModule.Log(args...)
-	}
+func Warn(args ...interface{}) {
+	_log := println("Warn", args...)
+	send(true, _log)
 }
 
 func Infof(msg string, args ...interface{}) {
-	msg = "[Info]: " + DetectFunc() + msg
-	if testLogModule == nil {
-		log.Printf(msg, args...)
-	} else {
-		testLogModule.Logf(msg, args...)
-	}
-
+	printf("Info", msg, args...)
 }
 
-func Info(v ...interface{}) {
-	args := []interface{}{"[Info]: " + DetectFunc()}
-	args = append(args, v...)
-	if testLogModule == nil {
-		log.Println(args...)
-	} else {
-		testLogModule.Log(args...)
-	}
+func Info(args ...interface{}) {
+	println("Info", args...)
 }
+
 func InfoStackN(n int, v ...interface{}) {
 	args := []interface{}{"[Info]: " + DetectFuncAtStackN(n)}
 	args = append(args, v...)
@@ -94,114 +84,55 @@ func InfoStackN(n int, v ...interface{}) {
 }
 
 func Errorf(msg string, args ...interface{}) {
-	msgFormat := "[Error]: " + DetectFunc() + msg
-	amqpSendf(true, msgFormat, args)
-	if testLogModule == nil {
-		log.Printf(msgFormat, args...)
-	} else {
-		testLogModule.Logf(msgFormat, args...)
-	}
+	_log := printf("Error", msg, args...)
+	send(true, _log)
 }
 
-func Error(v ...interface{}) {
-	args := []interface{}{"[Error]: " + DetectFunc()}
-	args = append(args, v...)
-	amqpSend(true, args)
-	if testLogModule == nil {
-		log.Println(args...)
-	} else {
-		testLogModule.Log(args...)
-	}
-}
-
-func Msgf(msg string, args ...interface{}) {
-	amqpSendf(true, msg, args)
-	msgFormat := DetectFunc() + msg
-	log.Printf("[AMQP]"+msgFormat, args...)
-}
-
-func Msg(v ...interface{}) {
-	amqpSend(true, v)
-	args := []interface{}{"[AMQP]" + DetectFunc()}
-	args = append(args, v...)
-	log.Println(args...)
+func Error(args ...interface{}) {
+	_log := println("Error", args...)
+	send(true, _log)
 }
 
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
-	msgFormat := "[Fatal]: " + DetectFunc() + msg
-	amqpSendf(false, msgFormat, args)
-	if testLogModule == nil {
-		log.Fatalf(msgFormat, args...)
-	} else {
-		testLogModule.Fatalf(msgFormat, args...)
-	}
+	_log := printf("Fatal", msg, args...)
+	send(true, _log)
+	os.Exit(1)
 }
 
-func Fatal(v ...interface{}) {
+func Fatal(args ...interface{}) {
 	debug.PrintStack()
-	args := []interface{}{"[Fatal]: " + DetectFunc()}
-	args = append(args, v...)
-	amqpSend(false, args)
-	if testLogModule == nil {
-		log.Fatalln(args...)
-	} else {
-		testLogModule.Fatal(args...)
-	}
+	_log := println("Fatal", args...)
+	send(true, _log)
+	os.Exit(1)
 }
 
 func CheckFatal(err error) {
-	args := []interface{}{"[Fatal]: " + DetectFunc(), err}
 	if err != nil {
-		amqpSend(false, args)
+		msg := "[Fatal]: " + DetectFuncAtStackN(1) + err.Error()
 		if testLogModule == nil {
-			log.Fatalln(args...)
+			log.Fatalln(msg)
 		} else {
-			testLogModule.Fatal(args...)
+			testLogModule.Fatal(msg)
 		}
+		send(true, msg)
 	}
 }
 
-var _logConfig LoggingConfig
-
-type LoggingConfig struct {
-	Network  string
-	Exchange string
-	App      string
-	Channel  *amqp.Channel
+func AMQPMsgf(msg string, args ...interface{}) {
+	_log := printf("AMQP", msg, args...)
+	send(true, _log)
 }
 
-func amqpSend(important bool, v []interface{}) {
-	alert := fmt.Sprint(v...)
-	send(important, alert)
-}
-func amqpSendf(important bool, msg string, args []interface{}) {
-	alert := fmt.Sprintf(msg, args...)
-	send(important, alert)
-}
-func send(important bool, message string) {
-	if _logConfig.Channel == nil {
-		return
-	}
-	err := _logConfig.Channel.Publish(
-		_logConfig.Exchange, // exchange
-		_logConfig.Network,  // routing key
-		false,               // mandatory
-		false,               // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(_logConfig.App + ": " + message),
-			Headers:     amqp.Table{"important": important},
-		})
-	if err != nil {
-		log.Println("Cant sent notification", err)
-	}
+func AMQPMsg(args ...interface{}) {
+	_log := println("AMQP", args...)
+	send(true, _log)
 }
 
 ////
 var cwdLen int
 
-func DetectFunc() string {
+func DetectFuncAtStackN(n int) string {
 	if cwdLen == 0 {
 		s, _ := os.Getwd()
 		for i := len(s) - 1; i >= 0; i-- {
@@ -210,9 +141,8 @@ func DetectFunc() string {
 				break
 			}
 		}
-
 	}
-	_, file, line, _ := runtime.Caller(2)
+	_, file, line, _ := runtime.Caller(n)
 	if ind := strings.IndexRune(file, '@'); ind == -1 {
 		return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
 	} else {
@@ -220,8 +150,4 @@ func DetectFunc() string {
 		extraInd := strings.IndexRune(remainingPath, '/')
 		return fmt.Sprintf(" %s:%d ", remainingPath[extraInd+1:], line)
 	}
-}
-func DetectFuncAtStackN(n int) string {
-	_, file, line, _ := runtime.Caller(n)
-	return fmt.Sprintf(" %s:%d ", file, line)
 }

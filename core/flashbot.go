@@ -73,6 +73,6 @@ func (p *FlashbotsTransactor) Send(blockNum int64, txs []*types.Transaction) err
 		BlockNumber: blockNum,
 	}
 	log.Info(utils.ToJson(bInfo))
-	log.Msgf("Sucessfully paused contracts via flashbot relay at %d bundle(%s)", blockNum, sendBundleResult.BundleHash)
+	log.AMQPMsgf("Sucessfully paused contracts via flashbot relay at %d bundle(%s)", blockNum, sendBundleResult.BundleHash)
 	return nil
 }

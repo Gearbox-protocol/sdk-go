@@ -1,32 +1,37 @@
 package log
 
 import (
+	"log"
+	"strings"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type ampqService struct {
-	ch *amqp.Channel
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		Fatalf("%s: %s", msg, err)
-	}
-}
+var _amqpChannel *amqp.Channel
 
 // Service constructor
-func NewAMQPService(amqpEnable string, amqpUrl string, logConfig LoggingConfig) {
+func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName string) {
+	_logConfig = logConfig
+	splits := strings.SplitN(appName, "@", 2)
+	_logConfig.App = splits[0]
+	if len(splits) > 1 {
+		_logConfig.Instance = splits[1]
+	}
+
 	if amqpEnable == "0" {
 		return
 	}
 	//
 	conn, err := amqp.Dial(amqpUrl)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	if err != nil {
+		Error(err, "Failed to connect to RabbitMQ")
+	}
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	if err != nil {
+		Error(err, "Failed to open a channel")
+	}
 	//
-	logConfig.Channel = ch
-	_logConfig = logConfig
+	_amqpChannel = ch
 }
 
 func GetNetworkName(chainId int64) (name string) {
@@ -41,4 +46,25 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "TEST"
 	}
 	return
+}
+
+func send(important bool, message string) {
+	if _amqpChannel == nil {
+		return
+	}
+	err := _amqpChannel.Publish(
+		_logConfig.Exchange,                // exchange
+		GetNetworkName(_logConfig.ChainId), // routing key
+		false,                              // mandatory
+		false,                              // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(message),
+			Headers:     amqp.Table{"important": important},
+			AppId:       _logConfig.App,
+			// UserId:      _logConfig.Instance,
+		})
+	if err != nil {
+		log.Println("Cant sent notification", err)
+	}
 }

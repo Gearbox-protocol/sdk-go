@@ -54,7 +54,7 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 		return receipt, fmt.Errorf("tx not successful for %s %+v", job, receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
-	log.Msgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
 	return receipt, nil
 }
