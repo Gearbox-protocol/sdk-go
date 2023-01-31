@@ -120,7 +120,7 @@ func (anvil *AnvilClient) RevertSnapshot(id string) {
 		log.Fatalf("Snapshot revert to %d failed with %s", id, err)
 	}
 	if !result.(bool) {
-		log.Fatal("revert %d to failed", id)
+		log.Fatalf("revert %s to failed", id)
 	}
 }
 

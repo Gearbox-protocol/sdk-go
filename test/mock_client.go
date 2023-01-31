@@ -183,7 +183,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		s := 4
 		index, ok := new(big.Int).SetString(hex.EncodeToString(call.Data[s:s+32]), 16)
 		if !ok {
-			log.Fatal("oracle:%s data: %s", call.To, call.Data)
+			log.Fatalf("oracle:%s data: %x", call.To, call.Data)
 		}
 		oracle := *call.To
 		feed := t.state.OracleMgr.GetState(oracle, int(index.Int64()))

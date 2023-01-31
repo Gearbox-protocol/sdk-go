@@ -15,26 +15,26 @@ var testLogModule *testing.T
 func SetTestLogging(t *testing.T) {
 	testLogModule = t
 }
-
+func severityFormat(severity string) string {
+	return "[" + severity + "]: "
+}
 func printf(severity, msg string, args ...interface{}) string {
-	_log := fmt.Sprintf("["+severity+"]: "+DetectFuncAtStackN(3)+msg, args...)
+	_log := fmt.Sprintf(severityFormat(severity)+DetectFuncAtStackN(3)+msg, args...)
 	if testLogModule == nil {
 		log.Println(_log)
 	} else {
 		testLogModule.Log(_log)
 	}
-	return _log
+	return fmt.Sprintf(severityFormat(severity)+msg, args...)
 }
 func println(severity string, args ...interface{}) string {
-	x := []interface{}{"[" + severity + "]: ", DetectFuncAtStackN(3)}
-	x = append(x, args...)
-	_log := fmt.Sprintln(x...)
+	_log := severityFormat(severity) + DetectFuncAtStackN(3) + fmt.Sprintln(args...)
 	if testLogModule == nil {
 		log.Printf(_log)
 	} else {
 		testLogModule.Logf(_log)
 	}
-	return _log
+	return severityFormat(severity) + fmt.Sprintln(args...)
 }
 
 // ---- Don't send to amqp
@@ -57,12 +57,12 @@ func Verbose(args ...interface{}) {
 //
 func Warnf(msg string, args ...interface{}) {
 	_log := printf("Warn", msg, args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 func Warn(args ...interface{}) {
 	_log := println("Warn", args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 func Infof(msg string, args ...interface{}) {
@@ -85,25 +85,25 @@ func InfoStackN(n int, v ...interface{}) {
 
 func Errorf(msg string, args ...interface{}) {
 	_log := printf("Error", msg, args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 func Error(args ...interface{}) {
 	_log := println("Error", args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
 	_log := printf("Fatal", msg, args...)
-	send(true, _log)
+	send(false, _log)
 	os.Exit(1)
 }
 
 func Fatal(args ...interface{}) {
 	debug.PrintStack()
 	_log := println("Fatal", args...)
-	send(true, _log)
+	send(false, _log)
 	os.Exit(1)
 }
 
@@ -115,18 +115,18 @@ func CheckFatal(err error) {
 		} else {
 			testLogModule.Fatal(msg)
 		}
-		send(true, msg)
+		send(false, msg)
 	}
 }
 
 func AMQPMsgf(msg string, args ...interface{}) {
 	_log := printf("AMQP", msg, args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 func AMQPMsg(args ...interface{}) {
 	_log := println("AMQP", args...)
-	send(true, _log)
+	send(false, _log)
 }
 
 ////

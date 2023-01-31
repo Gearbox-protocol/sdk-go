@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var _logConfig LoggingConfig
@@ -19,6 +21,11 @@ type LoggingConfig struct {
 	// for chain for risk msg
 	ChainId int64 `json:"chain"`
 	appDetails
+}
+
+func (cfg LoggingConfig) getRiskToken() string {
+	token := crypto.Keccak256Hash([]byte(cfg.App + cfg.Instance + cfg.RiskSecret))
+	return token.String()[2:]
 }
 
 type CommonEnvs struct {
@@ -75,7 +82,7 @@ func postReqToRisk(alert RiskAlert) {
 	}
 	req, _ := http.NewRequest(http.MethodPost, _logConfig.RiskEndpoint, bytes.NewBuffer(body))
 	if _logConfig.RiskSecret != "" {
-		req.Header.Set("Authorization", "Bearer "+_logConfig.RiskSecret)
+		req.Header.Set("Authorization", "Bearer "+_logConfig.getRiskToken())
 		req.Header.Set("content-type", "application/json")
 	}
 	resp, err := (&http.Client{}).Do(req)
