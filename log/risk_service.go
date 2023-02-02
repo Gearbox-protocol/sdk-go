@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/google/uuid"
 )
 
 var _logConfig LoggingConfig
@@ -52,6 +53,7 @@ type RiskHeader struct {
 }
 type RiskEvent struct {
 	RiskHeader
+	Id     string `json:"id"`
 	TxHash string `json:"tx_hash,omitempty"`
 	// message to send
 	Msg string `json:"message"`
@@ -75,6 +77,7 @@ func postReqToRisk(alert RiskAlert) {
 	if _logConfig.RiskEndpoint == "" {
 		return
 	}
+	alert.Id = uuid.New().String()
 	body, err := json.Marshal([]RiskAlert{alert})
 	if err != nil {
 		Error(err)
