@@ -21,6 +21,15 @@ var poolRewardv2GIP30 map[string]*big.Int = map[string]*big.Int{
 	"dwstETH": big.NewInt(0),
 }
 
+func init() {
+	for _, v := range poolRewardv2 {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
+	for _, v := range poolRewardv2GIP30 {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
+}
+
 type PoolRewardSnapshot struct {
 	RewardPerBlock map[string]*big.Int
 	Block          int64
@@ -37,6 +46,16 @@ func GetRewardPerToken(chainId int64, from, to int64) []PoolRewardSnapshot {
 		return MainnetPoolRewards.getSnapshotsInRange(from, to)
 	case 5:
 		return GoerliPoolRewards.getSnapshotsInRange(from, to)
+	default:
+		return nil
+	}
+}
+func LastRewardPerBlock(chainId int64) map[string]*big.Int {
+	switch chainId {
+	case 1:
+		return MainnetPoolRewards[len(MainnetPoolRewards)-1].RewardPerBlock
+	case 5:
+		return GoerliPoolRewards[len(GoerliPoolRewards)-1].RewardPerBlock
 	default:
 		return nil
 	}
