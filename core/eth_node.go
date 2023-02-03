@@ -148,6 +148,9 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 	defaultSize := 20
 	if params != nil {
 		defaultSize = params[0]
+		if defaultSize == 0 {
+			log.Fatal("can't make multicall with batch size of 0")
+		}
 	}
 	//
 	callsInd := 0
@@ -159,7 +162,13 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 			next = callsLen
 		}
 		tmpResult, err := contract.TryAggregate(opts, successRequired, calls[callsInd:next])
-		log.CheckFatal(err)
+		if err != nil {
+			if strings.Contains(err.Error(), "OutOfGas") {
+				tmpResult = MakeMultiCall(client, blockNum, successRequired, calls[callsInd:next], defaultSize/2)
+			} else {
+				log.Fatal(err)
+			}
+		}
 		result = append(result, tmpResult...)
 		callsInd += defaultSize
 	}
