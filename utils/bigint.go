@@ -122,6 +122,13 @@ func absFloat64(a float64) float64 {
 	return -1 * a
 }
 
+func NotNilBigInt(a *big.Int) *big.Int {
+	if a == nil {
+		return big.NewInt(0)
+	}
+	return a
+}
+
 func IntDiffMoreThanFraction(oldValue, newValue int64, diff float64) bool {
 	return absFloat64(float64(newValue-oldValue))/float64(oldValue) > diff
 }

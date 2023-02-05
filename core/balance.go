@@ -10,6 +10,10 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
+// there is balanceType without float decimal value and
+// CoreIntBalance with float decimal value
+// DBFOrmatBalance is map[string]CoreIntBalance
+// there is method on DbFormatBalance ToBalanceType() map[string]BalanceType
 type BalanceType struct {
 	// not important field is not used for any calculation
 	IsAllowed bool     `json:"isAllowed"`
