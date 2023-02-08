@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
@@ -51,34 +52,37 @@ type RiskHeader struct {
 	// condition to monitor
 	EventCode string `json:"event_code"`
 }
-type RiskEvent struct {
+type RiskAlert struct {
 	RiskHeader
-	Id     string `json:"id"`
-	TxHash string `json:"tx_hash,omitempty"`
+	FirstOccuredId string `json:"first_occured,omitempty"`
+	Id             string `json:"id"`
+	TxHash         string `json:"tx_hash,omitempty"`
 	// message to send
 	Msg string `json:"message"`
 }
 
-type RiskAlert struct {
-	RiskEvent
+type riskMsgFullScheme struct {
+	RiskAlert
 	LoggingConfig
 }
 
-func SendRiskAlert(event RiskEvent) {
+func SendRiskAlert(event RiskAlert) {
 	_log := println(event.EventCode, event.Msg)
-	postReqToRisk(RiskAlert{
-		RiskEvent:     event,
+	if event.Id == "" {
+		event.Id = uuid.New().String()
+	}
+	postReqToRisk(riskMsgFullScheme{
+		RiskAlert:     event,
 		LoggingConfig: _logConfig,
 	})
 	send(true, _log)
 }
 
-func postReqToRisk(alert RiskAlert) {
+func postReqToRisk(alert riskMsgFullScheme) {
 	if _logConfig.RiskEndpoint == "" {
 		return
 	}
-	alert.Id = uuid.New().String()
-	body, err := json.Marshal([]RiskAlert{alert})
+	body, err := json.Marshal([]riskMsgFullScheme{alert})
 	if err != nil {
 		Error(err)
 		return
@@ -100,5 +104,42 @@ func postReqToRisk(alert RiskAlert) {
 			body = string(data)
 		}
 		Error("Risk service returns error: ", resp.StatusCode, body)
+	}
+}
+
+type RiskMsgTimer struct {
+	FirstOccuredId string
+	lastTs         time.Time
+}
+
+type TimerFn func(time.Duration) (timer *RiskMsgTimer, canSendMsg bool, isFirstMsg bool)
+
+func GetRiskMsgTimer() TimerFn {
+	timer := &RiskMsgTimer{}
+	return func(duration time.Duration) (*RiskMsgTimer, bool, bool) {
+		if timer.lastTs.IsZero() {
+			timer.FirstOccuredId = uuid.New().String()
+			timer.lastTs = time.Now()
+			return timer, true, true
+		}
+		if time.Since(timer.lastTs) > duration {
+			timer.lastTs = time.Now()
+			return timer, true, false
+		}
+		return timer, false, false
+	}
+}
+
+func SendRiskAlertPerTimer(alert RiskAlert, timerFn TimerFn, interval time.Duration) {
+	if interval == 0 {
+		SendRiskAlert(alert)
+		return
+	}
+	if timer, canSendMsg, isFirstMsg := timerFn(interval); canSendMsg {
+		alert.FirstOccuredId = timer.FirstOccuredId
+		if isFirstMsg {
+			alert.Id = timer.FirstOccuredId
+		}
+		SendRiskAlert(alert)
 	}
 }
