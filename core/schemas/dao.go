@@ -98,4 +98,5 @@ const (
 	RemovedFromUpgradeable
 	EmergencyLiquidatorAdded
 	EmergencyLiquidatorRemoved
+	AdapterForbidden
 )

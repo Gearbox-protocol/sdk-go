@@ -154,6 +154,7 @@ type Protocol struct {
 	Adapter       string `gorm:"column:adapter" json:"adapter"`
 	BlockNumber   int64  `gorm:"column:block_num" json:"blockNum"`
 	CreditManager string `gorm:"column:credit_manager" json:"creditManager"`
+	Configurator  string `gorm:"column:configurator" json:"configurator"`
 }
 
 func (Protocol) TableName() string {
