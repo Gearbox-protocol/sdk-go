@@ -61,17 +61,14 @@ func LastRewardPerBlock(chainId int64) map[string]*big.Int {
 	}
 }
 
-func (changes PoolRewardSnapshots) smallOrEqualBlock(from int64) int {
+func (changes PoolRewardSnapshots) strictlyBiggerBlock(from int64) int {
 	return sort.Search(len(changes), func(ind int) bool { return changes[ind].Block > from })
 }
 func (changes PoolRewardSnapshots) getSnapshotsInRange(from, to int64) []PoolRewardSnapshot {
-	fromRewardBlock := changes.smallOrEqualBlock(from)
-	toRewardBlock := changes.smallOrEqualBlock(to)
-	if fromRewardBlock != 0 {
-		fromRewardBlock -= 1
+	fromRewardInd := changes.strictlyBiggerBlock(from)
+	toRewardInd := changes.strictlyBiggerBlock(to)
+	if fromRewardInd != 0 {
+		fromRewardInd -= 1
 	}
-	if toRewardBlock == len(changes) {
-		toRewardBlock -= 1
-	}
-	return changes[fromRewardBlock:toRewardBlock]
+	return changes[fromRewardInd:toRewardInd]
 }

@@ -26,4 +26,4 @@ jobs:
     - run: go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0 && ./generate-test.sh
       if: steps.cache-jsonnet-test.outputs.cache-hit != 'true'
     - name: Test lib build
-      run: go vet ./...   && go test ./calc && go test ./test && go test ./utils
+      run: go vet ./...   && go test ./calc ./core/... ./log ./test ./utils
