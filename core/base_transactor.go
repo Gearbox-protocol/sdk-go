@@ -48,10 +48,12 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 	defer cancel()
 	receipt, err := bind.WaitMined(ctx, p.Client, tx)
 	if err != nil {
-		return receipt, fmt.Errorf("tx failed for %s: %s", job, err.Error())
+		return receipt, fmt.Errorf("tx failed for %s(%s): %s",
+			job, utils.ToJson(ToDynamicTx(tx)), err.Error())
 	}
 	if receipt.Status != types.ReceiptStatusSuccessful {
-		return receipt, fmt.Errorf("tx not successful for %s %+v", job, receipt)
+		return receipt, fmt.Errorf("tx not successful for %s(%s): %+v",
+			job, utils.ToJson(ToDynamicTx(tx)), receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
 	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),

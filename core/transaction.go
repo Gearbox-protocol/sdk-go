@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -38,5 +39,28 @@ func GetWallet(pk string) keystore.Key {
 	return keystore.Key{
 		Address:    fromAddress,
 		PrivateKey: privateKey,
+	}
+}
+
+func ToDynamicTx(tx *types.Transaction) *types.DynamicFeeTx {
+	if tx == nil {
+		return nil
+	}
+	var gasFeeCap, gasTipCap *big.Int
+	switch tx.Type() {
+	case types.LegacyTxType:
+	case types.DynamicFeeTxType:
+		gasTipCap = tx.GasTipCap()
+		gasFeeCap = tx.GasFeeCap()
+	}
+	return &types.DynamicFeeTx{
+		Nonce:      tx.Nonce(),
+		GasTipCap:  gasTipCap,
+		GasFeeCap:  gasFeeCap,
+		Gas:        tx.Gas(),
+		To:         tx.To(),
+		Value:      tx.Value(),
+		Data:       tx.Data(),
+		AccessList: tx.AccessList(),
 	}
 }
