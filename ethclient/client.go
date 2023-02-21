@@ -86,6 +86,9 @@ func (rc *Client) errorHandler(err error) bool {
 			time.Sleep(15 * time.Second)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
 			log.Fatal(err)
+		} else if strings.Contains(err.Error(), "EVM error FatalExternalError") { // anvil error
+			log.Verbose("Trying on anvil error")
+			time.Sleep(3 * time.Second)
 		}
 	} else {
 		return false
