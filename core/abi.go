@@ -32,6 +32,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev2"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapConnectorChecker"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Pool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Router"
@@ -112,9 +113,10 @@ func GetAbi(contractName string) *abi.ABI {
 		"Uniswapv2Router":  {ABI: uniswapv2Router.Uniswapv2RouterABI},
 		"Uniswapv2Factory": {ABI: uniswapv2Factory.Uniswapv2FactoryABI},
 		//
-		"LidoMock":    {ABI: lidoMock.LidoMockABI},
-		"MainnetLido": {ABI: mainnetLido.MainnetLidoABI},
-		"LidoKovan":   {ABI: lidoKovan.LidoKovanABI},
+		"LidoMock":                {ABI: lidoMock.LidoMockABI},
+		"MainnetLido":             {ABI: mainnetLido.MainnetLidoABI},
+		"LidoKovan":               {ABI: lidoKovan.LidoKovanABI},
+		"UniswapConnectorChecker": {ABI: uniswapConnectorChecker.UniswapConnectorCheckerABI},
 		//
 		"YearnAdapter": {ABI: yearnAdapter.YearnAdapterABI},
 		// convex for liquidator calculation
