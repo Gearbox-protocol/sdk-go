@@ -25,11 +25,10 @@ func TestSpotPriceStore(t *testing.T) {
 	//
 	var blockNumber int64 = 16112061
 	//
-	expectedTokenPrices := map[common.Address]string{}
+	expectedTokenPrices := map[string]string{}
 	utils.ReadJsonAndSetInterface("inputs/spot_price_test.json", &expectedTokenPrices)
 	tStore := getDecimalStore(client, expectedTokenPrices, blockNumber, t)
-	t.Log(utils.ToJson(tStore.decimals))
-	inchOracle := common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
+	inchOracle := common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb") // 1inch oracle
 	//
 	store := New1InchOracle(client, 1, inchOracle, tStore)
 	calls := store.GetCalls()
@@ -38,7 +37,7 @@ func TestSpotPriceStore(t *testing.T) {
 	require.JSONEq(t, utils.ToJson(expectedTokenPrices), utils.ToJson(store.GetPrices(results, blockNumber)))
 }
 
-func getDecimalStore(client core.ClientI, tokenPrices map[common.Address]string, blockNum int64, t *testing.T) *TokensStore {
+func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNum int64, t *testing.T) *TokensStore {
 	erc20ABI := core.GetAbi("Token")
 	decimalsData, err := erc20ABI.Pack("decimals")
 	if err != nil {
@@ -46,10 +45,10 @@ func getDecimalStore(client core.ClientI, tokenPrices map[common.Address]string,
 	}
 
 	calls := make([]multicall.Multicall2Call, 0, len(tokenPrices))
-	tokenInOrder := make([]common.Address, 0, len(tokenPrices))
+	tokenInOrder := make([]string, 0, len(tokenPrices))
 	for token := range tokenPrices {
 		calls = append(calls, multicall.Multicall2Call{
-			Target:   token,
+			Target:   common.HexToAddress(token),
 			CallData: decimalsData,
 		})
 		tokenInOrder = append(tokenInOrder, token)
@@ -65,9 +64,9 @@ func getDecimalStore(client core.ClientI, tokenPrices map[common.Address]string,
 			if err != nil {
 				t.Fatal(err)
 			}
-			tStore[token] = schemas.Token{
+			tStore[common.HexToAddress(token)] = schemas.Token{
 				Decimals: int8(values[0].(uint8)),
-				Address:  token.Hex(),
+				Address:  token,
 			}
 		}
 	}
