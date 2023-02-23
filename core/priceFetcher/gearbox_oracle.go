@@ -33,7 +33,7 @@ type GearboxOracle struct {
 	tokens []string
 }
 
-func NewPriceOracle(addr string, version int16, client core.ClientI) GearboxOracleI {
+func NewGearboxOracle(addr string, version int16, client core.ClientI) GearboxOracleI {
 	po := &GearboxOracle{
 		Address:     addr,
 		TokenToFeed: map[string]common.Address{},
