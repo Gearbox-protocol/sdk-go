@@ -40,3 +40,8 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
 	return GetSymToAddrStore(fileName)
 }
+
+func GetAddrToSymbolByChainId(chainId int64) map[common.Address]Symbol {
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	return GetAddrToSymbol(fileName)
+}
