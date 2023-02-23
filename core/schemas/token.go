@@ -10,11 +10,11 @@ import (
 )
 
 type Token struct {
-	Address  string       `gorm:"primaryKey;column:address" json:"address"`
+	Address  string       `gorm:"primaryKey;column:address" json:"addr"`
 	Symbol   string       `gorm:"column:symbol" json:"symbol"`
 	Decimals int8         `gorm:"column:decimals" json:"decimals"`
 	client   core.ClientI `gorm:"-" json:"-"`
-}
+} // @name TokenData
 
 func (Token) TableName() string {
 	return "tokens"
