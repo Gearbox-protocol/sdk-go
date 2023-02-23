@@ -21,7 +21,7 @@ type GearboxOracleI interface {
 	OnLog(txLog types.Log) bool
 	//
 	GetCalls() []multicall.Multicall2Call
-	UpdateStore(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
+	GetPrices(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
 }
 
 type GearboxOracle struct {
@@ -31,7 +31,6 @@ type GearboxOracle struct {
 	version     int16
 	//
 	tokens []string
-	prices map[string]*core.BigInt
 }
 
 func NewPriceOracle(addr string, version int16, client core.ClientI) GearboxOracleI {
@@ -90,11 +89,7 @@ func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 	return calls
 }
 
-func (pOracle *GearboxOracle) GetPrices() map[string]*core.BigInt {
-	return pOracle.prices
-}
-
-func (pOracle *GearboxOracle) UpdateStore(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
+func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
 	poABI := core.GetAbi("YearnPriceFeed")
 	prices := map[string]*big.Int{}
 	for i, entry := range results {
