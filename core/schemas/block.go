@@ -19,7 +19,6 @@ type (
 		TreasuryTransfers       []*TreasuryTransfer       `gorm:"foreignKey:block_num" json:"treasuryTransfers"`
 		TreasurySnapshots       []*TreasurySnapshotModel2 `gorm:"foreignKey:block_num" json:"treasurySnapshots"`
 		NoSessionTokenTransfers []*TokenTransfer          `gorm:"foreignKey:block_num" json:"noSessionTokenTransfers"`
-		UniswapPoolPrices       []*UniPoolPrices          `gorm:"foreignKey:block_num" json:"uniswapPoolPrices"`
 		TAA                     []*TransferAccountAllowed `gorm:"foreignKey:block_num" json:"transferAccountAllowed"`
 	}
 )
@@ -58,10 +57,6 @@ func (b *Block) AddPoolStat(ps *PoolStat) {
 }
 func (b *Block) AddPoolLedger(pl *PoolLedger) {
 	b.PoolLedgers = append(b.PoolLedgers, pl)
-}
-
-func (b *Block) AddUniswapPrices(prices *UniPoolPrices) {
-	b.UniswapPoolPrices = append(b.UniswapPoolPrices, prices)
 }
 
 func (b *Block) AddCreditManagerStats(cms *CreditManagerStat) {
