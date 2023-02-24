@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"math/big"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -44,4 +45,12 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 func GetAddrToSymbolByChainId(chainId int64) map[common.Address]Symbol {
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
 	return GetAddrToSymbol(fileName)
+}
+
+func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
+	decimals, err := CallFuncWithExtraBytes(client, "313ce567", addr, blockNum, nil) // decimals
+	if err != nil {
+		log.Fatalf("Can't get decimals for addr(%s) : %s", addr, err)
+	}
+	return int8(new(big.Int).SetBytes(decimals).Int64())
 }

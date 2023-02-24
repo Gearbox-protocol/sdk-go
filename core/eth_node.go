@@ -61,12 +61,17 @@ func (lf *Node) GetLatestBlockNumber() int64 {
 		log.Fatal(err)
 	}
 	blockNumToReturn := int64(latestBlockNum)
+	return blockNumToReturn
+}
+
+func (lf *Node) GetLatestFinalizedBlock(skipBlocks int64) int64 {
+	blockNum := lf.GetLatestBlockNumber()
 	// skip 2 blocks ~30 sec latest block might reorder
 	if lf.chainId != 1337 {
-		blockNumToReturn -= 4
+		blockNum -= skipBlocks
 	}
-	log.Info("Lastest blocknumber", blockNumToReturn)
-	return blockNumToReturn
+	log.Info("Last finalized block", blockNum)
+	return blockNum
 }
 
 func (lf *Node) setChainId() {
@@ -139,6 +144,25 @@ func getMultiCallContract(client ClientI) *multicall.Multicall {
 	return contract
 }
 
+type MulticallResultCounter struct {
+	results []multicall.Multicall2Result
+	ind     int
+}
+
+func NewMulticallResultCounter(results []multicall.Multicall2Result) MulticallResultCounter {
+	return MulticallResultCounter{
+		results: results,
+	}
+}
+
+func (c *MulticallResultCounter) Next() multicall.Multicall2Result {
+	if c.ind == len(c.results) {
+		log.Fatal("ind exceeded len of results")
+	}
+	ans := c.results[c.ind]
+	c.ind++
+	return ans
+}
 func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
 	contract := getMultiCallContract(client)
 	opts := &bind.CallOpts{}

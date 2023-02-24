@@ -17,7 +17,9 @@ import (
 type GearboxOracleI interface {
 	//
 	GetPriceTokenTill(blockNum int64)
+	GetAddress() common.Address
 	GetVersion() int16
+	GetTokenToFeed() map[string]common.Address
 	OnLog(txLog types.Log) bool
 	//
 	GetCalls() []multicall.Multicall2Call
@@ -45,6 +47,10 @@ func NewGearboxOracle(addr string, version int16, client core.ClientI) GearboxOr
 	return po
 }
 
+func (pOracle GearboxOracle) GetAddress() common.Address {
+	return common.HexToAddress(pOracle.Address)
+}
+
 func (pOracle *GearboxOracle) GetVersion() int16 {
 	return pOracle.version
 }
@@ -69,6 +75,10 @@ func (pOracle *GearboxOracle) OnLog(txLog types.Log) bool {
 		return true
 	}
 	return false
+}
+
+func (pOracle *GearboxOracle) GetTokenToFeed() map[string]common.Address {
+	return pOracle.TokenToFeed
 }
 
 func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {

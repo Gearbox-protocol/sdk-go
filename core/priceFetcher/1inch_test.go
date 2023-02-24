@@ -70,6 +70,5 @@ func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNu
 			}
 		}
 	}
-
-	return &TokensStore{decimals: tStore, mu: &sync.RWMutex{}}
+	return &TokensStore{tokens: tStore, mu: &sync.RWMutex{}}
 }

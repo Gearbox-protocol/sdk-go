@@ -2,6 +2,8 @@ package schemas
 
 import (
 	"math/big"
+
+	"github.com/Gearbox-protocol/sdk-go/core"
 )
 
 type LatestRounData struct {
@@ -28,22 +30,31 @@ func (UniPoolPrices) TableName() string {
 	return "uniswap_pool_prices"
 }
 
-type UniPriceAndChainlink struct {
-	ChainlinkBlockNumber int64  `gorm:"column:chainlink_block_num"`
-	Token                string `gorm:"column:token"`
-	UniBlockNum          int64  `gorm:"column:block_num"`
-	Feed                 string `gorm:"column:feed"`
-}
-
-func (UniPriceAndChainlink) TableName() string {
-	return "uniswap_chainlink_relations"
-}
-
 type UniswapPools struct {
-	V2      string `gorm:"column:pool_v2"`
-	V3      string `gorm:"column:pool_v3"`
+	V2     string `gorm:"column:pool_v2"`
+	V3_100 string `gorm:"column:pool_v3_100"`
+	V3_500 string `gorm:"column:pool_v3_500"`
+	V3_3k  string `gorm:"column:pool_v3_3k"`
+	V3_10k string `gorm:"column:pool_v3_10k"`
+
 	Token   string `gorm:"column:token;primaryKey"`
 	Updated bool   `gorm:"-"`
+}
+
+type FeeAndUniv3Pool struct {
+	Fee  int16
+	Pool string
+}
+
+func (p UniswapPools) GetPools() (pools []FeeAndUniv3Pool) {
+	nullAddr := core.NULL_ADDR.Hex()
+	fees := []int16{100, 500, 3000, 10000}
+	for ind, pool := range []string{p.V3_100, p.V3_500, p.V3_3k, p.V3_10k} {
+		if pool != nullAddr {
+			pools = append(pools, FeeAndUniv3Pool{Fee: fees[ind], Pool: pool})
+		}
+	}
+	return pools
 }
 
 type TokenSyncDetails struct {
