@@ -249,9 +249,7 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 					calc.symToAddr.Exchanges[details.Pool],
 					blockBigInt,
 				)
-				if err != nil {
-					log.Fatal(err)
-				}
+				log.CheckFatal(err)
 				balanceOfPool = balance
 			} else {
 				entry := results[ind]

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
-	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -190,9 +189,6 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 		if err != nil {
 			if strings.Contains(err.Error(), "OutOfGas") {
 				tmpResult = MakeMultiCall(client, blockNum, successRequired, calls[callsInd:next], defaultSize/2)
-			} else if strings.Contains(err.Error(), "429") {
-				ethclient.SleepFor429Error(err.Error())
-				tmpResult = MakeMultiCall(client, blockNum, successRequired, calls[callsInd:next], defaultSize)
 			} else {
 				log.Fatal(err)
 			}
