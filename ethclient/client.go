@@ -3,6 +3,8 @@ package ethclient
 import (
 	"context"
 	"math/big"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -64,13 +66,26 @@ func (rc *Client) returnIndex(index int) {
 	rc.indexInUse[index] = false
 }
 
+func SleepFor429Error(msg string) {
+	re2, _ := regexp.Compile(`backoff_seconds":(\d+)`)
+	matches := re2.FindStringSubmatch(msg)
+	sleepFor := 20 * time.Second
+	if len(matches) == 2 {
+		secs, err := strconv.ParseInt(matches[1], 10, 64)
+		log.CheckFatal(err)
+		sleepFor = time.Second * time.Duration(secs*2)
+	}
+	log.Verbosef("sleeping for %s due to 429 error.", sleepFor)
+	time.Sleep(sleepFor)
+}
+
 func (rc *Client) errorHandler(err error) bool {
 	if err != nil {
 		if err.Error() == "execution aborted (timeout = 10s)" {
 			log.Error("sleeping due to execution aborted (timeout = 10s)")
 			time.Sleep(2 * time.Second)
-		} else if strings.HasPrefix(err.Error(), "429") { // too many request
-			time.Sleep(20 * time.Second)
+		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
+			SleepFor429Error(err.Error())
 		} else if strings.Contains(err.Error(), "Your app has exceeded its compute units per second capacity") { // too many request alchemy
 			time.Sleep(20 * time.Second)
 			panic(err.Error())
