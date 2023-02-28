@@ -5,10 +5,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -132,82 +130,4 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 		return logs, err
 	}
 	return append(newLogs, logs...), nil
-}
-
-func getMultiCallAddr() string {
-	return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
-}
-
-func getMultiCallContract(client ClientI) *multicall.Multicall {
-	contract, err := multicall.NewMulticall(common.HexToAddress(getMultiCallAddr()), client)
-	log.CheckFatal(err)
-	return contract
-}
-
-type MulticallResultCounter struct {
-	results []multicall.Multicall2Result
-	ind     int
-}
-
-func NewMulticallResultCounter(results []multicall.Multicall2Result) MulticallResultCounter {
-	return MulticallResultCounter{
-		results: results,
-	}
-}
-
-func (c *MulticallResultCounter) Next() multicall.Multicall2Result {
-	if c.ind == len(c.results) {
-		log.Fatal("ind exceeded len of results")
-	}
-	ans := c.results[c.ind]
-	c.ind++
-	return ans
-}
-func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
-	contract := getMultiCallContract(client)
-	opts := &bind.CallOpts{}
-	if blockNum != 0 {
-		opts.BlockNumber = big.NewInt(blockNum)
-	}
-	defaultSize := 20
-	if params != nil {
-		defaultSize = params[0]
-		if defaultSize == 0 {
-			log.Fatal("can't make multicall with batch size of 0")
-		}
-	}
-	//
-	callsInd := 0
-	callsLen := len(calls)
-	result := make([]multicall.Multicall2Result, 0, len(calls))
-	for callsInd < callsLen {
-		next := callsInd + defaultSize
-		if next > callsLen {
-			next = callsLen
-		}
-		tmpResult, err := contract.TryAggregate(opts, successRequired, calls[callsInd:next])
-		if err != nil {
-			if strings.Contains(err.Error(), "OutOfGas") {
-				tmpResult = MakeMultiCall(client, blockNum, successRequired, calls[callsInd:next], defaultSize/2)
-			} else {
-				log.Fatal(err)
-			}
-		}
-		result = append(result, tmpResult...)
-		callsInd += defaultSize
-	}
-	return result
-}
-
-func MulticallAnsBigInt(result multicall.Multicall2Result) (*big.Int, bool) {
-	if result.Success {
-		return new(big.Int).SetBytes(result.ReturnData[:32]), true
-	}
-	return big.NewInt(0), false
-}
-func MulticallAnsAddress(result multicall.Multicall2Result) (common.Address, bool) {
-	if result.Success {
-		return common.BytesToAddress(result.ReturnData[:32]), true
-	}
-	return NULL_ADDR, false
 }

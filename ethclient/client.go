@@ -3,6 +3,7 @@ package ethclient
 import (
 	"context"
 	"math/big"
+	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
@@ -65,7 +66,7 @@ func sleepFor429Error(msg string) {
 	if len(matches) == 2 {
 		secs, err := strconv.ParseInt(matches[1], 10, 64)
 		log.CheckFatal(err)
-		sleepFor = time.Second * time.Duration(secs*2)
+		sleepFor = time.Second * time.Duration(secs)
 	}
 	log.Verbosef("sleeping for %s due to 429 error.", sleepFor)
 	time.Sleep(sleepFor)
@@ -121,8 +122,14 @@ func getDataViaRetry[T any](getData func() (T, error)) (T, error) {
 
 func (rc Client) getClient() (*ethclient.Client, func()) {
 	rc.sem.Acquire(context.TODO(), 1)
-	for _, muclient := range rc.clients {
+
+	l := len(rc.clients)
+	start := rand.Intn(l)
+	for i := 0; i < l; i++ {
+		ind := (i + start) % l
+		muclient := rc.clients[ind]
 		if muclient.mu.TryLock() {
+			// fmt.Println(ind)
 			mu := muclient.mu
 			return muclient.client, func() {
 				mu.Unlock()
