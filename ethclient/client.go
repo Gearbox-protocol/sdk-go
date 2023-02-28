@@ -128,14 +128,15 @@ func (rc *Client) Close() {
 }
 
 func getDataViaRetry[T any](wrapperClient *Client, mc *MutextedClient, getData func(c *ethclient.Client) (T, error)) (T, error) {
-	data, err := getData(mc.client)
-	if err != nil && errorHandler(err, mc) {
+	for {
+		data, err := getData(mc.client)
+		if err == nil || !errorHandler(err, mc) {
+			mc.mu.Unlock()
+			return data, err
+		}
 		mc.mu.Unlock()
 		mc = wrapperClient.getClient()
-		data, err = getData(mc.client)
 	}
-	mc.mu.Unlock()
-	return data, err
 }
 
 func (rc Client) getClient() *MutextedClient {
@@ -200,15 +201,15 @@ func (rc *Client) HeaderByNumber(ctx context.Context, number *big.Int) (*types.H
 // TransactionByHash returns the transaction with the given hash.
 func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*types.Transaction, bool, error) {
 	mc := rc.getClient()
-	//
-	tx, pending, err := mc.client.TransactionByHash(ctx, hash)
-	if errorHandler(err, mc) {
+	for {
+		tx, pending, err := mc.client.TransactionByHash(ctx, hash)
+		if err == nil || !errorHandler(err, mc) { // if no error or err not handled
+			mc.mu.Unlock()
+			return tx, pending, err
+		}
 		mc.mu.Unlock()
 		mc = rc.getClient()
-		tx, pending, err = mc.client.TransactionByHash(ctx, hash)
 	}
-	mc.mu.Unlock()
-	return tx, pending, err
 }
 
 func (rc *Client) TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error) {
@@ -336,11 +337,13 @@ func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	mc := rc.getClient()
-	err := mc.client.SendTransaction(ctx, tx)
-	if errorHandler(err, mc) {
+	for {
+		err := mc.client.SendTransaction(ctx, tx)
+		if err == nil || !errorHandler(err, mc) { // if no error or err not handled
+			mc.mu.Unlock()
+			return err
+		}
 		mc.mu.Unlock()
 		mc = rc.getClient()
-		err = mc.client.SendTransaction(ctx, tx)
 	}
-	return err
 }
