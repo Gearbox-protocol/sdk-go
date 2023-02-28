@@ -36,6 +36,9 @@ func init() {
 	for _, v := range poolRewardv2GIP30 {
 		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
 	}
+	for _, v := range poolRewardFRAX {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
 }
 
 type PoolRewardSnapshot struct {
@@ -45,7 +48,7 @@ type PoolRewardSnapshot struct {
 
 type PoolRewardSnapshots []PoolRewardSnapshot
 
-var MainnetPoolRewards = PoolRewardSnapshots{{poolRewardv2, 15820000}, {poolRewardv2GIP30, 15977000}, {poolRewardv2GIP30, 16720000}}
+var MainnetPoolRewards = PoolRewardSnapshots{{poolRewardv2, 15820000}, {poolRewardv2GIP30, 15977000}, {poolRewardFRAX, 16720000}}
 var GoerliPoolRewards = PoolRewardSnapshots{{poolRewardv2, 7694030}}
 
 func GetRewardPerToken(chainId int64, from, to int64) []PoolRewardSnapshot {

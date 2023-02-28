@@ -45,7 +45,7 @@ func (mdl TokensStore) GetDecimals(tokenAddr common.Address) int8 {
 	if !ok {
 		token, err := schemas.NewToken(tokenAddr.Hex(), mdl.client)
 		if err != nil {
-			log.Fatalf("Err(%s) for token: %s", err, token)
+			log.Fatalf("Err(%s) for token: %s", err, token.Address)
 		}
 		mdl.tokens[tokenAddr] = *token
 	}
