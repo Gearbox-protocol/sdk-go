@@ -25,7 +25,7 @@ type ClientI interface {
 	NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error)
 	//
 	// HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error)
-	// HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
+	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 	// TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error)
 	// TransactionCount(ctx context.Context, blockHash common.Hash) (uint, error)
 	// TransactionInBlock(ctx context.Context, blockHash common.Hash, index uint) (*types.Transaction, error)
