@@ -38,28 +38,30 @@ func (mdl TokensStore) GetTokens() (tokens []schemas.Token) {
 	return
 }
 
-func (mdl TokensStore) GetDecimals(tokenAddr common.Address) int8 {
+func (mdl TokensStore) getToken(tokenAddr common.Address) schemas.Token {
 	mdl.mu.RLock()
-	defer mdl.mu.RUnlock()
 	_, ok := mdl.tokens[tokenAddr]
+	mdl.mu.RUnlock()
 	if !ok {
 		token, err := schemas.NewToken(tokenAddr.Hex(), mdl.client)
 		if err != nil {
 			log.Fatalf("Err(%s) for token: %s", err, token.Address)
 		}
+		mdl.mu.Lock()
 		mdl.tokens[tokenAddr] = *token
+		mdl.mu.Unlock()
 	}
-	return mdl.tokens[tokenAddr].Decimals
-}
-
-func (mdl TokensStore) GetSymbol(token common.Address) core.Symbol {
 	mdl.mu.RLock()
 	defer mdl.mu.RUnlock()
-	v, ok := mdl.tokens[token]
-	if !ok {
-		log.Fatal("Decimal not found for token ", token)
-	}
-	return core.Symbol(v.Symbol)
+	return mdl.tokens[tokenAddr]
+}
+
+func (mdl TokensStore) GetDecimals(tokenAddr common.Address) int8 {
+	return mdl.getToken(tokenAddr).Decimals
+}
+
+func (mdl TokensStore) GetSymbol(tokenAddr common.Address) core.Symbol {
+	return core.Symbol(mdl.getToken(tokenAddr).Symbol)
 }
 
 func (mdl TokensStore) Exists(token common.Address) bool {
