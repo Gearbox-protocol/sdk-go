@@ -1,15 +1,13 @@
 package core
 
 import (
-	"bytes"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"net/http"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -26,48 +24,16 @@ func NewAnvilClient(url string) *AnvilClient {
 	}
 }
 
-func getRequestBody(method string, params ...interface{}) *RequestBody {
-	return &RequestBody{
-		JsonRPC: "2.0",
-		Id:      1,
-		Method:  method,
-		Params:  params,
-	}
-}
-
 func (anvil *AnvilClient) ImpersonateAccount(account string) error {
-	body := getRequestBody("anvil_impersonateAccount", account)
-	_, err := anvil.makeRequest(body)
+	body := utils.GetJsonRPCRequestBody("anvil_impersonateAccount", account)
+	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	return err
 }
 
-func (anvil *AnvilClient) makeRequest(body *RequestBody) (interface{}, error) {
-	bodyBytes, err := json.Marshal(body)
+func (anvil *AnvilClient) SendAsImpersonator(impAccount common.Address, tx *types.Transaction) common.Hash {
+	err := anvil.ImpersonateAccount(impAccount.Hex())
 	log.CheckFatal(err)
-	reader := bytes.NewReader(bodyBytes)
-	// make request
-	req, err := http.NewRequest(http.MethodPost, anvil.url, reader)
-	log.CheckFatal(err)
-	req.Header["Content-Type"] = []string{"application/json"}
-	// get response
-	response, err := anvil.client.Do(req)
-	log.CheckFatal(err)
-	respBytes, err := ioutil.ReadAll(response.Body)
-	log.CheckFatal(err)
-	//
-	data := ResponseBody{}
-	json.Unmarshal(respBytes, &data)
-	if data.Error != nil {
-		return nil, fmt.Errorf("%+v", data.Error)
-	} else {
-		return data.Result, nil
-	}
-}
-
-type ResponseBody struct {
-	JsonRPC string      `json:"jsonrpc"`
-	Error   interface{} `json:"error"`
-	Result  interface{} `json:"result"`
+	return anvil.SendTransaction(impAccount, tx)
 }
 
 type anvilTransaction struct {
@@ -90,7 +56,7 @@ func bigIntToString(n int64) string {
 }
 
 func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transaction) common.Hash {
-	body := getRequestBody("eth_sendTransaction", anvilTransaction{
+	body := utils.GetJsonRPCRequestBody("eth_sendTransaction", anvilTransaction{
 		From:            from.Hex(),
 		To:              tx.To().Hex(),
 		GasPrice:        bigIntToString(tx.GasPrice().Int64()),
@@ -100,7 +66,7 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 		Value:           fmt.Sprintf("%x", tx.Value()),
 		TransactionType: bigIntToString(int64(tx.Type())),
 	})
-	result, err := anvil.makeRequest(body)
+	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
 		log.Fatal(err, "from", from)
 	}
@@ -108,25 +74,18 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 }
 
 func (anvil *AnvilClient) TakeSnapshot() string {
-	body := getRequestBody("evm_snapshot")
-	result, err := anvil.makeRequest(body)
+	body := utils.GetJsonRPCRequestBody("evm_snapshot")
+	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	log.CheckFatal(err)
 	return result.(string)
 }
 func (anvil *AnvilClient) RevertSnapshot(id string) {
-	body := getRequestBody("evm_revert", id)
-	result, err := anvil.makeRequest(body)
+	body := utils.GetJsonRPCRequestBody("evm_revert", id)
+	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
 		log.Fatalf("Snapshot revert to %d failed with %s", id, err)
 	}
 	if !result.(bool) {
 		log.Fatalf("revert %s to failed", id)
 	}
-}
-
-type RequestBody struct {
-	JsonRPC string        `json:"jsonrpc"`
-	Id      int           `json:"id"`
-	Method  string        `json:"method"`
-	Params  []interface{} `json:"params"`
 }

@@ -110,7 +110,7 @@ func Fatal(args ...interface{}) {
 func CheckFatal(err error) {
 	if err != nil {
 		debug.PrintStack()
-		msg := "[Fatal]: " + DetectFuncAtStackN(1) + err.Error()
+		msg := "[Fatal]: " + DetectFuncAtStackN(2) + err.Error()
 		if testLogModule == nil {
 			log.Fatalln(msg)
 		} else {
