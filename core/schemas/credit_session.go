@@ -1,7 +1,9 @@
 package schemas
 
 import (
+	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 )
@@ -14,6 +16,41 @@ const (
 	LiquidateExpired
 	LiquidatePaused
 )
+
+func AccountStatusToStr(id int) (string, error) {
+	switch id {
+	case 0:
+		return "Active", nil
+	case 1:
+		return "Closed", nil
+	case 2:
+		return "Repaid", nil
+	case 3:
+		return "Liquidated", nil
+	case 4:
+		return "LiquidateExpired", nil
+	case 5:
+		return "LiquidatePaused", nil
+	}
+	return "", fmt.Errorf("unknown status id: %d", id)
+}
+func AccountStatusStrToId(status string) (int, error) {
+	switch strings.ToLower(status) {
+	case "active":
+		return 0, nil
+	case "closed":
+		return 1, nil
+	case "repaid":
+		return 2, nil
+	case "liquidated":
+		return 3, nil
+	case "liquidateexpired":
+		return 4, nil
+	case "liquidatepaused":
+		return 5, nil
+	}
+	return -1, fmt.Errorf("unknown status type: %s", status)
+}
 
 func IsStatusLiquidated(status int) bool {
 	return status == Liquidated || status == LiquidateExpired || status == LiquidatePaused
