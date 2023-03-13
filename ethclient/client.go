@@ -91,9 +91,9 @@ func sleepFor429Error(msg string) int64 {
 func errorHandler(err error, mc *MutextedClient) bool {
 	if err != nil {
 		// fmt.Println("retrying")
-		if err.Error() == "execution aborted (timeout = 10s)" {
-			log.Error("sleeping due to execution aborted (timeout = 10s)")
-			mc.addSleepForSecs(2)
+		if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
+			log.Verbose("sleeping due to ", err.Error())
+			mc.addSleepForSecs(60)
 		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
 			mc.addSleepForSecs(sleepFor429Error(err.Error()))
 		} else if strings.Contains(err.Error(), "504") { // Gateway Timeout server error
