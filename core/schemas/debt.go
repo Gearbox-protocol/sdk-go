@@ -31,6 +31,7 @@ type Debt struct {
 	AmountToPoolBI *core.BigInt `gorm:"-" json:"-"`
 	// field not present in current_debts
 	TotalValueInUSD float64 `gorm:"column:total_value_usd" json:"totalValueInUSD"`
+	FarmingValUSD   float64 `gorm:"-" json:"-"`
 }
 
 type CurrentDebt struct {
@@ -41,9 +42,11 @@ type CurrentDebt struct {
 	CalBorrowedAmountPlusInterest float64 `gorm:"column:cal_borrowed_amt_with_interest" json:"calBorrowedAmountPlusInterest"`
 	CalThresholdValue             float64 `gorm:"column:cal_threshold_value" json:"calThresholdValue"`
 	//
-	AmountToPool  float64      `gorm:"-" json:"amountToPool"`
-	RepayAmountBI *core.BigInt `gorm:"column:repay_amount_bi" json:"-"`
-	RepayAmount   float64      `gorm:"column:repay_amount" json:"repayAmount"`
+	AmountToPool    float64      `gorm:"-" json:"amountToPool"`
+	RepayAmountBI   *core.BigInt `gorm:"column:repay_amount_bi" json:"-"`
+	RepayAmount     float64      `gorm:"column:repay_amount" json:"repayAmount"`
+	TotalValueInUSD float64      `gorm:"column:total_value_usd" json:"totalValueInUSD"`
+	TFIndex         float64      `gorm:"column:tf_index" json:"-"`
 }
 
 func (CurrentDebt) TableName() string {
