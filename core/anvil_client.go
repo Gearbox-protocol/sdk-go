@@ -80,6 +80,7 @@ func (anvil *AnvilClient) TakeSnapshot() string {
 	return result.(string)
 }
 func (anvil *AnvilClient) RevertSnapshot(id string) {
+	log.Info("Reverting snapshot", id)
 	body := utils.GetJsonRPCRequestBody("evm_revert", id)
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {

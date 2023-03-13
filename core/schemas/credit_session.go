@@ -52,6 +52,10 @@ func AccountStatusStrToId(status string) (int, error) {
 	return -1, fmt.Errorf("unknown status type: %s", status)
 }
 
+func AllowedAccountStatus(status int) bool {
+	return status >= Active && status <= LiquidatePaused
+}
+
 func IsStatusLiquidated(status int) bool {
 	return status == Liquidated || status == LiquidateExpired || status == LiquidatePaused
 }
