@@ -20,6 +20,7 @@ type (
 		TreasurySnapshots       []*TreasurySnapshotModel2 `gorm:"foreignKey:block_num" json:"treasurySnapshots"`
 		NoSessionTokenTransfers []*TokenTransfer          `gorm:"foreignKey:block_num" json:"noSessionTokenTransfers"`
 		TAA                     []*TransferAccountAllowed `gorm:"foreignKey:block_num" json:"transferAccountAllowed"`
+		DieselTransfers         []*DieselTransfer         `gorm:"foreignKey:block_num" json:"dieselTransfers"`
 	}
 )
 
@@ -29,6 +30,9 @@ func (Block) TableName() string {
 
 func (b *Block) AddAccountOperation(accountOperation *AccountOperation) {
 	b.AccountOperations = append(b.AccountOperations, accountOperation)
+}
+func (b *Block) AddDieselTransfer(transfer *DieselTransfer) {
+	b.DieselTransfers = append(b.DieselTransfers, transfer)
 }
 func (b *Block) AddTokenOracle(tokenOracle *TokenOracle) {
 	b.TokenOracles = append(b.TokenOracles, tokenOracle)
@@ -121,4 +125,17 @@ func (b *Block) GetParams() []*Parameters {
 
 func (b *Block) AddTransferAccountAllowed(obj *TransferAccountAllowed) {
 	b.TAA = append(b.TAA, obj)
+}
+
+type DieselTransfer struct {
+	LogId       int64   `gorm:"primaryKey;column:log_id"`
+	BlockNum    int64   `gorm:"primaryKey;column:block_num"`
+	TokenSymbol string  `gorm:"column:token_sym"`
+	From        string  `gorm:"column:from_user"`
+	To          string  `gorm:"column:to_user"`
+	Amount      float64 `gorm:"column:amount"`
+}
+
+func (DieselTransfer) TableName() string {
+	return "diesel_transfers"
 }
