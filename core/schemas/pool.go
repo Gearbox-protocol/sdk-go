@@ -12,6 +12,7 @@ type PoolState struct {
 	ExpectedLiquidityLimit *core.BigInt `gorm:"column:expected_liq_limit"`
 	WithdrawFee            *core.BigInt `gorm:"column:withdraw_fee"`
 	BorrowAPYBI            *core.BigInt `gorm:"column:borrow_apy_bi"`
+	DepositAPYBI           *core.BigInt `gorm:"column:deposit_apy_bi"`
 }
 
 func (PoolState) TableName() string {
