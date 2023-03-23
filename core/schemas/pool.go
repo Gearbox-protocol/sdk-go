@@ -50,11 +50,22 @@ type PoolStat struct {
 }
 
 type PoolInterestData struct {
-	BorrowAPYBI        *core.BigInt `gorm:"column:borrow_apy_bi"`
-	CumulativeIndexRAY *core.BigInt `gorm:"column:cumulative_index_ray"`
-	BlockNum           int64        `gorm:"column:block_num"`
-	Address            string       `gorm:"column:pool"`
-	Timestamp          uint64       `gorm:"column:timestamp"`
+	BorrowAPYBI          *core.BigInt `gorm:"column:borrow_apy_bi"`
+	CumulativeIndexRAY   *core.BigInt `gorm:"column:cumulative_index_ray"`
+	AvailableLiquidityBI *core.BigInt `gorm:"column:available_liquidity_bi"`
+	BlockNum             int64        `gorm:"column:block_num"`
+	Address              string       `gorm:"column:pool"`
+	Timestamp            uint64       `gorm:"column:timestamp"`
+}
+
+type TvlSnapshots struct {
+	BlockNum           int64   `gorm:"column:block_num;primaryKey"`
+	AvailableLiquidity float64 `gorm:"column:available_liquidity"`
+	CATotalValue       float64 `gorm:"column:ca_total_value"`
+}
+
+func (TvlSnapshots) TableName() string {
+	return "tvl_snapshots"
 }
 
 type PoolLedger struct {
