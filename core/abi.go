@@ -31,6 +31,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceFeed"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOracle"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev2"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenDistributor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/tokenMock"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapConnectorChecker"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/uniswapv2Factory"
@@ -123,6 +124,7 @@ func GetAbi(contractName string) *abi.ABI {
 		"BaseRewardPool": {ABI: baseRewardPool.BaseRewardPoolABI},
 		// v3 pos for synctron
 		"NonFungiblePosManager": {ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
+		"TokenDistributor":      {ABI: tokenDistributor.TokenDistributorABI},
 	}
 	abiStr, ok := metadataMap[contractName]
 	if !ok {
