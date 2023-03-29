@@ -68,6 +68,7 @@ func (c Calculator) CalcAccountFields(version int16, blockNum int64,
 			utils.GetInt64(calThresholdValue, -4),
 			calBorrowWithInterestAndFees,
 		)
+		calBorrowWithInterest = calBorrowWithInterestAndFees
 	}
 	return
 }
