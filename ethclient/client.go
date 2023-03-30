@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -286,6 +287,7 @@ func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	ignoreClients := make(map[int]bool)
+	var errs utils.Errors
 	for {
 		mc, clientInd := rc.getClient(ignoreClients)
 		err := mc.client.SendTransaction(ctx, tx)
@@ -293,13 +295,14 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 			mc.mu.Unlock()
 			return err
 		}
+		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
 			ignoreClients[clientInd] = true
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
-			return err
+			return errs
 		}
 	}
 }
@@ -307,6 +310,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 // TransactionByHash returns the transaction with the given hash.
 func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*types.Transaction, bool, error) {
 	ignoreClients := make(map[int]bool)
+	var errs utils.Errors
 	for {
 		mc, clientInd := rc.getClient(ignoreClients)
 		tx, pending, err := mc.client.TransactionByHash(ctx, hash)
@@ -314,19 +318,21 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 			mc.mu.Unlock()
 			return tx, pending, err
 		}
+		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
 			ignoreClients[clientInd] = true
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
-			return tx, pending, err
+			return tx, pending, errs
 		}
 	}
 }
 
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {
 	ignoreClients := make(map[int]bool)
+	var errs utils.Errors
 	for {
 		mc, clientInd := wrapperClient.getClient(ignoreClients)
 		data, err := getData(mc.client)
@@ -334,6 +340,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 			mc.mu.Unlock()
 			return data, err
 		}
+		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients return error
 		if !errorHandler(err, mc) {
 			ignoreClients[clientInd] = true
@@ -341,7 +348,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 		mc.mu.Unlock()
 		// if all clients are ignore(return error), we can return this error
 		if len(wrapperClient.clients) == len(ignoreClients) {
-			return data, err
+			return data, errs
 		}
 	}
 }

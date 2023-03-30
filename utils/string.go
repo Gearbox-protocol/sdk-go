@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -98,4 +99,14 @@ func ReadFromEnv(val interface{}) {
 			rv.Field(i).SetString(value)
 		}
 	}
+}
+
+type Errors []error
+
+func (e Errors) Error() string {
+	var s string
+	for i, err := range e {
+		s += fmt.Sprintf("Err %d: %s\n", i, err.Error())
+	}
+	return s
 }
