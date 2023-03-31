@@ -60,3 +60,10 @@ func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
 	}
 	return int8(new(big.Int).SetBytes(decimals).Int64())
 }
+
+type PriceSource string
+
+const (
+	SOURCE_CHAINLINK PriceSource = "chainlink"
+	SOURCE_SPOT                  = "spot"
+)

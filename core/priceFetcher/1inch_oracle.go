@@ -27,7 +27,7 @@ type OneInchOracle struct {
 	symToAddr  *core.SymTOAddrStore
 	inchOracle common.Address
 	client     core.ClientI
-	decimals   *TokensStore
+	decimals   DecimalStoreI
 }
 
 type CrvSpotPriceCalc struct {
@@ -44,7 +44,11 @@ type YearnSpotPriceCalc struct {
 	Underlying string `json:"underlying"`
 }
 
-func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore *TokensStore) *OneInchOracle {
+type DecimalStoreI interface {
+	GetDecimals(tokenAddr common.Address) int8
+}
+
+func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data, err := core.GetEmbeddedJsonnet("1inch_price_calc_details.jsonnet", core.JsonnetImports{})

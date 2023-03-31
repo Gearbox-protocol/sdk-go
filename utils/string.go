@@ -104,6 +104,9 @@ func ReadFromEnv(val interface{}) {
 type Errors []error
 
 func (e Errors) Error() string {
+	if len(e) == 1 {
+		return e[0].Error()
+	}
 	var s string
 	for i, err := range e {
 		s += fmt.Sprintf("Err %d: %s\n", i, err.Error())

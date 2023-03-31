@@ -83,6 +83,7 @@ type TokenCurrentPrice struct {
 	BlockNum int64        `gorm:"column:block_num"`
 	Token    string       `gorm:"column:token;primaryKey" json:"token"`
 	Updated  bool         `gorm:"-"`
+	PriceSrc string       `gorm:"column:price_source;primaryKey" json:"-"`
 }
 
 func (TokenCurrentPrice) TableName() string {
