@@ -23,7 +23,7 @@ jobs:
       with:
         path: ./inputs/  # what we cache: the folder
         key: ${{ runner.os }}-${{ hashFiles('./jsonnet/**') }}
-    - run: go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0 && ./generate-test.sh
+    - run: go install github.com/google/go-jsonnet/cmd/...@latest && ./generate-test.sh
       if: steps.cache-jsonnet-test.outputs.cache-hit != 'true'
     - name: Test lib build
       run: go vet ./...   && go test ./calc ./core ./core/schemas ./log ./test ./utils

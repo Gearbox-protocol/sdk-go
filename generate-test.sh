@@ -1,5 +1,6 @@
 #!/bin/sh
-
+set -e 
+mkdir -p inputs
 for i in `ls jsonnet/*.jsonnet`; do
     echo $i
     jsonnetfmt --in-place $i

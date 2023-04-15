@@ -2,6 +2,7 @@ package ethclient
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"regexp"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/google/uuid"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -36,20 +38,32 @@ type MutextedClient struct {
 	_lockedTillTs int64
 }
 
+func (mc MutextedClient) Unlock() {
+	mc.mu.Unlock()
+}
+func (mc MutextedClient) Lock() {
+	fmt.Println("lock")
+	mc.mu.Lock()
+}
+
+// it is also thread safe as thread with  has this client has locked the mutex on it.
 func (mc *MutextedClient) addSleepForSecs(sec int64) {
 	atomic.SwapInt64(&mc._lockedTillTs, time.Now().Add(time.Second*time.Duration(sec)).Unix())
 }
 
+// it is also thread safe
 func (mc MutextedClient) available(curTs int64) bool {
-	if mc._lockedTillTs > curTs {
+	if atomic.LoadInt64(&mc._lockedTillTs) > curTs {
 		return false
 	}
+	fmt.Println("trylock")
 	return mc.mu.TryLock()
 }
 
+// it is thread safe as mutex is locked.
 func (mc MutextedClient) wait() {
-	mc.mu.Lock()
-	sleepFor := time.Unix(mc._lockedTillTs, 0).Sub(time.Now())
+	mc.Lock()
+	sleepFor := time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
 	if sleepFor > 0 {
 		time.Sleep(sleepFor)
 	}
@@ -287,6 +301,7 @@ func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	ignoreClients := make(map[int]bool)
+	requestId := uuid.New().String()
 	var errs utils.Errors
 	for {
 		mc, clientInd := rc.getClient(ignoreClients)
@@ -295,6 +310,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 			mc.mu.Unlock()
 			return err
 		}
+		fmt.Println(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
@@ -302,6 +318,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
+			fmt.Println(requestId, errs)
 			return errs
 		}
 	}
@@ -310,6 +327,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 // TransactionByHash returns the transaction with the given hash.
 func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*types.Transaction, bool, error) {
 	ignoreClients := make(map[int]bool)
+	requestId := uuid.New().String()
 	var errs utils.Errors
 	for {
 		mc, clientInd := rc.getClient(ignoreClients)
@@ -318,6 +336,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 			mc.mu.Unlock()
 			return tx, pending, err
 		}
+		fmt.Println(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
@@ -325,6 +344,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
+			fmt.Println(requestId, errs)
 			return tx, pending, errs
 		}
 	}
@@ -332,6 +352,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {
 	ignoreClients := make(map[int]bool)
+	requestId := uuid.New().String()
 	var errs utils.Errors
 	for {
 		mc, clientInd := wrapperClient.getClient(ignoreClients)
@@ -340,6 +361,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 			mc.mu.Unlock()
 			return data, err
 		}
+		fmt.Println(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients return error
 		if !errorHandler(err, mc) {
@@ -348,6 +370,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 		mc.mu.Unlock()
 		// if all clients are ignore(return error), we can return this error
 		if len(wrapperClient.clients) == len(ignoreClients) {
+			fmt.Println(requestId, errs)
 			return data, errs
 		}
 	}
