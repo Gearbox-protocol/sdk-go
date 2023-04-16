@@ -34,10 +34,10 @@ func println(severity LEVEL, args ...interface{}) string {
 	if severity < logLevel {
 		return ""
 	}
-	return printlnStr(toString(severity), args...)
+	return printlnStr(toString(severity), 4, args...)
 }
-func printlnStr(severity string, args ...interface{}) string {
-	_log := severityFormat(severity) + DetectFuncAtStackN(3) + fmt.Sprintln(args...)
+func printlnStr(severity string, depth int, args ...interface{}) string {
+	_log := severityFormat(severity) + DetectFuncAtStackN(depth) + fmt.Sprintln(args...)
 	if testLogModule == nil {
 		log.Printf(_log)
 	} else {

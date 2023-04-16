@@ -37,31 +37,30 @@ type MutextedClient struct {
 	_lockedTillTs int64
 }
 
-func (mc MutextedClient) Unlock() {
-	mc.mu.Unlock()
-}
-func (mc MutextedClient) Lock() {
-	log.Verbose("lock")
-	mc.mu.Lock()
-}
-
 // it is also thread safe as thread with  has this client has locked the mutex on it.
 func (mc *MutextedClient) addSleepForSecs(sec int64) {
 	atomic.SwapInt64(&mc._lockedTillTs, time.Now().Add(time.Second*time.Duration(sec)).Unix())
 }
 
 // it is also thread safe
-func (mc MutextedClient) available(curTs int64) bool {
+func (mc *MutextedClient) available(curTs int64, req Req) bool {
 	if atomic.LoadInt64(&mc._lockedTillTs) > curTs {
 		return false
 	}
-	log.Verbose("trylock")
-	return mc.mu.TryLock()
+	tryLock := mc.mu.TryLock()
+	req.print("trylock", tryLock)
+	return tryLock
+}
+
+func (mc MutextedClient) Unlock(req Req) {
+	req.print("unlock")
+	mc.mu.Unlock()
 }
 
 // it is thread safe as mutex is locked.
-func (mc MutextedClient) wait() {
-	mc.Lock()
+func (mc *MutextedClient) wait(req Req) {
+	mc.mu.Lock()
+	req.print("lock")
 	sleepFor := time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
 	if sleepFor > 0 {
 		time.Sleep(sleepFor)
@@ -141,24 +140,25 @@ func errorHandler(err error, mc *MutextedClient) bool {
 func (rc *Client) Close() {
 }
 
-func (rc Client) getClient(ignoreClients map[int]bool) (*MutextedClient, int) {
+func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient, int) {
 	l := len(rc.clients)
 	// find an start client index that is not ignored.
 	startClientId := rand.Intn(l)
 	for ignoreClients[startClientId] && len(ignoreClients) != l {
 		startClientId = (startClientId + 1) % l
 	}
+	req.print("startClientId", startClientId)
 	// return client if it is available and not ignored
 	for i := 0; i < l; i++ {
 		clientInd := (i + startClientId) % l
 		muclient := rc.clients[clientInd]
-		if muclient.available(time.Now().Unix()) && !ignoreClients[clientInd] {
+		if muclient.available(time.Now().Unix(), req) && !ignoreClients[clientInd] {
 			return muclient, clientInd
 		}
 	}
 	// if no client is available, wait for startClient to unlock
 	muclient := rc.clients[startClientId]
-	muclient.wait()
+	muclient.wait(req)
 	return muclient, startClientId
 }
 
@@ -299,24 +299,25 @@ func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	ignoreClients := make(map[int]bool)
-	requestId := uuid.New().String()
+	req := NewReq()
 	var errs utils.Errors
 	for {
-		mc, clientInd := rc.getClient(ignoreClients)
-		err := mc.client.SendTransaction(ctx, tx)
-		if err == nil {
-			mc.mu.Unlock()
-			return err
+		mc, clientInd := rc.getClient(ignoreClients, req)
+		errOne := mc.client.SendTransaction(ctx, tx)
+		if errOne == nil {
+			mc.Unlock(req)
+			return errOne
 		}
-		log.Verbose(requestId, err)
-		errs = append(errs, err)
+		req.print(errOne)
+		errs = append(errs, errOne)
 		// if error is not handled, retry on another client till all clients are ignored
-		if !errorHandler(err, mc) {
+		if !errorHandler(errOne, mc) {
 			ignoreClients[clientInd] = true
+			req.print("not handled", ignoreClients)
 		}
-		mc.mu.Unlock()
+		mc.Unlock(req)
 		if len(rc.clients) == len(ignoreClients) {
-			log.Verbose(requestId, errs)
+			req.print(errOne)
 			return errs
 		}
 	}
@@ -325,50 +326,68 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 // TransactionByHash returns the transaction with the given hash.
 func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*types.Transaction, bool, error) {
 	ignoreClients := make(map[int]bool)
-	requestId := uuid.New().String()
+	req := NewReq()
 	var errs utils.Errors
 	for {
-		mc, clientInd := rc.getClient(ignoreClients)
-		tx, pending, err := mc.client.TransactionByHash(ctx, hash)
-		if err == nil {
-			mc.mu.Unlock()
-			return tx, pending, err
+		mc, clientInd := rc.getClient(ignoreClients, req)
+		tx, pending, errOne := mc.client.TransactionByHash(ctx, hash)
+		if errOne == nil {
+			mc.Unlock(req)
+			return tx, pending, errOne
 		}
-		log.Verbose(requestId, err)
-		errs = append(errs, err)
+		req.print(errOne)
+		errs = append(errs, errOne)
 		// if error is not handled, retry on another client till all clients are ignored
-		if !errorHandler(err, mc) {
+		if !errorHandler(errOne, mc) {
 			ignoreClients[clientInd] = true
+			req.print("not handled", ignoreClients)
 		}
-		mc.mu.Unlock()
+		mc.Unlock(req)
 		if len(rc.clients) == len(ignoreClients) {
-			log.Verbose(requestId, errs)
+			req.print(errs)
 			return tx, pending, errs
 		}
 	}
 }
 
+type Req struct {
+	uuid string
+	ts   time.Time
+}
+
+func NewReq() Req {
+	requestId := uuid.New().String()
+	log.Verbose(requestId, "newRequest")
+	return Req{uuid: requestId, ts: time.Now()}
+}
+func (r Req) print(args ...interface{}) {
+	allArgs := []interface{}{r.uuid, time.Since(r.ts)}
+	log.Verbose(append(allArgs, args...)...)
+}
+
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {
 	ignoreClients := make(map[int]bool)
-	requestId := uuid.New().String()
+
+	req := NewReq()
 	var errs utils.Errors
 	for {
-		mc, clientInd := wrapperClient.getClient(ignoreClients)
-		data, err := getData(mc.client)
-		if err == nil {
-			mc.mu.Unlock()
-			return data, err
+		mc, clientInd := wrapperClient.getClient(ignoreClients, req)
+		data, errOne := getData(mc.client)
+		if errOne == nil {
+			mc.Unlock(req)
+			return data, errOne
 		}
-		log.Verbose(requestId, err)
-		errs = append(errs, err)
+		req.print(errOne)
+		errs = append(errs, errOne)
 		// if error is not handled, retry on another client till all clients return error
-		if !errorHandler(err, mc) {
+		if !errorHandler(errOne, mc) {
 			ignoreClients[clientInd] = true
+			req.print("not handled", ignoreClients)
 		}
-		mc.mu.Unlock()
+		mc.Unlock(req)
 		// if all clients are ignore(return error), we can return this error
 		if len(wrapperClient.clients) == len(ignoreClients) {
-			log.Verbose(requestId, errs)
+			req.print(errs)
 			return data, errs
 		}
 	}
