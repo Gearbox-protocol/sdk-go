@@ -2,7 +2,6 @@ package ethclient
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"regexp"
@@ -42,7 +41,7 @@ func (mc MutextedClient) Unlock() {
 	mc.mu.Unlock()
 }
 func (mc MutextedClient) Lock() {
-	fmt.Println("lock")
+	log.Verbose("lock")
 	mc.mu.Lock()
 }
 
@@ -56,7 +55,7 @@ func (mc MutextedClient) available(curTs int64) bool {
 	if atomic.LoadInt64(&mc._lockedTillTs) > curTs {
 		return false
 	}
-	fmt.Println("trylock")
+	log.Verbose("trylock")
 	return mc.mu.TryLock()
 }
 
@@ -154,7 +153,6 @@ func (rc Client) getClient(ignoreClients map[int]bool) (*MutextedClient, int) {
 		clientInd := (i + startClientId) % l
 		muclient := rc.clients[clientInd]
 		if muclient.available(time.Now().Unix()) && !ignoreClients[clientInd] {
-			// fmt.Println(clientInd)
 			return muclient, clientInd
 		}
 	}
@@ -310,7 +308,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 			mc.mu.Unlock()
 			return err
 		}
-		fmt.Println(requestId, err)
+		log.Verbose(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
@@ -318,7 +316,7 @@ func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) er
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
-			fmt.Println(requestId, errs)
+			log.Verbose(requestId, errs)
 			return errs
 		}
 	}
@@ -336,7 +334,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 			mc.mu.Unlock()
 			return tx, pending, err
 		}
-		fmt.Println(requestId, err)
+		log.Verbose(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients are ignored
 		if !errorHandler(err, mc) {
@@ -344,7 +342,7 @@ func (rc *Client) TransactionByHash(ctx context.Context, hash common.Hash) (*typ
 		}
 		mc.mu.Unlock()
 		if len(rc.clients) == len(ignoreClients) {
-			fmt.Println(requestId, errs)
+			log.Verbose(requestId, errs)
 			return tx, pending, errs
 		}
 	}
@@ -361,7 +359,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 			mc.mu.Unlock()
 			return data, err
 		}
-		fmt.Println(requestId, err)
+		log.Verbose(requestId, err)
 		errs = append(errs, err)
 		// if error is not handled, retry on another client till all clients return error
 		if !errorHandler(err, mc) {
@@ -370,7 +368,7 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 		mc.mu.Unlock()
 		// if all clients are ignore(return error), we can return this error
 		if len(wrapperClient.clients) == len(ignoreClients) {
-			fmt.Println(requestId, errs)
+			log.Verbose(requestId, errs)
 			return data, errs
 		}
 	}

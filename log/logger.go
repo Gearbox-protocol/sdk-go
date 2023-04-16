@@ -18,16 +18,25 @@ func SetTestLogging(t *testing.T) {
 func severityFormat(severity string) string {
 	return "[" + severity + "]: "
 }
-func printf(severity, msg string, args ...interface{}) string {
-	_log := fmt.Sprintf(severityFormat(severity)+DetectFuncAtStackN(3)+msg, args...)
+func printf(severity LEVEL, msg string, args ...interface{}) string {
+	if severity < logLevel {
+		return ""
+	}
+	_log := fmt.Sprintf(severityFormat(toString(severity))+DetectFuncAtStackN(3)+msg, args...)
 	if testLogModule == nil {
 		log.Println(_log)
 	} else {
 		testLogModule.Log(_log)
 	}
-	return fmt.Sprintf(severityFormat(severity)+msg, args...)
+	return fmt.Sprintf(severityFormat(toString(severity))+msg, args...)
 }
-func println(severity string, args ...interface{}) string {
+func println(severity LEVEL, args ...interface{}) string {
+	if severity < logLevel {
+		return ""
+	}
+	return printlnStr(toString(severity), args...)
+}
+func printlnStr(severity string, args ...interface{}) string {
 	_log := severityFormat(severity) + DetectFuncAtStackN(3) + fmt.Sprintln(args...)
 	if testLogModule == nil {
 		log.Printf(_log)
@@ -48,29 +57,31 @@ func println(severity string, args ...interface{}) string {
 // ----- Risk condition alerts
 // Alert
 func Verbosef(msg string, args ...interface{}) {
-	printf("Debug", msg, args...)
+	printf(DEBUG, msg, args...)
 }
 func Verbose(args ...interface{}) {
-	println("Debug", args...)
+	println(DEBUG, args...)
 }
 
 //
 func Warnf(msg string, args ...interface{}) {
-	_log := printf("Warn", msg, args...)
-	send(false, _log)
+	if _log := printf(WARN, msg, args...); _log != "" {
+		send(false, _log)
+	}
 }
 
 func Warn(args ...interface{}) {
-	_log := println("Warn", args...)
-	send(false, _log)
+	if _log := println(WARN, args...); _log != "" {
+		send(false, _log)
+	}
 }
 
 func Infof(msg string, args ...interface{}) {
-	printf("Info", msg, args...)
+	printf(INFO, msg, args...)
 }
 
 func Info(args ...interface{}) {
-	println("Info", args...)
+	println(INFO, args...)
 }
 
 func InfoStackN(n int, v ...interface{}) {
@@ -84,26 +95,30 @@ func InfoStackN(n int, v ...interface{}) {
 }
 
 func Errorf(msg string, args ...interface{}) {
-	_log := printf("Error", msg, args...)
-	send(false, _log)
+	if _log := printf(ERROR, msg, args...); _log != "" {
+		send(false, _log)
+	}
 }
 
 func Error(args ...interface{}) {
-	_log := println("Error", args...)
-	send(false, _log)
+	if _log := println(ERROR, args...); _log != "" {
+		send(false, _log)
+	}
 }
 
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
-	_log := printf("Fatal", msg, args...)
-	send(false, _log)
+	if _log := printf(FATAL, msg, args...); _log != "" {
+		send(false, _log)
+	}
 	os.Exit(1)
 }
 
 func Fatal(args ...interface{}) {
 	debug.PrintStack()
-	_log := println("Fatal", args...)
-	send(false, _log)
+	if _log := println(FATAL, args...); _log != "" {
+		send(false, _log)
+	}
 	os.Exit(1)
 }
 
@@ -121,12 +136,12 @@ func CheckFatal(err error) {
 }
 
 func AMQPMsgf(msg string, args ...interface{}) {
-	_log := printf("AMQP", msg, args...)
+	_log := printf(AMQP, msg, args...)
 	send(false, _log)
 }
 
 func AMQPMsg(args ...interface{}) {
-	_log := println("AMQP", args...)
+	_log := println(AMQP, args...)
 	send(false, _log)
 }
 

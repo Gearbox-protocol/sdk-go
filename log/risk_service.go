@@ -67,7 +67,7 @@ type riskMsgFullScheme struct {
 }
 
 func SendRiskAlert(event RiskAlert) {
-	_log := println(event.EventCode, event.Msg)
+	_log := printlnStr(event.EventCode, event.Msg)
 	if event.Id == "" {
 		event.Id = uuid.New().String()
 	}
