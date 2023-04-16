@@ -152,8 +152,10 @@ func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient
 	for i := 0; i < l; i++ {
 		clientInd := (i + startClientId) % l
 		muclient := rc.clients[clientInd]
-		if muclient.available(time.Now().Unix(), req) && !ignoreClients[clientInd] {
-			return muclient, clientInd
+		if !ignoreClients[clientInd] {
+			if muclient.available(time.Now().Unix(), req) {
+				return muclient, clientInd
+			}
 		}
 	}
 	// if no client is available, wait for startClient to unlock
