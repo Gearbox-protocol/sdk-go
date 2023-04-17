@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacade"
@@ -88,15 +89,46 @@ func GetEnvOrDefault(key, fallback string) string {
 	return fallback
 }
 
+func getField(envVarDS reflect.StructField) (string, string) {
+	envField := envVarDS.Tag.Get("env")
+	defaultValue := envVarDS.Tag.Get("default")
+	value := strings.Replace(GetEnvOrDefault(envField, defaultValue), "\\n", "\n", -1)
+	if envField != "" && // if the field doesn't have env tag, it's not an env var
+		envVarDS.Type.Kind() != reflect.String && defaultValue == "" {
+		log.Fatalf("Default value can't be missing if type golang isn't string. Env: %s, Type: %s", envField, envVarDS.Type.Kind())
+	}
+	return envField, value
+}
 func ReadFromEnv(val interface{}) {
 	rv := reflect.ValueOf(val).Elem()
 	num := rv.NumField()
 	for i := 0; i < num; i++ {
-		envValue := rv.Type().Field(i).Tag.Get("env")
-		defaultValue := rv.Type().Field(i).Tag.Get("default")
-		if envValue != "" {
-			value := strings.Replace(GetEnvOrDefault(envValue, defaultValue), "\\n", "\n", -1)
+		envVarDS := rv.Type().Field(i)
+		envField, value := getField(envVarDS)
+		switch envVarDS.Type.Kind() {
+		case reflect.String:
 			rv.Field(i).SetString(value)
+		case reflect.Int64, reflect.Int32, reflect.Int:
+			num, err := strconv.ParseInt(value, 10, 64)
+			if err != nil {
+				log.Fatalf("Err(%v) while getting env %s", err, envField)
+			}
+			rv.Field(i).SetInt(num)
+		case reflect.Bool:
+			value = strings.ToLower(value)
+			if value == "1" || value == "true" {
+				rv.Field(i).SetBool(true)
+			} else if value == "0" || value == "false" {
+				rv.Field(i).SetBool(false)
+			} else {
+				log.Fatalf("Wrong value (%s) gotten for %s bool", value, envField)
+			}
+		case reflect.Float64:
+			f, err := strconv.ParseFloat(value, 64)
+			if err != nil {
+				log.Fatalf("Err(%s) while getting env float %s", err, envField)
+			}
+			rv.Field(i).SetFloat(f)
 		}
 	}
 }
