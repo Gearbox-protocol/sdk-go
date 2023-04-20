@@ -88,6 +88,13 @@ func GetEnvOrDefault(key, fallback string) string {
 	}
 	return fallback
 }
+func GetEnvOrPanic(field string) string {
+	ans := os.Getenv(field)
+	if ans == "" {
+		log.Fatalf("env %s not present", field)
+	}
+	return ans
+}
 
 func getField(envVarDS reflect.StructField) (string, string) {
 	envField := envVarDS.Tag.Get("env")

@@ -1,4 +1,4 @@
-package core
+package pkg
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -15,12 +16,12 @@ import (
 
 type BaseTransactor struct {
 	Topts      *bind.TransactOpts
-	Client     ClientI
+	Client     core.ClientI
 	ChainId    int64
 	timeoutSec int
 }
 
-func NewBaseTransactor(privateKey string, client ClientI, timeoutSec int) *BaseTransactor {
+func NewBaseTransactor(privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
 	chainId, err := client.ChainID(context.TODO())
 	log.CheckFatal(err)
@@ -31,7 +32,7 @@ func NewBaseTransactor(privateKey string, client ClientI, timeoutSec int) *BaseT
 		log.CheckFatal(err)
 		privateKey = utils.Decrypt(strings.Split(privateKey, ":")[1], password)
 	}
-	wallet := GetWallet(privateKey)
+	wallet := core.GetWallet(privateKey)
 	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId.Int64()))
 	log.CheckFatal(err)
 	//
@@ -49,14 +50,14 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 	receipt, err := bind.WaitMined(ctx, p.Client, tx)
 	if err != nil {
 		return receipt, fmt.Errorf("tx failed for %s(%s): %s",
-			job, utils.ToJson(ToDynamicTx(tx)), err.Error())
+			job, utils.ToJson(core.ToDynamicTx(tx)), err.Error())
 	}
 	if receipt.Status != types.ReceiptStatusSuccessful {
 		return receipt, fmt.Errorf("tx not successful for %s(%s): %+v",
-			job, utils.ToJson(ToDynamicTx(tx)), receipt)
+			job, utils.ToJson(core.ToDynamicTx(tx)), receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
-	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, core.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
 	return receipt, nil
 }

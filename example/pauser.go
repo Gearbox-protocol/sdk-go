@@ -8,6 +8,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/pauseMulticall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -15,17 +16,17 @@ import (
 type Pauser struct {
 	isDone bool
 	mu     *sync.Mutex
-	*core.BaseTransactor
-	flashBots *core.FlashbotsTransactor
+	*pkg.BaseTransactor
+	flashBots *pkg.FlashbotsTransactor
 	//
 	multicall *pauseMulticall.PauseMulticall
 }
 
-func NewPauser(transactor *core.BaseTransactor, privateKey, flashbotsRelay, pauserMCAddr string, client core.ClientI) *Pauser {
+func NewPauser(transactor *pkg.BaseTransactor, privateKey, flashbotsRelay, pauserMCAddr string, client core.ClientI) *Pauser {
 	c := &Pauser{
-		BaseTransactor: core.NewBaseTransactor(privateKey, client, 600),
+		BaseTransactor: pkg.NewBaseTransactor(privateKey, client, 600),
 		mu:             &sync.Mutex{},
-		flashBots:      core.NewFlashbotsTransactor(flashbotsRelay),
+		flashBots:      pkg.NewFlashbotsTransactor(flashbotsRelay),
 	}
 	// don't send tx , while creating it
 	c.Topts.NoSend = true

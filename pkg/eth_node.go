@@ -1,10 +1,11 @@
-package core
+package pkg
 
 import (
 	"context"
 	"math/big"
 	"strings"
 
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -12,7 +13,7 @@ import (
 )
 
 type Node struct {
-	Client  ClientI
+	Client  core.ClientI
 	chainId int64
 }
 
@@ -27,10 +28,10 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), LogFilterLenError) ||
-			strings.Contains(err.Error(), NoderealFilterLogError) ||
-			err.Error() == LogFilterQueryTimeout {
+		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
+			strings.Contains(err.Error(), core.LogFilterLenError) ||
+			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
+			err.Error() == core.LogFilterQueryTimeout {
 			middle := (fromBlock + toBlock) / 2
 			bottomHalfLogs, err := lf.GetLogs(fromBlock, middle-1, addrs, topics)
 			if err != nil {
@@ -115,7 +116,7 @@ func (lf Node) GetReceipt(txHash common.Hash) *types.Receipt {
 func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.Address, treasuryAddrTopic []common.Hash) ([]types.Log, error) {
 	topics := [][]common.Hash{
 		{
-			Topic("Transfer(address,address,uint256)"),
+			core.Topic("Transfer(address,address,uint256)"),
 		},
 	}
 	otherAddrTopic := []common.Hash{}
@@ -133,7 +134,7 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	return append(newLogs, logs...), nil
 }
 
-func GetChainId(client ClientI) int64 {
+func GetChainId(client core.ClientI) int64 {
 	chainId, err := client.ChainID(context.TODO())
 	log.CheckFatal(err)
 	return chainId.Int64()

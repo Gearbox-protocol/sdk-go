@@ -6,6 +6,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg"
 
 	// "github.com/Gearbox-protocol/third-eye/models/chainlink_price_feed"
 	// "github.com/ethereum/go-ethereum/accounts/abi"
@@ -29,7 +30,7 @@ type GearboxOracleI interface {
 type GearboxOracle struct {
 	Address     string
 	TokenToFeed map[string]common.Address
-	Node        *core.Node
+	Node        *pkg.Node
 	version     int16
 	//
 	tokens []string
@@ -39,7 +40,7 @@ func NewGearboxOracle(addr string, version int16, client core.ClientI) GearboxOr
 	po := &GearboxOracle{
 		Address:     addr,
 		TokenToFeed: map[string]common.Address{},
-		Node: &core.Node{
+		Node: &pkg.Node{
 			Client: client,
 		},
 		version: version,
