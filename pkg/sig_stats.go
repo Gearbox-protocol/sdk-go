@@ -27,7 +27,7 @@ func (x SigDetails) GetDayStats() (ans []SigDetailsByDay) {
 		ans = append(ans, SigDetailsByDay{
 			day:     utils.TimeToDate(time.Unix(dateTs, 0)),
 			Count:   details.Count,
-			EthUsed: new(big.Int).Quo(details.EthUsed, big.NewInt(details.Count)),
+			EthUsed: details.EthUsed,
 		})
 	}
 	return
@@ -46,12 +46,17 @@ func NewSigStatsHandler(sigsToMethodName map[string]string) *SigStatsHandler {
 	}
 }
 func (f *SigStatsHandler) Add(sig string, tx EtherScanCallInput) {
-	if _, ok := f.stats[sig]; !ok {
+	ts := utils.TimeToDateEndTs(time.Unix(tx.TimeStamp, 0))
+	//
+	if f.stats[sig] == nil {
 		f.stats[sig] = &SigDetails{
 			days: make(map[int64]*SigDetailsByDay),
 		}
 	}
-	ts := utils.TimeToDateEndTs(time.Unix(tx.TimeStamp, 0))
+	if f.stats[sig].days[ts] == nil {
+		f.stats[sig].days[ts] = &SigDetailsByDay{}
+	}
+	//
 	f.stats[sig].days[ts].Count++
 	f.stats[sig].days[ts].EthUsed = new(big.Int).Add(
 		utils.NotNilBigInt(f.stats[sig].days[ts].EthUsed),
@@ -62,10 +67,10 @@ func (f *SigStatsHandler) Print(steam io.Writer) {
 	for sig, details := range f.stats {
 		fmt.Fprintln(steam, "##############")
 		fmt.Fprintln(steam, "For method", f.sigsToMethodName[sig])
-		fmt.Fprintln(steam, "##############")
 		for _, stat := range details.GetDayStats() {
-			fmt.Fprintln(steam, stat.day, stat.Count, stat.EthUsed)
+			fmt.Fprintf(steam, "%s Count: %d TotalCost: %f\n", stat.day, stat.Count, utils.GetFloat64Decimal(stat.EthUsed, 18))
 		}
+		fmt.Fprintln(steam, "")
 	}
 }
 

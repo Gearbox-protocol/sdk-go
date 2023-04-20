@@ -119,7 +119,7 @@ type EtherScanCallInput struct {
 	IsError     string `json:"isError"`
 	BlockNumber string `json:"blockNumber"`
 	GasPrice    string `json:"gasPrice"`
-	TimeStamp   int64  `json:"timeStamp"`
+	TimeStamp   int64  `json:"timeStamp,string,omitempty"`
 }
 type EtherscanResp struct {
 	Result []EtherScanCallInput `json:"result"`
