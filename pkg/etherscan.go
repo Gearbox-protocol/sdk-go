@@ -46,36 +46,6 @@ func (e EtherScan) makeRequest(q url.Values) (response *http.Response, reqReq er
 	return nil, fmt.Errorf("status code: %d %s", response.StatusCode, utils.ReadJsonReader(response.Body))
 }
 
-//
-type Fetched struct {
-	count            map[string]int
-	sigsToMethodName map[string]string
-	total            int
-	neededDatapoints int
-}
-
-func NewFetcher(sigsToMethodName map[string]string, datapoints int) *Fetched {
-	return &Fetched{
-		sigsToMethodName: sigsToMethodName,
-		count:            make(map[string]int, len(sigsToMethodName)),
-		neededDatapoints: datapoints,
-	}
-}
-func (f *Fetched) Add(sig string) {
-	f.count[sig]++
-	f.total++
-}
-func (f *Fetched) String() (output string) {
-	for sig, methodName := range f.sigsToMethodName {
-		output += fmt.Sprintf("%s: %d ", methodName, f.count[sig])
-	}
-	return
-}
-
-func (f *Fetched) fetchedNeeded() bool {
-	return f.total > f.neededDatapoints
-}
-
 func min[T int | int64](a, b T) T {
 	if a > b {
 		return b
@@ -84,8 +54,13 @@ func min[T int | int64](a, b T) T {
 }
 
 //
-func (e *EtherScan) GetTxs(contract common.Address, endBlock, datapoints int, sigsToMethodName map[string]string, ch chan EtherScanCallInput) (txs []EtherScanCallInput) {
-	fetched := NewFetcher(sigsToMethodName, datapoints)
+type statsI interface {
+	Add(sig string, tx EtherScanCallInput)
+	AllowedSig(sig string) bool
+}
+
+func (e *EtherScan) GetTxs(contract common.Address, endBlock, datapoints int, statsHandler statsI, ch chan EtherScanCallInput) (txs []EtherScanCallInput) {
+	totalEntries := 0
 	for {
 		query := e.getQuery(contract, 0, endBlock, 1, min(datapoints, 10000))
 		response, err := e.makeRequest(query)
@@ -94,9 +69,10 @@ func (e *EtherScan) GetTxs(contract common.Address, endBlock, datapoints int, si
 		for _, tx := range msg.Result {
 			if tx.IsError == "0" && tx.Input != "0x" {
 				sig := tx.Input[2:10]
-				if _, ok := sigsToMethodName[sig]; ok {
+				if statsHandler.AllowedSig(sig) {
 					ch <- tx
-					fetched.Add(sig)
+					statsHandler.Add(sig, tx)
+					totalEntries++
 				}
 			}
 		}
@@ -107,8 +83,8 @@ func (e *EtherScan) GetTxs(contract common.Address, endBlock, datapoints int, si
 		blockNum, err := strconv.ParseInt(LastArrElem(msg.Result).BlockNumber, 10, 32)
 		log.CheckFatal(err)
 		endBlock = int(blockNum) - 1
-		log.Verbosef("fetched(%d) %s matching txs, new endBlock: %d", fetched.total, fetched, endBlock)
-		if fetched.fetchedNeeded() {
+		log.Verbosef("Fetched(%d) %s matching txs, new endBlock: %d", totalEntries, endBlock)
+		if totalEntries > datapoints {
 			close(ch)
 			return
 		}
@@ -142,6 +118,8 @@ type EtherScanCallInput struct {
 	Hash        string `json:"hash"`
 	IsError     string `json:"isError"`
 	BlockNumber string `json:"blockNumber"`
+	GasPrice    string `json:"gasPrice"`
+	TimeStamp   int64  `json:"timeStamp"`
 }
 type EtherscanResp struct {
 	Result []EtherScanCallInput `json:"result"`
