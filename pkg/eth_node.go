@@ -133,9 +133,3 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	}
 	return append(newLogs, logs...), nil
 }
-
-func GetChainId(client core.ClientI) int64 {
-	chainId, err := client.ChainID(context.TODO())
-	log.CheckFatal(err)
-	return chainId.Int64()
-}

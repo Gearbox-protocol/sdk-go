@@ -69,3 +69,9 @@ func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, bl
 	}
 	return bytes, err
 }
+
+func GetChainId(client ClientI) int64 {
+	chainId, err := client.ChainID(context.TODO())
+	log.CheckFatal(err)
+	return chainId.Int64()
+}
