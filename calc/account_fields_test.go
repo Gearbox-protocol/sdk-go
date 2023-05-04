@@ -35,12 +35,12 @@ func (a account) GetBalances() map[string]core.BalanceType {
 }
 
 type store struct {
-	Prices        map[int16]map[string]*core.BigInt
+	Prices        map[core.VersionType]map[string]*core.BigInt
 	LiqThresholds map[string]map[string]*big.Int `json:"LT"`
 	Tokens        map[string]*schemas.Token
 }
 
-func (s store) GetPrices(token string, version int16, blockNums ...int64) *big.Int {
+func (s store) GetPrices(token string, version core.VersionType, blockNums ...int64) *big.Int {
 	return s.Prices[version][token].Convert()
 }
 func (s store) GetToken(token string) *schemas.Token {
@@ -52,7 +52,7 @@ func (s store) GetLiqThreshold(cm, token string) *big.Int {
 
 type CalcFieldsParams struct {
 	BlockNum        int64
-	Version         int16
+	Version         core.VersionType
 	CumIndexOfPool  *core.BigInt
 	UnderlyingToken common.Address
 	FeeInterest     uint16

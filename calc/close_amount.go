@@ -3,15 +3,15 @@ package calc
 import (
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
-func CalCloseAmount(params *schemas.Parameters, version int16, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
-	switch version {
-	case 1:
+func CalCloseAmount(params *schemas.Parameters, version core.VersionType, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+	if version.IsGBv1() {
 		return calCloseAmountV1(params, totalValue, schemas.IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
-	case 2:
+	} else if version.IsGBv2orAbove() {
 		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, borrowedAmountWithInterest, borrowedAmount)
 	}
 	return
