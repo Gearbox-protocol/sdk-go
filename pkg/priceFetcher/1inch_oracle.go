@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"net/http"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -13,7 +14,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-//
 type OneInchOracle struct {
 	ConstToken    []ConstTokenPriceCalc `json:"constTokens"`
 	YearnTokens   []YearnSpotPriceCalc  `json:"yearnTokens"`
@@ -135,7 +135,42 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
+	// if the gearPrice is not available from the 1inch spot contract use 1inch api
+	gearPrice := prices[calc.symToAddr.Tokens["GEAR"].Hex()]
+	if gearPrice != nil && gearPrice.Convert().Cmp(new(big.Int)) == 0 { // only set gearPrice it if already set , but is zero
+		price := calc.getPriceForAPI("GEAR")
+		prices[calc.symToAddr.Tokens["GEAR"].Hex()] = (*core.BigInt)(price)
+	}
 	return prices
+}
+
+// get the price from 1inch api for `token to usdc quote`
+func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
+	token := calc.symToAddr.Tokens[tokenSym]
+	decimals := calc.decimals.GetDecimals(token)
+	url := fmt.Sprintf("https://api.1inch.io/v5.0/1/quote?fromTokenAddress=%s&toTokenAddress=%s&amount=%s",
+		token.Hex(),
+		calc.symToAddr.Tokens["USDC"].Hex(),
+		utils.GetExpInt(decimals+2), // 100 token units for price in 10^8 for usdc
+	)
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+	val := struct {
+		Error      string `json:"error"`
+		StatusCode int    `json:"statusCode"`
+		ToTokenAmt string `json:"toTokenAmount"`
+	}{}
+	if resp.StatusCode/100 != 2 { // 2xx
+		return new(big.Int)
+	}
+	utils.ReadJsonReaderAndSetInterface(resp.Body, &val)
+	if val.StatusCode != 0 {
+		fmt.Println("Error", val.Error)
+		return new(big.Int)
+	}
+	return utils.StringToInt(val.ToTokenAmt)
 }
 
 func (calc OneInchOracle) GetBaseCalls() (calls []multicall.Multicall2Call) {
