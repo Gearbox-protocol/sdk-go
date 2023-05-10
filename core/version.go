@@ -30,18 +30,23 @@ func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
 type VersionType int16
 
 func NewVersion(v int16) VersionType {
-	return VersionType(v)
+	if v == 1 || v == 2 || v == 210 {
+		return VersionType(v)
+	}
+	log.Fatal("version not supported")
+	panic("")
 }
+
 func (v VersionType) Decimals() int8 {
 	switch v {
 	case 1:
 		return 18 // eth decimals
-	case 2:
+	case 2, 210:
 		return 8 // USD decimals
 	default:
 		log.Fatal("version not supported")
+		panic("")
 	}
-	return 0
 }
 
 func (v VersionType) IsGBv1() bool {
@@ -58,5 +63,13 @@ func (v VersionType) IsGBv2orAbove() bool {
 }
 
 func (v VersionType) MoreThan(cmpAgainst VersionType) bool {
-	return v > cmpAgainst
+	return floatOrd(v) > floatOrd(cmpAgainst)
+}
+func floatOrd(v VersionType) float64 {
+	if v < 10 {
+		return float64(v)
+	} else if v == 210 {
+		return float64(v) / 100
+	}
+	panic("")
 }
