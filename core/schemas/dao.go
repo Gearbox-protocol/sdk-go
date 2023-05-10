@@ -104,5 +104,5 @@ const (
 	///////////
 	NewMaxCumulativeLoss
 	CumulativeLossReset
-	NewEmergencyLiquidationPremium
+	NewEmergencyLiquidationDiscount
 )
