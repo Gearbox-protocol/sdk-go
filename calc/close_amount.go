@@ -74,7 +74,11 @@ func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureSt
 			liquidationFeeToPool := utils.PercentMulByUInt16(totalValue, params.FeeLiquidationExpired)
 			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
 		case schemas.LiquidatePaused:
-			totalFunds = totalValue
+			totalFunds = utils.PercentMulByUInt16(totalValue, params.EmergencyLiqDiscount)
+			// here liquidationFee is calculated by multiple totalFunds not totalValue.
+			// https://github.com/Gearbox-protocol/core-v2/blob/2f01dcaa2512a4f51157bacce45544c51e5033b3/contracts/credit/CreditFacade.sol#L545-L548
+			liquidationFeeToPool := utils.PercentMulByUInt16(totalFunds, params.FeeLiquidation)
+			amountToPool = new(big.Int).Add(amountToPool, liquidationFeeToPool)
 		}
 		//
 		if totalFunds.Cmp(amountToPool) > 0 {
