@@ -114,7 +114,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 			strings.Contains(err.Error(), core.LogFilterLenError) {
 			middle := (fromBlock + toBlock) / 2
 
-			log.Verbosef("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
+			log.Debugf("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
 			foundLow, err := c.findFirstLogBound(fromBlock, middle-1)
 			if err != nil && err.Error() != "no events found" {
 				return 0, err
@@ -126,7 +126,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 			}
 
 			if foundLow == 0 && foundHigh == 0 {
-				return 0, fmt.Errorf("No events was found for the contract")
+				return 0, fmt.Errorf("no events was found for the contract")
 			}
 
 			if foundLow == 0 {

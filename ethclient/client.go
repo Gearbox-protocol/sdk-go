@@ -105,7 +105,7 @@ func errorHandler(err error, mc *MutextedClient) bool {
 	if err != nil {
 		// fmt.Println("retrying")
 		if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
-			log.Verbose("sleeping due to ", err.Error())
+			log.Trace("sleeping due to ", err.Error())
 			mc.addSleepForSecs(60)
 		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
 			mc.addSleepForSecs(sleepFor429Error(err.Error()))
@@ -122,7 +122,7 @@ func errorHandler(err error, mc *MutextedClient) bool {
 		} else if err.Error() == "header not found" { // makemulticall failed with this error in definder
 			mc.addSleepForSecs(15)
 		} else if strings.Contains(err.Error(), "EVM error FatalExternalError") { // anvil error
-			log.Verbose("Trying on anvil error")
+			log.Trace("Trying on anvil error")
 			mc.addSleepForSecs(3)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
 			log.Fatal(err)
@@ -359,12 +359,12 @@ type Req struct {
 
 func NewReq() Req {
 	requestId := uuid.New().String()
-	log.Verbose(requestId, "newRequest")
+	log.Trace(requestId, "newRequest")
 	return Req{uuid: requestId, ts: time.Now()}
 }
 func (r Req) print(args ...interface{}) {
 	allArgs := []interface{}{r.uuid, time.Since(r.ts)}
-	log.Verbose(append(allArgs, args...)...)
+	log.Trace(append(allArgs, args...)...)
 }
 
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {

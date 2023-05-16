@@ -47,7 +47,8 @@ func printlnStr(severity string, depth int, args ...interface{}) string {
 }
 
 // ---- Don't send to amqp
-// verbose
+// trace
+// debug
 // info
 // ----- To channel Alerts
 // warn
@@ -56,14 +57,19 @@ func printlnStr(severity string, depth int, args ...interface{}) string {
 // fatal
 // ----- Risk condition alerts
 // Alert
-func Verbosef(msg string, args ...interface{}) {
+func Tracef(msg string, args ...interface{}) {
+	printf(TRACE, msg, args...)
+}
+func Trace(args ...interface{}) {
+	println(TRACE, args...)
+}
+func Debugf(msg string, args ...interface{}) {
 	printf(DEBUG, msg, args...)
 }
-func Verbose(args ...interface{}) {
+func Debug(args ...interface{}) {
 	println(DEBUG, args...)
 }
 
-//
 func Warnf(msg string, args ...interface{}) {
 	if _log := printf(WARN, msg, args...); _log != "" {
 		send(false, _log)
@@ -145,7 +151,7 @@ func AMQPMsg(args ...interface{}) {
 	send(false, _log)
 }
 
-////
+// //
 var cwdLen int
 
 func DetectFuncAtStackN(n int) string {
