@@ -75,9 +75,13 @@ func (j DBBalanceFormat) Value() (driver.Value, error) {
 
 func (z *DBBalanceFormat) Scan(value interface{}) error {
 	switch t := value.(type) {
-	case []byte:
+	case []byte, string:
+		dataBytes, ok := t.([]byte)
+		if !ok {
+			dataBytes = []byte((t.(string)))
+		}
 		out := DBBalanceFormat{}
-		err := json.Unmarshal(value.([]byte), &out)
+		err := json.Unmarshal(dataBytes, &out)
 		if err != nil {
 			return err
 		}
