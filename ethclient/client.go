@@ -23,8 +23,9 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients []*MutextedClient
-	chainId int64
+	clients   []*MutextedClient
+	chainId   int64
+	noOfCalls *atomic.Int32
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -81,7 +82,8 @@ func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	l := int64(len(urls))
 	c := &Client{
-		clients: make([]*MutextedClient, l),
+		clients:   make([]*MutextedClient, l),
+		noOfCalls: &atomic.Int32{},
 	}
 	for i, url := range urls {
 		c.clients[i] = NewMutextedClient(url)
@@ -140,7 +142,13 @@ func errorHandler(err error, mc *MutextedClient) bool {
 func (rc *Client) Close() {
 }
 
+func (rc Client) GetNoOfCalls() int32 {
+	defer func() { rc.noOfCalls.Store(0) }()
+	return rc.noOfCalls.Load()
+}
+
 func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient, int) {
+	defer func() { rc.noOfCalls.Add(1) }()
 	l := len(rc.clients)
 	// find an start client index that is not ignored.
 	startClientId := rand.Intn(l)
