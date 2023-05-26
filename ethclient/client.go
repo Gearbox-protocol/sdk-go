@@ -23,8 +23,9 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients []*MutextedClient
-	chainId int64
+	clients   []*MutextedClient
+	chainId   int64
+	noOfCalls *atomic.Int32
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -61,7 +62,7 @@ func (mc MutextedClient) Unlock(req Req) {
 func (mc *MutextedClient) wait(req Req) {
 	mc.mu.Lock()
 	req.print("lock")
-	sleepFor := time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
+	sleepFor := time.Until(time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0)) // time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
 	if sleepFor > 0 {
 		time.Sleep(sleepFor)
 	}
@@ -81,7 +82,8 @@ func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	l := int64(len(urls))
 	c := &Client{
-		clients: make([]*MutextedClient, l),
+		clients:   make([]*MutextedClient, l),
+		noOfCalls: &atomic.Int32{},
 	}
 	for i, url := range urls {
 		c.clients[i] = NewMutextedClient(url)
@@ -140,7 +142,18 @@ func errorHandler(err error, mc *MutextedClient) bool {
 func (rc *Client) Close() {
 }
 
+func (rc Client) GetNoOfCalls() int32 {
+	defer func() { rc.noOfCalls.Store(0) }()
+	return rc.noOfCalls.Load()
+}
+
+// args: if this client int is to be ignored, and request for tracing purpose
+// operations:
+// - ignores the clients in ignoreClients, iterate over remaining clients to check if they are available and returns first.
+// - if none are available then wait for the startClientId to be available.
+// returns: wrapper over actual client and time when it is available and is it locked or not.
 func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient, int) {
+	defer func() { rc.noOfCalls.Add(1) }()
 	l := len(rc.clients)
 	// find an start client index that is not ignored.
 	startClientId := rand.Intn(l)

@@ -68,6 +68,9 @@ func ContainsHash(list []common.Hash, v common.Hash) bool {
 	return false
 }
 func (t *TestClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
+	if query.FromBlock.Int64() < 0 {
+		return nil, fmt.Errorf("from block for filter log less than 0: %d", query.FromBlock.Int64())
+	}
 	toBlock := query.ToBlock.Int64()
 	txLogs := []types.Log{}
 	for i := query.FromBlock.Int64(); i <= toBlock; i++ {
@@ -110,7 +113,6 @@ func (t *TestClient) CodeAt(ctx context.Context, contract common.Address, blockN
 }
 
 // for otherCalls in call of blocks
-//
 func addrAndData(input []string) (addr string, data []string) {
 	isAddr := false
 	for len(input) > 0 {

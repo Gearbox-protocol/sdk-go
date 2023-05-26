@@ -28,10 +28,6 @@ type Contract struct {
 	// VersionABI   abi.ABI      `gorm:"-" json:"-"`
 }
 
-func (c *Contract) Disable() {
-	c.Disabled = true
-}
-
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
 	con := &Contract{
@@ -62,17 +58,20 @@ func (c *Contract) SetAddress(addr string) {
 // Getter
 
 func (c *Contract) GetAddress() string {
+	if c.Address == "" {
+		log.Fatal("Adapter address is not set")
+	}
 	return c.Address
 }
 
 func (c *Contract) GetName() string {
+	if c.ContractName == "" {
+		log.Fatal("Contract name is not set")
+	}
 	return c.ContractName
 }
 func (c *Contract) IsDisabled() bool {
 	return c.Disabled
-}
-func (c *Contract) GetFirstLog() int64 {
-	return c.FirstLogAt
 }
 func (c *Contract) GetDiscoveredAt() int64 {
 	return c.DiscoveredAt
