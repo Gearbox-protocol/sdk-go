@@ -5143,7 +5143,7 @@ func (_CurveAdapter *CurveAdapterCallerSession) GetBalances3() ([2]*big.Int, err
 func (_CurveAdapter *CurveAdapterCaller) GetDy(opts *bind.CallOpts, i *big.Int, j *big.Int, dx *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _CurveAdapter.contract.Call(opts, &out, "get_dy", i, j, dx)
-
+	
 	if err != nil {
 		return *new(*big.Int), err
 	}

@@ -3,9 +3,11 @@ package priceFetcher
 import (
 	"sync"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -69,4 +71,40 @@ func (mdl TokensStore) Exists(token common.Address) bool {
 	defer mdl.mu.RUnlock()
 	_, ok := mdl.tokens[token]
 	return ok
+}
+
+func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
+	mdl.mu.Lock()
+	defer mdl.mu.Unlock()
+	calls := make([]multicall.Multicall2Call, 0, len(addrs))
+	decimalsData, err := core.GetAbi("Token").Pack("decimals")
+	symbolData, err := core.GetAbi("Token").Pack("symbol")
+	log.CheckFatal(err)
+	for _, addr := range addrs {
+		calls = append(calls, multicall.Multicall2Call{
+			Target:   addr,
+			CallData: decimalsData,
+		}, multicall.Multicall2Call{
+			Target:   addr,
+			CallData: symbolData,
+		})
+	}
+	results := core.MakeMultiCall(mdl.client, 0, false, calls, 20)
+	itr := core.NewMulticallResultIterator(results)
+	for _, addr := range addrs {
+		result := itr.Next()
+		decimals, ok := core.MulticallAnsBigInt(result)
+		result = itr.Next()
+		var sym string
+		if result.Success {
+			sym = string(result.ReturnData[utils.Min(64, len(result.ReturnData)):])
+		}
+		if ok {
+			mdl.tokens[addr] = schemas.Token{
+				Decimals: int8(decimals.Int64()),
+				Symbol:   sym,
+				Address:  addr.Hex(),
+			}
+		}
+	}
 }

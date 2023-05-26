@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"math/big"
+
+	"golang.org/x/exp/constraints"
 )
 
 // maths
@@ -76,14 +78,14 @@ func AlmostSameBigInt(a, b *big.Int, noOFZeroIndiff int8) bool {
 	return new(big.Int).Sub(a, b).CmpAbs(GetExpInt(noOFZeroIndiff)) <= 0
 }
 
-func Min(a, b int64) int64 {
+func Min[T constraints.Ordered](a, b T) T {
 	if a < b {
 		return a
 	}
 	return b
 }
 
-func Max(a, b int64) int64 {
+func Max[T constraints.Ordered](a, b int64) int64 {
 	if a > b {
 		return a
 	}
