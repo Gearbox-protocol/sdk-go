@@ -276,7 +276,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 						ReturnData: ansBytes,
 					})
 				}
-			case "13d21cdf": // getPoolData on dataCompressor
+			case "13d21cdf", "b10b074e", "191482d4": // getPoolData, getCreditManagerData, getCreditAccountDataExtended on dataCompressor
 				if call.Target != common.HexToAddress("0x0000000000000000000000000000000000000001") {
 					panic(fmt.Sprintf("sig %s and target %s", hex.EncodeToString(call.CallData[:4]), call.Target))
 				}
