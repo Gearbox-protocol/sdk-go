@@ -79,13 +79,13 @@ func singleEntryPriceCToken(bal core.JsonBigIntMap) (string, *big.Int) {
 func singleEntryPriceToken(bal map[string]core.BalanceType) (ansToken string, ansamt *big.Int, ansOk bool) {
 	tokens := 0
 	for token, details := range bal {
-		if details.IsEnabled && details.BI.Cmp(big.NewInt(1)) > 0 {
+		if details.IsEnabled && details.HasBalanceMoreThanOne() {
 			tokens++
 			if tokens == 2 {
 				return "", nil, false
 			}
 			ansToken = token
-			ansamt = details.BI
+			ansamt = details.BI.Convert()
 			ansOk = true
 		}
 	}

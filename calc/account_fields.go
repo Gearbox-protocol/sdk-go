@@ -35,7 +35,7 @@ func (c Calculator) CalcAccountFields(version int16, blockNum int64,
 	for token, balance := range account.GetBalances() {
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
-			tokenValueInUSD := c.convertToUSD(balance.BI, token, version, blockNum)
+			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
 			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
