@@ -40,6 +40,11 @@ func (mdl TokensStore) GetTokens() (tokens []schemas.Token) {
 	return
 }
 
+func (mdl TokensStore) GetToken(addr string) *schemas.Token {
+	obj := mdl.getToken(common.HexToAddress(addr))
+	return &obj
+}
+
 func (mdl TokensStore) getToken(tokenAddr common.Address) schemas.Token {
 	mdl.mu.RLock()
 	_, ok := mdl.tokens[tokenAddr]
