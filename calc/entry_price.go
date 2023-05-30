@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -25,7 +26,11 @@ type EntryPriceI interface {
 	SetEntryPrice(tradingToken string, amt float64)
 }
 
-func CalcEntryPrice(session EntryPriceI, usdc string, store TokenDetailsForCalcI) {
+type tokenI interface {
+	GetToken(token string) *schemas.Token
+}
+
+func CalcEntryPrice(session EntryPriceI, usdc string, store tokenI) {
 	if session.GetCollateral() == nil {
 		return
 	}
