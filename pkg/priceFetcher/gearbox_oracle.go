@@ -28,7 +28,7 @@ type GearboxOracleI interface {
 }
 
 type GearboxOracle struct {
-	Address     string
+	Address     common.Address
 	TokenToFeed map[string]common.Address
 	Node        *pkg.Node
 	version     int16
@@ -36,7 +36,7 @@ type GearboxOracle struct {
 	tokens []string
 }
 
-func NewGearboxOracle(addr string, version int16, client core.ClientI) GearboxOracleI {
+func NewGearboxOracle(addr common.Address, version int16, client core.ClientI) GearboxOracleI {
 	po := &GearboxOracle{
 		Address:     addr,
 		TokenToFeed: map[string]common.Address{},
@@ -49,7 +49,7 @@ func NewGearboxOracle(addr string, version int16, client core.ClientI) GearboxOr
 }
 
 func (pOracle GearboxOracle) GetAddress() common.Address {
-	return common.HexToAddress(pOracle.Address)
+	return pOracle.Address
 }
 
 func (pOracle *GearboxOracle) GetVersion() int16 {
@@ -59,7 +59,7 @@ func (pOracle *GearboxOracle) GetVersion() int16 {
 // gets all the prie feeds add events
 func (pOracle *GearboxOracle) GetPriceTokenTill(blockNum int64) {
 	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
-		[]common.Address{common.HexToAddress(pOracle.Address)},
+		[]common.Address{pOracle.Address},
 		[][]common.Hash{{core.Topic("NewPriceFeed(address,address)")}})
 	log.CheckFatal(err)
 	for _, txLog := range txLogs {
