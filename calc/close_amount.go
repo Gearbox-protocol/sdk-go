@@ -91,6 +91,8 @@ func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureSt
 		}
 	} else {
 		profit = new(big.Int).Sub(amountToPool, borrowedAmountWithInterest)
+		// reminaingFunds is totalValue - debt
+		remainingFunds = new(big.Int).Sub(totalValue, amountToPool)
 	}
 	return
 }

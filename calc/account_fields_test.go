@@ -69,7 +69,7 @@ func TestCalcFields(t *testing.T) {
 	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields.json", &input)
 	// //
 
-	calHF, calBorrowAmountPLusInterest, calTotalValue, calThresholdValue := Calculator{Store: input.store}.CalcAccountFields(
+	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		input.Version,
 		0,
 		input.Account,
@@ -80,8 +80,8 @@ func TestCalcFields(t *testing.T) {
 	if calHF.Cmp(utils.StringToInt("13225")) != 0 {
 		t.Fatalf("calculated HF(%d) is wrong", calHF)
 	}
-	if calBorrowAmountPLusInterest.Cmp(utils.StringToInt("8319356395")) != 0 {
-		t.Fatalf("calculated borrowedamount + interest(%d) is wrong", calBorrowAmountPLusInterest)
+	if calDebt.Cmp(utils.StringToInt("8319356395")) != 0 {
+		t.Fatalf("calculated borrowedamount + interest(%d) is wrong", calDebt)
 	}
 	if calTotalValue.Cmp(utils.StringToInt("12944049438")) != 0 {
 		t.Fatalf("calculated totalvalue(%d) is wrong", calTotalValue)
@@ -99,7 +99,7 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields_v2.json", &input)
 	// //
 
-	calHF, calBorrowAmountPLusInterest, calTotalValue, calThresholdValue := Calculator{Store: input.store}.CalcAccountFields(
+	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		input.Version,
 		0,
 		input.Account,
@@ -110,8 +110,8 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 	if calHF.Cmp(utils.StringToInt("2725195")) != 0 {
 		t.Fatalf("calculated HF(%d) is wrong", calHF)
 	}
-	if calBorrowAmountPLusInterest.Cmp(utils.StringToInt("5000008908519365762")) != 0 {
-		t.Fatalf("calculated borrowedamount + interest(%d) is wrong", calBorrowAmountPLusInterest)
+	if calDebt.Cmp(utils.StringToInt("5000008908519365762")) != 0 {
+		t.Fatalf("calculated borrowedamount + interest(%d) is wrong", calDebt)
 	}
 	if calTotalValue.Cmp(utils.StringToInt("1651636475399519415042")) != 0 {
 		t.Fatalf("calculated totalvalue(%d) is wrong", calTotalValue)
