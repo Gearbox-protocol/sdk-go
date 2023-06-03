@@ -85,7 +85,7 @@ func Min[T constraints.Ordered](a, b T) T {
 	return b
 }
 
-func Max[T constraints.Ordered](a, b int64) int64 {
+func Max[T constraints.Ordered](a, b T) T {
 	if a > b {
 		return a
 	}
