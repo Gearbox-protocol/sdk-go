@@ -24,7 +24,7 @@ type Pauser struct {
 
 func NewPauser(transactor *pkg.BaseTransactor, privateKey, flashbotsRelay, pauserMCAddr string, client core.ClientI) *Pauser {
 	c := &Pauser{
-		BaseTransactor: pkg.NewBaseTransactor(privateKey, client, 600),
+		BaseTransactor: pkg.NewBaseTransactor("", privateKey, client, 600),
 		mu:             &sync.Mutex{},
 		flashBots:      pkg.NewFlashbotsTransactor(flashbotsRelay),
 	}
