@@ -145,15 +145,16 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
-	// if the gearPrice is not available from the 1inch spot contract use 1inch api
-	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
-	gearPrice := prices[gearToken]
-	if gearPrice != nil && gearPrice.Convert().Cmp(new(big.Int)) == 0 { // only set gearPrice it if already set , but is zero
-		// price := calc.getPriceForAPI("GEAR")
-		price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
-		prices[gearToken] = (*core.BigInt)(price)
-	}
+	// get 1inch token from the 1inch spot contract use 1inch api
+	calc.addGearPrice(prices)
 	return prices
+}
+
+func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
+	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
+	price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
+	prices[gearToken] = (*core.BigInt)(price)
+	log.Info(prices[gearToken])
 }
 
 // get the price from 1inch api for `token to usdc quote`
@@ -185,22 +186,32 @@ func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 	return utils.StringToInt(val.ToTokenAmt)
 }
 
-func (calc OneInchOracle) getGearPriceFromCurve(ethPrice *big.Int) *big.Int {
+func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int {
 	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2")
-	dyData, err := core.GetAbi("CurvePool").Pack("get_dy", big.NewInt(0), big.NewInt(1), utils.GetExpInt(18))
+	d0Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(0))
+	log.CheckFatal(err)
+	d1Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(1))
 	log.CheckFatal(err)
 	results := core.MakeMultiCall(calc.client, 0, false, []multicall.Multicall2Call{{
 		Target:   pool,
-		CallData: dyData,
+		CallData: d0Data,
+	}, {
+		Target:   pool,
+		CallData: d1Data,
 	}})
-	gearPriceInEth, ok := core.MulticallAnsBigInt(results[0])
+	gearBalance, ok := core.MulticallAnsBigInt(results[0])
 	if !ok {
-		log.Info("Can't get price of gear from curve")
+		log.Info("Can't get gear balance.")
+		return new(big.Int)
+	}
+	ethBalance, ok := core.MulticallAnsBigInt(results[1])
+	if !ok {
+		log.Info("Can't get eth balance.")
 		return new(big.Int)
 	}
 	return new(big.Int).Quo(
-		new(big.Int).Mul(gearPriceInEth, ethPrice),
-		utils.GetExpInt(18),
+		new(big.Int).Mul(ethBalance, ethPriceInUSD),
+		gearBalance,
 	)
 }
 

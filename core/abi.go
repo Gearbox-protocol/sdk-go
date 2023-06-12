@@ -50,11 +50,14 @@ import (
 
 var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"srcToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"dstToken\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"useWrappers\",\"type\":\"bool\"}],\"name\":\"getRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"weightedRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
+var curveBalanceABI = "[{\"name\":\"balances\",\"outputs\":[{\"type\":\"uint256\",\"name\":\"\"}],\"inputs\":[{\"type\":\"uint256\",\"name\":\"i\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"gas\":2943}]"
+
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
-		"Version":     versionABI,
-		"Pauser":      pauserABI,
-		"1InchOracle": inchOracleABI,
+		"Version":      versionABI,
+		"Pauser":       pauserABI,
+		"1InchOracle":  inchOracleABI,
+		"curveBalance": curveBalanceABI,
 	}
 	if data := abiMap[contractName]; data != "" {
 		return getABI(data)
