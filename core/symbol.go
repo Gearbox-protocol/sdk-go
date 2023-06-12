@@ -65,5 +65,5 @@ type PriceSource string
 
 const (
 	SOURCE_CHAINLINK PriceSource = "chainlink"
-	SOURCE_SPOT                  = "spot"
+	SOURCE_SPOT      PriceSource = "spot"
 )
