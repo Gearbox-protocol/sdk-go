@@ -154,7 +154,6 @@ func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
 	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
 	price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
 	prices[gearToken] = (*core.BigInt)(price)
-	log.Info(prices[gearToken])
 }
 
 // get the price from 1inch api for `token to usdc quote`

@@ -105,3 +105,14 @@ func (a *TokenTransfer) Equal(b *TokenTransfer) bool {
 func (TokenTransfer) TableName() string {
 	return "no_session_transfers"
 }
+
+type TokenPrice struct {
+	Token    core.Symbol `gorm:"column:token;primaryKey" json:"symbol"`
+	Ts       uint64      `gorm:"column:ts;primaryKey" json:"ts"`
+	Price    float64     `gorm:"column:price" json:"price"`
+	Category string      `gorm:"column:category;primaryKey" json:"-"`
+}
+
+func (TokenPrice) TableName() string {
+	return "prices"
+}
