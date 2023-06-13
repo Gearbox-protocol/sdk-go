@@ -24,3 +24,10 @@ func FetchVersion(addr string, blockNum int64, client ClientI) int16 {
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	return int16(out0.Int64())
 }
+func FetchVersionOptimized(addr common.Address, blockNum int64, client ClientI) int16 {
+	version, err := CallFuncWithExtraBytes(client, "54fd4d50", addr, blockNum, nil)
+	if err != nil {
+		return 1
+	}
+	return int16(new(big.Int).SetBytes(version).Int64())
+}

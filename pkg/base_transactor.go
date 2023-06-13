@@ -10,6 +10,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/howeyc/gopass"
 )
@@ -21,7 +22,7 @@ type BaseTransactor struct {
 	timeoutSec int
 }
 
-func NewBaseTransactor(privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
+func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
 	chainId, err := client.ChainID(context.TODO())
 	log.CheckFatal(err)
@@ -33,6 +34,9 @@ func NewBaseTransactor(privateKey string, client core.ClientI, timeoutSec int) *
 		privateKey = utils.Decrypt(strings.Split(privateKey, ":")[1], password)
 	}
 	wallet := core.GetWallet(privateKey)
+	if addr != "" && common.HexToAddress(addr) != wallet.Address {
+		log.Fatal("Wrong prv key with addr", wallet.Address)
+	}
 	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId.Int64()))
 	log.CheckFatal(err)
 	//

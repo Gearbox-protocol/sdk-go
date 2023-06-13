@@ -3,6 +3,7 @@ package priceFetcher
 import (
 	"sync"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -11,19 +12,19 @@ import (
 
 type TokensStore struct {
 	mu     *sync.RWMutex
-	tokens map[common.Address]schemas.Token
+	tokens map[common.Address]*schemas.Token
 	client core.ClientI
 }
 
 func NewTokensStore(client core.ClientI) *TokensStore {
 	return &TokensStore{
-		tokens: map[common.Address]schemas.Token{},
+		tokens: map[common.Address]*schemas.Token{},
 		mu:     &sync.RWMutex{},
 		client: client,
 	}
 }
 
-func (mdl *TokensStore) Update(tokens []schemas.Token) {
+func (mdl *TokensStore) Update(tokens []*schemas.Token) {
 	mdl.mu.Lock()
 	defer mdl.mu.Unlock()
 	for _, token := range tokens {
@@ -31,14 +32,18 @@ func (mdl *TokensStore) Update(tokens []schemas.Token) {
 	}
 }
 
-func (mdl TokensStore) GetTokens() (tokens []schemas.Token) {
+func (mdl TokensStore) GetTokens() (tokens []*schemas.Token) {
 	for _, entry := range mdl.tokens {
 		tokens = append(tokens, entry)
 	}
 	return
 }
 
-func (mdl TokensStore) getToken(tokenAddr common.Address) schemas.Token {
+func (mdl TokensStore) GetToken(addr string) *schemas.Token {
+	return mdl.getToken(common.HexToAddress(addr))
+}
+
+func (mdl TokensStore) getToken(tokenAddr common.Address) *schemas.Token {
 	mdl.mu.RLock()
 	_, ok := mdl.tokens[tokenAddr]
 	mdl.mu.RUnlock()
@@ -48,7 +53,7 @@ func (mdl TokensStore) getToken(tokenAddr common.Address) schemas.Token {
 			log.Fatalf("Err(%s) for token: %s", err, token.Address)
 		}
 		mdl.mu.Lock()
-		mdl.tokens[tokenAddr] = *token
+		mdl.tokens[tokenAddr] = token
 		mdl.mu.Unlock()
 	}
 	mdl.mu.RLock()
@@ -69,4 +74,56 @@ func (mdl TokensStore) Exists(token common.Address) bool {
 	defer mdl.mu.RUnlock()
 	_, ok := mdl.tokens[token]
 	return ok
+}
+
+func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.Address) {
+	for _, addr := range addrs {
+		if mdl.tokens[addr] == nil {
+			ans = append(ans, addr)
+		}
+	}
+	return
+}
+func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
+	mdl.mu.Lock()
+	defer mdl.mu.Unlock()
+	addrs = mdl.getNotPresentAddrs(addrs)
+	//
+	tokenABI := core.GetAbi("Token")
+	// create calls
+	calls := make([]multicall.Multicall2Call, 0, len(addrs))
+	decimalsData, err := tokenABI.Pack("decimals")
+	log.CheckFatal(err)
+	symbolData, err := core.GetAbi("Token").Pack("symbol")
+	log.CheckFatal(err)
+	for _, addr := range addrs {
+		calls = append(calls, multicall.Multicall2Call{
+			Target:   addr,
+			CallData: decimalsData,
+		}, multicall.Multicall2Call{
+			Target:   addr,
+			CallData: symbolData,
+		})
+	}
+	// get results and process them
+	results := core.MakeMultiCall(mdl.client, 0, false, calls, 20)
+	itr := core.NewMulticallResultIterator(results)
+	for _, addr := range addrs {
+		result := itr.Next()
+		decimals, ok := core.MulticallAnsBigInt(result)
+		result = itr.Next()
+		var sym string
+		if result.Success {
+			if values, _ := tokenABI.Unpack("symbol", result.ReturnData); len(values) > 0 {
+				sym = values[0].(string)
+			}
+		}
+		if ok {
+			mdl.tokens[addr] = &schemas.Token{
+				Decimals: int8(decimals.Int64()),
+				Symbol:   sym,
+				Address:  addr.Hex(),
+			}
+		}
+	}
 }

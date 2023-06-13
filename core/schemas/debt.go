@@ -9,10 +9,11 @@ import (
 type CommonDebtFields struct {
 	BlockNumber int64 `gorm:"column:block_num" json:"blockNum"`
 	//
-	CalHealthFactor                 *core.BigInt `gorm:"column:cal_health_factor" json:"calHealthFactor"`
-	CalTotalValueBI                 *core.BigInt `gorm:"column:cal_total_value_bi" json:"calTotalValue"`
-	CalBorrowedAmountPlusInterestBI *core.BigInt `gorm:"column:cal_borrowed_amt_with_interest_bi" json:"calBorrowedAmountPlusInterest"`
-	CalThresholdValueBI             *core.BigInt `gorm:"column:cal_threshold_value_bi" json:"calThresholdValue"`
+	CalHealthFactor           *core.BigInt `gorm:"column:cal_health_factor" json:"calHealthFactor"`
+	CalTotalValueBI           *core.BigInt `gorm:"column:cal_total_value_bi" json:"calTotalValue"`
+	CalDebtBI                 *core.BigInt `gorm:"column:cal_borrowed_amt_with_interest_bi" json:"calBorrowedAmountPlusInterest"`
+	CalBorrowedWithInterestBI *core.BigInt `gorm:"-" json:"-"`
+	CalThresholdValueBI       *core.BigInt `gorm:"column:cal_threshold_value_bi" json:"calThresholdValue"`
 	//
 	ProfitInUSD            float64 `gorm:"column:profit_usd" json:"profitUSD"`
 	CollateralInUSD        float64 `gorm:"column:collateral_usd" json:"collateralUSD"`
@@ -38,9 +39,9 @@ type CurrentDebt struct {
 	CommonDebtFields
 	SessionId string `gorm:"column:session_id;primaryKey" json:"sessionId"`
 	//
-	CalTotalValue                 float64 `gorm:"column:cal_total_value" json:"calTotalValue"`
-	CalBorrowedAmountPlusInterest float64 `gorm:"column:cal_borrowed_amt_with_interest" json:"calBorrowedAmountPlusInterest"`
-	CalThresholdValue             float64 `gorm:"column:cal_threshold_value" json:"calThresholdValue"`
+	CalTotalValue     float64 `gorm:"column:cal_total_value" json:"calTotalValue"`
+	CalDebt           float64 `gorm:"column:cal_borrowed_amt_with_interest" json:"calBorrowedAmountPlusInterest"`
+	CalThresholdValue float64 `gorm:"column:cal_threshold_value" json:"calThresholdValue"`
 	//
 	AmountToPool    float64      `gorm:"-" json:"amountToPool"`
 	RepayAmountBI   *core.BigInt `gorm:"column:repay_amount_bi" json:"-"`

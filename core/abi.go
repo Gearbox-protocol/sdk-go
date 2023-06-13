@@ -50,11 +50,14 @@ import (
 
 var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"srcToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"dstToken\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"useWrappers\",\"type\":\"bool\"}],\"name\":\"getRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"weightedRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
+var curveBalanceABI = "[{\"name\":\"balances\",\"outputs\":[{\"type\":\"uint256\",\"name\":\"\"}],\"inputs\":[{\"type\":\"uint256\",\"name\":\"i\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"gas\":2943}]"
+
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
-		"Version":     versionABI,
-		"Pauser":      pauserABI,
-		"1InchOracle": inchOracleABI,
+		"Version":      versionABI,
+		"Pauser":       pauserABI,
+		"1InchOracle":  inchOracleABI,
+		"curveBalance": curveBalanceABI,
 	}
 	if data := abiMap[contractName]; data != "" {
 		return getABI(data)
@@ -118,6 +121,8 @@ func GetAbi(contractName string) *abi.ABI {
 		"MainnetLido":             {ABI: mainnetLido.MainnetLidoABI},
 		"LidoKovan":               {ABI: lidoKovan.LidoKovanABI},
 		"UniswapConnectorChecker": {ABI: uniswapConnectorChecker.UniswapConnectorCheckerABI},
+		//
+		"CurvePool": {ABI: "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"i\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"j\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dx\",\"type\":\"uint256\"}],\"name\":\"get_dy\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"},
 		//
 		"YearnAdapter": {ABI: yearnAdapter.YearnAdapterABI},
 		// convex for liquidator calculation

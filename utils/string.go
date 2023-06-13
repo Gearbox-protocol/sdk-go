@@ -112,6 +112,9 @@ func ReadFromEnv(val interface{}) {
 	for i := 0; i < num; i++ {
 		envVarDS := rv.Type().Field(i)
 		envField, value := getField(envVarDS)
+		if envField == "" {
+			continue
+		}
 		switch envVarDS.Type.Kind() {
 		case reflect.String:
 			rv.Field(i).SetString(value)
