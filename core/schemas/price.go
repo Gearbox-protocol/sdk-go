@@ -32,11 +32,10 @@ type PriceFeed struct {
 	Token       string `gorm:"column:token" json:"token"`
 	Feed        string `gorm:"column:feed" json:"feed"`
 	//
-	RoundId          int64        `gorm:"column:round_id" json:"roundId"`
-	IsPriceInUSD     bool         `gorm:"column:price_in_usd" json:"isPriceInUSD"`
-	PriceBI          *core.BigInt `gorm:"column:price_bi" json:"priceBI"`
-	Price            float64      `gorm:"column:price" json:"price"`
-	SaveCurrentPrice bool         `gorm:"-" json:"-"`
+	RoundId      int64        `gorm:"column:round_id" json:"roundId"`
+	IsPriceInUSD bool         `gorm:"column:price_in_usd" json:"isPriceInUSD"`
+	PriceBI      *core.BigInt `gorm:"column:price_bi" json:"priceBI"`
+	Price        float64      `gorm:"column:price" json:"price"`
 }
 
 func (pf PriceFeed) String() string {
@@ -84,6 +83,7 @@ type TokenCurrentPrice struct {
 	BlockNum int64        `gorm:"column:block_num"`
 	Token    string       `gorm:"column:token;primaryKey" json:"token"`
 	PriceSrc string       `gorm:"column:price_source;primaryKey" json:"-"`
+	Save     bool         `json:"-" gorm:"-"`
 }
 
 func (TokenCurrentPrice) TableName() string {

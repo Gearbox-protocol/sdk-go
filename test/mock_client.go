@@ -110,7 +110,6 @@ func (t *TestClient) CodeAt(ctx context.Context, contract common.Address, blockN
 }
 
 // for otherCalls in call of blocks
-//
 func addrAndData(input []string) (addr string, data []string) {
 	isAddr := false
 	for len(input) > 0 {
