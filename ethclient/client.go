@@ -62,7 +62,7 @@ func (mc MutextedClient) Unlock(req Req) {
 func (mc *MutextedClient) wait(req Req) {
 	mc.mu.Lock()
 	req.print("lock")
-	sleepFor := time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
+	sleepFor := time.Until(time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0)) // time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
 	if sleepFor > 0 {
 		time.Sleep(sleepFor)
 	}
@@ -147,6 +147,12 @@ func (rc Client) GetNoOfCalls() int32 {
 	return rc.noOfCalls.Load()
 }
 
+
+// args: if this client int is to be ignored, and request for tracing purpose
+// operations:
+// - ignores the clients in ignoreClients, iterate over remaining clients to check if they are available and returns first.
+// - if none are available then wait for the startClientId to be available.
+// returns: wrapper over actual client and time when it is available and is it locked or not.
 func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient, int) {
 	defer func() { rc.noOfCalls.Add(1) }()
 	l := len(rc.clients)
