@@ -17,7 +17,7 @@ type session struct {
 	//
 	tradingToken string
 	quoteToken   string
-	entryPrice   float64
+	currentPrice float64
 }
 
 func (s session) GetBalances() map[string]core.BalanceType {
@@ -26,16 +26,16 @@ func (s session) GetBalances() map[string]core.BalanceType {
 func (s session) GetBorrowedAmount() *big.Int {
 	return s.borrowedAmount
 }
-func (s session) GetCollateral() *core.JsonBigIntMap {
-	return &s.collateral
+func (s session) GetCollateralInUnderlying() interface{} {
+	return s.collateral[s.underlying]
 }
 func (s session) GetUnderlyingToken() string {
 	return s.underlying
 }
-func (s *session) SetEntryPrice(tradingToken, quoteToken string, entryPrice float64) {
+func (s *session) SetCurrentPrice(tradingToken, quoteToken string, currentPrice float64) {
 	s.tradingToken = tradingToken
 	s.quoteToken = quoteToken
-	s.entryPrice = entryPrice
+	s.currentPrice = currentPrice
 }
 
 type dStore struct {
@@ -54,7 +54,7 @@ func TestEntryPriceForLong(t *testing.T) {
 		collateral:     core.JsonBigIntMap{usdc: (*core.BigInt)(utils.GetExpInt(6 + 3))},
 		underlying:     usdc,
 	}
-	CalcEntryPrice(sess, []string{usdc}, dStore{
+	CalcCurrentPrice(sess, []string{usdc}, dStore{
 		tokens: map[string]*schemas.Token{
 			usdc:         {Decimals: 6},
 			tradingToken: {Decimals: 18},
@@ -64,8 +64,8 @@ func TestEntryPriceForLong(t *testing.T) {
 	if sess.tradingToken != tradingToken {
 		t.Fatal("trading token is not set", sess.tradingToken)
 	}
-	if sess.entryPrice != 4000 {
-		t.Fatal("entry price is wrong", sess.entryPrice)
+	if sess.currentPrice != 4000 {
+		t.Fatal("entry price is wrong", sess.currentPrice)
 	}
 }
 

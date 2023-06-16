@@ -11,7 +11,6 @@ import (
 )
 
 type PriceDS struct {
-	EntryPrice   float64 `json:"entryPrice"`
 	CurrentPrice float64 `json:"closePrice"`
 	TradingToken string  `json:"tradingToken,omitempty"`
 	QuoteToken   string  `json:"quoteToken,omitempty"`
