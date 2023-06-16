@@ -1,6 +1,8 @@
 package calc
 
 import (
+	"fmt"
+	"log"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -9,80 +11,79 @@ import (
 )
 
 type PriceDS struct {
-	EntryPrice   float64 `json:"entryPrice,omitempty"`
+	EntryPrice   float64 `json:"entryPrice"`
+	CurrentPrice float64 `json:"closePrice"`
 	TradingToken string  `json:"tradingToken,omitempty"`
 	QuoteToken   string  `json:"quoteToken,omitempty"`
 }
 
-func (session *PriceDS) SetEntryPrice(tradingToken, quoteToken string, price float64) {
+func (session *PriceDS) SetCurrentPrice(tradingToken, quoteToken string, price float64) {
 	session.TradingToken = tradingToken
 	session.QuoteToken = quoteToken
-	session.EntryPrice = price
+	session.CurrentPrice = price
 }
 
 type EntryPriceI interface {
 	GetBalances() map[string]core.BalanceType
 	GetBorrowedAmount() *big.Int
-	GetCollateral() *core.JsonBigIntMap
+	GetCollateralInUnderlying() interface{}
 	GetUnderlyingToken() string
-	SetEntryPrice(tradingToken, quoteToken string, amt float64)
+	SetCurrentPrice(tradingToken, quoteToken string, amt float64)
 }
 
 type tokenI interface {
 	GetToken(token string) *schemas.Token
 }
 
-func isQuoteTokenInCollateral(collateral map[string]*core.BigInt, quoteTokens []string) bool {
-	for _, token := range quoteTokens {
-		if collateral[token] != nil {
-			return true
-		}
+func toBigInt(collateral interface{}, decimals int8) *big.Int {
+	switch v := collateral.(type) {
+	case float64:
+		ans, _ := new(big.Float).Mul(big.NewFloat(v), utils.GetExpFloat(decimals)).Int(nil)
+		return ans
+	case *big.Int:
+		return v
+	case *core.BigInt:
+		return v.Convert()
+	default:
+		log.Fatal("can't covert this type", v)
+		return nil
 	}
-	return false
 }
-func CalcEntryPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
-	if session.GetCollateral() == nil {
+func CalcCurrentPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
+	cToken, cBal := session.GetUnderlyingToken(), new(big.Int).Add(
+		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals), // col token,
+		session.GetBorrowedAmount())
+	isLong := utils.Contains(quoteTokens, session.GetUnderlyingToken())
+	tradingToken, quoteToken, currentPrice, err := CalcPriceBasedOnBalanceAndCollateral(isLong, store, session.GetBalances(), cToken, cBal)
+	if err != nil {
 		return
 	}
-	collateral := *session.GetCollateral()
-	balances := session.GetBalances()
-	// etry price is valid then
-	if len(collateral) == 1 {
-		isLong := isQuoteTokenInCollateral(collateral, quoteTokens)
-		bToken, bBal, ok := singleEntryPriceToken(balances) // balance token, returns false if there are more than 1 token
-		if !ok {
-			return
-		}
-		cToken, cBal := singleEntryPriceCToken(collateral) // col token
-		if cToken == session.GetUnderlyingToken() {
-			cBal = new(big.Int).Add(cBal, session.GetBorrowedAmount())
-		}
-		if isLong {
-			tradingToken := bToken
-			entryPrice := utils.GetFloat64Decimal(
-				new(big.Int).Quo(
-					utils.GetInt64(cBal, -store.GetToken(bToken).Decimals), // cBal is usdc
-					bBal), // bBal is tradingToken
-				store.GetToken(cToken).Decimals)
-			session.SetEntryPrice(tradingToken, cToken, entryPrice)
-		} else {
-			tradingToken := cToken
-			entryPrice := utils.GetFloat64Decimal(
-				new(big.Int).Quo(
-					utils.GetInt64(bBal, -store.GetToken(cToken).Decimals), // bBal is usdc
-					cBal,
-				),
-				store.GetToken(bToken).Decimals)
-			session.SetEntryPrice(tradingToken, bToken, entryPrice)
-		}
-	}
+	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
 }
-
-func singleEntryPriceCToken(bal core.JsonBigIntMap) (string, *big.Int) {
-	for token, amt := range bal {
-		return token, amt.Convert()
+func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
+	balances map[string]core.BalanceType, cToken string, cBal *big.Int) (string, string, float64, error) {
+	bToken, bBal, ok := singleEntryPriceToken(balances) // balance token, returns false if there are more than 1 token
+	if !ok {
+		return "", "", 0, fmt.Errorf("balances has 2 or more token")
 	}
-	return "", nil
+	if isLong {
+		tradingToken := bToken
+		currentPrice := utils.GetFloat64Decimal(
+			new(big.Int).Quo(
+				utils.GetInt64(cBal, -store.GetToken(bToken).Decimals), // cBal is usdc
+				bBal), // bBal is tradingToken
+			store.GetToken(cToken).Decimals)
+		return tradingToken, cToken, currentPrice, nil
+	} else {
+		tradingToken := cToken
+		currentPrice := utils.GetFloat64Decimal(
+			new(big.Int).Quo(
+				utils.GetInt64(bBal, -store.GetToken(cToken).Decimals), // bBal is usdc
+				cBal,
+			),
+			store.GetToken(bToken).Decimals)
+		return tradingToken, cToken, currentPrice, nil
+	}
 }
 
 // returns false if there are more than 1 token
