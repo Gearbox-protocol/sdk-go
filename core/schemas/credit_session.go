@@ -84,6 +84,8 @@ type (
 		// v2 liquidate also uses it for calculation
 		// it shouldn't be directly used in API
 		RemainingFunds *core.BigInt `gorm:"column:remaining_funds"`
+		// for v2 close accounts.
+		CloseTransfers *core.JsonFloatMap `gorm:"column:close_transfers" json:"-"`
 	}
 
 	CreditAccountData struct {

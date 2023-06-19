@@ -7,7 +7,6 @@ import (
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
-	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 // there is balanceType without float decimal value and
@@ -92,15 +91,16 @@ func (z *DBBalanceFormat) Scan(value interface{}) error {
 	return nil
 }
 
-func (j DBBalanceFormat) ValueInUnderlying(underlyingToken string, uDecimals int8, prices JsonFloatMap) *big.Int {
-	var total float64
-	priceOfUnderlying := prices[underlyingToken]
-	for token, bal := range j {
-		tokenPrice := prices[token]
-		value := (bal.F * tokenPrice) / priceOfUnderlying
-		total += value
-	}
-	valueInFloat := new(big.Float).Mul(big.NewFloat(total), utils.GetExpFloat(uDecimals))
-	remainingFunds, _ := valueInFloat.Int(nil)
-	return remainingFunds
-}
+// deprecated
+// func (j DBBalanceFormat) ValueInUnderlying(underlyingToken string, uDecimals int8, prices JsonFloatMap) *big.Int {
+// 	var total float64
+// 	priceOfUnderlying := prices[underlyingToken]
+// 	for token, bal := range j {
+// 		tokenPrice := prices[token]
+// 		value := (bal.F * tokenPrice) / priceOfUnderlying
+// 		total += value
+// 	}
+// 	valueInFloat := new(big.Float).Mul(big.NewFloat(total), utils.GetExpFloat(uDecimals))
+// 	remainingFunds, _ := valueInFloat.Int(nil)
+// 	return remainingFunds
+// }

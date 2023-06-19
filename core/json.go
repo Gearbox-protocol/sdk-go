@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"math/big"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -34,7 +36,6 @@ func (z *Json) Scan(value interface{}) error {
 	}
 }
 
-//
 type JsonBigIntMap map[string]*BigInt
 
 func (j *JsonBigIntMap) Value() (driver.Value, error) {
@@ -55,6 +56,38 @@ func (z *JsonBigIntMap) Scan(value interface{}) error {
 	default:
 		return fmt.Errorf("could not scan type %T", t)
 	}
+}
+
+func (j JsonFloatMap) ValueInUnderlying(underlyingToken string, uDecimals int8, prices JsonFloatMap) *big.Int {
+	priceOfUnderlying := prices[underlyingToken]
+	total := j.ValueInUSD(prices) / priceOfUnderlying
+	//
+	valueInFloat := new(big.Float).Mul(big.NewFloat(total), utils.GetExpFloat(uDecimals))
+	remainingFunds, _ := valueInFloat.Int(nil)
+	return remainingFunds
+}
+
+func (z *JsonFloatMap) UnmarshalJSON(b []byte) (err error) {
+	tmpMap := map[string]interface{}{}
+	if err = json.Unmarshal(b, &tmpMap); err != nil {
+		return
+	}
+	returnObj := map[string]float64{}
+	for k, _v := range tmpMap {
+		switch val := _v.(type) {
+		case float64:
+			returnObj[k] = val
+		case string:
+			floatVal, err := strconv.ParseFloat(val, 64)
+			if err != nil {
+				return err
+			}
+			returnObj[k] = floatVal
+		default:
+			return fmt.Errorf("can't parse(%v) in JsonFloatMap ", _v)
+		}
+	}
+	return
 }
 
 type JsonFloatMap map[string]float64
