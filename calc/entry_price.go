@@ -81,7 +81,7 @@ func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
 				cBal,
 			),
 			store.GetToken(bToken).Decimals)
-		return tradingToken, cToken, currentPrice, nil
+		return tradingToken, bToken, currentPrice, nil
 	}
 }
 
