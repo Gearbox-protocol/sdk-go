@@ -2,11 +2,15 @@ package pkg
 
 import (
 	"context"
+	"fmt"
 	"math/big"
+	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -132,4 +136,34 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 		return logs, err
 	}
 	return append(newLogs, logs...), nil
+}
+
+func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, error) {
+	url := "https://%s.etherscan.io/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
+	var suffix string
+	switch chainId {
+	case 1:
+		suffix = "api"
+	case 5:
+		suffix = "api-goerli"
+	}
+	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
+	resp, err := http.Get(url)
+	if err != nil {
+		return 0, err
+	}
+	type respBody struct {
+		Status string `json:"status"`
+		Result string `json:"result"`
+	}
+	msg := &respBody{}
+	utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
+	if msg.Status != "1" {
+		return 0, fmt.Errorf("failed to get block num")
+	}
+	blockNum, err := strconv.ParseInt(msg.Result, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return blockNum, nil
 }

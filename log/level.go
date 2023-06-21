@@ -9,7 +9,8 @@ var logLevel LEVEL
 type LEVEL int
 
 const (
-	DEBUG LEVEL = iota
+	TRACE LEVEL = iota
+	DEBUG
 	INFO
 	WARN
 	ERROR
@@ -19,6 +20,8 @@ const (
 
 func toString(lvl LEVEL) string {
 	switch lvl {
+	case TRACE:
+		return "TRACE"
 	case DEBUG:
 		return "DEBUG"
 	case INFO:
@@ -41,6 +44,8 @@ func init() {
 		lvl = "INFO"
 	}
 	switch lvl {
+	case "TRACE":
+		logLevel = TRACE
 	case "DEBUG":
 		logLevel = DEBUG
 	case "INFO":

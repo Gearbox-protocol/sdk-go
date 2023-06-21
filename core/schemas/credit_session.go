@@ -63,25 +63,30 @@ func IsStatusLiquidated(status int) bool {
 type (
 	// TODO: delete remainingfunds/ health_factor/ profit_percent / profit not required
 	CreditSession struct {
-		ID                     string                `gorm:"primaryKey" json:"sessionId"`
-		Status                 int                   `json:"status"`
-		Borrower               string                `json:"borrower"`
-		CreditManager          string                `json:"creditManager"`
-		Account                string                `json:"account"`
-		Since                  int64                 `json:"since"`
-		ClosedAt               int64                 `json:"closedAt"`
-		InitialAmount          *core.BigInt          `json:"initialAmount"`
-		BorrowedAmount         *core.BigInt          `json:"borrowedAmount"`
-		Balances               *core.DBBalanceFormat `gorm:"column:balances"`
-		CollateralInUSD        float64               `gorm:"<-:false;column:collateral_usd"`
-		CollateralInUnderlying float64               `gorm:"<-:false;column:collateral_underlying"`
-		IsDirty                bool                  `gorm:"-"`
-		Liquidator             string                `gorm:"liquidator"`
-		Version                core.VersionType      `gorm:"version"`
+		ID             string                `gorm:"primaryKey" json:"sessionId"`
+		Status         int                   `json:"status"`
+		Borrower       string                `json:"borrower"`
+		CreditManager  string                `json:"creditManager"`
+		Account        string                `json:"account"`
+		Since          int64                 `json:"since"`
+		ClosedAt       int64                 `json:"closedAt"`
+		InitialAmount  *core.BigInt          `json:"initialAmount"`
+		BorrowedAmount *core.BigInt          `json:"borrowedAmount"`
+		Balances       *core.DBBalanceFormat `gorm:"column:balances"`
+		Collateral     *core.JsonBigIntMap   `gorm:"column:collateral" json:"-"`
+		// these two values are set and used for setting values in css
+		CollateralInUSD        float64 `gorm:"<-:false;column:collateral_usd"`
+		CollateralInUnderlying float64 `gorm:"<-:false;column:collateral_underlying"`
+		IsDirty                bool    `gorm:"-"`
+		Liquidator             string  `gorm:"liquidator"`
+		Version                int16   `gorm:"version"`
+
 		// v1 liquidte and close use remainingFunds for debt calculation
 		// v2 liquidate also uses it for calculation
 		// it shouldn't be directly used in API
 		RemainingFunds *core.BigInt `gorm:"column:remaining_funds"`
+		// for v2 close accounts.
+		CloseTransfers *core.JsonFloatMap `gorm:"column:close_transfers" json:"-"`
 	}
 
 	CreditAccountData struct {

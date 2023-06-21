@@ -23,8 +23,9 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients []*MutextedClient
-	chainId int64
+	clients   []*MutextedClient
+	chainId   int64
+	noOfCalls *atomic.Int32
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -61,7 +62,7 @@ func (mc MutextedClient) Unlock(req Req) {
 func (mc *MutextedClient) wait(req Req) {
 	mc.mu.Lock()
 	req.print("lock")
-	sleepFor := time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
+	sleepFor := time.Until(time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0)) // time.Unix(atomic.LoadInt64(&mc._lockedTillTs), 0).Sub(time.Now())
 	if sleepFor > 0 {
 		time.Sleep(sleepFor)
 	}
@@ -81,7 +82,8 @@ func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	l := int64(len(urls))
 	c := &Client{
-		clients: make([]*MutextedClient, l),
+		clients:   make([]*MutextedClient, l),
+		noOfCalls: &atomic.Int32{},
 	}
 	for i, url := range urls {
 		c.clients[i] = NewMutextedClient(url)
@@ -105,7 +107,7 @@ func errorHandler(err error, mc *MutextedClient) bool {
 	if err != nil {
 		// fmt.Println("retrying")
 		if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
-			log.Verbose("sleeping due to ", err.Error())
+			log.Trace("sleeping due to ", err.Error())
 			mc.addSleepForSecs(60)
 		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
 			mc.addSleepForSecs(sleepFor429Error(err.Error()))
@@ -122,7 +124,7 @@ func errorHandler(err error, mc *MutextedClient) bool {
 		} else if err.Error() == "header not found" { // makemulticall failed with this error in definder
 			mc.addSleepForSecs(15)
 		} else if strings.Contains(err.Error(), "EVM error FatalExternalError") { // anvil error
-			log.Verbose("Trying on anvil error")
+			log.Trace("Trying on anvil error")
 			mc.addSleepForSecs(3)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
 			log.Fatal(err)
@@ -140,7 +142,19 @@ func errorHandler(err error, mc *MutextedClient) bool {
 func (rc *Client) Close() {
 }
 
+func (rc Client) GetNoOfCalls() int32 {
+	defer func() { rc.noOfCalls.Store(0) }()
+	return rc.noOfCalls.Load()
+}
+
+
+// args: if this client int is to be ignored, and request for tracing purpose
+// operations:
+// - ignores the clients in ignoreClients, iterate over remaining clients to check if they are available and returns first.
+// - if none are available then wait for the startClientId to be available.
+// returns: wrapper over actual client and time when it is available and is it locked or not.
 func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient, int) {
+	defer func() { rc.noOfCalls.Add(1) }()
 	l := len(rc.clients)
 	// find an start client index that is not ignored.
 	startClientId := rand.Intn(l)
@@ -359,12 +373,12 @@ type Req struct {
 
 func NewReq() Req {
 	requestId := uuid.New().String()
-	log.Verbose(requestId, "newRequest")
+	log.Trace(requestId, "newRequest")
 	return Req{uuid: requestId, ts: time.Now()}
 }
 func (r Req) print(args ...interface{}) {
 	allArgs := []interface{}{r.uuid, time.Since(r.ts)}
-	log.Verbose(append(allArgs, args...)...)
+	log.Trace(append(allArgs, args...)...)
 }
 
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {

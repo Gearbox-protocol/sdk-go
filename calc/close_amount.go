@@ -51,6 +51,7 @@ func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquida
 	return
 }
 
+// https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditManager.sol#L1238
 func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
@@ -94,6 +95,8 @@ func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureSt
 		}
 	} else {
 		profit = new(big.Int).Sub(amountToPool, borrowedAmountWithInterest)
+		// reminaingFunds is totalValue - debt
+		remainingFunds = new(big.Int).Sub(totalValue, amountToPool)
 	}
 	return
 }

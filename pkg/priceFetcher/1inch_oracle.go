@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"net/http"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -13,7 +14,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-//
 type OneInchOracle struct {
 	ConstToken    []ConstTokenPriceCalc `json:"constTokens"`
 	YearnTokens   []YearnSpotPriceCalc  `json:"yearnTokens"`
@@ -28,6 +28,14 @@ type OneInchOracle struct {
 	inchOracle common.Address
 	client     core.ClientI
 	decimals   DecimalStoreI
+}
+
+func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
+	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
+	for _, addr := range details.symToAddr.Tokens {
+		addrs = append(addrs, addr)
+	}
+	return
 }
 
 type CrvSpotPriceCalc struct {
@@ -46,6 +54,7 @@ type YearnSpotPriceCalc struct {
 
 type DecimalStoreI interface {
 	GetDecimals(tokenAddr common.Address) int8
+	GetDecimalsForList([]common.Address)
 }
 
 func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI) *OneInchOracle {
@@ -110,6 +119,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	if len(results) != len(calc.generatedCalls) {
 		log.Fatalf("call len %d, result len %d", len(calc.generatedCalls), len(results))
 	}
+	calc.decimals.GetDecimalsForList(calc.getAllTokens())
 	//
 	prices := map[string]*core.BigInt{}
 	//
@@ -127,7 +137,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	calc.processCrvResults(crvResults, prices, blockNumber)
 	//
 	till = len(calc.YearnTokens)
-	yearnResults, results := results[:till], results[till:]
+	yearnResults, _ := results[:till], results[till:]
 	calc.processYearnResults(yearnResults, prices)
 	//
 	for tokenSym, fromTokenSym := range calc.CopyPricesFor {
@@ -135,7 +145,73 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
+	// get 1inch token from the 1inch spot contract use 1inch api
+	calc.addGearPrice(prices)
 	return prices
+}
+
+func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
+	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
+	price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
+	prices[gearToken] = (*core.BigInt)(price)
+}
+
+// get the price from 1inch api for `token to usdc quote`
+func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
+	token := calc.symToAddr.Tokens[tokenSym]
+	decimals := calc.decimals.GetDecimals(token)
+	url := fmt.Sprintf("https://api.1inch.io/v5.0/1/quote?fromTokenAddress=%s&toTokenAddress=%s&amount=%s",
+		token.Hex(),
+		calc.symToAddr.Tokens["USDC"].Hex(),
+		utils.GetExpInt(decimals+2), // 100 token units for price in 10^8 for usdc
+	)
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+	val := struct {
+		Error      string `json:"error"`
+		StatusCode int    `json:"statusCode"`
+		ToTokenAmt string `json:"toTokenAmount"`
+	}{}
+	if resp.StatusCode/100 != 2 { // 2xx
+		return new(big.Int)
+	}
+	utils.ReadJsonReaderAndSetInterface(resp.Body, &val)
+	if val.StatusCode != 0 {
+		fmt.Println("Error", val.Error)
+		return new(big.Int)
+	}
+	return utils.StringToInt(val.ToTokenAmt)
+}
+
+func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int {
+	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2")
+	d0Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(0))
+	log.CheckFatal(err)
+	d1Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(1))
+	log.CheckFatal(err)
+	results := core.MakeMultiCall(calc.client, 0, false, []multicall.Multicall2Call{{
+		Target:   pool,
+		CallData: d0Data,
+	}, {
+		Target:   pool,
+		CallData: d1Data,
+	}})
+	gearBalance, ok := core.MulticallAnsBigInt(results[0])
+	if !ok {
+		log.Info("Can't get gear balance.")
+		return new(big.Int)
+	}
+	ethBalance, ok := core.MulticallAnsBigInt(results[1])
+	if !ok {
+		log.Info("Can't get eth balance.")
+		return new(big.Int)
+	}
+	return new(big.Int).Quo(
+		new(big.Int).Mul(ethBalance, ethPriceInUSD),
+		gearBalance,
+	)
 }
 
 func (calc OneInchOracle) GetBaseCalls() (calls []multicall.Multicall2Call) {

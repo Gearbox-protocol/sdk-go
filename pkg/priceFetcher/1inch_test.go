@@ -54,7 +54,7 @@ func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNu
 		tokenInOrder = append(tokenInOrder, token)
 	}
 
-	tStore := map[common.Address]schemas.Token{}
+	tStore := map[common.Address]*schemas.Token{}
 
 	results := core.MakeMultiCall(client, blockNum, false, calls)
 	for ind, entry := range results {
@@ -64,7 +64,7 @@ func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNu
 			if err != nil {
 				t.Fatal(err)
 			}
-			tStore[common.HexToAddress(token)] = schemas.Token{
+			tStore[common.HexToAddress(token)] = &schemas.Token{
 				Decimals: int8(values[0].(uint8)),
 				Address:  token,
 			}

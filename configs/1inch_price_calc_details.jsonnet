@@ -34,7 +34,6 @@
     'WBTC',
     'USDT',
     'UNI',
-    'GEAR',
   ],
   yearnTokens: [
     {

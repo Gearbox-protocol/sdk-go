@@ -53,7 +53,6 @@ func min[T int | int64](a, b T) T {
 	return a
 }
 
-//
 type statsI interface {
 	Add(sig string, tx EtherScanCallInput)
 	AllowedSig(sig string) bool
@@ -83,7 +82,7 @@ func (e *EtherScan) GetTxs(contract common.Address, endBlock, datapoints int, st
 		blockNum, err := strconv.ParseInt(LastArrElem(msg.Result).BlockNumber, 10, 32)
 		log.CheckFatal(err)
 		endBlock = int(blockNum) - 1
-		log.Verbosef("Fetched(%d) %s matching txs, new endBlock: %d", totalEntries, endBlock)
+		log.Debugf("Fetched(%d) %s matching txs, new endBlock: %d", totalEntries, endBlock)
 		if totalEntries > datapoints {
 			close(ch)
 			return

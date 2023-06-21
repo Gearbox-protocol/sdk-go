@@ -68,6 +68,9 @@ func ContainsHash(list []common.Hash, v common.Hash) bool {
 	return false
 }
 func (t *TestClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
+	if query.FromBlock.Int64() < 0 {
+		return nil, fmt.Errorf("from block for filter log less than 0: %d", query.FromBlock.Int64())
+	}
 	toBlock := query.ToBlock.Int64()
 	txLogs := []types.Log{}
 	for i := query.FromBlock.Int64(); i <= toBlock; i++ {
@@ -110,7 +113,6 @@ func (t *TestClient) CodeAt(ctx context.Context, contract common.Address, blockN
 }
 
 // for otherCalls in call of blocks
-//
 func addrAndData(input []string) (addr string, data []string) {
 	isAddr := false
 	for len(input) > 0 {
@@ -274,6 +276,15 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 						ReturnData: ansBytes,
 					})
 				}
+			case "13d21cdf", "b10b074e", "191482d4": // getPoolData, getCreditManagerData, getCreditAccountDataExtended on dataCompressor
+				if call.Target != common.HexToAddress("0x0000000000000000000000000000000000000001") {
+					panic(fmt.Sprintf("sig %s and target %s", hex.EncodeToString(call.CallData[:4]), call.Target))
+				}
+				// bytes not needed.
+				resultArray = append(resultArray, multicall.Multicall2Result{
+					Success:    true,
+					ReturnData: nil,
+				})
 			default:
 				panic(fmt.Sprintf("sig %s and target %s", hex.EncodeToString(call.CallData[:4]), call.Target))
 			}

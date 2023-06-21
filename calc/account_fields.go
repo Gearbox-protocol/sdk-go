@@ -27,7 +27,7 @@ type Calculator struct {
 
 func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 	account AccountForCalcI, curCumIndex *big.Int, underlyingToken string, feeInterest uint16,
-) (calHF, calBorrowWithInterest, calTotalValue, calThresholdValue *big.Int) {
+) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 
 	calThresholdValueInUSD := new(big.Int)
 	calTotalValueInUSD := new(big.Int)
@@ -35,7 +35,7 @@ func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 	for token, balance := range account.GetBalances() {
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
-			tokenValueInUSD := c.convertToUSD(balance.BI, token, version, blockNum)
+			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
 			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
@@ -60,15 +60,17 @@ func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 			utils.GetInt64(calThresholdValue, -4),
 			calBorrowWithInterest,
 		)
+		// set calBorrowWithInterestAndFees
+		calBorrowWithInterestAndFees = calBorrowWithInterest
 	} else if version == 2 {
+		//https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditFacade.sol#L1206
 		interest := new(big.Int).Sub(calBorrowWithInterest, account.GetBorrowedAmount())
 		fees := utils.PercentMul(interest, big.NewInt(int64(feeInterest)))
-		calBorrowWithInterestAndFees := new(big.Int).Add(calBorrowWithInterest, fees)
+		calBorrowWithInterestAndFees = new(big.Int).Add(calBorrowWithInterest, fees)
 		calHF = new(big.Int).Quo(
 			utils.GetInt64(calThresholdValue, -4),
 			calBorrowWithInterestAndFees,
 		)
-		calBorrowWithInterest = calBorrowWithInterestAndFees
 	}
 	return
 }
