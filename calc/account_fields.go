@@ -10,7 +10,7 @@ import (
 
 type TokenDetailsForCalcI interface {
 	GetToken(token string) *schemas.Token
-	GetPrices(underlyingToken string, version int16, blockNums ...int64) *big.Int
+	GetPrices(underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
 	GetLiqThreshold(cm, token string) *big.Int
 }
 
@@ -25,7 +25,7 @@ type Calculator struct {
 	Store TokenDetailsForCalcI
 }
 
-func (c Calculator) CalcAccountFields(version int16, blockNum int64,
+func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 	account AccountForCalcI, curCumIndex *big.Int, underlyingToken string, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 
@@ -75,13 +75,13 @@ func (c Calculator) CalcAccountFields(version int16, blockNum int64,
 	return
 }
 
-func (c Calculator) convertToUSD(amount *big.Int, token string, version int16, blockNum int64) *big.Int {
+func (c Calculator) convertToUSD(amount *big.Int, token string, version core.VersionType, blockNum int64) *big.Int {
 	tokenDecimals := c.Store.GetToken(token).Decimals
 	tokenPrice := c.Store.GetPrices(token, version, blockNum)
 	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals)
 	return tokenValueInUSD
 }
-func (c Calculator) convertFromUSD(amount *big.Int, underlyingToken string, version int16, blockNum int64) *big.Int {
+func (c Calculator) convertFromUSD(amount *big.Int, underlyingToken string, version core.VersionType, blockNum int64) *big.Int {
 	underlyingDecimals := c.Store.GetToken(underlyingToken).Decimals
 	underlyingPrice := c.Store.GetPrices(underlyingToken, version, blockNum)
 	value := new(big.Int).Quo(utils.GetInt64(amount, -1*underlyingDecimals), underlyingPrice)

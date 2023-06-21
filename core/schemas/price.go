@@ -7,12 +7,12 @@ import (
 )
 
 type TokenOracle struct {
-	BlockNumber int64  `gorm:"primaryKey;column:block_num" json:"blockNum"`
-	Token       string `gorm:"primaryKey;column:token" json:"token"`
-	Oracle      string `gorm:"column:oracle" json:"oracle"`
-	Feed        string `gorm:"column:feed" json:"feed"`
-	Version     int16  `gorm:"column:version" json:"version"`
-	FeedType    string `gorm:"feed_type" json:"-"`
+	BlockNumber int64            `gorm:"primaryKey;column:block_num" json:"blockNum"`
+	Token       string           `gorm:"primaryKey;column:token" json:"token"`
+	Oracle      string           `gorm:"column:oracle" json:"oracle"`
+	Feed        string           `gorm:"column:feed" json:"feed"`
+	Version     core.VersionType `gorm:"column:version" json:"version"`
+	FeedType    string           `gorm:"feed_type" json:"-"`
 }
 
 func (t TokenOracle) String() string {

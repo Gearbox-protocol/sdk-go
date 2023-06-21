@@ -55,6 +55,9 @@ func (c *TestEvent) ParseData(contractName []string, topic0 common.Hash) ([]byte
 	if contractName[0] == "ACL" {
 		contractName = append(contractName, "ACLTrait")
 	}
+	if contractName[0] == "CreditConfigurator" {
+		contractName = append(contractName, "CreditConfigurator210")
+	}
 	var event *abi.Event
 	var err error
 	for _, name := range contractName {

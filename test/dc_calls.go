@@ -40,7 +40,7 @@ type TestAccountCallData struct {
 	BorrowedAmount             *core.BigInt       `json:"borrowedAmount"`
 	CumulativeIndexAtOpen      *core.BigInt       `json:"cumulativeIndexAtOpen"`
 	Since                      *core.BigInt       `json:"since"`
-	Version                    int                `json:"version"`
+	Version                    core.VersionType   `json:"version"`
 }
 
 type TestPoolCallData struct {

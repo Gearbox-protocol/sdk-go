@@ -21,7 +21,7 @@ type CreditManagerState struct {
 	MaxAmount         *core.BigInt      `gorm:"column:max_amount"`
 	Sessions          map[string]string `gorm:"-" json:"-"`
 	Paused            bool              `gorm:"column:paused"`
-	Version           int16             `gorm:"column:_version"`
+	Version           core.VersionType  `gorm:"column:_version"`
 }
 
 type CreditManagerData struct {
@@ -58,6 +58,7 @@ type Parameters struct {
 	LiquidationDiscount        uint16       `gorm:"column:liq_discount"`
 	FeeLiquidationExpired      uint16       `gorm:"column:fee_liquidation_expired"`
 	LiquidationDiscountExpired uint16       `gorm:"column:liq_discount_expired"`
+	EmergencyLiqDiscount       uint16       `gorm:"column:emergency_liq_discount"`
 }
 
 func NewParameters() *Parameters {
@@ -72,6 +73,7 @@ func (old *Parameters) Diffv2(new *Parameters) *core.Json {
 	obj := old.Diffv1(new)
 	(*obj)["feeLiquidationExpired"] = []uint16{old.FeeLiquidationExpired, new.FeeLiquidationExpired}
 	(*obj)["liquidationDiscountExpired"] = []uint16{old.LiquidationDiscountExpired, new.LiquidationDiscountExpired}
+	(*obj)["emergencyLiqDiscount"] = []uint16{old.EmergencyLiqDiscount, new.EmergencyLiqDiscount}
 	return obj
 }
 

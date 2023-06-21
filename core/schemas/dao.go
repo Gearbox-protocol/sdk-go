@@ -99,4 +99,10 @@ const (
 	EmergencyLiquidatorAdded
 	EmergencyLiquidatorRemoved
 	AdapterForbidden
+	///////////
+	// v2_10 events
+	///////////
+	NewMaxCumulativeLoss
+	CumulativeLossReset
+	NewEmergencyLiquidationDiscount
 )
