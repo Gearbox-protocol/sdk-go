@@ -75,11 +75,11 @@ type (
 		Balances       *core.DBBalanceFormat `gorm:"column:balances"`
 		Collateral     *core.JsonBigIntMap   `gorm:"column:collateral" json:"-"`
 		// these two values are set and used for setting values in css
-		CollateralInUSD        float64 `gorm:"<-:false;column:collateral_usd"`
-		CollateralInUnderlying float64 `gorm:"<-:false;column:collateral_underlying"`
-		IsDirty                bool    `gorm:"-"`
-		Liquidator             string  `gorm:"liquidator"`
-		Version                int16   `gorm:"version"`
+		CollateralInUSD        float64          `gorm:"<-:false;column:collateral_usd"`
+		CollateralInUnderlying float64          `gorm:"<-:false;column:collateral_underlying"`
+		IsDirty                bool             `gorm:"-"`
+		Liquidator             string           `gorm:"liquidator"`
+		Version                core.VersionType `gorm:"version"`
 
 		// v1 liquidte and close use remainingFunds for debt calculation
 		// v2 liquidate also uses it for calculation
