@@ -73,10 +73,14 @@ func floatOrd(v VersionType) float64 {
 	}
 	panic("")
 }
-func FetchVersionOptimized(addr common.Address, blockNum int64, client ClientI) int16 {
-	version, err := CallFuncWithExtraBytes(client, "54fd4d50", addr, blockNum, nil)
+func FetchVersionOptimized(addr common.Address, blockNum int64, client ClientI) VersionType {
+	_version, err := CallFuncWithExtraBytes(client, "54fd4d50", addr, blockNum, nil)
 	if err != nil {
 		return 1
 	}
-	return int16(new(big.Int).SetBytes(version).Int64())
+	version := new(big.Int).SetBytes(_version).Int64()
+	if version == 0 {
+		version = 1
+	}
+	return VersionType(version)
 }

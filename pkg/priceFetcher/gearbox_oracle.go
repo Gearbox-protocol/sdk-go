@@ -19,7 +19,7 @@ type GearboxOracleI interface {
 	//
 	GetPriceTokenTill(blockNum int64)
 	GetAddress() common.Address
-	GetVersion() int16
+	GetVersion() core.VersionType
 	GetTokenToFeed() map[string]common.Address
 	OnLog(txLog types.Log) bool
 	//
@@ -31,12 +31,12 @@ type GearboxOracle struct {
 	Address     common.Address
 	TokenToFeed map[string]common.Address
 	Node        *pkg.Node
-	version     int16
+	version     core.VersionType
 	//
 	tokens []string
 }
 
-func NewGearboxOracle(addr common.Address, version int16, client core.ClientI) GearboxOracleI {
+func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOracle{
 		Address:     addr,
 		TokenToFeed: map[string]common.Address{},
@@ -52,7 +52,7 @@ func (pOracle GearboxOracle) GetAddress() common.Address {
 	return pOracle.Address
 }
 
-func (pOracle *GearboxOracle) GetVersion() int16 {
+func (pOracle *GearboxOracle) GetVersion() core.VersionType {
 	return pOracle.version
 }
 
