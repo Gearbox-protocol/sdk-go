@@ -61,7 +61,7 @@ func CalcCurrentPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
 }
 func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
 	balances map[string]core.BalanceType, cToken string, cBal *big.Int) (string, string, float64, error) {
-	bToken, bBal, ok := singleEntryPriceToken(balances) // balance token, returns false if there are more than 1 token
+	bToken, bBal, ok := singleEntryPriceToken(balances, cToken) // balance token, returns false if there are more than 1 token
 	if !ok {
 		return "", "", 0, fmt.Errorf("balances has 2 or more token")
 	}
@@ -86,10 +86,11 @@ func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
 }
 
 // returns false if there are more than 1 token
-func singleEntryPriceToken(bal map[string]core.BalanceType) (ansToken string, ansamt *big.Int, ansOk bool) {
+func singleEntryPriceToken(bal map[string]core.BalanceType, underlyingToken string) (ansToken string, ansamt *big.Int, ansOk bool) {
 	tokens := 0
 	for token, details := range bal {
-		if details.IsEnabled && details.HasBalanceMoreThanOne() {
+		if details.IsEnabled && details.HasBalanceMoreThanOne() && // ignore tokens which are disabled or have zero balances
+			underlyingToken != token { // ignore underlyingToken
 			tokens++
 			if tokens == 2 {
 				return "", nil, false
