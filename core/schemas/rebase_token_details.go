@@ -76,6 +76,7 @@ func AdjustRebaseToken(balances core.DBBalanceFormat, stETH string, rebaseDetail
 			rebaseDetails.TotalShares.Convert(),
 		)
 		oldValues.BI = (*core.BigInt)(amt)
+		oldValues.F = utils.GetFloat64Decimal(amt, 18)
 		balances[stETH] = oldValues
 	}
 }

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -46,6 +47,12 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 		}
 	}
 	return NetworkUI{}
+}
+func (net NetworkUI) ExplorerAddrUrl(addr string) string {
+	return fmt.Sprintf("%s/address/%s", net.ExplorerUrl, addr)
+}
+func (net NetworkUI) ExplorerHashUrl(txHash string) string {
+	return fmt.Sprintf("%s/tx/%s", net.ExplorerUrl, txHash)
 }
 
 var MAX_BIG_INT = new(big.Int).Sub(new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil), big.NewInt(1))
