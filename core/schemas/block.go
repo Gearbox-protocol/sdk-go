@@ -21,6 +21,7 @@ type (
 		NoSessionTokenTransfers []*TokenTransfer          `gorm:"foreignKey:block_num" json:"noSessionTokenTransfers"`
 		TAA                     []*TransferAccountAllowed `gorm:"foreignKey:block_num" json:"transferAccountAllowed"`
 		DieselTransfers         []*DieselTransfer         `gorm:"foreignKey:block_num" json:"dieselTransfers"`
+		RebaseDetailsForDB      []*RebaseDetailsForDB     `gorm:"foreignKey:block_num" json:"-"`
 	}
 )
 
@@ -33,6 +34,9 @@ func (b *Block) AddAccountOperation(accountOperation *AccountOperation) {
 }
 func (b *Block) AddDieselTransfer(transfer *DieselTransfer) {
 	b.DieselTransfers = append(b.DieselTransfers, transfer)
+}
+func (b *Block) AddRebaseDetailsForDB(transfer *RebaseDetailsForDB) {
+	b.RebaseDetailsForDB = append(b.RebaseDetailsForDB, transfer)
 }
 func (b *Block) AddTokenOracle(tokenOracle *TokenOracle) {
 	b.TokenOracles = append(b.TokenOracles, tokenOracle)

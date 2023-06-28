@@ -32,7 +32,7 @@ type ClientI interface {
 	// SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error)
 	// SubscribeNewHead(ctx context.Context, ch chan<- *types.Header) (ethereum.Subscription, error)
 	// NetworkID(ctx context.Context) (*big.Int, error)
-	// StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
+	StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
 	// CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error)
 	// FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error)
 	// SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error)

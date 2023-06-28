@@ -25,10 +25,13 @@ func Contains(s []string, e string) bool {
 	return false
 }
 
-func ToJson(obj interface{}) string {
+func ToJsonBytes(obj interface{}) []byte {
 	str, err := json.Marshal(obj)
 	log.CheckFatal(err)
-	return string(str)
+	return str
+}
+func ToJson(obj interface{}) string {
+	return string(ToJsonBytes(obj))
 }
 
 func Method() {

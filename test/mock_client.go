@@ -41,6 +41,9 @@ func NewTestClient() *TestClient {
 	}
 }
 
+func (t *TestClient) StorageAt(tx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error) {
+	return nil, nil
+}
 func (t *TestClient) ChainID(ctx context.Context) (*big.Int, error) {
 	return big.NewInt(1337), nil
 }

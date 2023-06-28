@@ -26,6 +26,7 @@ func (b BalanceType) HasBalanceMoreThanOne() bool {
 	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
 }
 
+// filters isEnabled
 func ConvertToBalanceType(dcv2Balances []dataCompressorv2.TokenBalance) map[string]BalanceType {
 	m := map[string]BalanceType{}
 	for ind, entry := range dcv2Balances {
@@ -56,6 +57,7 @@ func (b CoreIntBalance) HasBalanceMoreThanOne() bool {
 
 type DBBalanceFormat map[string]CoreIntBalance // @name DBBalanceFormat
 
+// doesn't filter on isEnabled
 func (j DBBalanceFormat) ToBalanceType() map[string]BalanceType {
 	m := map[string]BalanceType{}
 	for token, bal := range j {
