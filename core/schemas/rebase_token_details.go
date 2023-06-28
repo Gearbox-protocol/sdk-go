@@ -21,7 +21,7 @@ type RebaseTokenDetails struct {
 
 type RebaseDetailsForDB struct {
 	TotalShares *core.BigInt `gorm:"column:total_shares"`
-	BlockNum    int64        `gorm:"column:blockNum" json:"-"`
+	BlockNum    int64        `gorm:"primaryKey;column:block_num" json:"-"`
 	TotalETH    *core.BigInt `gorm:"column:total_eth"`
 }
 
@@ -32,7 +32,7 @@ func (mdl RebaseTokenDetails) GetDataForDB(blockNum int64) *RebaseDetailsForDB {
 	return &RebaseDetailsForDB{
 		BlockNum:    blockNum,
 		TotalShares: mdl.TotalShares,
-		TotalETH:    mdl.TotalETH,
+		TotalETH:    (*core.BigInt)(mdl.GetPostTotalEther()),
 	}
 }
 
@@ -61,7 +61,7 @@ func (mdl *RebaseTokenDetails) Unserialize(input core.Json) {
 	log.CheckFatal(err)
 }
 
-func AdjustRebaseToken(balances map[string]core.BalanceType, stETH string, rebaseDetails *RebaseDetailsForDB) {
+func AdjustRebaseToken(balances core.DBBalanceFormat, stETH string, rebaseDetails *RebaseDetailsForDB) {
 	if rebaseDetails == nil {
 		return
 	}
