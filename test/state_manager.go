@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-///
+// /
 type TestState struct {
 	OracleMgr OracleMgr `json:"oracles"`
 	// sig to target to data
@@ -28,10 +28,10 @@ func (state *TestState) Merge(other TestState) {
 	}
 }
 
-///
+// /
 type OtherCalls map[string]SigCalls
 
-///
+// /
 type SigCalls map[common.Address]string
 
 func (calls *SigCalls) Merge(other SigCalls) {
@@ -40,7 +40,7 @@ func (calls *SigCalls) Merge(other SigCalls) {
 	}
 }
 
-////
+// //
 type StateManager struct {
 	OracleMgr OracleMgr
 	// block sig to target to data

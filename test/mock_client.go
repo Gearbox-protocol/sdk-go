@@ -139,7 +139,15 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		blockNum = blockNumber.Int64()
 	}
 	if data := t.state.GetOtherCall(blockNum, sig, *call.To); data != "" {
-		return common.HexToHash(data).Bytes(), nil
+		if strings.HasPrefix(data, "0x") {
+			return common.HexToHash(data).Bytes(), nil
+		} else {
+			data, ok := new(big.Int).SetString(data, 10)
+			if !ok {
+				log.Fatal(blockNum, sig, *call.To, data)
+			}
+			return data.Bytes(), nil
+		}
 	}
 	if sig == "95d89b41" { // symbol
 		sym := t.token[call.To.Hex()].Symbol
@@ -295,6 +303,8 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		outputData, err := method.Outputs.Pack(resultArray)
 		log.CheckFatal(err)
 		return outputData, nil
+	} else {
+		log.Fatal(sig, " not found")
 	}
 	return nil, nil
 }
