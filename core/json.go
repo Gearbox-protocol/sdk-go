@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -14,28 +13,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type Json map[string]interface{}
+// JsonBigIntMap
+// JsonFloatMap
+// AddressMap
+// Json
 
-func (j *Json) Value() (driver.Value, error) {
-	return json.Marshal(j)
-}
-
-func (z *Json) Scan(value interface{}) error {
-	out := map[string]interface{}{}
-	switch t := value.(type) {
-	case string:
-		err := json.Unmarshal([]byte(value.(string)), &out)
-		*z = Json(out)
-		return err
-	case []byte:
-		err := json.Unmarshal(value.([]byte), &out)
-		*z = Json(out)
-		return err
-	default:
-		return fmt.Errorf("could not scan type %T", t)
-	}
-}
-
+// ////////////////
+// ////////////////
 type JsonBigIntMap map[string]*BigInt
 
 func (j *JsonBigIntMap) Value() (driver.Value, error) {
@@ -67,34 +51,9 @@ func (j JsonFloatMap) ValueInUnderlying(underlyingToken string, uDecimals int8, 
 	return remainingFunds
 }
 
-func (z *JsonFloatMap) UnmarshalJSON(b []byte) (err error) {
-	tmpMap := map[string]interface{}{}
-	if err = json.Unmarshal(b, &tmpMap); err != nil {
-		return
-	}
-	returnObj := map[string]float64{}
-	for k, _v := range tmpMap {
-		switch val := _v.(type) {
-		case float64:
-			returnObj[k] = val
-		case string:
-			floatVal, err := strconv.ParseFloat(val, 64)
-			if err != nil {
-				return err
-			}
-			returnObj[k] = floatVal
-		default:
-			return fmt.Errorf("can't parse(%v) in JsonFloatMap ", _v)
-		}
-	}
-	return
-}
-
+// ////////////////
+// ////////////////
 type JsonFloatMap map[string]float64
-
-func (z *JsonFloatMap) Value() (driver.Value, error) {
-	return json.Marshal(z)
-}
 
 func (z JsonFloatMap) Copy() *JsonFloatMap {
 	obj := JsonFloatMap{}
@@ -109,6 +68,10 @@ func (z JsonFloatMap) ValueInUSD(prices JsonFloatMap) (valueInUSD float64) {
 		valueInUSD += amount * prices[token]
 	}
 	return
+}
+
+func (z *JsonFloatMap) Value() (driver.Value, error) {
+	return json.Marshal(z)
 }
 
 func (z *JsonFloatMap) Scan(value interface{}) error {
@@ -145,6 +108,8 @@ func (addrs AddressMap) checkIfAddress(v string) string {
 	}
 }
 
+// ////////////////
+// ////////////////
 type AddressMap map[string]string
 
 func (addrs AddressMap) checkInterface(data interface{}, t *testing.T) interface{} {
@@ -169,26 +134,6 @@ func (addrs AddressMap) checkInterface(data interface{}, t *testing.T) interface
 	default:
 		return data
 	}
-}
-
-func (z *Json) ParseAddress(t *testing.T, addrs AddressMap) {
-	for key, data := range *z {
-		newKey := addrs.checkIfAddress(key)
-		if newKey != key {
-			delete(*z, key)
-			key = newKey
-		}
-		(*z)[key] = addrs.checkInterface(data, t)
-	}
-}
-
-func (z *Json) UnmarshalJSON(b []byte) (err error) {
-	tmpMap := map[string]interface{}{}
-	err = json.Unmarshal(b, &tmpMap)
-	if err == nil {
-		(*z) = tmpMap
-	}
-	return
 }
 
 func (addrs AddressMap) ReplaceWithVariable(key string, data interface{}) interface{} {
@@ -220,6 +165,50 @@ func (addrs AddressMap) ReplaceWithVariable(key string, data interface{}) interf
 		return data
 	}
 	return data
+}
+
+// ////////////////
+// ////////////////
+type Json map[string]interface{}
+
+func (j *Json) Value() (driver.Value, error) {
+	return json.Marshal(j)
+}
+
+func (z *Json) Scan(value interface{}) error {
+	out := map[string]interface{}{}
+	switch t := value.(type) {
+	case string:
+		err := json.Unmarshal([]byte(value.(string)), &out)
+		*z = Json(out)
+		return err
+	case []byte:
+		err := json.Unmarshal(value.([]byte), &out)
+		*z = Json(out)
+		return err
+	default:
+		return fmt.Errorf("could not scan type %T", t)
+	}
+}
+
+func (z *Json) ParseAddress(t *testing.T, addrs AddressMap) {
+	for key, data := range *z {
+		newKey := addrs.checkIfAddress(key)
+		if newKey != key {
+			delete(*z, key)
+			key = newKey
+		}
+		(*z)[key] = addrs.checkInterface(data, t)
+	}
+}
+
+func (z *Json) UnmarshalJSON(b []byte) (err error) {
+	tmpMap := map[string]interface{}{}
+	err = json.Unmarshal(b, &tmpMap)
+	if err == nil {
+		(*z) = tmpMap
+	}
+	return
 }
 
 func (z *Json) ReplaceWithVariable(addrToVariable AddressMap) {

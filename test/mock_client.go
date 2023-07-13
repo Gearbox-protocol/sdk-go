@@ -146,10 +146,13 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 			if !ok {
 				log.Fatal(blockNum, sig, *call.To, data)
 			}
-			return data.Bytes(), nil
+			bytes64 := common.BytesToHash(data.Bytes())
+			return bytes64[:], nil
 		}
 	}
-	if sig == "95d89b41" { // symbol
+	if sig == "7284e416" { // description on pricefeed
+		return nil, nil
+	} else if sig == "95d89b41" { // symbol
 		sym := t.token[call.To.Hex()].Symbol
 		zeroBytes := make([]byte, 96)
 		zeroBytes[31] = 32

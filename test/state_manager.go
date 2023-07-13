@@ -88,31 +88,16 @@ func (state *StateManager) addForBlockNum(blockNum int64, cs OtherCalls) {
 
 func (state *StateManager) GetOtherCall(blockNum int64, sig string, target common.Address) string {
 	// log.Info(utils.ToJson(state.OtherCallsByBlock))
+	// }
 	if state.OtherCalls[sig] == nil || state.OtherCalls[sig][target] == nil {
 		return ""
 	}
-	x := lastEntryTillBlock(blockNum, state.OtherCalls[sig][target])
-	if x != nil {
-		return x.Data
+	entries := state.OtherCalls[sig][target]
+	ind := sort.Search(len(entries), func(i int) bool {
+		return entries[i].BlockNum > blockNum
+	})
+	if ind != 0 {
+		return entries[ind-1].Data
 	}
 	return ""
-}
-
-func lastEntryTillBlock(blockNum int64, entries []*NumAndData) *NumAndData {
-	x, y := 0, len(entries)
-	for x < y {
-		mid := (x + y) / 2
-		if entries[mid].BlockNum == blockNum {
-			return entries[mid]
-		} else if entries[mid].BlockNum > blockNum {
-			y = mid
-		} else {
-			x = mid + 1
-		}
-	}
-	x = x - 1
-	if x == -1 {
-		return nil
-	}
-	return entries[x]
 }
