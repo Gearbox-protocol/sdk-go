@@ -93,11 +93,18 @@ func (state *StateManager) GetOtherCall(blockNum int64, sig string, target commo
 		return ""
 	}
 	entries := state.OtherCalls[sig][target]
+	x := lastEntryTillBlock(blockNum, entries)
+	if x != nil {
+		return x.Data
+	}
+	return ""
+}
+func lastEntryTillBlock(blockNum int64, entries []*NumAndData) *NumAndData {
 	ind := sort.Search(len(entries), func(i int) bool {
 		return entries[i].BlockNum > blockNum
 	})
-	if ind != 0 {
-		return entries[ind-1].Data
+	if ind == 0 {
+		return nil
 	}
-	return ""
+	return entries[ind-1]
 }
