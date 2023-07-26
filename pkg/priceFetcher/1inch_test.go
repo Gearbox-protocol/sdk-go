@@ -15,6 +15,9 @@ import (
 )
 
 func TestSpotPriceStore(t *testing.T) {
+	if utils.GetEnvOrDefault("ETH_PROVIDER", "") == "" {
+		t.Skip("skip spot price store test")
+	}
 	if err := os.Chdir("../../"); err != nil {
 		t.Fatal(err)
 	}
