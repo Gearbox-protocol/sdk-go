@@ -14,7 +14,7 @@ type CommonDebtFields struct {
 	CalDebtBI                 *core.BigInt `gorm:"column:cal_borrowed_amt_with_interest_bi" json:"calBorrowedAmountPlusInterest"`
 	CalBorrowedWithInterestBI *core.BigInt `gorm:"-" json:"-"`
 	CalThresholdValueBI       *core.BigInt `gorm:"column:cal_threshold_value_bi" json:"calThresholdValue"`
-	//
+	// these usd fields uses price at block collateral was updated, so collateralInUSD doesn't change if there is no change in collateral but change in price of collateral assets. As a result, profitInUSD too might not change.
 	ProfitInUSD            float64 `gorm:"column:profit_usd" json:"profitUSD"`
 	CollateralInUSD        float64 `gorm:"column:collateral_usd" json:"collateralUSD"`
 	CollateralInUnderlying float64 `gorm:"column:collateral_underlying" json:"collateralUnderlying"`

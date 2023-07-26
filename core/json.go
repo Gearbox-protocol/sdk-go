@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -75,19 +76,35 @@ func (z *JsonFloatMap) Value() (driver.Value, error) {
 }
 
 func (z *JsonFloatMap) Scan(value interface{}) error {
-	out := JsonFloatMap{}
+	// out := JsonFloatMap{}
+	out := map[string]interface{}{}
 	switch t := value.(type) {
 	case string:
-		err := json.Unmarshal([]byte(value.(string)), &out)
-		*z = out
-		return err
+		if err := json.Unmarshal([]byte(value.(string)), &out); err != nil {
+			return err
+		}
 	case []byte:
-		err := json.Unmarshal(value.([]byte), &out)
-		*z = out
-		return err
+		if err := json.Unmarshal(value.([]byte), &out); err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("could not scan type %T", t)
 	}
+	//
+	ans := JsonFloatMap{}
+	for k, v := range out {
+		switch value := v.(type) {
+		case float64:
+			ans[k] = value
+		case string:
+			var err error
+			if ans[k], err = strconv.ParseFloat(value, 64); err != nil {
+				return err
+			}
+		}
+	}
+	*z = ans
+	return nil
 }
 
 func (addrs AddressMap) checkIfAddress(v string) string {
