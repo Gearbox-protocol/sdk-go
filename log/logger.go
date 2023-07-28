@@ -133,11 +133,12 @@ func CheckFatal(err error) {
 		debug.PrintStack()
 		msg := "[Fatal]: " + DetectFuncAtStackN(2) + err.Error()
 		if testLogModule == nil {
-			log.Fatalln(msg)
+			log.Println(msg)
 		} else {
-			testLogModule.Fatal(msg)
+			testLogModule.Log(msg)
 		}
 		send(false, msg)
+		os.Exit(1)
 	}
 }
 
