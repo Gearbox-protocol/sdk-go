@@ -111,6 +111,8 @@ func errorHandler(err error, mc *MutextedClient) bool {
 			mc.addSleepForSecs(60)
 		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
 			mc.addSleepForSecs(sleepFor429Error(err.Error()))
+		} else if strings.Contains(err.Error(), "custom rate limits that you have exceeded") { // trace_transaction on alchemy exceeded custom throughput limit
+			mc.addSleepForSecs(60) // 1min
 		} else if strings.Contains(err.Error(), "504") { // Gateway Timeout server error
 			// channel/connection is not open
 			mc.addSleepForSecs(30)
@@ -146,7 +148,6 @@ func (rc Client) GetNoOfCalls() int32 {
 	defer func() { rc.noOfCalls.Store(0) }()
 	return rc.noOfCalls.Load()
 }
-
 
 // args: if this client int is to be ignored, and request for tracing purpose
 // operations:
