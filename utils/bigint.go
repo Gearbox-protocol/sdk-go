@@ -132,6 +132,9 @@ func NotNilBigInt(a *big.Int) *big.Int {
 }
 
 func IntDiffMoreThanFraction(oldValue, newValue int64, diff float64) bool {
+	return FloatDiffMoreThanFraction(float64(oldValue), float64(newValue), diff)
+}
+func FloatDiffMoreThanFraction(oldValue, newValue float64, diff float64) bool {
 	return absFloat64(float64(newValue-oldValue))/float64(oldValue) > diff
 }
 

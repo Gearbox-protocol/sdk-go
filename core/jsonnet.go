@@ -12,7 +12,7 @@ type JsonnetImports struct {
 	Files    map[string]string
 }
 
-func getJsonnetFile(mainFileData string, importedFiles JsonnetImports) (string, error) {
+func GetJsonFromJsonnetData(mainFileData string, importedFiles JsonnetImports) (string, error) {
 	vm := jsonnet.MakeVM()
 	imports := map[string]jsonnet.Contents{}
 	if err := getJsonnetFileImports(importedFiles.Files, imports); err != nil {
@@ -60,13 +60,13 @@ func GetJsonnetFile(mainFile string, importedFiles JsonnetImports) (string, erro
 	if mainFileData, err := os.ReadFile(mainFile); err != nil {
 		return "", err
 	} else {
-		return getJsonnetFile(string(mainFileData), importedFiles)
+		return GetJsonFromJsonnetData(string(mainFileData), importedFiles)
 	}
 }
 func GetEmbeddedJsonnet(mainFile string, importedFiles JsonnetImports) (string, error) {
 	if mainFileData, err := configs.Configs.ReadFile(mainFile); err != nil {
 		return "", err
 	} else {
-		return getJsonnetFile(string(mainFileData), importedFiles)
+		return GetJsonFromJsonnetData(string(mainFileData), importedFiles)
 	}
 }

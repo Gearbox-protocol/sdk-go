@@ -57,11 +57,20 @@ type DecimalStoreI interface {
 	GetDecimalsForList([]common.Address)
 }
 
-func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI) *OneInchOracle {
+func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
-	data, err := core.GetEmbeddedJsonnet("1inch_price_calc_details.jsonnet", core.JsonnetImports{})
-	log.CheckFatal(err)
+	data := func() string {
+		if dataStrings == nil {
+			data, err := core.GetEmbeddedJsonnet("1inch_price_calc_details.jsonnet", core.JsonnetImports{})
+			log.CheckFatal(err)
+			return data
+		} else {
+			data, err := core.GetJsonFromJsonnetData(dataStrings[0], core.JsonnetImports{})
+			log.CheckFatal(err)
+			return data
+		}
+	}()
 	utils.SetJson([]byte(data), calc)
 	//
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
