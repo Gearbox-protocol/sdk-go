@@ -29,8 +29,16 @@ func (anvil *AnvilClient) ImpersonateAccount(account string) error {
 	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	return err
 }
+func (anvil *AnvilClient) StopImpersonateAccount(account string) error {
+	body := utils.GetJsonRPCRequestBody("anvil_stopImpersonatingAccount", account)
+	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
+	return err
+}
 
 func (anvil *AnvilClient) SendAsImpersonator(impAccount common.Address, tx *types.Transaction) common.Hash {
+	defer func() {
+		log.CheckFatal(anvil.StopImpersonateAccount(impAccount.Hex()))
+	}()
 	err := anvil.ImpersonateAccount(impAccount.Hex())
 	log.CheckFatal(err)
 	return anvil.SendTransaction(impAccount, tx)
@@ -68,11 +76,16 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	})
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
-		log.Fatal(err, "from", from)
+		log.Fatal("from", from, "err:", err)
 	}
 	return common.HexToHash(result.(string))
 }
 
+func (anvil *AnvilClient) SetEthBalance(to common.Address, value *big.Int) {
+	body := utils.GetJsonRPCRequestBody("anvil_setBalance", to.Hex(), fmt.Sprintf("%x", value))
+	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
+	log.CheckFatal(err)
+}
 func (anvil *AnvilClient) TakeSnapshot() string {
 	body := utils.GetJsonRPCRequestBody("evm_snapshot")
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
