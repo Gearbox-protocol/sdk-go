@@ -307,7 +307,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		log.CheckFatal(err)
 		return outputData, nil
 	} else {
-		log.Fatal(sig, " not found")
+		log.Fatalf("sig(%s) on %s for BlockNum(%d) not found", sig, *call.To, blockNum)
 	}
 	return nil, nil
 }
