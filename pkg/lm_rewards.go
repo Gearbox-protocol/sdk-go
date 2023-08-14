@@ -29,6 +29,15 @@ var poolRewardFRAX map[string]*big.Int = map[string]*big.Int{
 	"dFRAX":   big.NewInt(641),
 }
 
+var poolRewardGIP68 map[string]*big.Int = map[string]*big.Int{
+	"dDAI":    big.NewInt(2283),
+	"dUSDC":   big.NewInt(3101),
+	"dWETH":   big.NewInt(4014),
+	"dWBTC":   big.NewInt(457),
+	"dwstETH": big.NewInt(0),
+	"dFRAX":   big.NewInt(0),
+}
+
 func init() {
 	for _, v := range poolRewardv2 {
 		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
@@ -37,6 +46,9 @@ func init() {
 		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
 	}
 	for _, v := range poolRewardFRAX {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
+	for _, v := range poolRewardGIP68 {
 		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
 	}
 }
@@ -48,7 +60,7 @@ type PoolRewardSnapshot struct {
 
 type PoolRewardSnapshots []PoolRewardSnapshot
 
-var MainnetPoolRewards = PoolRewardSnapshots{{poolRewardv2, 15820000}, {poolRewardv2GIP30, 15977000}, {poolRewardFRAX, 16720000}}
+var MainnetPoolRewards = PoolRewardSnapshots{{poolRewardv2, 15820000}, {poolRewardv2GIP30, 15977000}, {poolRewardFRAX, 16720000}, {poolRewardGIP68, 17904775}}
 var GoerliPoolRewards = PoolRewardSnapshots{{poolRewardv2, 7694030}}
 
 func GetRewardPerToken(chainId int64, from, to int64) []PoolRewardSnapshot {
