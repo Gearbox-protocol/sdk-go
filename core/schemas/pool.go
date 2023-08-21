@@ -69,16 +69,26 @@ func (TvlSnapshots) TableName() string {
 }
 
 type PoolLedger struct {
-	Id          int64        `json:"-"`
-	BlockNumber int64        `gorm:"column:block_num;primaryKey" json:"blockNum"`
-	Pool        string       `gorm:"column:pool;primaryKey" json:"pool"`
-	User        string       `gorm:"column:user_address" json:"user"`
-	TxHash      string       `gorm:"column:tx_hash" json:"txHash"`
-	SessionId   string       `gorm:"column:session_id" json:"sessionId"`
-	LogId       uint         `gorm:"column:log_id;primaryKey" json:"logId"`
-	Event       string       `gorm:"column:event" json:"event"`
-	AmountBI    *core.BigInt `gorm:"column:amount_bi" json:"-"`
-	Amount      float64      `gorm:"column:amount" json:"amount"`
+	Id          int64  `json:"-"`
+	BlockNumber int64  `gorm:"column:block_num;primaryKey" json:"blockNum"`
+	Pool        string `gorm:"column:pool;primaryKey" json:"pool"`
+	// executor
+	Executor string `gorm:"column:executor" json:"executor,omitempty"`
+	// receiver
+	Receiver string `gorm:"column:receiver" json:"receiver,omitempty"`
+	// owner
+	User string `gorm:"column:user_address" json:"user"`
+	//
+	TxHash    string `gorm:"column:tx_hash" json:"txHash"`
+	SessionId string `gorm:"column:session_id" json:"sessionId"`
+	LogId     uint   `gorm:"column:log_id;primaryKey" json:"logId"`
+	Event     string `gorm:"column:event" json:"event"`
+	// underlying token
+	AmountBI *core.BigInt `gorm:"column:amount_bi" json:"-"`
+	Amount   float64      `gorm:"column:amount" json:"amount"`
+	// diesel token
+	Shares   float64      `gorm:"column:shares" json:"shares,omitempty"`
+	SharesBI *core.BigInt `gorm:"column:shares_bi" json:"-"`
 }
 
 func (PoolLedger) TableName() string {

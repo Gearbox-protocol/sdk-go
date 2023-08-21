@@ -11,7 +11,7 @@ import (
 type TokenDetailsForCalcI interface {
 	GetToken(token string) *schemas.Token
 	GetPrices(underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
-	GetLiqThreshold(cm, token string) *big.Int
+	GetLiqThreshold(ts int64, cm, token string) *big.Int
 }
 
 type AccountForCalcI interface {
@@ -25,7 +25,7 @@ type Calculator struct {
 	Store TokenDetailsForCalcI
 }
 
-func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
+func (c Calculator) CalcAccountFields(ts int64, version core.VersionType, blockNum int64,
 	account AccountForCalcI, curCumIndex *big.Int, underlyingToken string, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 
@@ -36,7 +36,7 @@ func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
 			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
-			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(account.GetCM(), token))
+			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(ts, account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
 			calTotalValueInUSD = new(big.Int).Add(calTotalValueInUSD, tokenValueInUSD)

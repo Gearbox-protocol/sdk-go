@@ -1,5 +1,7 @@
 package schemas
 
+import "github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
+
 type (
 	Block struct {
 		BlockNumber             int64                     `gorm:"primaryKey;column:id" json:"blockNum"` // Block Number
@@ -22,6 +24,10 @@ type (
 		TAA                     []*TransferAccountAllowed `gorm:"foreignKey:block_num" json:"transferAccountAllowed"`
 		DieselTransfers         []*DieselTransfer         `gorm:"foreignKey:block_num" json:"dieselTransfers"`
 		RebaseDetailsForDB      []*RebaseDetailsForDB     `gorm:"foreignKey:block_num" json:"-"`
+		// v3
+		LTRamp           []*schemas_v3.TokenLTRamp      `gorm:"foreignKey:block_num" json:"-"`
+		QuotaDetails     []*schemas_v3.QuotaDetails     `gorm:"foreignKey:block_num" json:"-"`
+		AccountQuotaInfo []*schemas_v3.AccountQuotaInfo `gorm:"foreignKey:block_num" json:"-"`
 	}
 )
 
@@ -29,6 +35,23 @@ func (Block) TableName() string {
 	return "blocks"
 }
 
+// v3
+
+func (b *Block) AddTokenLTRamp(details *schemas_v3.TokenLTRamp) {
+	b.LTRamp = append(b.LTRamp, details)
+}
+func (b *Block) AddQuotaDetails(details *schemas_v3.QuotaDetails) {
+	b.QuotaDetails = append(b.QuotaDetails, details)
+}
+func (b *Block) AddAccountQuotaInfo(details *schemas_v3.AccountQuotaInfo) {
+	b.AccountQuotaInfo = append(b.AccountQuotaInfo, details)
+}
+
+func (b *Block) GetTokenLTRamp() []*schemas_v3.TokenLTRamp {
+	return b.LTRamp
+}
+
+// v2
 func (b *Block) AddAccountOperation(accountOperation *AccountOperation) {
 	b.AccountOperations = append(b.AccountOperations, accountOperation)
 }

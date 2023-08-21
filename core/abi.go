@@ -54,6 +54,7 @@ import (
 	// v3
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadev3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/poolv3"
 
 	//
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -153,6 +154,7 @@ var v2Map = AbiMap{
 var v3Map = AbiMap{
 	"CreditManagerv3": {ABI: creditManagerv3.CreditManagerv3ABI},
 	"CreditFacadev3":  {ABI: creditFacadev3.CreditFacadev3ABI},
+	"Poolv3":          {ABI: poolv3.Poolv3ABI},
 }
 var adapterMap = AbiMap{
 	//

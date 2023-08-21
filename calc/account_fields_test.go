@@ -46,7 +46,7 @@ func (s store) GetPrices(token string, version core.VersionType, blockNums ...in
 func (s store) GetToken(token string) *schemas.Token {
 	return s.Tokens[token]
 }
-func (s store) GetLiqThreshold(cm, token string) *big.Int {
+func (s store) GetLiqThreshold(_ int64, cm, token string) *big.Int {
 	return s.LiqThresholds[cm][token]
 }
 
@@ -70,6 +70,7 @@ func TestCalcFields(t *testing.T) {
 	// //
 
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
+		0,
 		input.Version,
 		0,
 		input.Account,
@@ -100,6 +101,7 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 	// //
 
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
+		0,
 		input.Version,
 		0,
 		input.Account,
