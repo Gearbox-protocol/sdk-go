@@ -142,6 +142,9 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 		if strings.HasPrefix(data, "0x") {
 			return common.HexToHash(data).Bytes(), nil
 		} else {
+			if len(data) > 64 {
+				return hex.DecodeString(data)
+			}
 			data, ok := new(big.Int).SetString(data, 10)
 			if !ok {
 				log.Fatal(blockNum, sig, *call.To, data)
