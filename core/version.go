@@ -86,8 +86,10 @@ func (z *VersionType) Scan(value interface{}) error {
 		*z = NewVersion(int16(v))
 	case int:
 		*z = NewVersion(int16(t))
+	case int64:
+		*z = NewVersion(int16(t))
 	default:
-		return fmt.Errorf("could not scan type %T into BigInt", t)
+		return fmt.Errorf("could not scan type %T into versionType", t)
 	}
 
 	return nil
