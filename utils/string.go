@@ -121,7 +121,7 @@ func ReadFromEnv(val interface{}) {
 		switch envVarDS.Type.Kind() {
 		case reflect.String:
 			rv.Field(i).SetString(value)
-		case reflect.Int64, reflect.Int32, reflect.Int:
+		case reflect.Int64, reflect.Int32, reflect.Int, reflect.Int16:
 			num, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
 				log.Fatalf("Err(%v) while getting env %s", err, envField)

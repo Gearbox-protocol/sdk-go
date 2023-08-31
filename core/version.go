@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -57,7 +58,7 @@ func (v VersionType) Decimals() int8 {
 }
 
 func (v VersionType) IsGBv1() bool {
-	return v.v == 2
+	return v.v == 1
 }
 
 func (v VersionType) IsPriceInUSD() bool {
@@ -97,15 +98,25 @@ func (z VersionType) MarshalJSON() ([]byte, error) {
 }
 
 func (z *VersionType) UnmarshalJSON(b []byte) error {
-	v, err := strconv.Atoi(string(b))
+	str := strings.Trim(string(b), "\"")
+	v, err := strconv.Atoi(str)
 	if err != nil {
 		return fmt.Errorf("can unmarshal versiontype %s", err)
 	}
 
-	*z = NewVersion(int16(v))
+	z.v = int16(v)
 	return nil
-
 }
+
+// https://stackoverflow.com/questions/55335296/problem-with-marshal-unmarshal-when-key-of-map-is-a-struct for map
+func (z VersionType) MarshalText() (text []byte, err error) {
+	return z.MarshalJSON()
+}
+
+func (s *VersionType) UnmarshalText(text []byte) error {
+	return s.UnmarshalJSON(text)
+}
+
 func (v VersionType) Eq(in int16) bool {
 	return v.v == in
 }
