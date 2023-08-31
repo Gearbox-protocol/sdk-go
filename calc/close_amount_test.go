@@ -3,6 +3,7 @@ package calc
 import (
 	"testing"
 
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
@@ -14,7 +15,7 @@ func TestCalcCloseAmount(t *testing.T) {
 			FeeLiquidation:      200,
 			LiquidationDiscount: 9500,
 		},
-		2,
+		core.NewVersion(2),
 		utils.StringToInt("2003445408514560318103"),
 		schemas.Liquidated,
 		utils.StringToInt("2000036753743938235"),

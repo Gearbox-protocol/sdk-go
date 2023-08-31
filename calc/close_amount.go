@@ -9,9 +9,9 @@ import (
 )
 
 func CalCloseAmount(params *schemas.Parameters, version core.VersionType, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
-	if version.IsGBv1() {
+	if version.Eq(1) {
 		return calCloseAmountV1(params, totalValue, schemas.IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
-	} else if version.IsGBv2orAbove() {
+	} else if version.Eq(2) {
 		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, borrowedAmountWithInterest, borrowedAmount)
 	}
 	return

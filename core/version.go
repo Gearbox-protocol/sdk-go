@@ -1,7 +1,10 @@
 package core
 
 import (
+	"database/sql/driver"
+	"fmt"
 	"math/big"
+	"strconv"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -27,21 +30,25 @@ func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
 	return NewVersion(int16(out0.Int64()))
 }
 
-type VersionType int16
+type VersionType struct {
+	v int16
+}
 
 func NewVersion(v int16) VersionType {
-	if v == 1 || v == 2 || v == 210 {
-		return VersionType(v)
+	if v == 1 || v == 2 {
+		return VersionType{v: v}
+	} else if v == 210 {
+		return VersionType{v: 2}
 	}
 	log.Fatal("version not supported")
 	panic("")
 }
 
 func (v VersionType) Decimals() int8 {
-	switch v {
+	switch v.v {
 	case 1:
 		return 18 // eth decimals
-	case 2, 210:
+	case 2:
 		return 8 // USD decimals
 	default:
 		log.Fatal("version not supported")
@@ -50,37 +57,66 @@ func (v VersionType) Decimals() int8 {
 }
 
 func (v VersionType) IsGBv1() bool {
-	return v == 1
+	return v.v == 2
 }
 
 func (v VersionType) IsPriceInUSD() bool {
-	return v != 1
-}
-
-// used for not setting session balance from dc for account closure in v2 or above
-func (v VersionType) IsGBv2orAbove() bool {
-	return v >= 2
+	return v.v != 1
 }
 
 func (v VersionType) MoreThan(cmpAgainst VersionType) bool {
-	return floatOrd(v) > floatOrd(cmpAgainst)
+	return v.v > cmpAgainst.v
 }
-func floatOrd(v VersionType) float64 {
-	if v < 10 {
-		return float64(v)
-	} else if v == 210 {
-		return float64(v) / 100
+func (v VersionType) MoreThanEq(cmpAgainst VersionType) bool {
+	return v.v >= cmpAgainst.v
+}
+
+func (z VersionType) Value() (driver.Value, error) {
+	return fmt.Sprintf("%d", z.v), nil
+}
+func (z *VersionType) Scan(value interface{}) error {
+	if value == nil {
+		z = nil
 	}
-	panic("")
+	switch t := value.(type) {
+	case string:
+		v, err := strconv.ParseInt(t, 10, 32)
+		log.CheckFatal(err)
+		*z = NewVersion(int16(v))
+	case int:
+		*z = NewVersion(int16(t))
+	default:
+		return fmt.Errorf("could not scan type %T into BigInt", t)
+	}
+
+	return nil
+}
+
+func (z VersionType) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.Itoa(int(z.v))), nil
+}
+
+func (z *VersionType) UnmarshalJSON(b []byte) error {
+	v, err := strconv.Atoi(string(b))
+	if err != nil {
+		return fmt.Errorf("can unmarshal versiontype %s", err)
+	}
+
+	*z = NewVersion(int16(v))
+	return nil
+
+}
+func (v VersionType) Eq(in int16) bool {
+	return v.v == in
 }
 func FetchVersionOptimized(addr common.Address, blockNum int64, client ClientI) VersionType {
 	_version, err := CallFuncWithExtraBytes(client, "54fd4d50", addr, blockNum, nil)
 	if err != nil {
-		return 1
+		return NewVersion(1)
 	}
 	version := new(big.Int).SetBytes(_version).Int64()
 	if version == 0 {
 		version = 1
 	}
-	return VersionType(version)
+	return NewVersion(int16(version))
 }

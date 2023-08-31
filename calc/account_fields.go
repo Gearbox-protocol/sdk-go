@@ -55,14 +55,14 @@ func (c Calculator) CalcAccountFields(version core.VersionType, blockNum int64,
 		4, // div by the per factor
 	)
 	//
-	if version == 1 {
+	if version.Eq(1) {
 		calHF = new(big.Int).Quo(
 			utils.GetInt64(calThresholdValue, -4),
 			calBorrowWithInterest,
 		)
 		// set calBorrowWithInterestAndFees
 		calBorrowWithInterestAndFees = calBorrowWithInterest
-	} else if version == 2 {
+	} else if version.Eq(2) {
 		//https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditFacade.sol#L1206
 		interest := new(big.Int).Sub(calBorrowWithInterest, account.GetBorrowedAmount())
 		fees := utils.PercentMul(interest, big.NewInt(int64(feeInterest)))
