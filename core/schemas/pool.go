@@ -24,29 +24,29 @@ type UTokenAndPool struct {
 	UToken string
 }
 type PoolStat struct {
-	ID                       int64        `json:"-"`
-	BlockNum                 int64        `gorm:"column:block_num;primaryKey" json:"blockNum"`
-	Address                  string       `gorm:"column:pool;primaryKey" json:"pool"`
-	UniqueUsers              int          `gorm:"column:unique_users" json:"uniqueUsers"`
-	DepositAPY               float64      `gorm:"column:deposit_apy" json:"depositAPY"`
-	DepositAPYBI             *core.BigInt `gorm:"column:deposit_apy_bi" json:"depositAPYBI"`
-	BorrowAPY                float64      `gorm:"column:borrow_apy" json:"borrowAPY"`
-	BorrowAPYBI              *core.BigInt `gorm:"column:borrow_apy_bi" json:"borrowAPYBI"`
-	ExpectedLiquidity        float64      `gorm:"column:expected_liquidity" json:"expectedLiquidity"`
-	ExpectedLiquidityBI      *core.BigInt `gorm:"column:expected_liquidity_bi" json:"expectedLiquidityBI"`
-	ExpectedLiquidityLimitBI *core.BigInt `gorm:"column:expected_liquidity_limit_bi" json:"expectedLiquidityLimitBI"`
-	AvailableLiquidity       float64      `gorm:"column:available_liquidity" json:"availableLiquidity"`
-	AvailableLiquidityBI     *core.BigInt `gorm:"column:available_liquidity_bi" json:"availableLiquidityBI"`
-	TotalBorrowed            float64      `gorm:"column:total_borrowed" json:"totalBorrowed"`
-	TotalBorrowedBI          *core.BigInt `gorm:"column:total_borrowed_bi" json:"totalBorrowedBI"`
-	TotalProfit              float64      `gorm:"column:total_profit" json:"totalProfit"`
-	TotalProfitBI            *core.BigInt `gorm:"column:total_profit_bi" json:"totalProfitBI"`
-	TotalLosses              float64      `gorm:"column:total_losses" json:"totalLosses"`
-	TotalLossesBI            *core.BigInt `gorm:"column:total_losses_bi" json:"totalLossesBI"`
-	DieselRate               float64      `gorm:"column:diesel_rate" json:"dieselRate"`
-	DieselRateBI             *core.BigInt `gorm:"column:diesel_rate_bi" json:"dieselRateBI"`
-	WithdrawFee              int          `gorm:"column:withdraw_fee" json:"withdrawFee"`
-	CumulativeIndexRAY       *core.BigInt `gorm:"column:cumulative_index_ray" json:"cumulativeIndexRAY"`
+	ID                  int64        `json:"-"`
+	BlockNum            int64        `gorm:"column:block_num;primaryKey" json:"blockNum"`
+	Address             string       `gorm:"column:pool;primaryKey" json:"pool"`
+	UniqueUsers         int          `gorm:"column:unique_users" json:"uniqueUsers"`
+	DepositAPY          float64      `gorm:"column:deposit_apy" json:"depositAPY"`
+	DepositAPYBI        *core.BigInt `gorm:"column:deposit_apy_bi" json:"depositAPYBI"`
+	BorrowAPY           float64      `gorm:"column:borrow_apy" json:"borrowAPY"`
+	BorrowAPYBI         *core.BigInt `gorm:"column:borrow_apy_bi" json:"borrowAPYBI"`
+	ExpectedLiquidity   float64      `gorm:"column:expected_liquidity" json:"expectedLiquidity"`
+	ExpectedLiquidityBI *core.BigInt `gorm:"column:expected_liquidity_bi" json:"expectedLiquidityBI"`
+	// ExpectedLiquidityLimitBI *core.BigInt `gorm:"column:expected_liquidity_limit_bi" json:"expectedLiquidityLimitBI"`
+	AvailableLiquidity   float64      `gorm:"column:available_liquidity" json:"availableLiquidity"`
+	AvailableLiquidityBI *core.BigInt `gorm:"column:available_liquidity_bi" json:"availableLiquidityBI"`
+	TotalBorrowed        float64      `gorm:"column:total_borrowed" json:"totalBorrowed"`
+	TotalBorrowedBI      *core.BigInt `gorm:"column:total_borrowed_bi" json:"totalBorrowedBI"`
+	TotalProfit          float64      `gorm:"column:total_profit" json:"totalProfit"`
+	TotalProfitBI        *core.BigInt `gorm:"column:total_profit_bi" json:"totalProfitBI"`
+	TotalLosses          float64      `gorm:"column:total_losses" json:"totalLosses"`
+	TotalLossesBI        *core.BigInt `gorm:"column:total_losses_bi" json:"totalLossesBI"`
+	DieselRate           float64      `gorm:"column:diesel_rate" json:"dieselRate"`
+	DieselRateBI         *core.BigInt `gorm:"column:diesel_rate_bi" json:"dieselRateBI"`
+	WithdrawFee          int          `gorm:"column:withdraw_fee" json:"withdrawFee"`
+	CumulativeIndexRAY   *core.BigInt `gorm:"column:cumulative_index_ray" json:"cumulativeIndexRAY"`
 }
 
 type PoolInterestData struct {

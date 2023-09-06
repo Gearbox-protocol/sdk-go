@@ -24,15 +24,15 @@ type CreditManagerState struct {
 }
 
 type CreditManagerData struct {
-	AvailableLiquidityBI    *core.BigInt `gorm:"column:available_liquidity_bi"`
-	AvailableLiquidity      float64      `gorm:"column:available_liquidity"`
-	OpenedAccountsCount     int          `gorm:"column:opened_accounts_count"`
-	TotalOpenedAccounts     int          `gorm:"column:total_opened_accounts"`
-	TotalClosedAccounts     int          `gorm:"column:total_closed_accounts"`
-	TotalRepaidAccounts     int          `gorm:"column:total_repaid_accounts"`
-	TotalLiquidatedAccounts int          `gorm:"column:total_liquidated_accounts"`
-	UniqueUsers             int          `gorm:"column:unique_users"`
-	TotalBorrowed           float64      `gorm:"column:total_borrowed"`
+	// AvailableLiquidityBI    *core.BigInt `gorm:"column:available_liquidity_bi"`
+	// AvailableLiquidity      float64      `gorm:"column:available_liquidity"`
+	OpenedAccountsCount     int     `gorm:"column:opened_accounts_count"`
+	TotalOpenedAccounts     int     `gorm:"column:total_opened_accounts"`
+	TotalClosedAccounts     int     `gorm:"column:total_closed_accounts"`
+	TotalRepaidAccounts     int     `gorm:"column:total_repaid_accounts"`
+	TotalLiquidatedAccounts int     `gorm:"column:total_liquidated_accounts"`
+	UniqueUsers             int     `gorm:"column:unique_users"`
+	TotalBorrowed           float64 `gorm:"column:total_borrowed"`
 	// increase -> in open creditaccount (CMStatsOnOpenAccount), in increaseBorrowAmount v1/v2
 	// decreased -> when pool repay is emitted, subtract borrowAmount in event(this doesn't include fees and interest)
 	TotalBorrowedBI      *core.BigInt `gorm:"column:total_borrowed_bi"`
