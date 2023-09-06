@@ -5,71 +5,77 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-
-	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 )
+
+type TokenBalanceCallData struct {
+	Token string `json:"token"`
+	DBTokenBalance
+}
 
 // there is balanceType without float decimal value and
 // CoreIntBalance with float decimal value
 // DBFOrmatBalance is map[string]CoreIntBalance
 // there is method on DbFormatBalance ToBalanceType() map[string]BalanceType
-type BalanceType struct {
-	// not important field is not used for any calculation
-	IsAllowed bool    `json:"isAllowed"`
-	IsEnabled bool    `json:"isEnabled"` // based on mask
-	BI        *BigInt `json:"BI"`
-	Ind       int     `json:"-"`
-	// not used in liquidator
-}
+// type BalanceType struct {
+// 	// not important field is not used for any calculation
+// 	IsForbidden bool    `json:"isForbidden"`
+// 	IsEnabled   bool    `json:"isEnabled"` // based on mask
+// 	BI          *BigInt `json:"BI"`
+// 	Ind         int     `json:"-"`
+// 	// not used in liquidator
+// }
 
-func (b BalanceType) HasBalanceMoreThanOne() bool {
-	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
-}
+// func (b BalanceType) HasBalanceMoreThanOne() bool {
+// 	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
+// }
 
 // filters isEnabled
-func ConvertToBalanceType(dcv2Balances []dataCompressorv2.TokenBalance) map[string]BalanceType {
-	m := map[string]BalanceType{}
-	for ind, entry := range dcv2Balances {
-		if entry.IsEnabled {
-			m[entry.Token.Hex()] = BalanceType{
-				IsAllowed: entry.IsAllowed,
-				IsEnabled: entry.IsEnabled,
-				BI:        (*BigInt)(entry.Balance),
-				Ind:       ind,
-			}
+func ConvertToDBBalanceFormat(dcv2Balances []TokenBalanceCallData) DBBalanceFormat {
+	m := DBBalanceFormat{}
+	for _, entry := range dcv2Balances {
+		if !entry.IsEnabled {
+			m[entry.Token] = entry.DBTokenBalance
 		}
 	}
 	return m
 }
 
-type CoreIntBalance struct {
+type DBTokenBalance struct {
 	// not important field is not used for any calculation
-	IsAllowed bool    `json:"isAllowed"`
+	BI *BigInt `json:"BI"`
+	// is forbidden on credit manager
+	IsForbidden bool `json:"isForbidden"`
+	// is enabled on account
 	IsEnabled bool    `json:"isEnabled"`
-	BI        *BigInt `json:"BI"`
-	F         float64 `json:"F"`
 	Ind       int     `json:"ind"`
-} // @name CoreIntBalance
+	IsQuoted  bool    `json:"isQuoted,omitempty"`
+	Quota     *BigInt `json:"quota,omitempty"`
+	QuotaRate uint16  `json:"quotaRate,omitempty"`
+	F         float64 `json:"F"`
+	//
+} // @name DBTokenBalance
 
-func (b CoreIntBalance) HasBalanceMoreThanOne() bool {
+func (b DBTokenBalance) HasBalanceMoreThanOne() bool {
 	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
 }
 
-type DBBalanceFormat map[string]CoreIntBalance // @name DBBalanceFormat
+type DBBalanceFormat map[string]DBTokenBalance // @name DBBalanceFormat
 
 // doesn't filter on isEnabled
-func (j DBBalanceFormat) ToBalanceType() map[string]BalanceType {
-	m := map[string]BalanceType{}
-	for token, bal := range j {
-		m[token] = BalanceType{
-			Ind:       bal.Ind,
-			BI:        bal.BI,
-			IsAllowed: bal.IsAllowed,
-			IsEnabled: bal.IsEnabled,
-		}
-	}
-	return m
-}
+//
+//	func (j DBBalanceFormat) ToBalanceType() map[string]BalanceType {
+//		m := map[string]BalanceType{}
+//		for token, bal := range j {
+//			m[token] = BalanceType{
+//				Ind:         bal.Ind,
+//				BI:          bal.BI,
+//				IsForbidden: bal.IsForbidden,
+//				IsEnabled:   bal.IsEnabled,
+//			}
+//		}
+//		return m
+//	}
+
 func (j DBBalanceFormat) Value() (driver.Value, error) {
 	return json.Marshal(j)
 }

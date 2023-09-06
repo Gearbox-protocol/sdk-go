@@ -8,6 +8,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg/dc"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -30,8 +31,8 @@ func (a account) GetBorrowedAmount() *big.Int {
 func (a account) GetCumulativeIndex() *big.Int {
 	return a.CumulativeIndex
 }
-func (a account) GetBalances() map[string]core.BalanceType {
-	return core.ConvertToBalanceType(a.Balances)
+func (a account) GetBalances() core.DBBalanceFormat {
+	return core.ConvertToDBBalanceFormat(dc.Convertv2ToBalance(a.Balances))
 }
 
 type store struct {

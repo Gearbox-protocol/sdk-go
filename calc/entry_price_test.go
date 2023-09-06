@@ -10,7 +10,7 @@ import (
 )
 
 type session struct {
-	balances       map[string]core.BalanceType
+	balances       core.DBBalanceFormat
 	borrowedAmount *big.Int
 	collateral     core.JsonBigIntMap
 	underlying     string
@@ -20,7 +20,7 @@ type session struct {
 	currentPrice float64
 }
 
-func (s session) GetBalances() map[string]core.BalanceType {
+func (s session) GetBalances() core.DBBalanceFormat {
 	return s.balances
 }
 func (s session) GetBorrowedAmount() *big.Int {
@@ -49,7 +49,7 @@ func TestEntryPriceForLong(t *testing.T) {
 	usdc := utils.RandomAddr()
 	tradingToken := utils.RandomAddr()
 	sess := &session{
-		balances:       map[string]core.BalanceType{tradingToken: {IsEnabled: true, BI: (*core.BigInt)(utils.GetExpInt(18))}},
+		balances:       map[string]core.DBTokenBalance{tradingToken: {IsEnabled: true, BI: (*core.BigInt)(utils.GetExpInt(18))}},
 		borrowedAmount: new(big.Int).Mul(big.NewInt(3), utils.GetExpInt(6+3)),
 		collateral:     core.JsonBigIntMap{usdc: (*core.BigInt)(utils.GetExpInt(6 + 3))},
 		underlying:     usdc,

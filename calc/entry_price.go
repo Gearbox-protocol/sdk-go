@@ -23,7 +23,7 @@ func (session *PriceDS) SetCurrentPrice(tradingToken, quoteToken string, price f
 }
 
 type EntryPriceI interface {
-	GetBalances() map[string]core.BalanceType
+	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
 	GetCollateralInUnderlying() interface{}
 	GetUnderlyingToken() string
@@ -60,7 +60,7 @@ func CalcCurrentPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
 	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
 }
 func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
-	balances map[string]core.BalanceType, cToken string, cBal *big.Int) (string, string, float64, error) {
+	balances core.DBBalanceFormat, cToken string, cBal *big.Int) (string, string, float64, error) {
 	bToken, bBal, ok := singleEntryPriceToken(balances, cToken) // balance token, returns false if there are more than 1 token
 	if !ok {
 		return "", "", 0, fmt.Errorf("balances has 2 or more token")
@@ -86,7 +86,7 @@ func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
 }
 
 // returns false if there are more than 1 token
-func singleEntryPriceToken(bal map[string]core.BalanceType, underlyingToken string) (ansToken string, ansamt *big.Int, ansOk bool) {
+func singleEntryPriceToken(bal core.DBBalanceFormat, underlyingToken string) (ansToken string, ansamt *big.Int, ansOk bool) {
 	tokens := 0
 	for token, details := range bal {
 		if details.IsEnabled && details.HasBalanceMoreThanOne() && // ignore tokens which are disabled or have zero balances

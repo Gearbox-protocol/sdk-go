@@ -1,8 +1,6 @@
 package dc
 
 import (
-	"math/big"
-
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum/common"
@@ -33,21 +31,21 @@ type PoolCallData struct {
 	Addr                  common.Address `json:"address"`
 	Underlying            common.Address `json:"underlyingToken"`
 	DieselToken           common.Address `json:"dieselToken"`
-	LinearCumulativeIndex *big.Int       `json:"linearCumulativeIndex"`
-	AvailableLiquidity    *big.Int       `json:"availableLiquidity"`
-	ExpectedLiquidity     *big.Int       `json:"expectedLiquidity"`
-	TotalBorrowed         *big.Int       `json:"totalBorrowed"`
-	// TotalDebtLimit          *big.Int
+	LinearCumulativeIndex *core.BigInt   `json:"linearCumulativeIndex"`
+	AvailableLiquidity    *core.BigInt   `json:"availableLiquidity"`
+	ExpectedLiquidity     *core.BigInt   `json:"expectedLiquidity"`
+	TotalBorrowed         *core.BigInt   `json:"totalBorrowed"`
+	// TotalDebtLimit          *core.BigInt
 	CreditManagerDebtParams []dcv3.CreditManagerDebtParams `json:"creditManagerDebtParams,omitempty"`
-	TotalAssets             *big.Int                       `json:"-"`
-	TotalSupply             *big.Int                       `json:"-"`
-	SupplyRate              *big.Int                       `json:"depositAPY"`
-	BaseInterestRate        *big.Int                       `json:"baseBorrowRate"` // DC_CHANGED
-	DieselRateRAY           *big.Int                       `json:"dieselRate"`
-	WithdrawFee             *big.Int                       `json:"withdrawFee"`
-	CumulativeIndexRAY      *big.Int                       `json:"cumulativeIndex"`
-	// BaseInterestIndexLU     *big.Int
-	Version *big.Int         `json:"version"`
+	TotalAssets             *core.BigInt                   `json:"-"`
+	TotalSupply             *core.BigInt                   `json:"-"`
+	SupplyRate              *core.BigInt                   `json:"depositAPY"`
+	BaseInterestRate        *core.BigInt                   `json:"baseBorrowRate"` // DC_CHANGED
+	DieselRateRAY           *core.BigInt                   `json:"dieselRate"`
+	WithdrawFee             *core.BigInt                   `json:"withdrawFee"`
+	CumulativeIndexRAY      *core.BigInt                   `json:"cumulativeIndex"`
+	// BaseInterestIndexLU     *core.BigInt
+	Version *core.BigInt     `json:"version"`
 	Quotas  []dcv3.QuotaInfo `json:"quotas,omitempty"`
 }
 
@@ -60,9 +58,9 @@ type CMCallData struct {
 	// Pool                       common.Address
 	// TotalDebt                  *big.Int
 	// TotalDebtLimit             *big.Int
-	BaseBorrowRate *big.Int `json:"baseBorrowRate"` // DC_CHANGED
-	MinDebt        *big.Int `json:"minAmount"`
-	MaxDebt        *big.Int `json:"maxAmount"`
+	BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
+	MinDebt        *core.BigInt `json:"minAmount"`
+	MaxDebt        *core.BigInt `json:"maxAmount"`
 	// AvailableToBorrow          *big.Int
 	// CollateralTokens           []common.Address
 	Adapters []dcv3.ContractAdapter `json:"adapters"`
@@ -85,33 +83,23 @@ type CreditAccountCallData struct {
 	Borrower                   common.Address `json:"borrower"`
 	CreditManager              common.Address `json:"creditManager"`
 	Underlying                 common.Address `json:"underlyingToken"`
-	BorrowedAmount             *big.Int       `json:"borrowedAmount"` // DC_CHANGED
-	BorrowedAmountPlusInterest *big.Int       `json:"borrowedAmountPlusInterest"`
+	BorrowedAmount             *core.BigInt   `json:"borrowedAmount"` // DC_CHANGED
+	BorrowedAmountPlusInterest *core.BigInt   `json:"borrowedAmountPlusInterest"`
 	// TODO:"totalBorrowedWithInterst" is removed
-	CumulativeIndexAtOpen   *big.Int `json:"cumulativeIndexAtOpen"`
-	CumulativeQuotaInterest *big.Int `json:"cumulativeQuotaInterest,omitempty"`
-	AccruedInterest         *big.Int `json:"accruedInterest,omitempty"`
-	AccruedFees             *big.Int `json:"accruedFees,omitempty"`
-	TotalValue              *big.Int `json:"totalValue"`
+	CumulativeIndexAtOpen   *core.BigInt `json:"cumulativeIndexAtOpen"`
+	CumulativeQuotaInterest *core.BigInt `json:"cumulativeQuotaInterest,omitempty"`
+	AccruedInterest         *core.BigInt `json:"accruedInterest,omitempty"`
+	AccruedFees             *core.BigInt `json:"accruedFees,omitempty"`
+	TotalValue              *core.BigInt `json:"totalValue"`
 
-	RepayAmountv1v2 *big.Int `json:"repayAmount,omitempty"`
+	RepayAmountv1v2 *core.BigInt `json:"repayAmount,omitempty"`
 	// TotalValueUSD
 	// TwvUSD
 	// EnabledTokensMask
-	HealthFactor   *big.Int `json:"healthFactor"`
-	BaseBorrowRate *big.Int `json:"baseBorrowRate"` // DC_CHANGED
+	HealthFactor   *core.BigInt `json:"healthFactor"`
+	BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
 	// AggregatedBorrowRate
-	Since    uint64                 `json:"since"`
-	Balances []TokenBalanceCallData `json:"balances"`
-	Version  core.VersionType       `json:"version"`
-}
-
-type TokenBalanceCallData struct {
-	Token       common.Address `json:"token"`
-	Balance     *big.Int       `json:"balance"`
-	IsForbidden bool           `json:"isForbidden"`
-	IsEnabled   bool           `json:"isEnabled"`
-	IsQuoted    bool           `json:"isQuoted"`
-	Quota       *big.Int       `json:"quota"`
-	QuotaRate   uint16         `json:"quotaRate"`
+	Since    uint64                      `json:"since"`
+	Balances []core.TokenBalanceCallData `json:"balances"`
+	Version  core.VersionType            `json:"version"`
 }

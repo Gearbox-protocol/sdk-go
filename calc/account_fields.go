@@ -16,7 +16,7 @@ type TokenDetailsForCalcI interface {
 
 type AccountForCalcI interface {
 	GetCM() string
-	GetBalances() map[string]core.BalanceType
+	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
 	GetCumulativeIndex() *big.Int
 }

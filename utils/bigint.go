@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"golang.org/x/exp/constraints"
 )
 
@@ -36,8 +37,22 @@ func PercentMulByUInt16(a *big.Int, percent uint16) *big.Int {
 	return PercentMul(a, big.NewInt(int64(percent)))
 }
 
-func GetFloat64Decimal(num *big.Int, decimals int8) float64 {
-	floatBorrowedAmount, _ := GetFloat64(num, decimals).Float64()
+func GetFloat64Decimal(_num interface{}, decimals int8) float64 {
+	type convertI interface {
+		Convert() *big.Int
+	}
+	var bigInt *big.Int
+	switch v := _num.(type) {
+	case *big.Int:
+		bigInt = v
+	default:
+		coreBigInt, ok := _num.(convertI)
+		if !ok {
+			log.Fatal("GetFloat64Decimal received unknown type")
+		}
+		bigInt = coreBigInt.Convert()
+	}
+	floatBorrowedAmount, _ := GetFloat64(bigInt, decimals).Float64()
 	return floatBorrowedAmount
 }
 
