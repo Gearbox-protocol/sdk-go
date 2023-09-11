@@ -108,8 +108,9 @@ func getCreditAccountDatav1(client core.ClientI, cfAddrv1 common.Address, blockN
 		CumulativeIndexAtOpen: (*core.BigInt)(data.CumulativeIndexAtOpen),
 		// CumulativeIndexLastUpdate: nil,
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
-		// AccruedInterest
-		// AccruedFees               *big.Int
+		//
+		AccruedInterest: (*core.BigInt)(new(big.Int)),
+		AccruedFees:     (*core.BigInt)(new(big.Int)),
 		// TotalDebtUSD
 		TotalValue: (*core.BigInt)(data.TotalValue),
 		// TotalValueUSD

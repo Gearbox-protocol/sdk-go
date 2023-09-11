@@ -16,6 +16,7 @@ func CalCloseAmount(params *schemas.Parameters, version core.VersionType, totalV
 	}
 	return
 }
+
 func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)

@@ -118,6 +118,8 @@ type (
 		BorrowedAmount   float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
 		TotalValueBI     *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
 		TotalValue       float64      `gorm:"column:total_value" json:"totalValue"`
+		AccruedInterest  *core.BigInt `gorm:"column:accrued_interest" json:"accruedInterest,omitempty"`
+		AccruedFees      *core.BigInt `gorm:"column:accrued_fees" json:"accruedFees,omitempty"`
 		// enabled can be false but amount is always non -zero
 		Balances               *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
 		Borrower               string                `gorm:"column:borrower" json:"borrower"`
