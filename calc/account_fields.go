@@ -5,13 +5,14 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 type TokenDetailsForCalcI interface {
 	GetToken(token string) *schemas.Token
 	GetPrices(underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
-	GetLiqThreshold(ts int64, cm, token string) *big.Int
+	GetLiqThreshold(ts uint64, cm, token string) *big.Int
 }
 
 type AccountForCalcI interface {
@@ -19,16 +20,27 @@ type AccountForCalcI interface {
 	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
 	GetCumulativeIndex() *big.Int
+	GetQuotas() map[string]*schemas_v3.AccountQuotaInfo
+	GetUnderlying() string
+	GetQuotaCumInterestAndFees() (*big.Int, *big.Int)
 }
 
 type Calculator struct {
 	Store TokenDetailsForCalcI
 }
 
-func (c Calculator) CalcAccountFields(ts int64, version core.VersionType, blockNum int64,
-	account AccountForCalcI, curCumIndex *big.Int, underlyingToken string, feeInterest uint16,
+func (c Calculator) CalcAccountFields(ts uint64, blockNum int64, version core.VersionType,
+	poolCumIndexNow *big.Int, poolQuotaDetails PoolForCalcI,
+	account AccountForCalcI, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 
+	if version.Eq(3) {
+		return c.CalcAccountFieldsv3(ts, blockNum, poolCumIndexNow, poolQuotaDetails, account, feeInterest)
+	}
+
+	// logic for v1 and v2
+	underlyingToken := account.GetUnderlying()
+	//
 	calThresholdValueInUSD := new(big.Int)
 	calTotalValueInUSD := new(big.Int)
 	// calculate the debt parameters
@@ -43,7 +55,7 @@ func (c Calculator) CalcAccountFields(ts int64, version core.VersionType, blockN
 		}
 	}
 	calBorrowWithInterest = new(big.Int).Quo(
-		new(big.Int).Mul(curCumIndex, account.GetBorrowedAmount()),
+		new(big.Int).Mul(poolCumIndexNow, account.GetBorrowedAmount()),
 		account.GetCumulativeIndex())
 	//
 	calTotalValue = c.convertFromUSD(calTotalValueInUSD, underlyingToken, version, blockNum)

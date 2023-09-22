@@ -61,7 +61,7 @@ func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 		BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		Since:          values.Since,
 		Balances:       convertv3ToBalance(values.Balances),
-		Version:        3,
+		Version:        core.NewVersion(3),
 	}
 }
 

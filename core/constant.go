@@ -13,6 +13,7 @@ const LogFilterQueryTimeout = "Query timeout exceeded. Consider reducing your bl
 const NoderealFilterLogError = "exceed maximum block range:"
 const NoOfBlocksPerMin int64 = 5
 const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
+const SECONDS_PER_YEAR = 86400 * 365
 
 var WETHPrice, USDCPrice *big.Int
 

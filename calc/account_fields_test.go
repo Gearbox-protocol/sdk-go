@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/pkg/dc"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -17,6 +18,7 @@ type account struct {
 	CM              string
 	BorrowedAmount  *big.Int
 	CumulativeIndex *big.Int
+	UnderlyingToken common.Address
 	Balances        []dataCompressorv2.TokenBalance
 }
 
@@ -35,6 +37,17 @@ func (a account) GetBalances() core.DBBalanceFormat {
 	return core.ConvertToDBBalanceFormat(dc.Convertv2ToBalance(a.Balances))
 }
 
+func (a account) GetQuotas() map[string]*schemas_v3.AccountQuotaInfo {
+	return nil
+}
+
+func (a account) GetQuotaCumInterestAndFees() (*big.Int, *big.Int) {
+	return new(big.Int), new(big.Int)
+}
+func (a account) GetUnderlying() string {
+	return a.UnderlyingToken.Hex()
+}
+
 type store struct {
 	Prices        map[core.VersionType]map[string]*core.BigInt
 	LiqThresholds map[string]map[string]*big.Int `json:"LT"`
@@ -47,16 +60,15 @@ func (s store) GetPrices(token string, version core.VersionType, blockNums ...in
 func (s store) GetToken(token string) *schemas.Token {
 	return s.Tokens[token]
 }
-func (s store) GetLiqThreshold(_ int64, cm, token string) *big.Int {
+func (s store) GetLiqThreshold(_ uint64, cm, token string) *big.Int {
 	return s.LiqThresholds[cm][token]
 }
 
 type CalcFieldsParams struct {
-	BlockNum        int64
-	Version         core.VersionType
-	CumIndexOfPool  *core.BigInt
-	UnderlyingToken common.Address
-	FeeInterest     uint16
+	BlockNum       int64
+	Version        core.VersionType
+	CumIndexOfPool *core.BigInt
+	FeeInterest    uint16
 	//
 	////
 	store
@@ -72,11 +84,11 @@ func TestCalcFields(t *testing.T) {
 
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
-		input.Version,
 		0,
-		input.Account,
+		input.Version,
 		input.CumIndexOfPool.Convert(),
-		input.UnderlyingToken.Hex(),
+		nil,
+		input.Account,
 		input.FeeInterest,
 	)
 	if calHF.Cmp(utils.StringToInt("13225")) != 0 {
@@ -103,11 +115,13 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
-		input.Version,
 		0,
-		input.Account,
+		input.Version,
+		//
 		input.CumIndexOfPool.Convert(),
-		input.UnderlyingToken.Hex(),
+		nil,
+		//
+		input.Account,
 		input.FeeInterest,
 	)
 	if calHF.Cmp(utils.StringToInt("2725195")) != 0 {

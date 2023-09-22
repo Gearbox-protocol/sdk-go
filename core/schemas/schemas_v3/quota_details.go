@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 type QuotaDetails struct {
@@ -21,6 +22,16 @@ type QuotaDetails struct {
 
 	//
 	IsDirty bool `gorm:"-"`
+}
+
+func (d QuotaDetails) GetCumulativeIndexAt(ts uint64) *big.Int {
+	rateFactor := new(big.Int).Mul(big.NewInt(int64(ts-d.Timestamp)), big.NewInt(int64(d.Rate)))
+
+	extraInterestIndex := new(big.Int).Quo(
+		new(big.Int).Mul(rateFactor, utils.GetExpInt(27-4)),
+		big.NewInt(core.SECONDS_PER_YEAR),
+	)
+	return new(big.Int).Add(extraInterestIndex, d.CumQuotaIndex.Convert())
 }
 
 func (old QuotaDetails) Copy() *QuotaDetails {
@@ -61,6 +72,12 @@ func (d AccountQuotaInfo) IsDisabled() bool {
 	return d.Quota == nil || d.Quota.Convert().Cmp(big.NewInt(2)) < 0
 }
 
+// uint128(uint256(quoted) * (cumulativeIndexNow - cumulativeIndexLU) / RAY);
+func (d AccountQuotaInfo) CalcAccruedQuotaInterest(ts uint64, poolQuota *QuotaDetails) *big.Int {
+	numerator := new(big.Int).Sub(poolQuota.GetCumulativeIndexAt(ts), d.QuotaIndex.Convert())
+	numerator = new(big.Int).Mul(numerator, d.Quota.Convert())
+	return new(big.Int).Quo(numerator, utils.GetExpInt(27))
+}
 func (old AccountQuotaInfo) Copy() *AccountQuotaInfo {
 	return &AccountQuotaInfo{
 		SessionId:       old.SessionId,
