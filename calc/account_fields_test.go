@@ -20,6 +20,7 @@ type account struct {
 	CumulativeIndex *big.Int
 	UnderlyingToken common.Address
 	Balances        []dataCompressorv2.TokenBalance
+	Version         int16
 }
 
 func (a account) GetCM() string {
@@ -47,6 +48,9 @@ func (a account) GetQuotaCumInterestAndFees() (*big.Int, *big.Int) {
 func (a account) GetUnderlying() string {
 	return a.UnderlyingToken.Hex()
 }
+func (a account) GetVersion() core.VersionType {
+	return core.NewVersion(a.Version)
+}
 
 type store struct {
 	Prices        map[core.VersionType]map[string]*core.BigInt
@@ -66,7 +70,6 @@ func (s store) GetLiqThreshold(_ uint64, cm, token string) *big.Int {
 
 type CalcFieldsParams struct {
 	BlockNum       int64
-	Version        core.VersionType
 	CumIndexOfPool *core.BigInt
 	FeeInterest    uint16
 	//
@@ -85,7 +88,6 @@ func TestCalcFields(t *testing.T) {
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
 		0,
-		input.Version,
 		input.CumIndexOfPool.Convert(),
 		nil,
 		input.Account,
@@ -116,7 +118,6 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
 		0,
-		input.Version,
 		//
 		input.CumIndexOfPool.Convert(),
 		nil,

@@ -22,6 +22,7 @@ type AccountForCalcI interface {
 	GetCumulativeIndex() *big.Int
 	GetQuotas() map[string]*schemas_v3.AccountQuotaInfo
 	GetUnderlying() string
+	GetVersion() core.VersionType
 	GetQuotaCumInterestAndFees() (*big.Int, *big.Int)
 }
 
@@ -29,11 +30,11 @@ type Calculator struct {
 	Store TokenDetailsForCalcI
 }
 
-func (c Calculator) CalcAccountFields(ts uint64, blockNum int64, version core.VersionType,
+func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	poolCumIndexNow *big.Int, poolQuotaDetails PoolForCalcI,
 	account AccountForCalcI, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
-
+	version := account.GetVersion()
 	if version.Eq(3) {
 		return c.CalcAccountFieldsv3(ts, blockNum, poolCumIndexNow, poolQuotaDetails, account, feeInterest)
 	}
