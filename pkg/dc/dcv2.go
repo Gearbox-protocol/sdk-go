@@ -72,8 +72,8 @@ func getAccountDatav2(values dcv2.CreditAccountData) CreditAccountCallData {
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexAtOpen),
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
 		//
-		AccruedInterest: (*core.BigInt)(new(big.Int)),
-		AccruedFees:     (*core.BigInt)(new(big.Int)),
+		AccruedInterest: new(core.BigInt),
+		AccruedFees:     new(core.BigInt),
 		//
 		TotalValue:     (*core.BigInt)(values.TotalValue),
 		HealthFactor:   (*core.BigInt)(values.HealthFactor),
