@@ -137,10 +137,10 @@
         IsEnabled: true,
       },
     ],
+    UnderlyingToken: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    Version: 1,
   },
-  UnderlyingToken: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   BlockNum: 15380052,
-  Version: 1,
   CumIndexOfPool: '1008974004624121395847841465',
   Prices: {
     '1': {

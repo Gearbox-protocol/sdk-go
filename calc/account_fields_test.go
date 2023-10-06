@@ -80,6 +80,7 @@ type CalcFieldsParams struct {
 
 // for v1
 func TestCalcFields(t *testing.T) {
+	log.SetTestLogging(t)
 	//
 	input := CalcFieldsParams{}
 	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields.json", &input)

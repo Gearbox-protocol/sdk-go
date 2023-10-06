@@ -55,6 +55,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 			calTotalValueInUSD = new(big.Int).Add(calTotalValueInUSD, tokenValueInUSD)
 		}
 	}
+
 	calBorrowWithInterest = new(big.Int).Quo(
 		new(big.Int).Mul(poolCumIndexNow, account.GetBorrowedAmount()),
 		account.GetCumulativeIndex())

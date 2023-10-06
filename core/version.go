@@ -43,7 +43,7 @@ func NewVersion(v int16) VersionType {
 	} else if v == 300 {
 		return VersionType{v: 300}
 	}
-	log.Fatal("version not supported")
+	log.Fatal("version not supported", v)
 	panic("")
 }
 

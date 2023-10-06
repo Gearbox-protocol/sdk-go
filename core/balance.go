@@ -33,7 +33,7 @@ type TokenBalanceCallData struct {
 func ConvertToDBBalanceFormat(dcv2Balances []TokenBalanceCallData) DBBalanceFormat {
 	m := DBBalanceFormat{}
 	for _, entry := range dcv2Balances {
-		if !entry.IsEnabled {
+		if entry.IsEnabled {
 			m[entry.Token] = entry.DBTokenBalance
 		}
 	}

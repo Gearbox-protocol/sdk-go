@@ -263,10 +263,10 @@
         Balance: 0,
       },
     ],
+    UnderlyingToken: '0x595DFFf822767c2E14CFB7D5e0b5a5e23eCfACdd',
+    Version: 2,
   },
-  UnderlyingToken: '0x595DFFf822767c2E14CFB7D5e0b5a5e23eCfACdd',
   BlockNum: 7712345,
-  Version: 2,
   CumIndexOfPool: '1000748182006430558180400186',
   Prices: {
     '2': {
