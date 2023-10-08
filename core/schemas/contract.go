@@ -96,7 +96,6 @@ func (c *Contract) DiscoverFirstLog() int64 {
 }
 
 func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
-
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(fromBlock),
 		ToBlock:   big.NewInt(toBlock),

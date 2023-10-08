@@ -38,7 +38,7 @@ func GetAddrToSymbol(fileName string) map[common.Address]Symbol {
 }
 
 func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
-	if chainId == 1337 {
+	if chainId == 1337 || chainId == 7878 {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
@@ -46,7 +46,7 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 }
 
 func GetAddrToSymbolByChainId(chainId int64) map[common.Address]Symbol {
-	if chainId == 1337 {
+	if chainId == 1337 || chainId == 7878 {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
