@@ -30,12 +30,30 @@ func NewToken(addr string, client core.ClientI) (*Token, error) {
 }
 
 func (t *Token) init() error {
-	contract, err := eRC20.NewERC20(common.HexToAddress(t.Address), t.client)
+	tokenAddr := common.HexToAddress(t.Address)
+	contract, err := eRC20.NewERC20(tokenAddr, t.client)
 	if err != nil {
 		return err
 	}
 	if symbol, err := contract.Symbol(&bind.CallOpts{}); err != nil {
-		return err
+		if err2 := func() error {
+			symbolBytes, err := core.CallFuncWithExtraBytes(t.client, "95d89b41", tokenAddr, 0, nil)
+			if err != nil {
+				return err
+			}
+			t.Symbol = func() string {
+				for ind, ele := range symbolBytes {
+					if ele == 0 {
+						symbolBytes = symbolBytes[:ind]
+						break
+					}
+				}
+				return string(symbolBytes)
+			}()
+			return nil
+		}(); err2 != nil { // if we can't get bytes data return error
+			return err
+		}
 	} else {
 		t.Symbol = symbol
 	}
