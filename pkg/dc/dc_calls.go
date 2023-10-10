@@ -1,8 +1,11 @@
 package dc
 
 import (
+	"math/big"
+
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -88,9 +91,8 @@ type CreditAccountCallData struct {
 	// TODO:"totalBorrowedWithInterst" is removed
 	CumulativeIndexAtOpen   *core.BigInt `json:"cumulativeIndexAtOpen"`
 	CumulativeQuotaInterest *core.BigInt `json:"cumulativeQuotaInterest,omitempty"`
-	AccruedInterest         *core.BigInt `json:"accruedInterest,omitempty"`
-	AccruedFees             *core.BigInt `json:"accruedFees,omitempty"`
-	TotalValue              *core.BigInt `json:"totalValue"`
+	QuotaFeeCalc
+	TotalValue *core.BigInt `json:"totalValue"`
 
 	RepayAmountv1v2 *core.BigInt `json:"repayAmount,omitempty"`
 	// TotalValueUSD
@@ -101,5 +103,24 @@ type CreditAccountCallData struct {
 	// AggregatedBorrowRate
 	Since    uint64                      `json:"since"`
 	Balances []core.TokenBalanceCallData `json:"balances"`
-	Version  core.VersionType            `json:"version"`
+}
+
+type QuotaFeeCalc struct {
+	AccruedInterest *core.BigInt     `json:"accruedInterest,omitempty"`
+	AccruedFees     *core.BigInt     `json:"accruedFees,omitempty"`
+	Version         core.VersionType `json:"version"`
+}
+
+func (data QuotaFeeCalc) GetQuotaFees(feeInterest uint16) *big.Int {
+	if !data.Version.Eq(3) {
+		return new(big.Int)
+	}
+	interestFees := new(big.Int).Quo(
+		new(big.Int).Mul(
+			data.AccruedInterest.Convert(), big.NewInt(int64(feeInterest)),
+		),
+		utils.GetExpInt(4),
+	)
+	// quota fees
+	return new(big.Int).Sub(data.AccruedFees.Convert(), interestFees)
 }

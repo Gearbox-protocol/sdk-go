@@ -22,7 +22,9 @@ func getPoolDatav3(values dcv3.PoolData) PoolCallData {
 		BaseInterestRate:        (*core.BigInt)(values.BaseInterestRate),
 		DieselRateRAY:           (*core.BigInt)(values.DieselRateRAY),
 		WithdrawFee:             (*core.BigInt)(values.WithdrawFee),
-		CumulativeIndexRAY:      (*core.BigInt)(values.CumulativeIndexRAY),
+		// assuming cumulativeIndexRay is depcreated
+		// CumulativeIndexRAY is same as BaseInterestIndexLU
+		CumulativeIndexRAY: (*core.BigInt)(values.BaseInterestIndexLU),
 		// : values.//,
 		Version: (*core.BigInt)(values.Version),
 		Quotas:  values.Quotas,
@@ -53,19 +55,21 @@ func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexLastUpdate),
 		CumulativeQuotaInterest: (*core.BigInt)(values.CumulativeQuotaInterest),
 		//
-		AccruedInterest: (*core.BigInt)(values.AccruedInterest),
-		AccruedFees:     (*core.BigInt)(values.AccruedFees),
+		QuotaFeeCalc: QuotaFeeCalc{
+			AccruedInterest: (*core.BigInt)(values.AccruedInterest),
+			AccruedFees:     (*core.BigInt)(values.AccruedFees),
+			Version:         core.NewVersion(3),
+		},
 		//
 		TotalValue:     (*core.BigInt)(values.TotalValue),
 		HealthFactor:   (*core.BigInt)(values.HealthFactor),
 		BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		Since:          values.Since,
-		Balances:       convertv3ToBalance(values.Balances),
-		Version:        core.NewVersion(3),
+		Balances:       Convertv3ToBalance(values.Balances),
 	}
 }
 
-func convertv3ToBalance(balances []dcv3.TokenBalance) (dcv2Balances []core.TokenBalanceCallData) {
+func Convertv3ToBalance(balances []dcv3.TokenBalance) (dcv2Balances []core.TokenBalanceCallData) {
 	for ind, balance := range balances {
 		dcv2Balances = append(dcv2Balances, core.TokenBalanceCallData{
 			Token: balance.Token.Hex(),

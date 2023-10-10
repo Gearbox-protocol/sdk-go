@@ -72,15 +72,18 @@ func getAccountDatav2(values dcv2.CreditAccountData) CreditAccountCallData {
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexAtOpen),
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
 		//
-		AccruedInterest: new(core.BigInt),
-		AccruedFees:     new(core.BigInt),
+		QuotaFeeCalc: QuotaFeeCalc{
+			Version:         core.NewVersion(int16(values.Version)),
+			AccruedInterest: new(core.BigInt),
+			AccruedFees:     new(core.BigInt),
+		},
 		//
 		TotalValue:     (*core.BigInt)(values.TotalValue),
 		HealthFactor:   (*core.BigInt)(values.HealthFactor),
 		BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
 		Since:          uint64(values.Since.Int64()),
 		Balances:       Convertv2ToBalance(values.Balances),
-		Version:        core.NewVersion(int16(values.Version)),
+
 		//
 		RepayAmountv1v2: (*core.BigInt)(values.RepayAmount),
 	}
