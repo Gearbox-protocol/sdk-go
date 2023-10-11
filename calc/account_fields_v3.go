@@ -9,7 +9,9 @@ import (
 )
 
 type PoolForCalcI interface {
-	GetPoolQuotaDetails(underlyingToken string) map[string]*schemas_v3.QuotaDetails
+	GetPoolQuotaDetails() map[string]*schemas_v3.QuotaDetails
+	GetCumIndexNow() *big.Int
+	GetUnderlying() string
 }
 
 func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int {
@@ -27,11 +29,11 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // - whenever there is updateQuota, cumulative quota intereest and fees are stored in creditManager and cumulativeQuotaIndex for account is updated.
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
-func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolCumIndexNow *big.Int, poolQuotaDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
+func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 	version := core.NewVersion(3)
-	_, accruedInterest, totalDebt := c.getDebt(ts, poolCumIndexNow, poolQuotaDetails, session, feeInterest)
+	_, accruedInterest, totalDebt := c.getDebt(ts, poolDetails, session, feeInterest)
 
-	underlying := session.GetUnderlying()
+	underlying := poolDetails.GetUnderlying()
 	// quotaedTokens := poolQuotaDetails.GetPoolQuotaDetails(underlying)
 	accountQuotas := session.GetQuotas()
 	//
@@ -80,12 +82,12 @@ func minBigInt(a, b *big.Int) *big.Int {
 	}
 }
 
-func (c Calculator) getDebt(ts uint64, poolCumIndexNow *big.Int, poolQuotaDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (*big.Int, *big.Int, *big.Int) {
+func (c Calculator) getDebt(ts uint64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (*big.Int, *big.Int, *big.Int) {
 	borrowedAmount := session.GetBorrowedAmount()
-	baseInterestSinceUpdate := GetbaseInterest(poolCumIndexNow, session)
+	baseInterestSinceUpdate := GetbaseInterest(poolDetails.GetCumIndexNow(), session)
 
 	cumQuotaInterest, quotaFees := session.GetQuotaCumInterestAndFees()
-	extraQuotaInterest := calcExtraQuotaInterest(ts, poolQuotaDetails, session)
+	extraQuotaInterest := calcExtraQuotaInterest(ts, poolDetails.GetPoolQuotaDetails(), session)
 
 	// total interest
 	totalNewInterest := new(big.Int).Add(baseInterestSinceUpdate, extraQuotaInterest)
@@ -107,9 +109,9 @@ func (c Calculator) getDebt(ts uint64, poolCumIndexNow *big.Int, poolQuotaDetail
 	return accruedFees, accruedInterest, totalDebt
 }
 
-func calcExtraQuotaInterest(ts uint64, poolQuotaDetails PoolForCalcI, session AccountForCalcI) *big.Int {
+func calcExtraQuotaInterest(ts uint64, poolQuotas map[string]*schemas_v3.QuotaDetails, session AccountForCalcI) *big.Int {
 	accountQuotas := session.GetQuotas()
-	poolQuotas := poolQuotaDetails.GetPoolQuotaDetails(session.GetUnderlying())
+	// poolQuotas := poolQuotaDetails.GetPoolQuotaDetails(session.GetPool())
 	totalQuotedInterest := big.NewInt(0)
 	for _, quota := range accountQuotas {
 		poolQuota := poolQuotas[quota.Token]

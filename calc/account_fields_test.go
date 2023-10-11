@@ -14,11 +14,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+// ///////////
+// ///////////
 type account struct {
 	CM              string
 	BorrowedAmount  *big.Int
 	CumulativeIndex *big.Int
-	UnderlyingToken common.Address
 	Balances        []dataCompressorv2.TokenBalance
 	Version         int16
 }
@@ -45,13 +46,12 @@ func (a account) GetQuotas() map[string]*schemas_v3.AccountQuotaInfo {
 func (a account) GetQuotaCumInterestAndFees() (*big.Int, *big.Int) {
 	return new(big.Int), new(big.Int)
 }
-func (a account) GetUnderlying() string {
-	return a.UnderlyingToken.Hex()
-}
 func (a account) GetVersion() core.VersionType {
 	return core.NewVersion(a.Version)
 }
 
+// ///////////
+// ///////////
 type store struct {
 	Prices        map[core.VersionType]map[string]*core.BigInt
 	LiqThresholds map[string]map[string]*big.Int `json:"LT"`
@@ -68,14 +68,32 @@ func (s store) GetLiqThreshold(_ uint64, cm, token string) *big.Int {
 	return s.LiqThresholds[cm][token]
 }
 
+// ///////////
+// ///////////
+type PoolDetails struct {
+	CumIndexOfPool  *core.BigInt
+	UnderlyingToken common.Address
+}
+
+func (details PoolDetails) GetPoolQuotaDetails() map[string]*schemas_v3.QuotaDetails {
+	return nil
+}
+func (details PoolDetails) GetCumIndexNow() *big.Int {
+	return details.CumIndexOfPool.Convert()
+}
+func (details PoolDetails) GetUnderlying() string {
+	return details.UnderlyingToken.Hex()
+}
+
 type CalcFieldsParams struct {
-	BlockNum       int64
-	CumIndexOfPool *core.BigInt
-	FeeInterest    uint16
+	BlockNum int64
+
+	FeeInterest uint16
 	//
 	////
 	store
-	Account account
+	PoolDetails PoolDetails
+	Account     account
 }
 
 // for v1
@@ -89,8 +107,7 @@ func TestCalcFields(t *testing.T) {
 	calHF, calDebt, calTotalValue, calThresholdValue, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
 		0,
-		input.CumIndexOfPool.Convert(),
-		nil,
+		input.PoolDetails,
 		input.Account,
 		input.FeeInterest,
 	)
@@ -120,8 +137,7 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 		0,
 		0,
 		//
-		input.CumIndexOfPool.Convert(),
-		nil,
+		input.PoolDetails,
 		//
 		input.Account,
 		input.FeeInterest,

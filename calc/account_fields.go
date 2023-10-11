@@ -21,7 +21,6 @@ type AccountForCalcI interface {
 	GetBorrowedAmount() *big.Int
 	GetCumulativeIndex() *big.Int
 	GetQuotas() map[string]*schemas_v3.AccountQuotaInfo
-	GetUnderlying() string
 	GetVersion() core.VersionType
 	GetQuotaCumInterestAndFees() (*big.Int, *big.Int)
 }
@@ -31,16 +30,16 @@ type Calculator struct {
 }
 
 func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
-	poolCumIndexNow *big.Int, poolQuotaDetails PoolForCalcI,
+	poolDetails PoolForCalcI,
 	account AccountForCalcI, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 	version := account.GetVersion()
 	if version.Eq(3) {
-		return c.CalcAccountFieldsv3(ts, blockNum, poolCumIndexNow, poolQuotaDetails, account, feeInterest)
+		return c.CalcAccountFieldsv3(ts, blockNum, poolDetails, account, feeInterest)
 	}
 
 	// logic for v1 and v2
-	underlyingToken := account.GetUnderlying()
+	underlyingToken := poolDetails.GetUnderlying()
 	//
 	calThresholdValueInUSD := new(big.Int)
 	calTotalValueInUSD := new(big.Int)
@@ -57,7 +56,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	}
 
 	calBorrowWithInterest = new(big.Int).Quo(
-		new(big.Int).Mul(poolCumIndexNow, account.GetBorrowedAmount()),
+		new(big.Int).Mul(poolDetails.GetCumIndexNow(), account.GetBorrowedAmount()),
 		account.GetCumulativeIndex())
 	//
 	calTotalValue = c.convertFromUSD(calTotalValueInUSD, underlyingToken, version, blockNum)
