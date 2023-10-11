@@ -168,3 +168,7 @@ func DiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
 	value := new(big.Float).Quo(new(big.Float).Sub(newFloat, oldFloat), ifZeroReturnOneBigInt(oldFloat))
 	return new(big.Float).Abs(value).Cmp(diff) > 0
 }
+
+func BytesToUInt16(data []byte) uint16 {
+	return uint16(new(big.Int).SetBytes(data).Int64())
+}

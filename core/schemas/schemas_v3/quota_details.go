@@ -55,17 +55,19 @@ func (QuotaDetails) TableName() string {
 }
 
 type AccountQuotaInfo struct {
+	// for id purpose
 	SessionId       string `gorm:"column:session_id;primaryKey"`
 	BlockNum        int64  `gorm:"column:block_num;primaryKey"`
 	Token           string `gorm:"column:token;primaryKey"`
 	PoolQuotaKeeper string `gorm:"column:pool_quota_keeper"`
 	//
-	Timestamp uint64 `gorm:"column:timestamp"`
-	//
+	// for calculating accrued interest
 	QuotaIndex *core.BigInt `gorm:"column:quota_index"`
 	Quota      *core.BigInt `gorm:"column:quota"`
-	Fees       *core.BigInt `gorm:"column:fees"`
-	Interest   *core.BigInt `gorm:"column:interest"`
+	// for db and reporting purpose
+	Timestamp uint64       `gorm:"column:timestamp"`
+	Fees      *core.BigInt `gorm:"column:fees"`
+	Interest  *core.BigInt `gorm:"column:interest"`
 }
 
 func (d AccountQuotaInfo) IsDisabled() bool {
@@ -85,12 +87,13 @@ func (old AccountQuotaInfo) Copy() *AccountQuotaInfo {
 		Token:           old.Token,
 		PoolQuotaKeeper: old.PoolQuotaKeeper,
 		//
-		Timestamp: old.Timestamp,
 		//
 		QuotaIndex: old.QuotaIndex,
 		Quota:      old.Quota,
-		Fees:       old.Fees,
-		Interest:   old.Interest,
+		//
+		Timestamp: old.Timestamp,
+		Fees:      old.Fees,
+		Interest:  old.Interest,
 	}
 }
 
