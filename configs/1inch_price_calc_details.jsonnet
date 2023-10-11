@@ -34,6 +34,12 @@
     'WBTC',
     'USDT',
     'UNI',
+    //
+    'MKR',
+    'BLUR',
+    'RPL',
+    'APE',
+    'LDO',
   ],
   yearnTokens: [
     {
