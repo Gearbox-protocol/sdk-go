@@ -36,22 +36,9 @@ func (t *Token) init() error {
 		return err
 	}
 	if symbol, err := contract.Symbol(&bind.CallOpts{}); err != nil {
-		if err2 := func() error {
-			symbolBytes, err := core.CallFuncWithExtraBytes(t.client, "95d89b41", tokenAddr, 0, nil)
-			if err != nil {
-				return err
-			}
-			t.Symbol = func() string {
-				for ind, ele := range symbolBytes {
-					if ele == 0 {
-						symbolBytes = symbolBytes[:ind]
-						break
-					}
-				}
-				return string(symbolBytes)
-			}()
-			return nil
-		}(); err2 != nil { // if we can't get bytes data return error
+		var err2 error
+		t.Symbol, err2 = SymbolFnReturnsBytes(t.client, tokenAddr)
+		if err2 != nil { // if we can't get bytes data return error
 			return err
 		}
 	} else {
@@ -133,4 +120,21 @@ type TokenPrice struct {
 
 func (TokenPrice) TableName() string {
 	return "prices"
+}
+
+// for MKR token
+func SymbolFnReturnsBytes(client core.ClientI, tokenAddr common.Address) (string, error) {
+	symbolBytes, err := core.CallFuncWithExtraBytes(client, "95d89b41", tokenAddr, 0, nil)
+	if err != nil {
+		return "", err
+	}
+	return func() string {
+		for ind, ele := range symbolBytes {
+			if ele == 0 {
+				symbolBytes = symbolBytes[:ind]
+				break
+			}
+		}
+		return string(symbolBytes)
+	}(), nil
 }

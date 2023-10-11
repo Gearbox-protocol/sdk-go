@@ -114,9 +114,16 @@ func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
 		result = itr.Next()
 		var sym string
 		if result.Success {
-			if values, _ := tokenABI.Unpack("symbol", result.ReturnData); len(values) > 0 {
-				sym = values[0].(string)
+			if values, err := tokenABI.Unpack("symbol", result.ReturnData); err == nil {
+				if len(values) > 0 {
+					sym = values[0].(string)
+				}
+			} else {
+				sym, _ = schemas.SymbolFnReturnsBytes(mdl.client, addr)
 			}
+		}
+		if sym == "" {
+			log.Fatal("can't get symbol for token", addr.Hex())
 		}
 		if ok {
 			mdl.tokens[addr] = &schemas.Token{
