@@ -31,13 +31,12 @@ type TestTokenBalance struct {
 }
 
 type PoolCallData struct {
-	Addr                  common.Address `json:"address"`
-	Underlying            common.Address `json:"underlyingToken"`
-	DieselToken           common.Address `json:"dieselToken"`
-	LinearCumulativeIndex *core.BigInt   `json:"linearCumulativeIndex"`
-	AvailableLiquidity    *core.BigInt   `json:"availableLiquidity"`
-	ExpectedLiquidity     *core.BigInt   `json:"expectedLiquidity"`
-	TotalBorrowed         *core.BigInt   `json:"totalBorrowed"`
+	Addr               common.Address `json:"address"`
+	Underlying         common.Address `json:"underlyingToken"`
+	DieselToken        common.Address `json:"dieselToken"`
+	AvailableLiquidity *core.BigInt   `json:"availableLiquidity"`
+	ExpectedLiquidity  *core.BigInt   `json:"expectedLiquidity"`
+	TotalBorrowed      *core.BigInt   `json:"totalBorrowed"`
 	// TotalDebtLimit          *core.BigInt
 	CreditManagerDebtParams []dcv3.CreditManagerDebtParams `json:"creditManagerDebtParams,omitempty"`
 	TotalAssets             *core.BigInt                   `json:"-"`

@@ -7,13 +7,12 @@ import (
 
 func getPoolDatav3(values dcv3.PoolData) PoolCallData {
 	return PoolCallData{
-		Addr:                  values.Addr,
-		Underlying:            values.Underlying,
-		DieselToken:           values.DieselToken,
-		LinearCumulativeIndex: (*core.BigInt)(values.LinearCumulativeIndex),
-		AvailableLiquidity:    (*core.BigInt)(values.AvailableLiquidity),
-		ExpectedLiquidity:     (*core.BigInt)(values.ExpectedLiquidity),
-		TotalBorrowed:         (*core.BigInt)(values.TotalBorrowed),
+		Addr:               values.Addr,
+		Underlying:         values.Underlying,
+		DieselToken:        values.DieselToken,
+		AvailableLiquidity: (*core.BigInt)(values.AvailableLiquidity),
+		ExpectedLiquidity:  (*core.BigInt)(values.ExpectedLiquidity),
+		TotalBorrowed:      (*core.BigInt)(values.TotalBorrowed),
 		// : values.//,
 		CreditManagerDebtParams: values.CreditManagerDebtParams,
 		TotalAssets:             (*core.BigInt)(values.TotalAssets),
@@ -74,13 +73,14 @@ func Convertv3ToBalance(balances []dcv3.TokenBalance) (dcv2Balances []core.Token
 		dcv2Balances = append(dcv2Balances, core.TokenBalanceCallData{
 			Token: balance.Token.Hex(),
 			DBTokenBalance: core.DBTokenBalance{
-				BI:          (*core.BigInt)(balance.Balance),
-				IsForbidden: balance.IsForbidden, // is set on credit manager
-				IsEnabled:   balance.IsEnabled,   // is used by credit account
-				IsQuoted:    balance.IsQuoted,
-				Quota:       (*core.BigInt)(balance.Quota),
-				QuotaRate:   balance.QuotaRate,
-				Ind:         ind,
+				BI:           (*core.BigInt)(balance.Balance),
+				IsForbidden:  balance.IsForbidden, // is set on credit manager
+				IsEnabled:    balance.IsEnabled,   // is used by credit account
+				IsQuoted:     balance.IsQuoted,
+				Quota:        (*core.BigInt)(balance.Quota),
+				QuotaRate:    balance.QuotaRate,
+				QuotaIndexLU: (*core.BigInt)(balance.QuotaCumulativeIndexLU),
+				Ind:          ind,
 			},
 		})
 	}
