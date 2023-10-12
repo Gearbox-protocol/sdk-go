@@ -9,6 +9,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addressProvider"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/contractsRegister"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfiguratorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
@@ -153,10 +154,11 @@ var v2Map = AbiMap{
 	"MultiCall": {ABI: multicall.MulticallABI},
 }
 var v3Map = AbiMap{
-	"CreditManagerv3":  {ABI: creditManagerv3.CreditManagerv3ABI},
-	"CreditFacadev3":   {ABI: creditFacadev3.CreditFacadev3ABI},
-	"Poolv3":           {ABI: poolv3.Poolv3ABI},
-	"DataCompressorv3": {ABI: dataCompressorv3.DataCompressorv3ABI},
+	"CreditManagerv3":      {ABI: creditManagerv3.CreditManagerv3ABI},
+	"CreditFacadev3":       {ABI: creditFacadev3.CreditFacadev3ABI},
+	"CreditConfiguratorv3": {ABI: creditConfiguratorv3.CreditConfiguratorv3ABI},
+	"Poolv3":               {ABI: poolv3.Poolv3ABI},
+	"DataCompressorv3":     {ABI: dataCompressorv3.DataCompressorv3ABI},
 }
 var adapterMap = AbiMap{
 	//
