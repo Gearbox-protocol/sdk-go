@@ -39,10 +39,6 @@ func (a account) GetBalances() core.DBBalanceFormat {
 	return core.ConvertToDBBalanceFormat(dc.Convertv2ToBalance(a.Balances))
 }
 
-func (a account) GetQuotas() map[string]*schemas_v3.AccountQuotaInfo {
-	return nil
-}
-
 func (a account) GetQuotaCumInterestAndFees() (*big.Int, *big.Int) {
 	return new(big.Int), new(big.Int)
 }

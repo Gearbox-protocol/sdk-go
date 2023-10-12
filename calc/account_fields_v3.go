@@ -35,15 +35,14 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 
 	underlying := poolDetails.GetUnderlying()
 	// quotaedTokens := poolQuotaDetails.GetPoolQuotaDetails(underlying)
-	accountQuotas := session.GetQuotas()
 	//
 	totalValueInUSD, tvwValueInUSD := big.NewInt(0), big.NewInt(0)
 	for token, balance := range session.GetBalances() {
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
 			var quotaInUSD *big.Int
-			if quota := accountQuotas[token]; quota != nil {
-				quotaInUSD = c.convertToUSD(quota.Quota.Convert(), token, version, blockNum)
+			if quota := balance.Quota; quota != nil {
+				quotaInUSD = c.convertToUSD(quota.Convert(), token, version, blockNum)
 			} else {
 				quotaInUSD = utils.GetExpInt(84)
 			}
@@ -110,15 +109,16 @@ func (c Calculator) getDebt(ts uint64, poolDetails PoolForCalcI, session Account
 }
 
 func calcExtraQuotaInterest(ts uint64, poolQuotas map[string]*schemas_v3.QuotaDetails, session AccountForCalcI) *big.Int {
-	accountQuotas := session.GetQuotas()
+	balances := session.GetBalances()
 	// poolQuotas := poolQuotaDetails.GetPoolQuotaDetails(session.GetPool())
 	totalQuotedInterest := big.NewInt(0)
-	for _, quota := range accountQuotas {
-		poolQuota := poolQuotas[quota.Token]
-		interest := quota.CalcAccruedQuotaInterest(ts, poolQuota)
-
+	for tokenAddr, balance := range balances {
+		if balance.Quota != nil {
+			poolQuota := poolQuotas[tokenAddr]
+			interest := schemas_v3.CalcAccruedQuotaInterest(ts, balance, poolQuota)
+			totalQuotedInterest = new(big.Int).Add(totalQuotedInterest, interest)
+		}
 		//
-		totalQuotedInterest = new(big.Int).Add(totalQuotedInterest, interest)
 	}
 
 	return totalQuotedInterest

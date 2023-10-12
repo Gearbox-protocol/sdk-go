@@ -54,58 +54,58 @@ func (QuotaDetails) TableName() string {
 	return "quota_details"
 }
 
-type AccountQuotaInfo struct {
-	// for id purpose
-	SessionId       string `gorm:"column:session_id;primaryKey"`
-	BlockNum        int64  `gorm:"column:block_num;primaryKey"`
-	Token           string `gorm:"column:token;primaryKey"`
-	PoolQuotaKeeper string `gorm:"column:pool_quota_keeper"`
-	//
-	// for calculating accrued interest
-	QuotaIndex *core.BigInt `gorm:"column:quota_index"`
-	Quota      *core.BigInt `gorm:"column:quota"`
-	// for db and reporting purpose
-	Timestamp uint64       `gorm:"column:timestamp"`
-	Fees      *core.BigInt `gorm:"column:fees"`
-	Interest  *core.BigInt `gorm:"column:interest"`
-}
-
-func (d AccountQuotaInfo) IsDisabled() bool {
-	return d.Quota == nil || d.Quota.Convert().Cmp(big.NewInt(2)) < 0
-}
-
-// uint128(uint256(quoted) * (cumulativeIndexNow - cumulativeIndexLU) / RAY);
-func (d AccountQuotaInfo) CalcAccruedQuotaInterest(ts uint64, poolQuota *QuotaDetails) *big.Int {
-	numerator := new(big.Int).Sub(poolQuota.GetCumulativeIndexAt(ts), d.QuotaIndex.Convert())
-	numerator = new(big.Int).Mul(numerator, d.Quota.Convert())
+func CalcAccruedQuotaInterest(ts uint64, token core.DBTokenBalance, poolQuota *QuotaDetails) *big.Int {
+	numerator := new(big.Int).Sub(poolQuota.GetCumulativeIndexAt(ts), token.QuotaIndexLU.Convert())
+	numerator = new(big.Int).Mul(numerator, token.Quota.Convert())
 	return new(big.Int).Quo(numerator, utils.GetExpInt(27))
 }
-func (old AccountQuotaInfo) Copy() *AccountQuotaInfo {
-	return &AccountQuotaInfo{
-		SessionId:       old.SessionId,
-		BlockNum:        old.BlockNum,
-		Token:           old.Token,
-		PoolQuotaKeeper: old.PoolQuotaKeeper,
-		//
-		//
-		QuotaIndex: old.QuotaIndex,
-		Quota:      old.Quota,
-		//
-		Timestamp: old.Timestamp,
-		Fees:      old.Fees,
-		Interest:  old.Interest,
-	}
-}
 
-func NotNilAccountQuotaInfo() *AccountQuotaInfo {
-	return &AccountQuotaInfo{
-		QuotaIndex: core.NewBigInt(nil),
-		Quota:      core.NewBigInt(nil),
-		Fees:       core.NewBigInt(nil),
-		Interest:   core.NewBigInt(nil),
-	}
-}
+// type AccountQuotaInfo struct {
+// 	// for id purpose
+// 	SessionId       string `gorm:"column:session_id;primaryKey"`
+// 	BlockNum        int64  `gorm:"column:block_num;primaryKey"`
+// 	Token           string `gorm:"column:token;primaryKey"`
+// 	PoolQuotaKeeper string `gorm:"column:pool_quota_keeper"`
+// 	//
+// 	// for calculating accrued interest
+// 	QuotaIndex *core.BigInt `gorm:"column:quota_index"`
+// 	Quota      *core.BigInt `gorm:"column:quota"`
+// 	// for db and reporting purpose
+// 	Timestamp uint64       `gorm:"column:timestamp"`
+// 	Fees      *core.BigInt `gorm:"column:fees"`
+// 	Interest  *core.BigInt `gorm:"column:interest"`
+// }
 
-func (AccountQuotaInfo) TableName() string {
-	return "account_quota_info"
-}
+// func (d AccountQuotaInfo) IsDisabled() bool {
+// 	return d.Quota == nil || d.Quota.Convert().Cmp(big.NewInt(2)) < 0
+// }
+
+// func (old AccountQuotaInfo) Copy() *AccountQuotaInfo {
+// 	return &AccountQuotaInfo{
+// 		SessionId:       old.SessionId,
+// 		BlockNum:        old.BlockNum,
+// 		Token:           old.Token,
+// 		PoolQuotaKeeper: old.PoolQuotaKeeper,
+// 		//
+// 		//
+// 		QuotaIndex: old.QuotaIndex,
+// 		Quota:      old.Quota,
+// 		//
+// 		Timestamp: old.Timestamp,
+// 		Fees:      old.Fees,
+// 		Interest:  old.Interest,
+// 	}
+// }
+
+// func NotNilAccountQuotaInfo() *AccountQuotaInfo {
+// 	return &AccountQuotaInfo{
+// 		QuotaIndex: core.NewBigInt(nil),
+// 		Quota:      core.NewBigInt(nil),
+// 		Fees:       core.NewBigInt(nil),
+// 		Interest:   core.NewBigInt(nil),
+// 	}
+// }
+
+// func (AccountQuotaInfo) TableName() string {
+// 	return "account_quota_info"
+// }

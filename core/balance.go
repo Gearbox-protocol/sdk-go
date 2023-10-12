@@ -50,14 +50,18 @@ type DBTokenBalance struct {
 	Ind       int     `json:"ind"`
 	IsQuoted  bool    `json:"isQuoted,omitempty"`
 	Quota     *BigInt `json:"quota,omitempty"`
-	QuotaRate uint16  `json:"quotaRate,omitempty"`
-	F         float64 `json:"F"`
+	// TODO add last updated index
+	QuotaIndexLU *BigInt `json:"quotaIndexLU,omitempty"`
+	QuotaRate    uint16  `json:"quotaRate,omitempty"`
+	F            float64 `json:"F"`
 	//
 } // @name DBTokenBalance
 
 func (b DBTokenBalance) HasBalanceMoreThanOne() bool {
 	return b.BI != nil && b.BI.Convert().Cmp(big.NewInt(1)) > 0
 }
+
+// uint128(uint256(quoted) * (cumulativeIndexNow - cumulativeIndexLU) / RAY);
 
 type DBBalanceFormat map[string]DBTokenBalance // @name DBBalanceFormat
 

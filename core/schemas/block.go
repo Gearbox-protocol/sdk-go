@@ -25,9 +25,9 @@ type (
 		DieselTransfers         []*DieselTransfer         `gorm:"foreignKey:block_num" json:"dieselTransfers"`
 		RebaseDetailsForDB      []*RebaseDetailsForDB     `gorm:"foreignKey:block_num" json:"-"`
 		// v3
-		LTRamp           []*schemas_v3.TokenLTRamp      `gorm:"foreignKey:block_num" json:"-"`
-		QuotaDetails     []*schemas_v3.QuotaDetails     `gorm:"foreignKey:block_num" json:"-"`
-		AccountQuotaInfo []*schemas_v3.AccountQuotaInfo `gorm:"foreignKey:block_num" json:"-"`
+		LTRamp       []*schemas_v3.TokenLTRamp  `gorm:"foreignKey:block_num" json:"-"`
+		QuotaDetails []*schemas_v3.QuotaDetails `gorm:"foreignKey:block_num" json:"-"`
+		// AccountQuotaInfo []*schemas_v3.AccountQuotaInfo `gorm:"foreignKey:block_num" json:"-"`
 	}
 )
 
@@ -43,9 +43,10 @@ func (b *Block) AddTokenLTRamp(details *schemas_v3.TokenLTRamp) {
 func (b *Block) AddQuotaDetails(details *schemas_v3.QuotaDetails) {
 	b.QuotaDetails = append(b.QuotaDetails, details)
 }
-func (b *Block) AddAccountQuotaInfo(details *schemas_v3.AccountQuotaInfo) {
-	b.AccountQuotaInfo = append(b.AccountQuotaInfo, details)
-}
+
+// func (b *Block) AddAccountQuotaInfo(details *schemas_v3.AccountQuotaInfo) {
+// 	b.AccountQuotaInfo = append(b.AccountQuotaInfo, details)
+// }
 
 func (b *Block) GetTokenLTRamp() []*schemas_v3.TokenLTRamp {
 	return b.LTRamp

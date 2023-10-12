@@ -5,7 +5,6 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
-	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -20,7 +19,6 @@ type AccountForCalcI interface {
 	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
 	GetCumulativeIndex() *big.Int
-	GetQuotas() map[string]*schemas_v3.AccountQuotaInfo
 	GetVersion() core.VersionType
 	GetQuotaCumInterestAndFees() (*big.Int, *big.Int)
 }
