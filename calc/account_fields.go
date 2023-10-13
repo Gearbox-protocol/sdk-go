@@ -32,7 +32,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	account AccountForCalcI, feeInterest uint16,
 ) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 	version := account.GetVersion()
-	if version.Eq(3) {
+	if version.Eq(300) {
 		return c.CalcAccountFieldsv3(ts, blockNum, poolDetails, account, feeInterest)
 	}
 

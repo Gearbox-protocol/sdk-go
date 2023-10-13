@@ -70,6 +70,9 @@ func (v VersionType) IsPriceInUSD() bool {
 func (v VersionType) MoreThan(cmpAgainst VersionType) bool {
 	return v.v > cmpAgainst.v
 }
+func (v VersionType) LessThan(cmpAgainst VersionType) bool {
+	return v.v < cmpAgainst.v
+}
 func (v VersionType) MoreThanEq(cmpAgainst VersionType) bool {
 	return v.v >= cmpAgainst.v
 }

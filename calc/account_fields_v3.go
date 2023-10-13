@@ -30,8 +30,8 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
 func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
-	version := core.NewVersion(3)
-	_, accruedInterest, totalDebt := c.getDebt(ts, poolDetails, session, feeInterest)
+	version := core.NewVersion(300)
+	accruedFees, accruedInterest, totalDebt := c.getDebt(ts, poolDetails, session, feeInterest)
 
 	underlying := poolDetails.GetUnderlying()
 	// quotaedTokens := poolQuotaDetails.GetPoolQuotaDetails(underlying)
@@ -42,13 +42,12 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 			//
 			var quotaInUSD *big.Int
 			if quota := balance.Quota; quota != nil {
-				quotaInUSD = c.convertToUSD(quota.Convert(), token, version, blockNum)
+				quotaInUSD = c.convertToUSD(quota.Convert(), underlying, version, blockNum)
 			} else {
 				quotaInUSD = utils.GetExpInt(84)
 			}
 			//
 			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
-
 			tokenTwvValueInUSD := new(big.Int).Quo(
 				new(big.Int).Mul(
 					minBigInt(tokenValueInUSD, quotaInUSD),              // quotaed value
@@ -67,7 +66,9 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, version, blockNum)
 	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, version, blockNum)
 	// calBorrowWithInterestAndFees := totalDebt
-	calBorrowWithInterest = new(big.Int).Sub(session.GetBorrowedAmount(), accruedInterest)
+	calBorrowWithInterest = new(big.Int).Mul(session.GetBorrowedAmount(), accruedInterest)
+	calBorrowWithInterestAndFees = new(big.Int).Mul(calBorrowWithInterest, accruedFees)
+	//
 	calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), totalDebt)
 
 	return
@@ -113,7 +114,7 @@ func calcExtraQuotaInterest(ts uint64, poolQuotas map[string]*schemas_v3.QuotaDe
 	// poolQuotas := poolQuotaDetails.GetPoolQuotaDetails(session.GetPool())
 	totalQuotedInterest := big.NewInt(0)
 	for tokenAddr, balance := range balances {
-		if balance.Quota != nil {
+		if balance.Quota != nil && balance.Quota.Convert().Cmp(new(big.Int)) > 0 {
 			poolQuota := poolQuotas[tokenAddr]
 			interest := schemas_v3.CalcAccruedQuotaInterest(ts, balance, poolQuota)
 			totalQuotedInterest = new(big.Int).Add(totalQuotedInterest, interest)

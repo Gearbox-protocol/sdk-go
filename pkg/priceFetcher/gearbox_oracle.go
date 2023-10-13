@@ -32,6 +32,7 @@ type GearboxOracle struct {
 	TokenToFeed map[string]common.Address
 	Node        *pkg.Node
 	version     core.VersionType
+	topics      []common.Hash
 	//
 	tokens []string
 }
@@ -44,6 +45,7 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 			Client: client,
 		},
 		version: version,
+		topics:  []common.Hash{core.Topic("NewPriceFeed(address,address)")},
 	}
 	return po
 }
@@ -60,7 +62,7 @@ func (pOracle *GearboxOracle) GetVersion() core.VersionType {
 func (pOracle *GearboxOracle) GetPriceTokenTill(blockNum int64) {
 	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
 		[]common.Address{pOracle.Address},
-		[][]common.Hash{{core.Topic("NewPriceFeed(address,address)")}})
+		[][]common.Hash{pOracle.topics})
 	log.CheckFatal(err)
 	for _, txLog := range txLogs {
 		pOracle.OnLog(txLog)
@@ -69,7 +71,7 @@ func (pOracle *GearboxOracle) GetPriceTokenTill(blockNum int64) {
 
 func (pOracle *GearboxOracle) OnLog(txLog types.Log) bool {
 	switch txLog.Topics[0] {
-	case core.Topic("NewPriceFeed(address,address)"):
+	case pOracle.topics[0]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
 		pOracle.TokenToFeed[token] = feed
