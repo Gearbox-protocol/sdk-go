@@ -74,6 +74,9 @@ func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Addres
 	utils.SetJson([]byte(data), calc)
 	//
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
+	// delete ETH as 0xee address can't be used for getting symbol in token_store.go
+	delete(calc.symToAddr.Tokens, "ETH")
+	//
 	calc.inchOracle = inchOracle
 	calc.client = client
 	calc.setCrvCallLen()

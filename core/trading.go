@@ -10,7 +10,7 @@ var TRADING_SYMBOLS = []string{
 	"APE",
 	"CVX",
 	"FXS",
-	"BLUR",
+	// "BLUR",
 	"WETH",
 	"WBTC",
 }
