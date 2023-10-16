@@ -57,7 +57,7 @@ func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 		QuotaFeeCalc: QuotaFeeCalc{
 			AccruedInterest: (*core.BigInt)(values.AccruedInterest),
 			AccruedFees:     (*core.BigInt)(values.AccruedFees),
-			Version:         core.NewVersion(3),
+			Version:         core.NewVersion(int16(values.CfVersion.Int64())),
 		},
 		//
 		TotalValue:     (*core.BigInt)(values.TotalValue),
