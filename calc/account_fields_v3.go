@@ -41,10 +41,14 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
 			var quotaInUSD *big.Int
-			if quota := balance.Quota; quota != nil {
+			if balance.IsQuoted {
+				quota := new(core.BigInt)
+				if balance.Quota != nil {
+					quota = balance.Quota
+				}
 				quotaInUSD = c.convertToUSD(quota.Convert(), underlying, version, blockNum)
 			} else {
-				quotaInUSD = utils.GetExpInt(84)
+				quotaInUSD = utils.GetExpInt(90)
 			}
 			//
 			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
@@ -70,7 +74,6 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 	calBorrowWithInterestAndFees = new(big.Int).Mul(calBorrowWithInterest, accruedFees)
 	//
 	calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), totalDebt)
-
 	return
 }
 
