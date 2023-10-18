@@ -44,6 +44,8 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "MAINNET"
 	case 1337:
 		name = "TEST"
+	case 7878:
+		name = "ANVIL"
 	}
 	return
 }
@@ -52,11 +54,15 @@ func send(important bool, message string) {
 	if _amqpChannel == nil {
 		return
 	}
+	routingKey := GetNetworkName(_logConfig.ChainId)
+	if _logConfig.ChainId == 7878 {
+		routingKey = "GOERLI"
+	}
 	err := _amqpChannel.Publish(
-		_logConfig.Exchange,                // exchange
-		GetNetworkName(_logConfig.ChainId), // routing key
-		false,                              // mandatory
-		false,                              // immediate
+		_logConfig.Exchange, // exchange
+		routingKey,          // routing key
+		false,               // mandatory
+		false,               // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(message),
