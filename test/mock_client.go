@@ -79,17 +79,18 @@ func (t *TestClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery)
 	for i := query.FromBlock.Int64(); i <= toBlock; i++ {
 		for _, address := range query.Addresses {
 			if t.events[i] != nil {
-				if len(query.Topics) > 0 { // if topic is present  for transfer
-					if query.Topics[0][0] == topic("Transfer(address,address,uint256)") {
-						for _, txLog := range t.events[i][address.Hex()] {
-							if ContainsHash(query.Topics[2], txLog.Topics[2]) {
-								txLogs = append(txLogs, txLog)
-							}
-						}
-					} else { // for other tokens
-						for _, txLog := range t.events[i][address.Hex()] {
-							if ContainsHash(query.Topics[0], txLog.Topics[0]) {
-								txLogs = append(txLogs, txLog)
+				if len(query.Topics) > 0 { // if topic is present for transfer
+					for _, txLog := range t.events[i][address.Hex()] {
+						for _, topic0 := range query.Topics[0] {
+							if txLog.Topics[0] == topic("Transfer(address,address,uint256)") && txLog.Topics[0] == topic0 { //
+								if len(query.Topics) == 1 || // if only transfer topic is present
+									(len(query.Topics) == 3 && ContainsHash(query.Topics[2], txLog.Topics[2])) { // if to address for transfer is present
+									txLogs = append(txLogs, txLog)
+								}
+							} else { // for other topics
+								if topic0 == txLog.Topics[0] {
+									txLogs = append(txLogs, txLog)
+								}
 							}
 						}
 					}
