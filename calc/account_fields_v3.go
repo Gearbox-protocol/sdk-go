@@ -31,7 +31,7 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 
 func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
 	version := core.NewVersion(300)
-	accruedFees, accruedInterest, totalDebt := c.getDebt(ts, poolDetails, session, feeInterest)
+	accruedFees, accruedInterest, borrowedAmount := c.getDebt(ts, poolDetails, session, feeInterest)
 
 	underlying := poolDetails.GetUnderlying()
 	// quotaedTokens := poolQuotaDetails.GetPoolQuotaDetails(underlying)
@@ -70,10 +70,10 @@ func (c Calculator) CalcAccountFieldsv3(ts uint64, blockNum int64, poolDetails P
 	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, version, blockNum)
 	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, version, blockNum)
 	// calBorrowWithInterestAndFees := totalDebt
-	calBorrowWithInterest = new(big.Int).Mul(session.GetBorrowedAmount(), accruedInterest)
-	calBorrowWithInterestAndFees = new(big.Int).Mul(calBorrowWithInterest, accruedFees)
-	//
-	calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), totalDebt)
+	calBorrowWithInterest = new(big.Int).Add(borrowedAmount, accruedInterest)
+	calBorrowWithInterestAndFees = new(big.Int).Add(calBorrowWithInterest, accruedFees)
+
+	calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), calBorrowWithInterestAndFees)
 	return
 }
 
@@ -94,7 +94,6 @@ func (c Calculator) getDebt(ts uint64, poolDetails PoolForCalcI, session Account
 
 	// total interest
 	totalNewInterest := new(big.Int).Add(baseInterestSinceUpdate, extraQuotaInterest)
-
 	//
 	accruedFees := func() *big.Int {
 		feeForInterest := new(big.Int).Quo(
@@ -106,10 +105,7 @@ func (c Calculator) getDebt(ts uint64, poolDetails PoolForCalcI, session Account
 
 	accruedInterest := new(big.Int).Add(cumQuotaInterest, totalNewInterest)
 
-	// totalDebt DebtWithInterstAndFees
-	totalDebt := new(big.Int).Add(new(big.Int).Add(borrowedAmount, accruedInterest), accruedFees)
-
-	return accruedFees, accruedInterest, totalDebt
+	return accruedFees, accruedInterest, borrowedAmount
 }
 
 func calcExtraQuotaInterest(ts uint64, poolQuotas map[string]*schemas_v3.QuotaDetails, session AccountForCalcI) *big.Int {
