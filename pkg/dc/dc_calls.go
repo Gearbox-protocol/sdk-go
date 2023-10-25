@@ -81,12 +81,12 @@ type CMCallData struct {
 }
 
 type CreditAccountCallData struct {
-	Addr                       common.Address `json:"address"`
-	Borrower                   common.Address `json:"borrower"`
-	CreditManager              common.Address `json:"creditManager"`
-	Underlying                 common.Address `json:"underlyingToken"`
-	BorrowedAmount             *core.BigInt   `json:"borrowedAmount"` // DC_CHANGED
-	BorrowedAmountPlusInterest *core.BigInt   `json:"borrowedAmountPlusInterest"`
+	Addr           common.Address `json:"address"`
+	Borrower       common.Address `json:"borrower"`
+	CreditManager  common.Address `json:"creditManager"`
+	Underlying     common.Address `json:"underlyingToken"`
+	BorrowedAmount *core.BigInt   `json:"borrowedAmount"` // DC_CHANGED
+	Debt           *core.BigInt   `json:"debt"`
 	// TODO:"totalBorrowedWithInterst" is removed
 	CumulativeIndexAtOpen   *core.BigInt `json:"cumulativeIndexAtOpen"`
 	CumulativeQuotaInterest *core.BigInt `json:"cumulativeQuotaInterest,omitempty"`
@@ -111,7 +111,7 @@ type QuotaFeeCalc struct {
 }
 
 func (data QuotaFeeCalc) GetQuotaFees(feeInterest uint16) *big.Int {
-	if !data.Version.Eq(3) {
+	if !data.Version.Eq(300) {
 		return new(big.Int)
 	}
 	interestFees := new(big.Int).Quo(

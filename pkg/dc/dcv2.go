@@ -61,20 +61,26 @@ func getCMDatav2(values dcv2.CreditManagerData) CMCallData {
 }
 func getAccountDatav2(values dcv2.CreditAccountData) CreditAccountCallData {
 	return CreditAccountCallData{
-		Addr:                       values.Addr,
-		Borrower:                   values.Borrower,
-		CreditManager:              values.CreditManager,
-		Underlying:                 values.Underlying,
-		BorrowedAmount:             (*core.BigInt)(values.BorrowedAmount),
-		BorrowedAmountPlusInterest: (*core.BigInt)(values.BorrowedAmountPlusInterest),
+		Addr:           values.Addr,
+		Borrower:       values.Borrower,
+		CreditManager:  values.CreditManager,
+		Underlying:     values.Underlying,
+		BorrowedAmount: (*core.BigInt)(values.BorrowedAmount),
+		Debt:           (*core.BigInt)(values.BorrowedAmountPlusInterestAndFees),
 		// (*core.BigInt)(values.BorrowedAmountPlusInterest),
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexAtOpen),
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
 		//
 		QuotaFeeCalc: QuotaFeeCalc{
-			Version:         core.NewVersion(int16(values.Version)),
-			AccruedInterest: new(core.BigInt),
-			AccruedFees:     new(core.BigInt),
+			Version: core.NewVersion(int16(values.Version)),
+			AccruedInterest: (*core.BigInt)(new(big.Int).Sub(
+				values.BorrowedAmountPlusInterest,
+				values.BorrowedAmount,
+			)),
+			AccruedFees: (*core.BigInt)(new(big.Int).Sub(
+				values.BorrowedAmountPlusInterestAndFees,
+				values.BorrowedAmountPlusInterest,
+			)),
 		},
 		//
 		TotalValue:     (*core.BigInt)(values.TotalValue),

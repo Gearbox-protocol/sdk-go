@@ -14,6 +14,33 @@ type TokenDetailsForCalcI interface {
 	GetLiqThreshold(ts uint64, cm, token string) *big.Int
 }
 
+type DebtDetails struct {
+	total          *big.Int
+	interest       *big.Int
+	borrowedAmount *big.Int
+}
+
+func NewDebtDetails(total, interest, borrowedAmount *big.Int) *DebtDetails {
+	return &DebtDetails{
+		total:          total,
+		interest:       interest,
+		borrowedAmount: borrowedAmount,
+	}
+}
+
+func (d DebtDetails) Total() *big.Int {
+	return d.total
+}
+func (d DebtDetails) Interest() *big.Int {
+	return d.interest
+}
+func (d DebtDetails) BorrowedAmount() *big.Int {
+	return d.borrowedAmount
+}
+func (d DebtDetails) BorrowedAmountWithInterest() *big.Int {
+	return new(big.Int).Add(d.borrowedAmount, d.interest)
+}
+
 type AccountForCalcI interface {
 	GetCM() string
 	GetBalances() core.DBBalanceFormat
@@ -30,7 +57,7 @@ type Calculator struct {
 func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	poolDetails PoolForCalcI,
 	account AccountForCalcI, feeInterest uint16,
-) (calHF, calBorrowWithInterestAndFees, calTotalValue, calThresholdValue, calBorrowWithInterest *big.Int) {
+) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	version := account.GetVersion()
 	if version.Eq(300) {
 		return c.CalcAccountFieldsv3(ts, blockNum, poolDetails, account, feeInterest)
@@ -53,9 +80,14 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 		}
 	}
 
-	calBorrowWithInterest = new(big.Int).Quo(
+	calBorrowWithInterest := new(big.Int).Quo(
 		new(big.Int).Mul(poolDetails.GetCumIndexNow(), account.GetBorrowedAmount()),
 		account.GetCumulativeIndex())
+	debtDetails = &DebtDetails{
+		borrowedAmount: account.GetBorrowedAmount(),
+		total:          calBorrowWithInterest,
+		interest:       new(big.Int).Sub(calBorrowWithInterest, account.GetBorrowedAmount()),
+	}
 	//
 	calTotalValue = c.convertFromUSD(calTotalValueInUSD, underlyingToken, version, blockNum)
 	calThresholdValue = utils.GetInt64(
@@ -69,18 +101,15 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	if version.Eq(1) {
 		calHF = new(big.Int).Quo(
 			utils.GetInt64(calThresholdValue, -4),
-			calBorrowWithInterest,
+			debtDetails.Total(),
 		)
-		// set calBorrowWithInterestAndFees
-		calBorrowWithInterestAndFees = calBorrowWithInterest
 	} else if version.Eq(2) {
 		//https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditFacade.sol#L1206
-		interest := new(big.Int).Sub(calBorrowWithInterest, account.GetBorrowedAmount())
-		fees := utils.PercentMul(interest, big.NewInt(int64(feeInterest)))
-		calBorrowWithInterestAndFees = new(big.Int).Add(calBorrowWithInterest, fees)
+		fees := utils.PercentMul(debtDetails.Interest(), big.NewInt(int64(feeInterest)))
+		debtDetails.total = new(big.Int).Add(debtDetails.total, fees)
 		calHF = new(big.Int).Quo(
 			utils.GetInt64(calThresholdValue, -4),
-			calBorrowWithInterestAndFees,
+			debtDetails.Total(),
 		)
 	}
 	return

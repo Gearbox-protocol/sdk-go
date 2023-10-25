@@ -172,3 +172,7 @@ func DiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
 func BytesToUInt16(data []byte) uint16 {
 	return uint16(new(big.Int).SetBytes(data).Int64())
 }
+
+func BigIntAdd3(a, b, c *big.Int) *big.Int {
+	return new(big.Int).Add(a, new(big.Int).Add(b, c))
+}

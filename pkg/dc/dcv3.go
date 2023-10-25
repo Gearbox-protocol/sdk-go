@@ -3,6 +3,7 @@ package dc
 import (
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 func getPoolDatav3(values dcv3.PoolData) PoolCallData {
@@ -44,12 +45,12 @@ func getCMDatav3(values dcv3.CreditManagerData) CMCallData {
 }
 func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 	return CreditAccountCallData{
-		Addr:                       values.Addr,
-		Borrower:                   values.Borrower,
-		CreditManager:              values.CreditManager,
-		Underlying:                 values.Underlying,
-		BorrowedAmount:             (*core.BigInt)(values.Debt),
-		BorrowedAmountPlusInterest: nil, // DC_CHANGED
+		Addr:           values.Addr,
+		Borrower:       values.Borrower,
+		CreditManager:  values.CreditManager,
+		Underlying:     values.Underlying,
+		BorrowedAmount: (*core.BigInt)(values.Debt),
+		Debt:           (*core.BigInt)(utils.BigIntAdd3(values.Debt, values.AccruedFees, values.AccruedInterest)), // DC_CHANGED
 
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexLastUpdate),
 		CumulativeQuotaInterest: (*core.BigInt)(values.CumulativeQuotaInterest),
