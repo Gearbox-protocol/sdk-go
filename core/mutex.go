@@ -29,6 +29,9 @@ func (ds *MutexDS[T, K]) Set(key T, val K) {
 func (ds *MutexDS[T, K]) GetInner() map[T]K {
 	return ds.m
 }
+func (ds *MutexDS[T, K]) SetInner(in map[T]K) {
+	ds.m = in
+}
 func (ds *MutexDS[T, K]) Clear() {
 	ds.mu.Lock()
 	defer ds.mu.Unlock()
