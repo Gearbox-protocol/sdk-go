@@ -92,6 +92,10 @@ type CalcFieldsParams struct {
 	Account     account
 }
 
+func (account) GetAddr() string {
+	return ""
+}
+
 // for v1
 func TestCalcFields(t *testing.T) {
 	log.SetTestLogging(t)

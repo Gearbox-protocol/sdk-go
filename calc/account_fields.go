@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -18,6 +19,10 @@ type DebtDetails struct {
 	total          *big.Int
 	interest       *big.Int
 	borrowedAmount *big.Int
+}
+
+func (d DebtDetails) String() string {
+	return fmt.Sprintf("total:%s, interest:%s, borrowedAmount:%s", d.total, d.interest, d.borrowedAmount)
 }
 
 func NewDebtDetails(total, interest, borrowedAmount *big.Int) *DebtDetails {
@@ -42,6 +47,7 @@ func (d DebtDetails) BorrowedAmountWithInterest() *big.Int {
 }
 
 type AccountForCalcI interface {
+	GetAddr() string
 	GetCM() string
 	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
@@ -60,7 +66,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 ) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	version := account.GetVersion()
 	if version.Eq(300) {
-		return c.CalcAccountFieldsv3(ts, blockNum, poolDetails, account, feeInterest)
+		return c.CalcAccountFieldsv3(version, ts, blockNum, poolDetails, account, feeInterest)
 	}
 
 	// logic for v1 and v2
