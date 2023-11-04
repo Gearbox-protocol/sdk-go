@@ -13,6 +13,8 @@ var TRADING_SYMBOLS = []string{
 	// "BLUR",
 	"WETH",
 	"WBTC",
+	//
+	"stETH",
 }
 
 const OTHER_TRADING_BASE_SYMBOL = "DAI"
