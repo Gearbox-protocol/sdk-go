@@ -16,7 +16,7 @@ type QuotaDetails struct {
 	Pool          string       `gorm:"column:pool"`
 	CumQuotaIndex *core.BigInt `gorm:"column:cum_quota_index"`
 	//
-	Limit       *core.BigInt `gorm:"column:limit"`
+	Limit       *core.BigInt `gorm:"column:max_limit"`
 	IncreaseFee uint16       `gorm:"column:increase_fee"`
 	Rate        uint16       `gorm:"column:rate"`
 
