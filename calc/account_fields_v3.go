@@ -34,7 +34,7 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 	defer func() {
 		err := recover()
 		if err != nil {
-			log.Fatal("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}
 	}()
 	debtDetails = c.getDebtDetails(version, ts, blockNum, poolDetails, session, feeInterest)
@@ -94,7 +94,7 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 		if err != nil {
 			log.Info(session.GetBorrowedAmount(), session.GetAddr(), session.GetCumulativeIndex(), poolDetails.GetCumIndexNow())
 			log.Info(poolDetails.GetPoolQuotaDetails(), utils.ToJson(session.GetBalances()))
-			log.Fatal("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}
 	}()
 	borrowedAmount := session.GetBorrowedAmount()
