@@ -13,7 +13,7 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 		Node: &pkg.Node{
 			Client: client,
 		},
-		topics:  []common.Hash{core.Topic("SetPriceFeed(address,address,uint32,bool)")},
+		topics:  []common.Hash{core.Topic("SetPriceFeed(address,address,uint32,bool,bool)")},
 		version: version,
 	}
 	return po
