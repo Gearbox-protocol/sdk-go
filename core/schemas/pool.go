@@ -20,8 +20,9 @@ func (PoolState) TableName() string {
 }
 
 type UTokenAndPool struct {
-	Pool   string
-	UToken string
+	Pool    string
+	UToken  string
+	Version core.VersionType
 }
 type PoolStat struct {
 	ID                  int64        `json:"-"`
