@@ -52,8 +52,8 @@ type anvilTransaction struct {
 	From            string `json:"from"`
 	To              string `json:"to"`
 	GasPrice        string `json:"gasPrice,omitempty"`
-	MaxPriority     string `json:"maxPriorityFeePerGas"`
-	MaxFeePerGas    string `json:"maxFeePerGas"`
+	MaxPriority     string `json:"maxPriorityFeePerGas,omitempty"`
+	MaxFeePerGas    string `json:"maxFeePerGas,omitempty"`
 	Gas             string `json:"gas"`
 	Value           string `json:"value,omitempty"`
 	Data            string `json:"data"`
@@ -80,7 +80,7 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 		return
 	}()
 
-	if tx.Type() == 1 {
+	if tx.Type() <= 1 { // 0,1
 		anvilTx = anvilTransaction{
 			From:            from.Hex(),
 			To:              tx.To().Hex(),
@@ -107,6 +107,7 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	body := utils.GetJsonRPCRequestBody("eth_sendTransaction", anvilTx)
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
+		log.Debug(utils.ToJson(body))
 		log.Fatal("from", from, "err:", err)
 	}
 	return common.HexToHash(result.(string))
