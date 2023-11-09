@@ -28,7 +28,7 @@ func (d QuotaDetails) GetCumulativeIndexAt(ts uint64) *big.Int {
 	rateFactor := new(big.Int).Mul(big.NewInt(int64(ts-d.Timestamp)), big.NewInt(int64(d.Rate)))
 
 	extraInterestIndex := new(big.Int).Quo(
-		new(big.Int).Mul(rateFactor, utils.GetExpInt(27-4)),
+		new(big.Int).Mul(rateFactor, utils.GetExpInt(core.RAY_DECIMALS-4)),
 		big.NewInt(core.SECONDS_PER_YEAR),
 	)
 	return new(big.Int).Add(extraInterestIndex, d.CumQuotaIndex.Convert())
@@ -57,7 +57,7 @@ func (QuotaDetails) TableName() string {
 func CalcAccruedQuotaInterest(ts uint64, token core.DBTokenBalance, poolQuota *QuotaDetails) *big.Int {
 	numerator := new(big.Int).Sub(poolQuota.GetCumulativeIndexAt(ts), token.QuotaIndexLU.Convert())
 	numerator = new(big.Int).Mul(numerator, token.Quota.Convert())
-	return new(big.Int).Quo(numerator, utils.GetExpInt(27))
+	return new(big.Int).Quo(numerator, core.RAY)
 }
 
 // type AccountQuotaInfo struct {

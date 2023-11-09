@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -57,3 +58,8 @@ func (net NetworkUI) ExplorerHashUrl(txHash string) string {
 }
 
 var MAX_BIG_INT = new(big.Int).Sub(new(big.Int).Exp(big.NewInt(2), big.NewInt(256), nil), big.NewInt(1))
+
+// for ray
+const RAY_DECIMALS int8 = 27
+
+var RAY *big.Int = utils.GetExpInt(RAY_DECIMALS)
