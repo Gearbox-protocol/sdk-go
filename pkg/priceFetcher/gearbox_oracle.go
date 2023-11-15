@@ -109,7 +109,7 @@ func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ 
 		if entry.Success {
 			value, err := poABI.Unpack("latestRoundData", entry.ReturnData)
 			if err != nil {
-				log.Fatal("For token %s, err: %s", pOracle.tokens[i], err)
+				log.Fatalf("for token %s, err: %s", pOracle.tokens[i], err)
 			}
 			// latestData := abi.ConvertType(value[0], new(LatestData)).(*LatestData)
 			answer := value[1].(*big.Int)

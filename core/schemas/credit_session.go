@@ -6,15 +6,19 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 const (
 	Active = iota
 	Closed
 	Repaid
+	// status type for v2 liquidation is set after the call from tenderly is fetched
+	// status for v3 liquidation is set in the onLiquidateCreditAccount via expirationDate and based on the paused state of the credit manager
 	Liquidated
 	LiquidateExpired
 	LiquidatePaused
+	//
 )
 
 func AccountStatusToStr(id int) (string, error) {
@@ -65,6 +69,7 @@ type (
 	CreditSession struct {
 		ID             string                `gorm:"primaryKey" json:"sessionId"`
 		Status         int                   `json:"status"`
+		TeritaryStatus *core.Json            `gorm:"column:teritary_status"`
 		Borrower       string                `json:"borrower"`
 		CreditManager  string                `json:"creditManager"`
 		Account        string                `json:"account"`
@@ -140,4 +145,29 @@ type (
 
 func (CreditSessionUpdate) TableName() string {
 	return "credit_sessions"
+}
+
+func (ses CreditSession) secStatusMap() map[int64]int {
+	ans := map[int64]int{}
+	if ses.TeritaryStatus != nil {
+		secStatus := utils.ListOfInt64List((*ses.TeritaryStatus)["secStatus"])
+		for _, l := range secStatus {
+			ans[l[0]] = int(l[1])
+		}
+	}
+	return ans
+}
+
+func (ses CreditSession) StatusAt(blockNum int64) int {
+	if ses.ClosedAt == blockNum && ses.Status != Active {
+		return ses.Status
+	}
+	if ses.TeritaryStatus == nil {
+		return Active
+	}
+	secStatus := ses.secStatusMap()
+	if secStatus[blockNum] != 0 {
+		return secStatus[blockNum]
+	}
+	return Active
 }
