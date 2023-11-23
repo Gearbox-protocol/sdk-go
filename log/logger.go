@@ -63,6 +63,12 @@ func Tracef(msg string, args ...interface{}) {
 func Trace(args ...interface{}) {
 	println(TRACE, args...)
 }
+func TraceAtN(depth int, args ...interface{}) {
+	if TRACE < logLevel {
+		return
+	}
+	printlnStr(toString(TRACE), depth, args...)
+}
 func Debugf(msg string, args ...interface{}) {
 	printf(DEBUG, msg, args...)
 }
