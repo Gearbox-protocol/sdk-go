@@ -8,6 +8,7 @@ import (
 )
 
 var _amqpChannel *amqp.Channel
+var _amqpUrl string
 
 // Service constructor
 func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName string) {
@@ -22,7 +23,12 @@ func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName
 		return
 	}
 	//
-	conn, err := amqp.Dial(amqpUrl)
+	_amqpUrl = amqpUrl
+	setChannel()
+}
+
+func setChannel() {
+	conn, err := amqp.Dial(_amqpUrl)
 	if err != nil {
 		Error(err, "Failed to connect to RabbitMQ")
 	}
@@ -58,19 +64,24 @@ func send(important bool, message string) {
 	if _logConfig.ChainId == 7878 {
 		routingKey = "GOERLI"
 	}
-	err := _amqpChannel.Publish(
-		_logConfig.Exchange, // exchange
-		routingKey,          // routing key
-		false,               // mandatory
-		false,               // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(message),
-			Headers:     amqp.Table{"important": important},
-			AppId:       _logConfig.App,
-			// UserId:      _logConfig.Instance,
-		})
-	if err != nil {
-		log.Println("Cant sent notification", err)
+	for i := 0; i < 2; i++ {
+		err := _amqpChannel.Publish(
+			_logConfig.Exchange, // exchange
+			routingKey,          // routing key
+			false,               // mandatory
+			false,               // immediate
+			amqp.Publishing{
+				ContentType: "text/plain",
+				Body:        []byte(message),
+				Headers:     amqp.Table{"important": important},
+				AppId:       _logConfig.App,
+				// UserId:      _logConfig.Instance,
+			})
+		if err != nil {
+			log.Println("Cant sent notification", err)
+			setChannel()
+		} else {
+			return
+		}
 	}
 }
