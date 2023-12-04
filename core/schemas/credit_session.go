@@ -121,6 +121,7 @@ type (
 		SessionId               string       `gorm:"column:session_id" json:"sessionId"`
 		BorrowedAmountBI        *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
 		BorrowedAmount          float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
+		ExtraQuotaAPY           int64        `gorm:"column:extra_quota_apy" json:"extraQuotaAPY"`
 		TotalValueBI            *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
 		TotalValue              float64      `gorm:"column:total_value" json:"totalValue"`
 		CumulativeQuotaInterest *core.BigInt `gorm:"column:cum_quota_interest" json:"cumQuotaInterest,omitempty"`
@@ -170,4 +171,18 @@ func (ses CreditSession) StatusAt(blockNum int64) int {
 		return secStatus[blockNum]
 	}
 	return Active
+}
+
+// in 10**27
+func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) int64 {
+	total := new(big.Int)
+	for _, balance := range balances {
+		if balance.IsQuoted && balance.Quota != nil {
+			total = new(big.Int).Add(
+				total,
+				new(big.Int).Mul(balance.Quota.Convert(), big.NewInt(int64(balance.QuotaRate))),
+			)
+		}
+	}
+	return new(big.Int).Quo(total, totalValue.Convert()).Int64()
 }
