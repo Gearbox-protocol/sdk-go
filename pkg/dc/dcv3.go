@@ -61,8 +61,9 @@ func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 			Version:         core.NewVersion(int16(values.CfVersion.Int64())),
 		},
 		//
-		TotalValue:     (*core.BigInt)(values.TotalValue),
-		HealthFactor:   (*core.BigInt)(values.HealthFactor),
+		TotalValue:   (*core.BigInt)(values.TotalValue),
+		HealthFactor: (*core.BigInt)(values.HealthFactor),
+		//
 		BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		Since:          values.Since,
 		Balances:       Convertv3ToBalance(values.Balances),

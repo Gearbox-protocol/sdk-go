@@ -11,7 +11,7 @@ type PoolState struct {
 	IsWETH                 bool         `gorm:"column:is_weth"`
 	ExpectedLiquidityLimit *core.BigInt `gorm:"column:expected_liq_limit"`
 	WithdrawFee            *core.BigInt `gorm:"column:withdraw_fee"`
-	BorrowAPYBI            *core.BigInt `gorm:"column:borrow_apy_bi"`
+	BaseBorrowAPYBI        *core.BigInt `gorm:"column:base_borrow_apy_bi"`
 	DepositAPYBI           *core.BigInt `gorm:"column:deposit_apy_bi"`
 }
 
@@ -31,8 +31,8 @@ type PoolStat struct {
 	UniqueUsers         int          `gorm:"column:unique_users" json:"uniqueUsers"`
 	DepositAPY          float64      `gorm:"column:deposit_apy" json:"depositAPY"`
 	DepositAPYBI        *core.BigInt `gorm:"column:deposit_apy_bi" json:"depositAPYBI"`
-	BorrowAPY           float64      `gorm:"column:borrow_apy" json:"borrowAPY"`
-	BorrowAPYBI         *core.BigInt `gorm:"column:borrow_apy_bi" json:"borrowAPYBI"`
+	BaseBorrowAPY       float64      `gorm:"column:base_borrow_apy" json:"baseBorrowAPY"`
+	BaseBorrowAPYBI     *core.BigInt `gorm:"column:base_borrow_apy_bi" json:"baseBorrowAPYBI"`
 	ExpectedLiquidity   float64      `gorm:"column:expected_liquidity" json:"expectedLiquidity"`
 	ExpectedLiquidityBI *core.BigInt `gorm:"column:expected_liquidity_bi" json:"expectedLiquidityBI"`
 	// ExpectedLiquidityLimitBI *core.BigInt `gorm:"column:expected_liquidity_limit_bi" json:"expectedLiquidityLimitBI"`
@@ -51,7 +51,7 @@ type PoolStat struct {
 }
 
 type PoolInterestData struct {
-	BorrowAPYBI          *core.BigInt `gorm:"column:borrow_apy_bi"`
+	BaseBorrowAPYBI      *core.BigInt `gorm:"column:borrow_apy_bi"`
 	CumulativeIndexRAY   *core.BigInt `gorm:"column:cumulative_index_ray"`
 	AvailableLiquidityBI *core.BigInt `gorm:"column:available_liquidity_bi"`
 	BlockNum             int64        `gorm:"column:block_num"`
