@@ -191,3 +191,9 @@ func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) flo
 	val, _ := new(big.Float).Quo(total, totalValueF).Float64()
 	return val
 }
+
+func QuotaBorrowRAY(extraQuotaAPY float64) *big.Int {
+	f := new(big.Float).Mul(big.NewFloat(extraQuotaAPY), utils.GetExpFloat(23))
+	val, _ := f.Int(nil)
+	return val
+}
