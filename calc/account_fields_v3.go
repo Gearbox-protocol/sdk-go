@@ -77,8 +77,11 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 	//
 	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, version, blockNum)
 	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, version, blockNum)
-
-	calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), debtDetails.Total())
+	if debtDetails.borrowedAmount.Cmp(big.NewInt(0)) == 0 {
+		calHF = big.NewInt(65535)
+	} else {
+		calHF = new(big.Int).Quo(utils.GetInt64(calThresholdValue, -4), debtDetails.Total())
+	}
 	return
 }
 
