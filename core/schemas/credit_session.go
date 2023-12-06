@@ -175,6 +175,10 @@ func (ses CreditSession) StatusAt(blockNum int64) int {
 
 // in 10**27
 func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) float64 {
+	if totalValue.Convert().Cmp(big.NewInt(0)) == 0 {
+		return 0
+	}
+	//
 	total := new(big.Float)
 	for _, balance := range balances {
 		if balance.IsQuoted && balance.Quota != nil {

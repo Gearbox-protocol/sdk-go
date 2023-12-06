@@ -94,7 +94,6 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 	defer func() {
 		err := recover()
 		if err != nil {
-			log.Info(string(debug.Stack()))
 			log.Info(session.GetBorrowedAmount(), session.GetAddr(), session.GetCumulativeIndex(), poolDetails.GetCumIndexNow())
 			log.Info(poolDetails.GetPoolQuotaDetails(), utils.ToJson(session.GetBalances()))
 			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
