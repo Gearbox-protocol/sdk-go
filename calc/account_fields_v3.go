@@ -19,7 +19,7 @@ type PoolForCalcI interface {
 func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int {
 	borrowedAmountWithInterest := new(big.Int).Quo(
 		new(big.Int).Mul(poolCumIndexNow, session.GetBorrowedAmount()),
-		session.GetCumulativeIndex(),
+		getCumIndexOfAccount(session),
 	)
 	return new(big.Int).Sub(
 		borrowedAmountWithInterest,
@@ -90,11 +90,18 @@ func minBigInt(a, b *big.Int) *big.Int {
 	}
 }
 
+func getCumIndexOfAccount(session AccountForCalcI) *big.Int {
+	index := session.GetCumulativeIndex()
+	if index.Cmp(big.NewInt(0)) == 0 {
+		return core.RAY
+	}
+	return index
+}
 func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) *DebtDetails {
 	defer func() {
 		err := recover()
 		if err != nil {
-			log.Info(session.GetBorrowedAmount(), session.GetAddr(), session.GetCumulativeIndex(), poolDetails.GetCumIndexNow())
+			log.Info(session.GetBorrowedAmount(), session.GetAddr(), getCumIndexOfAccount(session), poolDetails.GetCumIndexNow())
 			log.Info(poolDetails.GetPoolQuotaDetails(), utils.ToJson(session.GetBalances()))
 			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}

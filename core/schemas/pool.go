@@ -51,7 +51,7 @@ type PoolStat struct {
 }
 
 type PoolInterestData struct {
-	BaseBorrowAPYBI      *core.BigInt `gorm:"column:borrow_apy_bi"`
+	BaseBorrowAPYBI      *core.BigInt `gorm:"column:base_borrow_apy_bi"`
 	CumulativeIndexRAY   *core.BigInt `gorm:"column:cumulative_index_ray"`
 	AvailableLiquidityBI *core.BigInt `gorm:"column:available_liquidity_bi"`
 	BlockNum             int64        `gorm:"column:block_num"`
