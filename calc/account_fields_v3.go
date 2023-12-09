@@ -60,13 +60,18 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 			}
 			//
 			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
-			tokenTwvValueInUSD := new(big.Int).Quo(
-				new(big.Int).Mul(
-					minBigInt(tokenValueInUSD, quotaInUSD),              // quotaed value
-					c.Store.GetLiqThreshold(ts, session.GetCM(), token), // lt
-				),
-				utils.GetExpInt(4),
-			)
+			if session.GetAddr() == "0xADd1CE4bE9dF6eBDfFaAc378118CE55Cbd76B289" {
+				log.Info(token, c.Store.GetLiqThreshold(ts, session.GetCM(), token), tokenValueInUSD, quotaInUSD)
+			}
+			tokenTwvValueInUSD := minBigInt(
+				new(big.Int).Quo(
+					new(big.Int).Mul(
+						tokenValueInUSD,
+						c.Store.GetLiqThreshold(ts, session.GetCM(), token), // lt
+					),
+					utils.GetExpInt(4)),
+				quotaInUSD,
+			) // quoted value
 
 			// sum
 			totalValueInUSD = new(big.Int).Add(totalValueInUSD, tokenValueInUSD)
