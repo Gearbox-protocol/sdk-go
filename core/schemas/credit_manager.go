@@ -21,6 +21,7 @@ type CreditManagerState struct {
 	MaxAmount         *core.BigInt     `gorm:"column:max_amount"`
 	Paused            bool             `gorm:"column:paused"`
 	Version           core.VersionType `gorm:"column:_version"`
+	Name              string           `gorm:"column:name"`
 }
 
 type CreditManagerData struct {
