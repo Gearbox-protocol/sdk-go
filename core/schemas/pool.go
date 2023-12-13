@@ -14,6 +14,8 @@ type PoolState struct {
 	BaseBorrowAPYBI        *core.BigInt     `gorm:"column:base_borrow_apy_bi"`
 	DepositAPYBI           *core.BigInt     `gorm:"column:deposit_apy_bi"`
 	Version                core.VersionType `gorm:"column:_version"`
+	//
+	Name string `gorm:"column:name"`
 }
 
 func (PoolState) TableName() string {
