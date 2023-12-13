@@ -5,14 +5,15 @@ import (
 )
 
 type PoolState struct {
-	Address                string       `gorm:"primaryKey" json:"address"`
-	UnderlyingToken        string       `gorm:"column:underlying_token" json:"underlyingToken"`
-	DieselToken            string       `gorm:"column:diesel_token" json:"dieselToken"`
-	IsWETH                 bool         `gorm:"column:is_weth"`
-	ExpectedLiquidityLimit *core.BigInt `gorm:"column:expected_liq_limit"`
-	WithdrawFee            *core.BigInt `gorm:"column:withdraw_fee"`
-	BaseBorrowAPYBI        *core.BigInt `gorm:"column:base_borrow_apy_bi"`
-	DepositAPYBI           *core.BigInt `gorm:"column:deposit_apy_bi"`
+	Address                string           `gorm:"primaryKey" json:"address"`
+	UnderlyingToken        string           `gorm:"column:underlying_token" json:"underlyingToken"`
+	DieselToken            string           `gorm:"column:diesel_token" json:"dieselToken"`
+	IsWETH                 bool             `gorm:"column:is_weth"`
+	ExpectedLiquidityLimit *core.BigInt     `gorm:"column:expected_liq_limit"`
+	WithdrawFee            *core.BigInt     `gorm:"column:withdraw_fee"`
+	BaseBorrowAPYBI        *core.BigInt     `gorm:"column:base_borrow_apy_bi"`
+	DepositAPYBI           *core.BigInt     `gorm:"column:deposit_apy_bi"`
+	Version                core.VersionType `gorm:"column:_version"`
 }
 
 func (PoolState) TableName() string {
