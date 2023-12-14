@@ -49,9 +49,15 @@ func toBigInt(collateral interface{}, decimals int8) *big.Int {
 	}
 }
 func CalcCurrentPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
-	cToken, cBal := session.GetUnderlyingToken(), new(big.Int).Add(
+	cToken := session.GetUnderlyingToken()
+	//
+	cBal := new(big.Int).Add(
 		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals), // col token,
 		session.GetBorrowedAmount())
+	if _, ok := session.GetBalances()[cToken]; ok {
+		cBal = new(big.Int).Sub(cBal, session.GetBalances()[cToken].BI.Convert())
+	}
+	//
 	isLong := utils.Contains(quoteTokens, session.GetUnderlyingToken())
 	tradingToken, quoteToken, currentPrice, err := CalcPriceBasedOnBalanceAndCollateral(isLong, store, session.GetBalances(), cToken, cBal)
 	if err != nil {
