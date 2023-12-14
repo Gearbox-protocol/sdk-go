@@ -235,5 +235,6 @@ func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *core
 	data["_order"] = argNames
 	jsonData := core.Json(data)
 	jsonData.CheckSumAddress()
+	jsonData.QuoteBigInt()
 	return c.ABI.Events[eventName].Sig, &jsonData
 }

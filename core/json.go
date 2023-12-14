@@ -249,6 +249,18 @@ func (z *Json) CheckSumAddress() {
 		(*z)[key] = fixAddress(value)
 	}
 }
+func (z *Json) QuoteBigInt() {
+	for key, value := range *z {
+		(*z)[key] = quoteBigInt(value)
+	}
+}
+func quoteBigInt(data interface{}) interface{} {
+	switch value := data.(type) {
+	case *big.Int:
+		return (*BigInt)(value)
+	}
+	return data
+}
 
 func fixAddress(data interface{}) interface{} {
 	switch value := data.(type) {
