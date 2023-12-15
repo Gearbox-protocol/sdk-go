@@ -2,7 +2,6 @@ package calc
 
 import (
 	"math/big"
-	"runtime/debug"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
@@ -35,7 +34,6 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 	defer func() {
 		err := recover()
 		if err != nil {
-			log.Info(string(debug.Stack()))
 			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}
 	}()

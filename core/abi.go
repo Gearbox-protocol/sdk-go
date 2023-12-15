@@ -14,6 +14,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
 
 	// v1
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
@@ -159,6 +160,7 @@ var v3Map = AbiMap{
 	"CreditConfiguratorv3": {ABI: creditConfiguratorv3.CreditConfiguratorv3ABI},
 	"Poolv3":               {ABI: poolv3.Poolv3ABI},
 	"DataCompressorv3":     {ABI: dataCompressorv3.DataCompressorv3ABI},
+	"InchFarming":          {ABI: inchFarmingPool.InchFarmingPoolABI},
 }
 var adapterMap = AbiMap{
 	//
