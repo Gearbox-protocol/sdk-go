@@ -40,6 +40,8 @@ func NewVersion(v int16) VersionType {
 		return VersionType{v: v}
 	} else if v == 210 || v == 220 {
 		return VersionType{v: 2}
+	} else if v == 300 {
+		return VersionType{v: 300}
 	}
 	log.Fatal("version not supported")
 	panic("")
