@@ -374,7 +374,7 @@ type Req struct {
 
 func NewReq() Req {
 	requestId := uuid.New().String()
-	log.Trace(requestId, "newRequest", log.DetectFuncAtStackN(6))
+	log.Trace(requestId, "newRequest", log.DetectFuncAtStackN(4))
 	return Req{uuid: requestId, ts: time.Now()}
 }
 func (r Req) print(args ...interface{}) {
