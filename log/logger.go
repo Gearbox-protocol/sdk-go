@@ -174,3 +174,7 @@ func DetectFuncAtStackN(n int) string {
 		return fmt.Sprintf(" %s:%d ", remainingPath[extraInd+1:], line)
 	}
 }
+
+func WrapErrWithLine(err error) error {
+	return fmt.Errorf("%s: %v", DetectFuncAtStackN(2), err)
+}
