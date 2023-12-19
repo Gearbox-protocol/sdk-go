@@ -67,3 +67,31 @@ const (
 	SOURCE_CHAINLINK PriceSource = "chainlink"
 	SOURCE_SPOT      PriceSource = "spot"
 )
+
+type TokenGroup struct {
+	CurvePools        map[Symbol]int64  `json:"curvePools"`
+	BalancerTokens    map[Symbol]int64  `json:"balancerTokens"`
+	YearnCurveTokens  map[Symbol]Symbol `json:"yearnCurveTokens"`
+	ConvexCurveTokens map[Symbol]Symbol `json:"convexCurveTokens"`
+}
+
+type tokenGroupWrapper struct {
+	Groups TokenGroup `json:"groups"`
+}
+
+func GetTokenGroups(fileName string) *TokenGroup {
+	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
+	log.CheckFatal(err)
+	store := &tokenGroupWrapper{}
+	err = json.Unmarshal([]byte(data), store)
+	log.CheckFatal(err)
+	return &store.Groups
+}
+
+func GetTokenGroupsByChainId(chainId int64) *TokenGroup {
+	if chainId == 1337 || chainId == 7878 {
+		chainId = 1
+	}
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	return GetTokenGroups(fileName)
+}
