@@ -718,26 +718,6 @@ func (_Routerv3 *Routerv3TransactorSession) FindAllSwaps(swapTask SwapTask, slip
 	return _Routerv3.Contract.FindAllSwaps(&_Routerv3.TransactOpts, swapTask, slippage)
 }
 
-// FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
-//
-// Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,uint256,(address,bytes)[]) result, uint256 gasPriceTargetRAY)
-func (_Routerv3 *Routerv3Transactor) FindBestClosePath(opts *bind.TransactOpts, creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
-	return _Routerv3.contract.Transact(opts, "findBestClosePath", creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
-}
-
-// FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
-//
-// Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,uint256,(address,bytes)[]) result, uint256 gasPriceTargetRAY)
-func (_Routerv3 *Routerv3Session) FindBestClosePath(creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
-	return _Routerv3.Contract.FindBestClosePath(&_Routerv3.TransactOpts, creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
-}
-
-// FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
-//
-// Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,uint256,(address,bytes)[]) result, uint256 gasPriceTargetRAY)
-func (_Routerv3 *Routerv3TransactorSession) FindBestClosePath(creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
-	return _Routerv3.Contract.FindBestClosePath(&_Routerv3.TransactOpts, creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
-}
 
 // FindOneTokenPath is a paid mutator transaction binding the contract method 0x0cf7f659.
 //
