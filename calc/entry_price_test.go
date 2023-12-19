@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -46,7 +47,8 @@ func (d dStore) GetToken(token string) *schemas.Token {
 	return d.tokens[token]
 }
 func TestEntryPriceForLong(t *testing.T) {
-	usdc := utils.RandomAddr()
+	log.SetTestLogging(t)
+	usdc := "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 	tradingToken := utils.RandomAddr()
 	sess := &session{
 		balances:       map[string]core.DBTokenBalance{tradingToken: {IsEnabled: true, BI: (*core.BigInt)(utils.GetExpInt(18))}},
@@ -54,7 +56,7 @@ func TestEntryPriceForLong(t *testing.T) {
 		collateral:     core.JsonBigIntMap{usdc: (*core.BigInt)(utils.GetExpInt(6 + 3))},
 		underlying:     usdc,
 	}
-	CalcCurrentPrice(sess, []string{usdc}, dStore{
+	CalcCurrentPriceBySession(sess, 1, dStore{
 		tokens: map[string]*schemas.Token{
 			usdc:         {Decimals: 6},
 			tradingToken: {Decimals: 18},

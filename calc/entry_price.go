@@ -8,6 +8,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type PriceDS struct {
@@ -48,46 +49,90 @@ func toBigInt(collateral interface{}, decimals int8) *big.Int {
 		return nil
 	}
 }
-func CalcCurrentPrice(session EntryPriceI, quoteTokens []string, store tokenI) {
-	cToken := session.GetUnderlyingToken()
-	//
-	cBal := new(big.Int).Add(
-		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals), // col token,
-		session.GetBorrowedAmount())
-	if _, ok := session.GetBalances()[cToken]; ok {
-		cBal = new(big.Int).Sub(cBal, session.GetBalances()[cToken].BI.Convert())
+
+var _addrToSym map[common.Address]core.Symbol
+
+func loadSymToAddrStore(chainId int64) {
+	if _addrToSym == nil {
+		_addrToSym = core.GetAddrToSymbolByChainId(chainId)
 	}
-	//
-	isLong := utils.Contains(quoteTokens, session.GetUnderlyingToken())
-	tradingToken, quoteToken, currentPrice, err := CalcPriceBasedOnBalanceAndCollateral(isLong, store, session.GetBalances(), cToken, cBal)
+}
+
+func CalcCurrentPriceBySession(session EntryPriceI, chainId int64, store tokenI) {
+	cBal := new(big.Int).Add(
+		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals),
+		session.GetBorrowedAmount(),
+	)
+	tradingToken, quoteToken, currentPrice, err := CalcCurrentPrice(
+		session.GetBalances(),
+		session.GetUnderlyingToken(),
+		cBal,
+		chainId,
+		store,
+	)
 	if err != nil {
 		return
 	}
 	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
 }
-func CalcPriceBasedOnBalanceAndCollateral(isLong bool, store tokenI,
-	balances core.DBBalanceFormat, cToken string, cBal *big.Int) (string, string, float64, error) {
-	bToken, bBal, ok := singleEntryPriceToken(balances, cToken) // balance token, returns false if there are more than 1 token
+func CalcCurrentPrice(bal core.DBBalanceFormat,
+	cToken string, cBal *big.Int, chainId int64, store tokenI) (string, string, float64, error) {
+	loadSymToAddrStore(chainId)
+	//
+	//
+	if _, ok := bal[cToken]; ok {
+		cBal = new(big.Int).Sub(cBal, bal[cToken].BI.Convert())
+	}
+	//
+	return getCurrentPrice(bal, store, cToken, cBal)
+}
+
+func getCurrentPrice(bal core.DBBalanceFormat, store tokenI, cToken string, cBal *big.Int) (string, string, float64, error) {
+	otherToken, otherAmount, ok := singleEntryPriceToken(bal, cToken)
 	if !ok {
 		return "", "", 0, fmt.Errorf("balances has 2 or more token")
 	}
-	if isLong {
-		tradingToken := bToken
-		currentPrice := utils.GetFloat64Decimal(
-			new(big.Int).Quo(
-				utils.GetInt64(cBal, -store.GetToken(bToken).Decimals), // cBal is usdc
-				bBal), // bBal is tradingToken
-			store.GetToken(cToken).Decimals)
-		return tradingToken, cToken, currentPrice, nil
+
+	tradingToken, baseToken := tradingAndBase(otherToken, cToken)
+	var tradingAmount, baseAmount *big.Int
+	if tradingToken == otherToken {
+		tradingAmount = otherAmount
+		baseAmount = cBal
 	} else {
-		tradingToken := cToken
-		currentPrice := utils.GetFloat64Decimal(
-			new(big.Int).Quo(
-				utils.GetInt64(bBal, -store.GetToken(cToken).Decimals), // bBal is usdc
-				cBal,
-			),
-			store.GetToken(bToken).Decimals)
-		return tradingToken, bToken, currentPrice, nil
+		tradingAmount = cBal
+		baseAmount = otherAmount
+	}
+
+	currentPrice := utils.GetFloat64Decimal(
+		new(big.Int).Quo(
+			utils.GetInt64(baseAmount, -store.GetToken(tradingToken).Decimals), // cBal is usdc
+			tradingAmount), // bBal is tradingToken
+		store.GetToken(baseToken).Decimals)
+	//
+	return tradingToken, baseToken, currentPrice, nil
+}
+
+// trading priority is higher than base
+func tradingAndBase(a, b string) (trading, base string) {
+	if priority(a) > priority(b) {
+		return a, b
+	} else {
+		return b, a
+	}
+}
+
+func priority(addr string) int {
+	switch _addrToSym[common.HexToAddress(addr)] {
+	case "USDC":
+		return 0
+	case "DAI":
+		return 1
+	case "BTC":
+		return 2
+	case "ETH":
+		return 3
+	default:
+		return 100
 	}
 }
 
