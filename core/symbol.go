@@ -69,14 +69,19 @@ const (
 )
 
 type TokenGroup struct {
-	CurvePools        map[Symbol]int64  `json:"curvePools"`
-	BalancerTokens    map[Symbol]int64  `json:"balancerTokens"`
-	YearnCurveTokens  map[Symbol]Symbol `json:"yearnCurveTokens"`
-	ConvexCurveTokens map[Symbol]Symbol `json:"convexCurveTokens"`
+	CurvePools        map[string]int64  `json:"curvePools"`
+	BalancerTokens    map[string]int64  `json:"balancerTokens"`
+	YearnCurveTokens  map[string]string `json:"yearnCurveTokens"`
+	ConvexCurveTokens map[string]string `json:"convexCurveTokens"`
 }
 
 type tokenGroupWrapper struct {
-	Groups TokenGroup `json:"groups"`
+	Groups struct {
+		CurvePools        map[Symbol]int64  `json:"curvePools"`
+		BalancerTokens    map[Symbol]int64  `json:"balancerTokens"`
+		YearnCurveTokens  map[Symbol]Symbol `json:"yearnCurveTokens"`
+		ConvexCurveTokens map[Symbol]Symbol `json:"convexCurveTokens"`
+	} `json:"groups"`
 }
 
 func GetTokenGroups(fileName string) *TokenGroup {
@@ -85,7 +90,25 @@ func GetTokenGroups(fileName string) *TokenGroup {
 	store := &tokenGroupWrapper{}
 	err = json.Unmarshal([]byte(data), store)
 	log.CheckFatal(err)
-	return &store.Groups
+
+	//
+	obj := &TokenGroup{}
+	{
+		symToAddr := GetSymToAddrStore(fileName)
+		for k, v := range store.Groups.CurvePools {
+			obj.CurvePools[symToAddr.Tokens[string(k)].Hex()] = v
+		}
+		for k, v := range store.Groups.BalancerTokens {
+			obj.BalancerTokens[symToAddr.Tokens[string(k)].Hex()] = v
+		}
+		for k, v := range store.Groups.ConvexCurveTokens {
+			obj.ConvexCurveTokens[symToAddr.Tokens[string(k)].Hex()] = symToAddr.Tokens[string(v)].Hex()
+		}
+		for k, v := range store.Groups.YearnCurveTokens {
+			obj.YearnCurveTokens[symToAddr.Tokens[string(k)].Hex()] = symToAddr.Tokens[string(v)].Hex()
+		}
+	}
+	return obj
 }
 
 func GetTokenGroupsByChainId(chainId int64) *TokenGroup {
