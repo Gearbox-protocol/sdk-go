@@ -17,7 +17,7 @@ var TRADING_SYMBOLS = []string{
 	"stETH",
 }
 
-const OTHER_TRADING_BASE_SYMBOL = "DAI"
+var BASE_SYMBOL []string = []string{"DAI", "WETH", "WBTC"}
 
 func TradingSymNoW[T ~string](sym T) T {
 	if sym[0] == 'W' {
