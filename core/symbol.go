@@ -16,6 +16,13 @@ type SymTOAddrStore struct {
 	Tokens    map[string]common.Address `json:"tokens"`
 }
 
+func (s *SymTOAddrStore) getTokenAddr(sym Symbol) string {
+	if _, ok := s.Tokens[string(sym)]; ok {
+		log.Fatal("can't get token")
+	}
+	return s.Tokens[string(sym)].Hex()
+}
+
 func GetSymToAddrStore(fileName string) *SymTOAddrStore {
 	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
 	log.CheckFatal(err)
@@ -96,16 +103,16 @@ func GetTokenGroups(fileName string) *TokenGroup {
 	{
 		symToAddr := GetSymToAddrStore(fileName)
 		for k, v := range store.Groups.CurvePools {
-			obj.CurvePools[symToAddr.Tokens[string(k)].Hex()] = v
+			obj.CurvePools[symToAddr.getTokenAddr(k)] = v
 		}
 		for k, v := range store.Groups.BalancerTokens {
-			obj.BalancerTokens[symToAddr.Tokens[string(k)].Hex()] = v
+			obj.BalancerTokens[symToAddr.getTokenAddr(k)] = v
 		}
 		for k, v := range store.Groups.ConvexCurveTokens {
-			obj.ConvexCurveTokens[symToAddr.Tokens[string(k)].Hex()] = symToAddr.Tokens[string(v)].Hex()
+			obj.ConvexCurveTokens[symToAddr.getTokenAddr(k)] = symToAddr.getTokenAddr(v)
 		}
 		for k, v := range store.Groups.YearnCurveTokens {
-			obj.YearnCurveTokens[symToAddr.Tokens[string(k)].Hex()] = symToAddr.Tokens[string(v)].Hex()
+			obj.YearnCurveTokens[symToAddr.getTokenAddr(k)] = symToAddr.getTokenAddr(v)
 		}
 	}
 	return obj
