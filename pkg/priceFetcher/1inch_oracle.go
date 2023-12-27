@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
+	"github.com/Gearbox-protocol/sdk-go/calc"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -57,7 +59,14 @@ type DecimalStoreI interface {
 	GetDecimalsForList([]common.Address)
 }
 
-func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI, dataStrings ...string) *OneInchOracle {
+func JsonnetStringInchConfig(syms []core.Symbol) string {
+	var subPhrase []string
+	for _, sym := range syms {
+		subPhrase = append(subPhrase, fmt.Sprintf(`'%s'`, sym))
+	}
+	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
+}
+func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data := func() string {
@@ -77,13 +86,22 @@ func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Addres
 	// delete ETH as 0xee address can't be used for getting symbol in token_store.go
 	delete(calc.symToAddr.Tokens, "ETH")
 	//
-	calc.inchOracle = inchOracle
+	calc.inchOracle = get1InchAddress(chainId)
 	calc.client = client
 	calc.setCrvCallLen()
 
 	// decimal store
 	calc.decimals = tStore
 	return calc
+}
+
+func get1InchAddress(chainId int64) common.Address {
+	switch chainId {
+	case 1, 7878, 1337:
+		return common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
+	}
+	log.Fatal("Can't get the inch oracle for", chainId)
+	return core.NULL_ADDR
 }
 
 func (calc *OneInchOracle) setCrvCallLen() {
@@ -371,4 +389,62 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 		}
 		ind++
 	}
+}
+
+func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBalanceFormat, underlying string) float64 {
+	tradingToken, baseToken := calc.TradingAndBaseTokens(bal, underlying)
+	if tradingToken == "" {
+		return 0
+	}
+	//
+	prices := map[string]*core.BigInt{}
+	//
+	{ // getting price via multicall
+		inchOracle := get1InchAddress(core.GetChainId(o.client))
+		tokens := []common.Address{common.HexToAddress(tradingToken), common.HexToAddress(baseToken)}
+		usdc := o.symToAddr.Tokens["USDC"]
+		//
+		pfABI := core.GetAbi("1InchOracle")
+		calls := []multicall.Multicall2Call{}
+		for _, token := range tokens {
+			data, err := pfABI.Pack("getRate", token, usdc, false)
+			log.CheckFatal(err)
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   inchOracle,
+				CallData: data,
+			})
+		}
+		results := core.MakeMultiCall(o.client, blockNum, false, calls)
+		for ind, entry := range results {
+			tokenAddr := tokens[ind]
+			if entry.Success {
+				price := new(big.Int).SetBytes(entry.ReturnData)
+				// for usdt = 18-6-2 = 10
+				// for wbtc = 18-8-2 = 8
+				// for gusd = 18-2-2= 14
+				normalizeDecimal := 18 - o.decimals.GetDecimals(tokenAddr) - 2
+				price = utils.GetInt64(price, normalizeDecimal)
+				prices[tokenAddr.Hex()] = (*core.BigInt)(price)
+			} else if usdc == tokenAddr {
+				prices[tokenAddr.Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			}
+		}
+	}
+	return GetTradingPriceFrom1Inch(prices, tradingToken, baseToken)
+}
+
+func GetTradingPriceFrom1Inch(prices map[string]*core.BigInt, tradingToken, baseToken string) float64 {
+	getPrice := func(token string) *big.Int {
+		p := prices[token]
+		if p == nil {
+			return new(big.Int)
+		}
+		return p.Convert()
+	}
+	tradingPrice := utils.GetFloat64Decimal(getPrice(tradingToken), 8)
+	basePrice := utils.GetFloat64Decimal(getPrice(baseToken), 8)
+	if tradingPrice == 0 || basePrice == 0 {
+		return 0
+	}
+	return tradingPrice / basePrice
 }

@@ -14,13 +14,7 @@ import (
 type PriceDS struct {
 	CurrentPrice float64 `json:"closePrice"`
 	TradingToken string  `json:"tradingToken,omitempty"`
-	QuoteToken   string  `json:"quoteToken,omitempty"`
-}
-
-func (session *PriceDS) SetCurrentPrice(tradingToken, quoteToken string, price float64) {
-	session.TradingToken = tradingToken
-	session.QuoteToken = quoteToken
-	session.CurrentPrice = price
+	BaseToken    string  `json:"quoteToken,omitempty"`
 }
 
 type EntryPriceI interface {
@@ -58,34 +52,34 @@ func loadSymToAddrStore(chainId int64) {
 	}
 }
 
-func CalcCurrentPriceBySession(session EntryPriceI, chainId int64, store tokenI) {
-	cBal := new(big.Int).Add(
-		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals),
-		session.GetBorrowedAmount(),
-	)
-	tradingToken, quoteToken, currentPrice, err := CalcCurrentPrice(
-		session.GetBalances(),
-		session.GetUnderlyingToken(),
-		cBal,
-		chainId,
-		store,
-	)
-	if err != nil {
-		return
-	}
-	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
-}
-func CalcCurrentPrice(bal core.DBBalanceFormat,
-	cToken string, cBal *big.Int, chainId int64, store tokenI) (string, string, float64, error) {
-	loadSymToAddrStore(chainId)
-	//
-	//
-	if _, ok := bal[cToken]; ok {
-		cBal = new(big.Int).Sub(cBal, bal[cToken].BI.Convert())
-	}
-	//
-	return getCurrentPrice(bal, store, cToken, cBal)
-}
+// func CalcCurrentPriceBySession(session EntryPriceI, chainId int64, store tokenI) {
+// 	cBal := new(big.Int).Add(
+// 		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals),
+// 		session.GetBorrowedAmount(),
+// 	)
+// 	tradingToken, quoteToken, currentPrice, err := CalcCurrentPrice(
+// 		session.GetBalances(),
+// 		session.GetUnderlyingToken(),
+// 		cBal,
+// 		chainId,
+// 		store,
+// 	)
+// 	if err != nil {
+// 		return
+// 	}
+// 	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
+// }
+// func CalcCurrentPrice(bal core.DBBalanceFormat,
+// 	cToken string, cBal *big.Int, chainId int64, store tokenI) (string, string, float64, error) {
+// 	loadSymToAddrStore(chainId)
+// 	//
+// 	//
+// 	if _, ok := bal[cToken]; ok {
+// 		cBal = new(big.Int).Sub(cBal, bal[cToken].BI.Convert())
+// 	}
+// 	//
+// 	return getCurrentPrice(bal, store, cToken, cBal)
+// }
 
 func getCurrentPrice(bal core.DBBalanceFormat, store tokenI, cToken string, cBal *big.Int) (string, string, float64, error) {
 	otherToken, otherAmount, ok := singleEntryPriceToken(bal, cToken)
@@ -110,6 +104,15 @@ func getCurrentPrice(bal core.DBBalanceFormat, store tokenI, cToken string, cBal
 		store.GetToken(baseToken).Decimals)
 	//
 	return tradingToken, baseToken, currentPrice, nil
+}
+
+func TradingAndBaseTokens(bal core.DBBalanceFormat, cToken string) (tradingToken, baseToken string) {
+	otherToken, _, ok := singleEntryPriceToken(bal, cToken)
+	if !ok {
+		return "", ""
+	}
+
+	return tradingAndBase(otherToken, cToken)
 }
 
 // trading priority is higher than base
