@@ -127,9 +127,9 @@ func priority(addr string) int {
 		return 0
 	case "DAI":
 		return 1
-	case "BTC":
+	case "WBTC":
 		return 2
-	case "ETH":
+	case "WETH":
 		return 3
 	default:
 		return 100
