@@ -1,12 +1,11 @@
 package calc
 
 import (
-	"fmt"
-	"log"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -46,86 +45,33 @@ func toBigInt(collateral interface{}, decimals int8) *big.Int {
 
 var _addrToSym map[common.Address]core.Symbol
 
-func loadSymToAddrStore(chainId int64) {
+func loadSymToAddrStore(chainId int64) map[common.Address]core.Symbol {
 	if _addrToSym == nil {
 		_addrToSym = core.GetAddrToSymbolByChainId(chainId)
 	}
+	return _addrToSym
 }
 
-// func CalcCurrentPriceBySession(session EntryPriceI, chainId int64, store tokenI) {
-// 	cBal := new(big.Int).Add(
-// 		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals),
-// 		session.GetBorrowedAmount(),
-// 	)
-// 	tradingToken, quoteToken, currentPrice, err := CalcCurrentPrice(
-// 		session.GetBalances(),
-// 		session.GetUnderlyingToken(),
-// 		cBal,
-// 		chainId,
-// 		store,
-// 	)
-// 	if err != nil {
-// 		return
-// 	}
-// 	session.SetCurrentPrice(tradingToken, quoteToken, currentPrice)
-// }
-// func CalcCurrentPrice(bal core.DBBalanceFormat,
-// 	cToken string, cBal *big.Int, chainId int64, store tokenI) (string, string, float64, error) {
-// 	loadSymToAddrStore(chainId)
-// 	//
-// 	//
-// 	if _, ok := bal[cToken]; ok {
-// 		cBal = new(big.Int).Sub(cBal, bal[cToken].BI.Convert())
-// 	}
-// 	//
-// 	return getCurrentPrice(bal, store, cToken, cBal)
-// }
-
-func getCurrentPrice(bal core.DBBalanceFormat, store tokenI, cToken string, cBal *big.Int) (string, string, float64, error) {
-	otherToken, otherAmount, ok := singleEntryPriceToken(bal, cToken)
-	if !ok {
-		return "", "", 0, fmt.Errorf("balances has 2 or more token")
-	}
-
-	tradingToken, baseToken := tradingAndBase(otherToken, cToken)
-	var tradingAmount, baseAmount *big.Int
-	if tradingToken == otherToken {
-		tradingAmount = otherAmount
-		baseAmount = cBal
-	} else {
-		tradingAmount = cBal
-		baseAmount = otherAmount
-	}
-
-	currentPrice := utils.GetFloat64Decimal(
-		new(big.Int).Quo(
-			utils.GetInt64(baseAmount, -store.GetToken(tradingToken).Decimals), // cBal is usdc
-			tradingAmount), // bBal is tradingToken
-		store.GetToken(baseToken).Decimals)
-	//
-	return tradingToken, baseToken, currentPrice, nil
-}
-
-func TradingAndBaseTokens(bal core.DBBalanceFormat, cToken string) (tradingToken, baseToken string) {
+func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, cToken string) (tradingToken, baseToken string) {
 	otherToken, _, ok := singleEntryPriceToken(bal, cToken)
 	if !ok {
 		return "", ""
 	}
 
-	return tradingAndBase(otherToken, cToken)
+	return tradingAndBase(loadSymToAddrStore(chainId), otherToken, cToken)
 }
 
 // trading priority is higher than base
-func tradingAndBase(a, b string) (trading, base string) {
-	if priority(a) > priority(b) {
+func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, base string) {
+	if priority(m, a) > priority(m, b) {
 		return a, b
 	} else {
 		return b, a
 	}
 }
 
-func priority(addr string) int {
-	switch _addrToSym[common.HexToAddress(addr)] {
+func priority(m map[common.Address]core.Symbol, addr string) int {
+	switch m[common.HexToAddress(addr)] {
 	case "USDC":
 		return 0
 	case "DAI":

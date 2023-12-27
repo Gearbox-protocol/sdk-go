@@ -186,13 +186,17 @@ func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
 	prices[gearToken] = (*core.BigInt)(price)
 }
 
+func (calc OneInchOracle) USDC() string {
+	return calc.symToAddr.Tokens["USDC"].Hex()
+}
+
 // get the price from 1inch api for `token to usdc quote`
 func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 	token := calc.symToAddr.Tokens[tokenSym]
 	decimals := calc.decimals.GetDecimals(token)
 	url := fmt.Sprintf("https://api.1inch.io/v5.0/1/quote?fromTokenAddress=%s&toTokenAddress=%s&amount=%s",
 		token.Hex(),
-		calc.symToAddr.Tokens["USDC"].Hex(),
+		calc.USDC(),
 		utils.GetExpInt(decimals+2), // 100 token units for price in 10^8 for usdc
 	)
 	resp, err := http.Get(url)
@@ -392,7 +396,7 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 }
 
 func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBalanceFormat, underlying string) float64 {
-	tradingToken, baseToken := calc.TradingAndBaseTokens(bal, underlying)
+	tradingToken, baseToken := calc.TradingAndBaseTokens(core.GetChainId(o.client), bal, underlying)
 	if tradingToken == "" {
 		return 0
 	}
