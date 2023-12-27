@@ -79,7 +79,8 @@ func (pair TradingPair) Tokens() (token, base Symbol) {
 }
 
 var notAllowedPairs = []TradingPair{
-	"ETHBTC",
+	"BTCETH",
+	"DAIUSDC",
 	"DAIBTC",
 	"DAIETH",
 }
