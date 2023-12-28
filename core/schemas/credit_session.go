@@ -92,6 +92,9 @@ type (
 		RemainingFunds *core.BigInt `gorm:"column:remaining_funds"`
 		// for v2 close accounts.
 		CloseTransfers *core.JsonFloatMap `gorm:"column:close_transfers" json:"-"`
+		//
+		EntryPrice float64 `gorm:"column:entry_price" json:"entryPrice,omitempty"`
+		ClosePrice float64 `gorm:"column:close_price" json:"closePrice,omitempty"`
 	}
 
 	CreditAccountData struct {
