@@ -90,7 +90,13 @@ func singleEntryPriceToken(bal core.DBBalanceFormat, underlyingToken string) (an
 	tokens := 0
 	for token, details := range bal {
 		if details.IsEnabled && details.HasBalanceMoreThanOne() && // ignore tokens which are disabled or have zero balances
-			underlyingToken != token { // ignore underlyingToken
+			!utils.Contains( // can't be underlying token or null address
+				[]string{
+					underlyingToken,
+					core.NULL_ADDR.Hex(),
+				},
+				token,
+			) { // ignore underlyingToken
 			tokens++
 			if tokens == 2 {
 				return "", nil, false
