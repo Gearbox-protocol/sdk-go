@@ -11,7 +11,7 @@ import (
 )
 
 type PriceDS struct {
-	CurrentPrice float64 `json:"closePrice"`
+	ClosePrice   float64 `gorm:"column:close_price" json:"closePrice"`
 	TradingToken string  `json:"tradingToken,omitempty"`
 	BaseToken    string  `json:"quoteToken,omitempty"`
 }
@@ -52,13 +52,13 @@ func loadSymToAddrStore(chainId int64) map[common.Address]core.Symbol {
 	return _addrToSym
 }
 
-func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, cToken string) (tradingToken, baseToken string) {
-	otherToken, _, ok := singleEntryPriceToken(bal, cToken)
+func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, underlying string) (tradingToken, baseToken string) {
+	otherToken, _, ok := singleEntryPriceToken(bal, underlying)
 	if !ok {
 		return "", ""
 	}
 
-	return tradingAndBase(loadSymToAddrStore(chainId), otherToken, cToken)
+	return tradingAndBase(loadSymToAddrStore(chainId), otherToken, underlying)
 }
 
 // trading priority is higher than base
