@@ -17,7 +17,7 @@ type SymTOAddrStore struct {
 }
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) string {
-	if _, ok := s.Tokens[string(sym)]; ok {
+	if _, ok := s.Tokens[string(sym)]; !ok {
 		log.Fatal("can't get token")
 	}
 	return s.Tokens[string(sym)].Hex()
