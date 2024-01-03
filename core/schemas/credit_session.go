@@ -153,7 +153,7 @@ func (CreditSessionUpdate) TableName() string {
 
 func (ses CreditSession) secStatusMap() map[int64]int {
 	ans := map[int64]int{}
-	if ses.TeritaryStatus != nil {
+	if ses.TeritaryStatus != nil && *ses.TeritaryStatus != nil {
 		secStatus := utils.ListOfInt64List((*ses.TeritaryStatus)["secStatus"])
 		for _, l := range secStatus {
 			ans[l[0]] = int(l[1])
