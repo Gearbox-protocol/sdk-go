@@ -115,18 +115,17 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 	cumQuotaInterest, quotaFees := session.GetQuotaCumInterestAndFees()
 	extraQuotaInterest := calcExtraQuotaInterest(version, ts, blockNum, poolDetails, session)
 
-	// total interest
-	totalNewInterest := new(big.Int).Add(baseInterestSinceUpdate, extraQuotaInterest)
+	// total interest = base interest + extra quota interest + cumQuotaInterest
+	accruedInterest := new(big.Int).Add(baseInterestSinceUpdate, extraQuotaInterest)
+	accruedInterest = new(big.Int).Add(cumQuotaInterest, accruedInterest)
 	//
 	accruedFees := func() *big.Int {
 		feeForInterest := new(big.Int).Quo(
-			new(big.Int).Mul(totalNewInterest, big.NewInt(int64(feeInterest))),
+			new(big.Int).Mul(accruedInterest, big.NewInt(int64(feeInterest))),
 			utils.GetExpInt(4),
 		)
 		return new(big.Int).Add(feeForInterest, quotaFees)
 	}()
-
-	accruedInterest := new(big.Int).Add(cumQuotaInterest, totalNewInterest)
 
 	return &DebtDetails{
 		total:          utils.BigIntAdd3(accruedFees, accruedInterest, borrowedAmount),
