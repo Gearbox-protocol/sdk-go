@@ -18,7 +18,7 @@ type SymTOAddrStore struct {
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) string {
 	if _, ok := s.Tokens[string(sym)]; !ok {
-		log.Fatal("can't get token")
+		log.Fatal("can't get token", sym)
 	}
 	return s.Tokens[string(sym)].Hex()
 }
@@ -91,6 +91,14 @@ type tokenGroupWrapper struct {
 	} `json:"groups"`
 }
 
+func newTokenGroup() *TokenGroup {
+	return &TokenGroup{
+		CurvePools:        map[string]int64{},
+		BalancerTokens:    map[string]int64{},
+		YearnCurveTokens:  map[string]string{},
+		ConvexCurveTokens: map[string]string{},
+	}
+}
 func GetTokenGroups(fileName string) *TokenGroup {
 	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
 	log.CheckFatal(err)
@@ -99,7 +107,7 @@ func GetTokenGroups(fileName string) *TokenGroup {
 	log.CheckFatal(err)
 
 	//
-	obj := &TokenGroup{}
+	obj := newTokenGroup()
 	{
 		symToAddr := GetSymToAddrStore(fileName)
 		for k, v := range store.Groups.CurvePools {
