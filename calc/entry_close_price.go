@@ -15,8 +15,7 @@ type TradingPriceI interface {
 	GetDebt() *big.Int
 	GetCollateralInUnderlying() interface{}
 	GetUnderlyingToken() string
-	SetCurrentPrice(tradingToken, quoteToken string, amt float64)
-	GetRemaingFunds() *core.BigInt
+	GetRemainingFunds() *core.BigInt
 }
 
 type tokenI interface {
@@ -88,7 +87,7 @@ func CalcEntryPriceBySession(chainId int64, store tokenI, session TradingPriceI)
 
 // closePrice
 func getRemaingFunds(session TradingPriceI) *big.Int {
-	remainingFunds := session.GetRemaingFunds()
+	remainingFunds := session.GetRemainingFunds()
 	if remainingFunds == nil {
 		return big.NewInt(0)
 	}
