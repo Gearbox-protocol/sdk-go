@@ -32,7 +32,6 @@ func powFloat(a *big.Int) *big.Float {
 //
 // - UniTokenLastSync is not updated, as AddLastSyncForUniToken is commented
 // - AddUniPools is not getting called as in chainlinkPriceFeed removed link to repo method.AddUniPoolsForToken
-//
 type UNIFetcher struct {
 	UniPoolByToken map[string]*schemas.UniswapPools
 	baseToken      string
@@ -101,7 +100,7 @@ func (mdl *UNIFetcher) GetCalls() (calls []multicall.Multicall2Call) {
 }
 
 func (mdl UNIFetcher) setuniv2(entry multicall.Multicall2Result, univ2 map[string]float64, token string, tokenDecimals int8) {
-	if !entry.Success {
+	if !entry.Success || len(entry.ReturnData) == 0 {
 		return
 	}
 	v2ABI := core.GetAbi("Uniswapv2Pool")
@@ -115,12 +114,14 @@ func (mdl UNIFetcher) setuniv2(entry multicall.Multicall2Result, univ2 map[strin
 }
 
 func (mdl UNIFetcher) setuniv3(entry multicall.Multicall2Result, univ3 map[string]float64, token string, tokenDecimals int8) {
-	if !entry.Success {
+	if !entry.Success || len(entry.ReturnData) == 0 {
 		return
 	}
 	v3ABI := core.GetAbi("Uniswapv3Pool")
 	value, err := v3ABI.Unpack("slot0", entry.ReturnData)
-	log.CheckFatal(err)
+	if err != nil {
+		log.Fatalf("for token %s, %v err: %s", token, entry.ReturnData, err)
+	}
 	//https://docs.uniswap.org/sdk/guides/fetching-prices#understanding-sqrtprice
 	// [(slot0**2 *Token0decimals)/2**192], divide by token for getting the float price in WETH
 	//
@@ -136,7 +137,7 @@ func (mdl UNIFetcher) setuniv3(entry multicall.Multicall2Result, univ3 map[strin
 // (num/token1Decimals) * token0Decimals
 // if sorted is ans else 1/ans
 func (mdl UNIFetcher) settwapv3(entry multicall.Multicall2Result, twapV3 map[string]float64, token string, tokenDecimals int8) {
-	if !entry.Success {
+	if !entry.Success || len(entry.ReturnData) == 0 {
 		return
 	}
 	v3ABI := core.GetAbi("Uniswapv3Pool")

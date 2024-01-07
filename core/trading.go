@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
+// update with 1inch trigger config too.
 var TRADING_SYMBOLS = []Symbol{
 	"MKR",
 	"UNI",
