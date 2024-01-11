@@ -18,6 +18,9 @@ type TradingPriceObj struct {
 }
 
 func (w TradingPriceObj) GetBalances() core.DBBalanceFormat {
+	if w.Balances == nil {
+		return core.DBBalanceFormat{}
+	}
 	return *w.Balances
 }
 
