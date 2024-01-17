@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -37,12 +38,13 @@ func CreateDefaultTestInput(filePaths []string, t *testing.T) (*TestInput, core.
 }
 
 func addAddressSetJson(filePath string, obj TestInputI, addressMap core.AddressMap, t *testing.T) {
-	var mock core.Json = utils.ReadJson(filePath)
+	var err error
+	var mock core.Json
+	mock, err = utils.ReadJson(filePath)
+	log.CheckFatal(err)
 	mock.ParseAddress(t, addressMap)
 	// log.Info(utils.ToJson(mock))
 	b, err := json.Marshal(mock)
-	if err != nil {
-		t.Error(err)
-	}
+	log.CheckFatal(err)
 	utils.SetJson(b, obj)
 }
