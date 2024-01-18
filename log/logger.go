@@ -184,3 +184,6 @@ func DetectFuncAtStackN(n int) string {
 func WrapErrWithLine(err error) error {
 	return fmt.Errorf("%s: %v", DetectFuncAtStackN(2), err)
 }
+func WrapErrWithLineN(err error, n int) error {
+	return fmt.Errorf("%s: %v", DetectFuncAtStackN(n), err)
+}
