@@ -21,7 +21,7 @@ func GetHost(host string) string {
 // host = 0.0.0.0:8080
 // host = 8080
 // host =0 return
-func ServerFromMux(mux *http.ServeMux, host string) {
+func ServerFromMux(mux http.Handler, host string) {
 	host = GetHost(host)
 	if host == "" {
 		return
