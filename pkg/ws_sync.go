@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 )
 
-func WsFetchBlockNumFrom(syncedTill int64, wsProvider string, fn func(_ int64, _ uint64)) {
+func WsFetchBlockNumFrom(syncedTill int64, wsProvider string, fn func(_ int64, _ uint64), dontGetTs ...bool) {
 	//
 	wsClient, err := ethclient.Dial(wsProvider)
 	log.CheckFatal(err)
@@ -35,12 +35,14 @@ func WsFetchBlockNumFrom(syncedTill int64, wsProvider string, fn func(_ int64, _
 			if syncedTill != 0 {
 				for nextBlock := syncedTill + 1; nextBlock <= latestBlockNum; nextBlock++ {
 					var ts uint64
-					if latestBlockNum == nextBlock { // for latest block, we get timestamp from ws subscrption
-						ts = header.Time
-					} else {
-						header, err := wsClient.HeaderByNumber(context.Background(), big.NewInt(nextBlock))
-						log.CheckFatal(err)
-						ts = header.Time
+					if !(len(dontGetTs) != 0 && dontGetTs[0]) {
+						if latestBlockNum == nextBlock { // for latest block, we get timestamp from ws subscrption
+							ts = header.Time
+						} else {
+							header, err := wsClient.HeaderByNumber(context.Background(), big.NewInt(nextBlock))
+							log.CheckFatal(err)
+							ts = header.Time
+						}
 					}
 					fn(nextBlock, ts)
 					syncedTill = nextBlock
