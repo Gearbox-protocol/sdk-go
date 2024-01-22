@@ -21,6 +21,11 @@ func (ds *MutexDS[T, K]) Get(key T) K {
 	defer ds.mu.RUnlock()
 	return ds.m[key]
 }
+func (ds *MutexDS[T, K]) Delete(key T) {
+	ds.mu.Lock()
+	defer ds.mu.Unlock()
+	delete(ds.m, key)
+}
 func (ds *MutexDS[T, K]) Exists(key T) bool {
 	ds.mu.RLock()
 	defer ds.mu.RUnlock()
