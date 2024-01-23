@@ -25,6 +25,7 @@ type GearboxOracleI interface {
 	//
 	GetCalls() []multicall.Multicall2Call
 	GetPrices(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
+	GetFeed(token string) common.Address
 }
 
 type GearboxOracle struct {
@@ -52,6 +53,9 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 
 func (pOracle GearboxOracle) GetAddress() common.Address {
 	return pOracle.Address
+}
+func (pOracle GearboxOracle) GetFeed(token string) common.Address {
+	return pOracle.TokenToFeed[token]
 }
 
 func (pOracle *GearboxOracle) GetVersion() core.VersionType {
