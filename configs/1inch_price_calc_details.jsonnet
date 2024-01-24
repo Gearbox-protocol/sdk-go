@@ -62,6 +62,11 @@
       token: 'yvCurve_stETH',
       underlying: 'steCRV',
     },
+    {
+      token: 'sDAI',
+      isMaker: true,
+      underlying: 'DAI',
+    },
   ],
   crvTokens: [
     {

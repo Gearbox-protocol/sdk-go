@@ -51,6 +51,7 @@ type ConstTokenPriceCalc struct {
 }
 type YearnSpotPriceCalc struct {
 	Token      string `json:"token"`
+	IsMaker    bool   `json:"isMaker"`
 	Underlying string `json:"underlying"`
 }
 
@@ -283,15 +284,22 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 
 func (calc OneInchOracle) GetYearnCalls() (calls []multicall.Multicall2Call) {
 	data, err := hex.DecodeString("99530b06") // pricepershare
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.CheckFatal(err)
+	makerDAI, err := hex.DecodeString("07a2d13a") // convertToAssets
+	log.CheckFatal(err)
 	for _, details := range calc.YearnTokens {
 		tokenAddr := calc.symToAddr.Tokens[details.Token]
-		calls = append(calls, multicall.Multicall2Call{
-			Target:   tokenAddr,
-			CallData: data,
-		})
+		if details.IsMaker {
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   tokenAddr,
+				CallData: makerDAI,
+			})
+		} else {
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   tokenAddr,
+				CallData: data,
+			})
+		}
 	}
 	return
 }
