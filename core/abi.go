@@ -6,6 +6,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCL"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCLTrait"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/accountFactory"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/adaptersv3/savingMaker"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addressProvider"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/contractsRegister"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
@@ -185,6 +186,9 @@ var adapterMap = AbiMap{
 	// v3 pos for synctron
 	"NonFungiblePosManager": {ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
 	"TokenDistributor":      {ABI: tokenDistributor.TokenDistributorABI},
+	//
+	//
+	"MakerDAI": {ABI: savingMaker.SavingMakerABI},
 }
 
 func getABI(data string) *abi.ABI {

@@ -285,14 +285,15 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 func (calc OneInchOracle) GetYearnCalls() (calls []multicall.Multicall2Call) {
 	data, err := hex.DecodeString("99530b06") // pricepershare
 	log.CheckFatal(err)
-	makerDAI, err := hex.DecodeString("07a2d13a") // convertToAssets
+	makerABI := core.GetAbi("MakerDAI")
+	makerData, err := makerABI.Pack("convertToAssets", utils.GetExpInt(18))
 	log.CheckFatal(err)
 	for _, details := range calc.YearnTokens {
 		tokenAddr := calc.symToAddr.Tokens[details.Token]
 		if details.IsMaker {
 			calls = append(calls, multicall.Multicall2Call{
 				Target:   tokenAddr,
-				CallData: makerDAI,
+				CallData: makerData,
 			})
 		} else {
 			calls = append(calls, multicall.Multicall2Call{
