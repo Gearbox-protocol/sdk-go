@@ -32,14 +32,17 @@ func GetSymToAddrStore(fileName string) *SymTOAddrStore {
 	return store
 }
 
-func GetAddrToSymbol(fileName string) map[common.Address]Symbol {
+func GetAddrToSymbol(fileName string, token bool) map[common.Address]Symbol {
 	store := GetSymToAddrStore(fileName)
 	addrToName := map[common.Address]Symbol{}
-	for name, token := range store.Tokens {
-		addrToName[token] = Symbol(name)
-	}
-	for name, exchg := range store.Exchanges {
-		addrToName[exchg] = Symbol(name)
+	if token {
+		for name, token := range store.Tokens {
+			addrToName[token] = Symbol(name)
+		}
+	} else {
+		for name, exchg := range store.Exchanges {
+			addrToName[exchg] = Symbol(name)
+		}
 	}
 	return addrToName
 }
@@ -52,12 +55,19 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 	return GetSymToAddrStore(fileName)
 }
 
-func GetAddrToSymbolByChainId(chainId int64) map[common.Address]Symbol {
+func GetTokenToSymbolByChainId(chainId int64) map[common.Address]Symbol {
 	if chainId == 1337 || chainId == 7878 {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
-	return GetAddrToSymbol(fileName)
+	return GetAddrToSymbol(fileName, true)
+}
+func GetExchangeToSymbolByChainId(chainId int64) map[common.Address]Symbol {
+	if chainId == 1337 || chainId == 7878 {
+		chainId = 1
+	}
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	return GetAddrToSymbol(fileName, false)
 }
 
 func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {

@@ -12,7 +12,7 @@ var _addrToSym map[common.Address]core.Symbol
 
 func loadSymToAddrStore(chainId int64) map[common.Address]core.Symbol {
 	if _addrToSym == nil {
-		_addrToSym = core.GetAddrToSymbolByChainId(chainId)
+		_addrToSym = core.GetTokenToSymbolByChainId(chainId)
 	}
 	return _addrToSym
 }
