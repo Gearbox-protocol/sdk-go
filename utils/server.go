@@ -36,3 +36,22 @@ func ServerFromMux(mux http.Handler, host string) {
 		srv.ListenAndServe()
 	}()
 }
+
+func HTTPServerWriteErr(w http.ResponseWriter, code int, err error) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(ToJsonBytes(map[string]string{"message": err.Error()}))
+}
+func HTTPServerWriteSuccess(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(ToJsonBytes(map[string]interface{}{"data": data}))
+}
+
+func HTTPServerCORSMiddleware(fn func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS,PUT")
+		// w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+		fn(w, r)
+	}
+}
