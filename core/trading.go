@@ -23,6 +23,11 @@ var TRADING_SYMBOLS = []Symbol{
 	"BTC",
 	//
 	"stETH",
+	"yvDAI",
+	"yvUSDC",
+	"yvWBTC",
+	"yvWETH",
+	"sDAI",
 }
 
 var BASE_SYMBOLS []Symbol = []Symbol{"DAI", "ETH", "BTC"}

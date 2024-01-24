@@ -37,13 +37,13 @@ func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, bas
 
 func priority(m map[common.Address]core.Symbol, addr string) int {
 	switch m[common.HexToAddress(addr)] {
-	case "USDC":
+	case "USDC", "yvUSDC":
 		return 0
-	case "DAI":
+	case "DAI", "sDAI", "yvDAI":
 		return 1
-	case "WBTC":
+	case "WBTC", "yvWBTC":
 		return 2
-	case "WETH":
+	case "WETH", "yvWETH", "stETH":
 		return 3
 	default:
 		return 100
