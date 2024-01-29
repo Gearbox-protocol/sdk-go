@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -141,12 +140,10 @@ func NewTradingPair[T ~string, X ~string](trading X, base T) TradingPair {
 }
 
 func (z TradingPair) MarshalJSON() ([]byte, error) {
-	log.Info(z.String())
 	return []byte("\"" + z.String() + "\""), nil
 }
 
 func (z *TradingPair) UnmarshalJSON(b []byte) error {
-	log.Info(string(b))
 	str := strings.ToUpper(strings.Trim(string(b), "\""))
 	for _, baseRealCase := range append(farmedBaseSymbols, baseSymbols...) { // farmed before normal base
 		baseUpperCase := strings.ToUpper(string(baseRealCase))
