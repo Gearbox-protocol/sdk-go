@@ -3,12 +3,11 @@ package core
 import (
 	"strings"
 
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 // update with 1inch trigger config too.
-var TRADING_SYMBOLS = []Symbol{
+var tradingSymbols = []Symbol{
 	"MKR",
 	"UNI",
 	"LINK",
@@ -19,41 +18,75 @@ var TRADING_SYMBOLS = []Symbol{
 	"CVX",
 	"FXS",
 	// "BLUR",
-	"ETH",
-	"BTC",
-	//
-	"stETH",
-	"yvDAI",
-	"yvUSDC",
-	"yvWBTC",
-	"yvWETH",
-	"sDAI",
 }
 
-var BASE_SYMBOLS []Symbol = []Symbol{"DAI", "ETH", "BTC"}
+var baseSymbols []Symbol = []Symbol{"DAI", "ETH", "BTC", "USDC"}
 
-var COMMON_TRADING_SYMBOLS []Symbol = []Symbol{"ETH", "BTC"}
+var farmedBaseSymbols []Symbol = []Symbol{"sDAI", "yvUSDC", "yvDAI", "stETH", "yvWBTC", "yvWETH"}
 
-func NotCommonBase() (ans []Symbol) {
-	set := map[Symbol]bool{}
-	for _, common := range COMMON_TRADING_SYMBOLS {
-		set[common] = true
+var TradingPairs map[TradingPair]bool
+
+var TokenToTradingPairs map[Symbol][]TradingPair
+
+var upperCaseToRealCase map[Symbol]Symbol
+
+func updateTokenToPairs(pair TradingPair, trading, base Symbol) {
+	TokenToTradingPairs[trading] = append(TokenToTradingPairs[trading], pair)
+	TokenToTradingPairs[base] = append(TokenToTradingPairs[base], pair)
+}
+
+func TradingSymNoW(sym Symbol) Symbol {
+	if sym[0] == 'W' {
+		sym = sym[1:]
 	}
-	for _, base := range BASE_SYMBOLS {
-		if !set[base] {
-			ans = append(ans, base)
+	return sym
+}
+func init() {
+	TradingPairs = map[TradingPair]bool{}
+	TokenToTradingPairs = map[Symbol][]TradingPair{}
+	// trading and base
+	for _, trading := range tradingSymbols {
+		for _, base := range baseSymbols {
+			pair := NewTradingPair(trading, base)
+			//
+			TradingPairs[pair] = true
+			updateTokenToPairs(pair, trading, base)
 		}
 	}
-	return
+	// all base pairs
+	for _, trading := range append(baseSymbols, farmedBaseSymbols...) {
+		for _, base := range append(baseSymbols, farmedBaseSymbols...) {
+			tP := Priority(trading)
+			bP := Priority(base)
+			if tP == bP {
+
+			} else if tP > bP {
+				pair := NewTradingPair(trading, base)
+				TradingPairs[pair] = true
+				updateTokenToPairs(pair, trading, base)
+			} else {
+				pair := NewTradingPair(base, trading)
+				TradingPairs[pair] = true
+				updateTokenToPairs(pair, trading, base)
+			}
+		}
+	}
+	//
+	upperCaseToRealCase = map[Symbol]Symbol{}
+	for _, sym := range AllTradingSymbolForDBWithW() {
+		sym = TradingSymNoW(sym)
+		upperCaseToRealCase[Symbol(strings.ToUpper(string(sym)))] = sym
+	}
 }
+
 func AllTradingSymbolForDBWithW() (ans []Symbol) {
 	set := map[Symbol]bool{}
-	for _, symbol := range TRADING_SYMBOLS {
-		set[symbol] = true
+	for _, symbols := range [][]Symbol{baseSymbols, farmedBaseSymbols, tradingSymbols} {
+		for _, sym := range symbols {
+			set[sym] = true
+		}
 	}
-	for _, symbol := range BASE_SYMBOLS {
-		set[symbol] = true
-	}
+	delete(set, "USDC")
 	ans = make([]Symbol, 0, len(set))
 	for token := range set {
 		if utils.Contains([]string{"ETH", "BTC"}, string(token)) {
@@ -64,40 +97,74 @@ func AllTradingSymbolForDBWithW() (ans []Symbol) {
 	return
 }
 
-type TradingPair Symbol
+func Priority(sym Symbol) int {
+	switch sym {
+	case "USDC", "yvUSDC":
+		return 0
+	case "DAI", "sDAI", "yvDAI":
+		return 1
+	case "WBTC", "yvWBTC":
+		return 2
+	case "WETH", "yvWETH", "stETH":
+		return 3
+	default:
+		return 100
+	}
+}
+
+func GetPriceScale(p TradingPair) int64 {
+	if utils.Contains([]Symbol{"BTC", "yvWBTC"}, p.Base) {
+		return 10_000
+	} else if utils.Contains([]Symbol{"yvWETH", "ETH", "stETH"}, p.Base) {
+		return 1000
+	} else {
+		return 100
+	}
+}
+
+//
+
+type TradingPair struct {
+	Trading Symbol
+	Base    Symbol
+}
+
+func (p TradingPair) String() string {
+	return string(p.Trading) + string(p.Base)
+}
 
 func NewTradingPair[T ~string, X ~string](trading X, base T) TradingPair {
-	return TradingPair(string(trading) + string(base))
+	return TradingPair{
+		Trading: Symbol(trading),
+		Base:    Symbol(base),
+	}
 }
 
-func (pair TradingPair) Tokens() (token, base Symbol) {
-	if strings.HasSuffix(string(pair), "USDC") {
-		return Symbol(pair[:len(pair)-len("USDC")]), Symbol("USDC")
-	}
-	for _, base := range BASE_SYMBOLS {
-		if strings.HasSuffix(string(pair), string(base)) {
-			return Symbol(pair[:len(pair)-len(base)]), base
+func (z TradingPair) MarshalJSON() ([]byte, error) {
+	return []byte(z.String()), nil
+}
+
+func (z *TradingPair) UnmarshalJSON(b []byte) error {
+	str := strings.ToUpper(strings.Trim(string(b), "\""))
+	for _, baseRealCase := range append(farmedBaseSymbols, baseSymbols...) { // farmed before normal base
+		baseUpperCase := strings.ToUpper(string(baseRealCase))
+		if strings.HasSuffix(str, baseUpperCase) {
+			splitInd := len(str) - len(baseUpperCase)
+			//
+			tradingToken := Symbol(str[:splitInd])
+			z.Trading = upperCaseToRealCase[tradingToken]
+			z.Base = baseRealCase
+			return nil
 		}
 	}
-
-	log.Fatalf("can't find the base token for pair %s", pair)
-	return "", ""
+	return nil
 }
 
-var notAllowedPairs = []TradingPair{
-	"BTCETH",
-	"DAIUSDC",
-	"DAIBTC",
-	"DAIETH",
+// https://stackoverflow.com/questions/55335296/problem-with-marshal-unmarshal-when-key-of-map-is-a-struct for map
+func (z TradingPair) MarshalText() (text []byte, err error) {
+	return z.MarshalJSON()
 }
 
-func PairIsAllowed(tradingSym, baseSym Symbol) bool {
-	if tradingSym == baseSym {
-		return false
-	}
-	pair := NewTradingPair(tradingSym, baseSym)
-	if utils.Contains(notAllowedPairs, pair) {
-		return false
-	}
-	return true
+func (s *TradingPair) UnmarshalText(text []byte) error {
+	return s.UnmarshalJSON(text)
 }

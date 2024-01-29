@@ -28,25 +28,10 @@ func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, underlying st
 
 // trading priority is higher than base
 func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, base string) {
-	if priority(m, a) > priority(m, b) {
+	if core.Priority(m[common.HexToAddress(a)]) > core.Priority(m[common.HexToAddress(b)]) {
 		return a, b
 	} else {
 		return b, a
-	}
-}
-
-func priority(m map[common.Address]core.Symbol, addr string) int {
-	switch m[common.HexToAddress(addr)] {
-	case "USDC", "yvUSDC":
-		return 0
-	case "DAI", "sDAI", "yvDAI":
-		return 1
-	case "WBTC", "yvWBTC":
-		return 2
-	case "WETH", "yvWETH", "stETH":
-		return 3
-	default:
-		return 100
 	}
 }
 
