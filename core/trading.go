@@ -1,8 +1,10 @@
 package core
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -55,7 +57,7 @@ func init() {
 	}
 	// all base pairs
 	for _, trading := range append(baseSymbols, farmedBaseSymbols...) {
-		for _, base := range append(baseSymbols, farmedBaseSymbols...) {
+		for _, base := range baseSymbols {
 			tP := Priority(trading)
 			bP := Priority(base)
 			if tP == bP {
@@ -99,13 +101,11 @@ func AllTradingSymbolForDBWithW() (ans []Symbol) {
 
 func Priority(sym Symbol) int {
 	switch sym {
-	case "USDC", "yvUSDC":
+	case "USDC", "yvUSDC", "DAI", "sDAI", "yvDAI":
 		return 0
-	case "DAI", "sDAI", "yvDAI":
-		return 1
-	case "WBTC", "yvWBTC":
+	case "WBTC", "yvWBTC", "BTC":
 		return 2
-	case "WETH", "yvWETH", "stETH":
+	case "WETH", "yvWETH", "stETH", "ETH":
 		return 3
 	default:
 		return 100
@@ -141,10 +141,12 @@ func NewTradingPair[T ~string, X ~string](trading X, base T) TradingPair {
 }
 
 func (z TradingPair) MarshalJSON() ([]byte, error) {
-	return []byte(z.String()), nil
+	log.Info(z.String())
+	return []byte("\"" + z.String() + "\""), nil
 }
 
 func (z *TradingPair) UnmarshalJSON(b []byte) error {
+	log.Info(string(b))
 	str := strings.ToUpper(strings.Trim(string(b), "\""))
 	for _, baseRealCase := range append(farmedBaseSymbols, baseSymbols...) { // farmed before normal base
 		baseUpperCase := strings.ToUpper(string(baseRealCase))
@@ -157,7 +159,7 @@ func (z *TradingPair) UnmarshalJSON(b []byte) error {
 			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("can't unmarshal TradingPair with input: %s", string(b))
 }
 
 // https://stackoverflow.com/questions/55335296/problem-with-marshal-unmarshal-when-key-of-map-is-a-struct for map
@@ -167,4 +169,49 @@ func (z TradingPair) MarshalText() (text []byte, err error) {
 
 func (s *TradingPair) UnmarshalText(text []byte) error {
 	return s.UnmarshalJSON(text)
+}
+
+// base and yearn tokens
+func NormalTradingTokensFor1Inch() (ans []Symbol) {
+	set := map[Symbol]bool{}
+	for _, symbols := range [][]Symbol{baseSymbols, tradingSymbols} {
+		for _, sym := range symbols {
+			set[sym] = true
+		}
+	}
+	ans = make([]Symbol, 0, len(set))
+	for token := range set {
+		if utils.Contains([]string{"ETH", "BTC"}, string(token)) {
+			token = Symbol("W" + string(token))
+		}
+		ans = append(ans, token)
+	}
+	return
+}
+
+func YearnTradingTokens() string {
+	return `
+	yearnTokens: [
+		{
+		  token: 'yvDAI',
+		  underlying: 'DAI',
+		},
+		{
+		  token: 'yvUSDC',
+		  underlying: 'USDC',
+		},
+		{
+		  token: 'yvWETH',
+		  underlying: 'WETH',
+		},
+		{
+		  token: 'yvWBTC',
+		  underlying: 'WBTC',
+		},
+		{
+		  token: 'sDAI',
+		  isMaker: true,
+		  underlying: 'DAI',
+		},
+	  ]`
 }
