@@ -32,7 +32,7 @@ var NULL_ADDR = common.Address{}
 
 func NetworkUIUrl(chainId int64) NetworkUI {
 	switch chainId {
-	case 1:
+	case 1, 7878:
 		return NetworkUI{
 			ExplorerUrl: "https://etherscan.io",
 			ChartUrl:    "https://charts.gearbox.fi",
