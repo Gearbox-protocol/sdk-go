@@ -13,9 +13,11 @@ type TradingPriceI interface {
 	GetBalances() core.DBBalanceFormat
 	GetBorrowedAmount() *big.Int
 	GetDebt() *big.Int
-	GetCollateralInUnderlying() interface{}
+	GetColExcludingEndToken() interface{}
+	GetColInEndToken() *big.Int
 	GetUnderlyingToken() string
 	GetRemainingFunds() *core.BigInt
+	EndToken() string
 }
 
 type tokenI interface {
@@ -47,7 +49,7 @@ func calculatePrice(store tokenI, tradingToken, baseToken string, tradingAmount,
 	return currentPrice
 }
 
-func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *big.Int) float64 {
+func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *big.Int, endTokenCol *big.Int) float64 {
 	underlyingToken := session.GetUnderlyingToken()
 	bal := session.GetBalances()
 	if _, ok := bal[underlyingToken]; ok {
@@ -58,6 +60,11 @@ func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *
 	if !ok {
 		return 0
 	}
+	if otherToken != session.EndToken() {
+		log.Fatalf("otherToken(%s) can't be different than endToken(%s)", otherToken, session.EndToken())
+	}
+	otherAmount = new(big.Int).Sub(otherAmount, endTokenCol)
+	//
 	tradingToken, baseToken := TradingAndBaseTokens(chainId, bal, underlyingToken)
 	if tradingToken == "" {
 		return 0
@@ -79,10 +86,10 @@ func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *
 func CalcEntryPriceBySession(chainId int64, store tokenI, session TradingPriceI) float64 {
 	// collteral + borrowedAmount - underlyingTokenBal = cBal
 	cBal := new(big.Int).Add(
-		toBigInt(session.GetCollateralInUnderlying(), store.GetToken(session.GetUnderlyingToken()).Decimals),
+		toBigInt(session.GetColExcludingEndToken(), store.GetToken(session.GetUnderlyingToken()).Decimals),
 		session.GetBorrowedAmount(),
 	)
-	return calcTradingPrice(chainId, store, session, cBal)
+	return calcTradingPrice(chainId, store, session, cBal, session.GetColInEndToken())
 }
 
 // closePrice
@@ -99,5 +106,5 @@ func CalcClosePriceBySession(chainId int64, store tokenI, session TradingPriceI)
 		session.GetDebt(),
 		getRemaingFunds(session),
 	)
-	return calcTradingPrice(chainId, store, session, cBal)
+	return calcTradingPrice(chainId, store, session, cBal, new(big.Int))
 }
