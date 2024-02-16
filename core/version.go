@@ -36,27 +36,17 @@ type VersionType struct {
 }
 
 func NewVersion(v int16) VersionType {
-	if v == 1 || v == 2 || v == 300 {
-		return VersionType{v: v}
-	} else if v == 210 || v == 220 {
+	if v == 1 {
+		return VersionType{v: 1}
+	} else if v == 300 || v == 301 {
+		return VersionType{v: 300}
+	} else if v == 210 || v == 220 || v == 2 {
 		return VersionType{v: 2}
 	} else if v == 10_000 { // for testing
 		return VersionType{v: 10000}
 	}
 	log.Fatal("version not supported", v)
 	panic("")
-}
-
-func (v VersionType) Decimals() int8 {
-	switch v.v {
-	case 1:
-		return 18 // eth decimals
-	case 2, 300:
-		return 8 // USD decimals
-	default:
-		log.Fatal("version not supported")
-		panic("")
-	}
 }
 
 func (v VersionType) IsGBv1() bool {

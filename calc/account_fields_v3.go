@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -30,14 +31,14 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // - whenever there is updateQuota, cumulative quota intereest and fees are stored in creditManager and cumulativeQuotaIndex for account is updated.
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
-func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
+func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	defer func() {
 		err := recover()
 		if err != nil {
 			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}
 	}()
-	debtDetails = c.getDebtDetails(version, ts, blockNum, poolDetails, session, feeInterest)
+	debtDetails = c.getDebtDetails(pfVersion, ts, blockNum, poolDetails, session, feeInterest)
 
 	underlying := poolDetails.GetUnderlying()
 	// quotaedTokens := poolQuotaDetails.GetPoolQuotaDetails(underlying)
@@ -52,12 +53,12 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 				if balance.Quota != nil {
 					quota = balance.Quota
 				}
-				quotaInUSD = c.convertToUSD(quota.Convert(), underlying, version, blockNum)
+				quotaInUSD = c.convertToUSD(quota.Convert(), underlying, pfVersion, blockNum)
 			} else {
 				quotaInUSD = utils.GetExpInt(90)
 			}
 			//
-			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, version, blockNum)
+			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, pfVersion, blockNum)
 			tokenTwvValueInUSD := minBigInt(
 				new(big.Int).Quo(
 					new(big.Int).Mul(
@@ -75,8 +76,8 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 		}
 	}
 	//
-	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, version, blockNum)
-	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, version, blockNum)
+	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, pfVersion, blockNum)
+	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, pfVersion, blockNum)
 	if debtDetails.borrowedAmount.Cmp(big.NewInt(0)) == 0 {
 		calHF = big.NewInt(65535)
 	} else {
@@ -100,7 +101,7 @@ func getCumIndexOfAccount(session AccountForCalcI) *big.Int {
 	}
 	return index
 }
-func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) *DebtDetails {
+func (c Calculator) getDebtDetails(version schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) *DebtDetails {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -134,7 +135,7 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 	}
 }
 
-func calcExtraQuotaInterest(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI) *big.Int {
+func calcExtraQuotaInterest(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI) *big.Int {
 	balances := session.GetBalances()
 	poolQuotas := poolDetails.GetPoolQuotaDetails()
 	totalQuotedInterest := big.NewInt(0)

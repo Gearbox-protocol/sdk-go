@@ -12,8 +12,9 @@ import (
 type Symbol string
 
 type SymTOAddrStore struct {
-	Exchanges map[string]common.Address `json:"exchanges"`
-	Tokens    map[string]common.Address `json:"tokens"`
+	Exchanges    map[string]common.Address `json:"exchanges"`
+	Tokens       map[string]common.Address `json:"tokens"`
+	FarmingPools map[string]common.Address `json:"farmingPools"`
 }
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) string {
@@ -32,15 +33,21 @@ func GetSymToAddrStore(fileName string) *SymTOAddrStore {
 	return store
 }
 
-func GetAddrToSymbol(fileName string, token bool) map[common.Address]Symbol {
+func getAddrToSymbol(fileName string, opts map[string]bool) map[common.Address]Symbol {
 	store := GetSymToAddrStore(fileName)
 	addrToName := map[common.Address]Symbol{}
-	if token {
+	if opts["tokens"] {
 		for name, token := range store.Tokens {
 			addrToName[token] = Symbol(name)
 		}
-	} else {
+	}
+	if opts["exchanges"] {
 		for name, exchg := range store.Exchanges {
+			addrToName[exchg] = Symbol(name)
+		}
+	}
+	if opts["farmingPools"] {
+		for name, exchg := range store.FarmingPools {
 			addrToName[exchg] = Symbol(name)
 		}
 	}
@@ -55,19 +62,27 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 	return GetSymToAddrStore(fileName)
 }
 
+func GetFarmingPoolsToSymbolByChainId(chainId int64) map[common.Address]Symbol {
+	if chainId == 1337 || chainId == 7878 {
+		chainId = 1
+	}
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	return getAddrToSymbol(fileName, map[string]bool{"farmingPools": true})
+}
+
 func GetTokenToSymbolByChainId(chainId int64) map[common.Address]Symbol {
 	if chainId == 1337 || chainId == 7878 {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
-	return GetAddrToSymbol(fileName, true)
+	return getAddrToSymbol(fileName, map[string]bool{"tokens": true})
 }
 func GetExchangeToSymbolByChainId(chainId int64) map[common.Address]Symbol {
 	if chainId == 1337 || chainId == 7878 {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
-	return GetAddrToSymbol(fileName, false)
+	return getAddrToSymbol(fileName, map[string]bool{"exchanges": true})
 }
 
 func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
