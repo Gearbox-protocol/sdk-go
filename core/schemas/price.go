@@ -18,7 +18,7 @@ type TokenOracle struct {
 }
 
 func (t TokenOracle) String() string {
-	return fmt.Sprintf("token %s of %s with feed %s and version %d, %b added at %d",
+	return fmt.Sprintf("token %s of %s with feed %s and version %d, %v added at %d",
 		t.Token, t.FeedType,
 		t.Feed, t.Version, t.Reserve, t.BlockNumber)
 }
@@ -41,7 +41,7 @@ type PriceFeed struct {
 }
 
 func (pf PriceFeed) String() string {
-	return fmt.Sprintf("Feed(%s) at block %d for token %s with Price %f. IsUSD: %v",
+	return fmt.Sprintf("Feed(%s) at block %d for token %s with Price %f. merged_pfVersion: %v",
 		pf.Feed,
 		pf.BlockNumber,
 		pf.Token,
@@ -108,9 +108,9 @@ func (v PFVersion) IsPriceInUSD() bool {
 	return v != V1PF
 }
 
-func VersionToPFVersion(version core.VersionType, reverse bool) PFVersion {
+func VersionToPFVersion(version core.VersionType, reserve bool) PFVersion {
 	if version.MoreThanEq(core.NewVersion(300)) {
-		if reverse {
+		if reserve {
 			return V3PF_REVERSE
 		}
 		return V3PF_MAIN

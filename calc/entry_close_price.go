@@ -60,7 +60,7 @@ func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *
 	if !ok {
 		return 0
 	}
-	if otherToken != session.EndToken() {
+	if session.EndToken() != "" && otherToken != session.EndToken() {
 		log.Fatalf("otherToken(%s) can't be different than endToken(%s)", otherToken, session.EndToken())
 	}
 	otherAmount = new(big.Int).Sub(otherAmount, endTokenCol)
