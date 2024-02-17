@@ -20,7 +20,8 @@ type GearboxOracleI interface {
 	GetPriceTokenTill(blockNum int64)
 	GetAddress() common.Address
 	GetVersion() core.VersionType
-	GetTokenToFeed() map[string]common.Address
+	GetTokens() []string
+	GetTopics() []common.Hash
 	OnLog(txLog types.Log) bool
 	//
 	GetCalls() []multicall.Multicall2Call
@@ -30,18 +31,19 @@ type GearboxOracleI interface {
 
 type GearboxOracle struct {
 	Address     common.Address
-	TokenToFeed map[string]common.Address
+	tokenToFeed map[string]common.Address
 	Node        *pkg.Node
 	version     core.VersionType
 	topics      []common.Hash
 	//
 	tokens []string
+	//
 }
 
 func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOracle{
 		Address:     addr,
-		TokenToFeed: map[string]common.Address{},
+		tokenToFeed: map[string]common.Address{},
 		Node: &pkg.Node{
 			Client: client,
 		},
@@ -51,11 +53,17 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 	return po
 }
 
+func (pOracle GearboxOracle) GetTopics() []common.Hash {
+	return pOracle.topics
+}
+
 func (pOracle GearboxOracle) GetAddress() common.Address {
 	return pOracle.Address
 }
+
+// overridden in gearbox_oracle_v3.go
 func (pOracle GearboxOracle) GetFeed(token string) common.Address {
-	return pOracle.TokenToFeed[token]
+	return pOracle.tokenToFeed[token]
 }
 
 func (pOracle *GearboxOracle) GetVersion() core.VersionType {
@@ -73,29 +81,35 @@ func (pOracle *GearboxOracle) GetPriceTokenTill(blockNum int64) {
 	}
 }
 
+// overridden in gearbox_oracle_v3.go
 func (pOracle *GearboxOracle) OnLog(txLog types.Log) bool {
 	switch txLog.Topics[0] {
 	case pOracle.topics[0]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
-		pOracle.TokenToFeed[token] = feed
+		pOracle.tokenToFeed[token] = feed
 		return true
 	}
 	return false
 }
 
-func (pOracle *GearboxOracle) GetTokenToFeed() map[string]common.Address {
-	return pOracle.TokenToFeed
+func (pOracle *GearboxOracle) GetTokens() []string {
+	tokens := make([]string, 0, len(pOracle.tokenToFeed))
+	for token := range pOracle.tokenToFeed {
+		tokens = append(tokens, token)
+	}
+	return tokens
 }
 
+// overridden in gearbox_oracle_v3.go
 func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 	poABI := core.GetAbi("YearnPriceFeed")
 	data, err := poABI.Pack("latestRoundData")
 	log.CheckFatal(err)
 	//
-	calls := make([]multicall.Multicall2Call, 0, len(pOracle.TokenToFeed))
-	tokens := make([]string, 0, len(pOracle.TokenToFeed))
-	for token, feed := range pOracle.TokenToFeed {
+	calls := make([]multicall.Multicall2Call, 0, len(pOracle.tokenToFeed))
+	tokens := make([]string, 0, len(pOracle.tokenToFeed))
+	for token, feed := range pOracle.tokenToFeed {
 		tokens = append(tokens, token)
 		calls = append(calls, multicall.Multicall2Call{
 			Target:   feed,
