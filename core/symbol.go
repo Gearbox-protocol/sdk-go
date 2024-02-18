@@ -11,10 +11,23 @@ import (
 
 type Symbol string
 
+type RedStonePF struct {
+	Type             int      `json:"type"`
+	DataServiceId    string   `json:"dataServiceId"`
+	DataId           string   `json:"dataId"`
+	StalenessPeriod  int64    `json:"stalenessPeriod"`
+	Signers          []string `json:"signers"`
+	SignersThreshold int      `json:"signersThreshold"`
+}
+type RedStone struct {
+	Mains    map[string]RedStonePF `json:"mains"`
+	Reserves map[string]RedStonePF `json:"reserves"`
+}
 type SymTOAddrStore struct {
 	Exchanges    map[string]common.Address `json:"exchanges"`
 	Tokens       map[string]common.Address `json:"tokens"`
 	FarmingPools map[string]common.Address `json:"farmingPools"`
+	RedStone     RedStone                  `json:"redStone"`
 }
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
@@ -25,17 +38,33 @@ func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
 	return s.Tokens[string(sym)].Hex(), true
 }
 
-func GetSymToAddrStore(fileName string) *SymTOAddrStore {
-	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
-	log.CheckFatal(err)
-	store := &SymTOAddrStore{}
-	err = json.Unmarshal([]byte(data), store)
-	log.CheckFatal(err)
-	return store
+var _globalCopy map[string]*SymTOAddrStore
+
+func getSymToAddrStore(fileName string) *SymTOAddrStore {
+	if _globalCopy == nil || _globalCopy[fileName] == nil {
+		data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
+		log.CheckFatal(err)
+		store := &SymTOAddrStore{}
+		err = json.Unmarshal([]byte(data), store)
+		log.CheckFatal(err)
+		if _globalCopy == nil {
+			_globalCopy[fileName] = store
+		}
+	}
+	return _globalCopy[fileName]
+}
+
+func GetRedStonePFByChainId(chainId int64) RedStone {
+	if chainId == 1337 || chainId == 7878 {
+		chainId = 1
+	}
+	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	data := getSymToAddrStore(fileName)
+	return data.RedStone
 }
 
 func getAddrToSymbol(fileName string, opts map[string]bool) map[common.Address]Symbol {
-	store := GetSymToAddrStore(fileName)
+	store := getSymToAddrStore(fileName)
 	addrToName := map[common.Address]Symbol{}
 	if opts["tokens"] {
 		for name, token := range store.Tokens {
@@ -60,7 +89,7 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 		chainId = 1
 	}
 	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
-	return GetSymToAddrStore(fileName)
+	return getSymToAddrStore(fileName)
 }
 
 func GetFarmingPoolsToSymbolByChainId(chainId int64) map[common.Address]Symbol {
@@ -135,7 +164,7 @@ func GetTokenGroups(fileName string) *TokenGroup {
 	//
 	obj := newTokenGroup()
 	{
-		symToAddr := GetSymToAddrStore(fileName)
+		symToAddr := getSymToAddrStore(fileName)
 		for k, v := range store.Groups.CurvePools {
 			k, ok := symToAddr.getTokenAddr(k)
 			if ok {
