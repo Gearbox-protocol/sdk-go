@@ -3,6 +3,7 @@ package dc
 import (
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -44,6 +45,9 @@ func getCMDatav3(values dcv3.CreditManagerData) CMCallData {
 	}
 }
 func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
+	if !values.IsSuccessful {
+		log.Warn("getAccountDatav3: IsSuccessful is false", values.Addr.Hex())
+	}
 	return CreditAccountCallData{
 		Addr:           values.Addr,
 		Borrower:       values.Borrower,
