@@ -17,11 +17,12 @@ type SymTOAddrStore struct {
 	FarmingPools map[string]common.Address `json:"farmingPools"`
 }
 
-func (s *SymTOAddrStore) getTokenAddr(sym Symbol) string {
+func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
 	if _, ok := s.Tokens[string(sym)]; !ok {
-		log.Fatal("can't get token", sym)
+		// log.Fatal("can't get token", sym)
+		return "", false
 	}
-	return s.Tokens[string(sym)].Hex()
+	return s.Tokens[string(sym)].Hex(), true
 }
 
 func GetSymToAddrStore(fileName string) *SymTOAddrStore {
@@ -136,16 +137,30 @@ func GetTokenGroups(fileName string) *TokenGroup {
 	{
 		symToAddr := GetSymToAddrStore(fileName)
 		for k, v := range store.Groups.CurvePools {
-			obj.CurvePools[symToAddr.getTokenAddr(k)] = v
+			k, ok := symToAddr.getTokenAddr(k)
+			if ok {
+				obj.CurvePools[k] = v
+			}
 		}
 		for k, v := range store.Groups.BalancerTokens {
-			obj.BalancerTokens[symToAddr.getTokenAddr(k)] = v
+			k, ok := symToAddr.getTokenAddr(k)
+			if ok {
+				obj.BalancerTokens[k] = v
+			}
 		}
 		for k, v := range store.Groups.ConvexCurveTokens {
-			obj.ConvexCurveTokens[symToAddr.getTokenAddr(k)] = symToAddr.getTokenAddr(v)
+			k, ok := symToAddr.getTokenAddr(k)
+			v, ok2 := symToAddr.getTokenAddr(v)
+			if ok && ok2 {
+				obj.ConvexCurveTokens[k] = v
+			}
 		}
 		for k, v := range store.Groups.YearnCurveTokens {
-			obj.YearnCurveTokens[symToAddr.getTokenAddr(k)] = symToAddr.getTokenAddr(v)
+			k, ok := symToAddr.getTokenAddr(k)
+			v, ok2 := symToAddr.getTokenAddr(v)
+			if ok && ok2 {
+				obj.YearnCurveTokens[k] = v
+			}
 		}
 	}
 	return obj

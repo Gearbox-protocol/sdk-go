@@ -84,11 +84,11 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 		anvilTx = anvilTransaction{
 			From:            from.Hex(),
 			To:              tx.To().Hex(),
-			GasPrice:        hex.EncodeToString(tx.GasTipCap().Bytes()),
-			Gas:             bigIntToString(int64(tx.Gas())),
+			GasPrice:        "0x" + hex.EncodeToString(tx.GasTipCap().Bytes()),
+			Gas:             "0x" + bigIntToString(int64(tx.Gas()*2)),
 			Data:            hex.EncodeToString(tx.Data()),
-			Nonce:           bigIntToString(nonce),
-			Value:           fmt.Sprintf("%x", tx.Value()),
+			Nonce:           "0x" + bigIntToString(nonce),
+			Value:           "0x" + fmt.Sprintf("%x", tx.Value()),
 			TransactionType: bigIntToString(int64(tx.Type())),
 		}
 	} else {

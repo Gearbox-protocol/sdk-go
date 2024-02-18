@@ -33,7 +33,7 @@ func ReadFile(fileName string) ([]byte, error) {
 func ReadJsonAndSetInterface(fileName string, data interface{}) error {
 	_bytes, err := ReadFile(fileName)
 	if err != nil {
-		fmt.Println(log.WrapErrWithLineN(err, 2))
+		log.Debug(log.WrapErrWithLineN(err, 3))
 		return err
 	}
 	reader := bytes.NewReader(_bytes)
@@ -44,7 +44,7 @@ func ReadJsonReaderAndSetInterface(reader io.Reader, data interface{}) error {
 	d := json.NewDecoder(reader)
 	d.UseNumber()
 	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", log.WrapErrWithLineN(err, 2))
+		log.Debug("error:", log.WrapErrWithLineN(err, 3))
 		return err
 	}
 	return nil
