@@ -20,8 +20,8 @@ type RedStonePF struct {
 	SignersThreshold int      `json:"signersThreshold"`
 }
 type RedStone struct {
-	Mains    map[string]RedStonePF `json:"mains"`
-	Reserves map[string]RedStonePF `json:"reserves"`
+	Mains    map[Symbol]RedStonePF `json:"mains"`
+	Reserves map[Symbol]RedStonePF `json:"reserves"`
 }
 type SymTOAddrStore struct {
 	Exchanges    map[string]common.Address `json:"exchanges"`
@@ -38,7 +38,7 @@ func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
 	return s.Tokens[string(sym)].Hex(), true
 }
 
-var _globalCopy map[string]*SymTOAddrStore
+var _globalCopy = map[string]*SymTOAddrStore{}
 
 func getSymToAddrStore(fileName string) *SymTOAddrStore {
 	if _globalCopy == nil || _globalCopy[fileName] == nil {
