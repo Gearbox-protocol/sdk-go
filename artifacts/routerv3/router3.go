@@ -35,13 +35,6 @@ type Balance struct {
 	Balance *big.Int
 }
 
-// GasUsage is an auto generated low-level Go binding around an user-defined struct.
-type GasUsage struct {
-	TargetContract common.Address
-	Key            [32]byte
-	Usage          *big.Int
-}
-
 // MultiCall is an auto generated low-level Go binding around an user-defined struct.
 type MultiCall struct {
 	Target   common.Address
@@ -59,7 +52,6 @@ type PathOption struct {
 type RouterResult struct {
 	Amount    *big.Int
 	MinAmount *big.Int
-	GasUsage  *big.Int
 	Calls     []MultiCall
 }
 
@@ -75,8 +67,6 @@ type StrategyPathTask struct {
 	Force             bool
 	TargetType        uint8
 	FoundAdapters     []TokenAdapters
-	GasPriceTargetRAY *big.Int
-	GasUsage          *big.Int
 	InitTargetBalance *big.Int
 	Calls             []MultiCall
 }
@@ -114,7 +104,7 @@ type TokenTypeToResolver struct {
 
 // Routerv3MetaData contains all meta data concerning the Routerv3 contract.
 var Routerv3MetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addressProvider\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"}],\"internalType\":\"structTokenToTokenType[]\",\"name\":\"tokenToTokenTypes\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"NoSpaceForSlippageCallException\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"UnknownToken\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"UnsupportedRouterComponent\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"ttIn\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"ttOut\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"rc\",\"type\":\"uint8\"}],\"name\":\"ResolverUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"RouterComponentUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"tt\",\"type\":\"uint8\"}],\"name\":\"TokenTypeUpdate\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"componentAddressById\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractICreditManagerV3\",\"name\":\"creditManager\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"createOpenStrategyPathTask\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"adapters\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"targetType\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"depositAdapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"withdrawAdapter\",\"type\":\"address\"}],\"internalType\":\"structTokenAdapters[]\",\"name\":\"foundAdapters\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"gasPriceTargetRAY\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"initTargetBalance\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structStrategyPathTask\",\"name\":\"task\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"}],\"name\":\"createStrategyPathTask\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"adapters\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"targetType\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"depositAdapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"withdrawAdapter\",\"type\":\"address\"}],\"internalType\":\"structTokenAdapters[]\",\"name\":\"foundAdapters\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"gasPriceTargetRAY\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"initTargetBalance\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structStrategyPathTask\",\"name\":\"task\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"enumSwapOperation\",\"name\":\"swapOperation\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenIn\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenOut\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"leftoverAmount\",\"type\":\"uint256\"}],\"internalType\":\"structSwapTask\",\"name\":\"swapTask\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findAllSwaps\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult[]\",\"name\":\"result\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"expectedBalances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"option\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"totalOptions\",\"type\":\"uint8\"}],\"internalType\":\"structPathOption[]\",\"name\":\"pathOptions\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"loops\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"}],\"name\":\"findBestClosePath\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"result\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"gasPriceTargetRAY\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenIn\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenOut\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findOneTokenPath\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditManager\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findOpenStrategyPath\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gasUsage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"gasUsage\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractICreditManagerV3\",\"name\":\"creditManager\",\"type\":\"address\"}],\"name\":\"getAdapters\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"result\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getGasPriceTokenOutRAY\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"gasPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"ttIn\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"ttOut\",\"type\":\"uint8\"}],\"name\":\"getResolver\",\"outputs\":[{\"internalType\":\"contractIPathResolver\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"isRouterConfigurator\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceOracle\",\"outputs\":[{\"internalType\":\"contractIPriceOracleV3\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"resolvers\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"usage\",\"type\":\"uint256\"}],\"name\":\"setGasUsage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"usage\",\"type\":\"uint256\"}],\"internalType\":\"structGasUsage[]\",\"name\":\"batchUsages\",\"type\":\"tuple[]\"}],\"name\":\"setGasUsageBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"componentAddress\",\"type\":\"address\"}],\"name\":\"setPathComponent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"componentAddresses\",\"type\":\"address[]\"}],\"name\":\"setPathComponentBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType0\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType1\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"resolver\",\"type\":\"uint8\"}],\"internalType\":\"structTokenTypeToResolver[]\",\"name\":\"tokenTypeToResolvers\",\"type\":\"tuple[]\"}],\"name\":\"setResolversBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"}],\"internalType\":\"structTokenToTokenType[]\",\"name\":\"tokensToTokenTypes\",\"type\":\"tuple[]\"}],\"name\":\"setTokenTypesBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tokenTypes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wethToken\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"NoSpaceForSlippageCallException\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"UnknownToken\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"UnsupportedRouterComponent\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"ttIn\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"ttOut\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"rc\",\"type\":\"uint8\"}],\"name\":\"ResolverUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"}],\"name\":\"RouterComponentUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"SetFutureRouter\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint8\",\"name\":\"tt\",\"type\":\"uint8\"}],\"name\":\"TokenTypeUpdate\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"componentAddressById\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractICreditManagerV3\",\"name\":\"creditManager\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"createOpenStrategyPathTask\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"adapters\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"targetType\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"depositAdapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"withdrawAdapter\",\"type\":\"address\"}],\"internalType\":\"structTokenAdapters[]\",\"name\":\"foundAdapters\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"initTargetBalance\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structStrategyPathTask\",\"name\":\"task\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"}],\"name\":\"createStrategyPathTask\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"adapters\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"targetType\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"depositAdapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"withdrawAdapter\",\"type\":\"address\"}],\"internalType\":\"structTokenAdapters[]\",\"name\":\"foundAdapters\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"initTargetBalance\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structStrategyPathTask\",\"name\":\"task\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"enumSwapOperation\",\"name\":\"swapOperation\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenIn\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenOut\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"leftoverAmount\",\"type\":\"uint256\"}],\"internalType\":\"structSwapTask\",\"name\":\"swapTask\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findAllSwaps\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult[]\",\"name\":\"result\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"expectedBalances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"option\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"totalOptions\",\"type\":\"uint8\"}],\"internalType\":\"structPathOption[]\",\"name\":\"pathOptions\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"loops\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"}],\"name\":\"findBestClosePath\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"result\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenIn\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"tokenOut\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findOneTokenPath\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditManager\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"balances\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"leftoverBalances\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"connectors\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"findOpenStrategyPath\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"internalType\":\"structBalance[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minAmount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"structMultiCall[]\",\"name\":\"calls\",\"type\":\"tuple[]\"}],\"internalType\":\"structRouterResult\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"futureRouter\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractICreditManagerV3\",\"name\":\"creditManager\",\"type\":\"address\"}],\"name\":\"getAdapters\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"result\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"ttIn\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"ttOut\",\"type\":\"uint8\"}],\"name\":\"getResolver\",\"outputs\":[{\"internalType\":\"contractIPathResolver\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"isRouterConfigurator\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_prevRouter\",\"type\":\"address\"}],\"name\":\"migrateRouterComponents\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"name\":\"resolvers\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_futureRouter\",\"type\":\"address\"}],\"name\":\"setFutureRouter\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"componentAddress\",\"type\":\"address\"}],\"name\":\"setPathComponent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"componentAddresses\",\"type\":\"address[]\"}],\"name\":\"setPathComponentBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"tokenType0\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"tokenType1\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"resolver\",\"type\":\"uint8\"}],\"internalType\":\"structTokenTypeToResolver[]\",\"name\":\"tokenTypeToResolvers\",\"type\":\"tuple[]\"}],\"name\":\"setResolversBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"tokenType\",\"type\":\"uint8\"}],\"internalType\":\"structTokenToTokenType[]\",\"name\":\"tokensToTokenTypes\",\"type\":\"tuple[]\"}],\"name\":\"setTokenTypesBatch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tokenTypes\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // Routerv3ABI is the input ABI used to generate the binding from.
@@ -296,7 +286,7 @@ func (_Routerv3 *Routerv3CallerSession) ComponentAddressById(arg0 uint8) (common
 
 // CreateOpenStrategyPathTask is a free data retrieval call binding the contract method 0xe654d4ec.
 //
-// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3Caller) CreateOpenStrategyPathTask(opts *bind.CallOpts, creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (StrategyPathTask, error) {
 	var out []interface{}
 	err := _Routerv3.contract.Call(opts, &out, "createOpenStrategyPathTask", creditManager, balances, leftoverBalances, target, connectors, slippage)
@@ -313,21 +303,21 @@ func (_Routerv3 *Routerv3Caller) CreateOpenStrategyPathTask(opts *bind.CallOpts,
 
 // CreateOpenStrategyPathTask is a free data retrieval call binding the contract method 0xe654d4ec.
 //
-// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3Session) CreateOpenStrategyPathTask(creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (StrategyPathTask, error) {
 	return _Routerv3.Contract.CreateOpenStrategyPathTask(&_Routerv3.CallOpts, creditManager, balances, leftoverBalances, target, connectors, slippage)
 }
 
 // CreateOpenStrategyPathTask is a free data retrieval call binding the contract method 0xe654d4ec.
 //
-// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createOpenStrategyPathTask(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3CallerSession) CreateOpenStrategyPathTask(creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (StrategyPathTask, error) {
 	return _Routerv3.Contract.CreateOpenStrategyPathTask(&_Routerv3.CallOpts, creditManager, balances, leftoverBalances, target, connectors, slippage)
 }
 
 // CreateStrategyPathTask is a free data retrieval call binding the contract method 0x5168e775.
 //
-// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3Caller) CreateStrategyPathTask(opts *bind.CallOpts, creditAccount common.Address, target common.Address, connectors []common.Address, slippage *big.Int, force bool) (StrategyPathTask, error) {
 	var out []interface{}
 	err := _Routerv3.contract.Call(opts, &out, "createStrategyPathTask", creditAccount, target, connectors, slippage, force)
@@ -344,47 +334,47 @@ func (_Routerv3 *Routerv3Caller) CreateStrategyPathTask(opts *bind.CallOpts, cre
 
 // CreateStrategyPathTask is a free data retrieval call binding the contract method 0x5168e775.
 //
-// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3Session) CreateStrategyPathTask(creditAccount common.Address, target common.Address, connectors []common.Address, slippage *big.Int, force bool) (StrategyPathTask, error) {
 	return _Routerv3.Contract.CreateStrategyPathTask(&_Routerv3.CallOpts, creditAccount, target, connectors, slippage, force)
 }
 
 // CreateStrategyPathTask is a free data retrieval call binding the contract method 0x5168e775.
 //
-// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,uint256,uint256,(address,bytes)[]) task)
+// Solidity: function createStrategyPathTask(address creditAccount, address target, address[] connectors, uint256 slippage, bool force) view returns((address,(address,uint256)[],(address,uint256)[],address,address[],address[],uint256,bool,uint8,(address,address,address)[],uint256,(address,bytes)[]) task)
 func (_Routerv3 *Routerv3CallerSession) CreateStrategyPathTask(creditAccount common.Address, target common.Address, connectors []common.Address, slippage *big.Int, force bool) (StrategyPathTask, error) {
 	return _Routerv3.Contract.CreateStrategyPathTask(&_Routerv3.CallOpts, creditAccount, target, connectors, slippage, force)
 }
 
-// GasUsage is a free data retrieval call binding the contract method 0x19c8e47a.
+// FutureRouter is a free data retrieval call binding the contract method 0x108033a5.
 //
-// Solidity: function gasUsage(address , bytes32 ) view returns(uint256)
-func (_Routerv3 *Routerv3Caller) GasUsage(opts *bind.CallOpts, arg0 common.Address, arg1 [32]byte) (*big.Int, error) {
+// Solidity: function futureRouter() view returns(address)
+func (_Routerv3 *Routerv3Caller) FutureRouter(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _Routerv3.contract.Call(opts, &out, "gasUsage", arg0, arg1)
+	err := _Routerv3.contract.Call(opts, &out, "futureRouter")
 
 	if err != nil {
-		return *new(*big.Int), err
+		return *new(common.Address), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
 
 }
 
-// GasUsage is a free data retrieval call binding the contract method 0x19c8e47a.
+// FutureRouter is a free data retrieval call binding the contract method 0x108033a5.
 //
-// Solidity: function gasUsage(address , bytes32 ) view returns(uint256)
-func (_Routerv3 *Routerv3Session) GasUsage(arg0 common.Address, arg1 [32]byte) (*big.Int, error) {
-	return _Routerv3.Contract.GasUsage(&_Routerv3.CallOpts, arg0, arg1)
+// Solidity: function futureRouter() view returns(address)
+func (_Routerv3 *Routerv3Session) FutureRouter() (common.Address, error) {
+	return _Routerv3.Contract.FutureRouter(&_Routerv3.CallOpts)
 }
 
-// GasUsage is a free data retrieval call binding the contract method 0x19c8e47a.
+// FutureRouter is a free data retrieval call binding the contract method 0x108033a5.
 //
-// Solidity: function gasUsage(address , bytes32 ) view returns(uint256)
-func (_Routerv3 *Routerv3CallerSession) GasUsage(arg0 common.Address, arg1 [32]byte) (*big.Int, error) {
-	return _Routerv3.Contract.GasUsage(&_Routerv3.CallOpts, arg0, arg1)
+// Solidity: function futureRouter() view returns(address)
+func (_Routerv3 *Routerv3CallerSession) FutureRouter() (common.Address, error) {
+	return _Routerv3.Contract.FutureRouter(&_Routerv3.CallOpts)
 }
 
 // GetAdapters is a free data retrieval call binding the contract method 0x89e0dd3e.
@@ -416,37 +406,6 @@ func (_Routerv3 *Routerv3Session) GetAdapters(creditManager common.Address) ([]c
 // Solidity: function getAdapters(address creditManager) view returns(address[] result)
 func (_Routerv3 *Routerv3CallerSession) GetAdapters(creditManager common.Address) ([]common.Address, error) {
 	return _Routerv3.Contract.GetAdapters(&_Routerv3.CallOpts, creditManager)
-}
-
-// GetGasPriceTokenOutRAY is a free data retrieval call binding the contract method 0x553f67ec.
-//
-// Solidity: function getGasPriceTokenOutRAY(address token) view returns(uint256 gasPrice)
-func (_Routerv3 *Routerv3Caller) GetGasPriceTokenOutRAY(opts *bind.CallOpts, token common.Address) (*big.Int, error) {
-	var out []interface{}
-	err := _Routerv3.contract.Call(opts, &out, "getGasPriceTokenOutRAY", token)
-
-	if err != nil {
-		return *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-
-	return out0, err
-
-}
-
-// GetGasPriceTokenOutRAY is a free data retrieval call binding the contract method 0x553f67ec.
-//
-// Solidity: function getGasPriceTokenOutRAY(address token) view returns(uint256 gasPrice)
-func (_Routerv3 *Routerv3Session) GetGasPriceTokenOutRAY(token common.Address) (*big.Int, error) {
-	return _Routerv3.Contract.GetGasPriceTokenOutRAY(&_Routerv3.CallOpts, token)
-}
-
-// GetGasPriceTokenOutRAY is a free data retrieval call binding the contract method 0x553f67ec.
-//
-// Solidity: function getGasPriceTokenOutRAY(address token) view returns(uint256 gasPrice)
-func (_Routerv3 *Routerv3CallerSession) GetGasPriceTokenOutRAY(token common.Address) (*big.Int, error) {
-	return _Routerv3.Contract.GetGasPriceTokenOutRAY(&_Routerv3.CallOpts, token)
 }
 
 // GetResolver is a free data retrieval call binding the contract method 0x620416e6.
@@ -542,37 +501,6 @@ func (_Routerv3 *Routerv3CallerSession) Owner() (common.Address, error) {
 	return _Routerv3.Contract.Owner(&_Routerv3.CallOpts)
 }
 
-// PriceOracle is a free data retrieval call binding the contract method 0x2630c12f.
-//
-// Solidity: function priceOracle() view returns(address)
-func (_Routerv3 *Routerv3Caller) PriceOracle(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Routerv3.contract.Call(opts, &out, "priceOracle")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// PriceOracle is a free data retrieval call binding the contract method 0x2630c12f.
-//
-// Solidity: function priceOracle() view returns(address)
-func (_Routerv3 *Routerv3Session) PriceOracle() (common.Address, error) {
-	return _Routerv3.Contract.PriceOracle(&_Routerv3.CallOpts)
-}
-
-// PriceOracle is a free data retrieval call binding the contract method 0x2630c12f.
-//
-// Solidity: function priceOracle() view returns(address)
-func (_Routerv3 *Routerv3CallerSession) PriceOracle() (common.Address, error) {
-	return _Routerv3.Contract.PriceOracle(&_Routerv3.CallOpts)
-}
-
 // Resolvers is a free data retrieval call binding the contract method 0xee47c965.
 //
 // Solidity: function resolvers(uint8 , uint8 ) view returns(uint8)
@@ -666,99 +594,109 @@ func (_Routerv3 *Routerv3CallerSession) Version() (*big.Int, error) {
 	return _Routerv3.Contract.Version(&_Routerv3.CallOpts)
 }
 
-// WethToken is a free data retrieval call binding the contract method 0x4b57b0be.
-//
-// Solidity: function wethToken() view returns(address)
-func (_Routerv3 *Routerv3Caller) WethToken(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _Routerv3.contract.Call(opts, &out, "wethToken")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// WethToken is a free data retrieval call binding the contract method 0x4b57b0be.
-//
-// Solidity: function wethToken() view returns(address)
-func (_Routerv3 *Routerv3Session) WethToken() (common.Address, error) {
-	return _Routerv3.Contract.WethToken(&_Routerv3.CallOpts)
-}
-
-// WethToken is a free data retrieval call binding the contract method 0x4b57b0be.
-//
-// Solidity: function wethToken() view returns(address)
-func (_Routerv3 *Routerv3CallerSession) WethToken() (common.Address, error) {
-	return _Routerv3.Contract.WethToken(&_Routerv3.CallOpts)
-}
-
 // FindAllSwaps is a paid mutator transaction binding the contract method 0x8d3fd28b.
 //
-// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[])[] result)
+// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,(address,bytes)[])[] result)
 func (_Routerv3 *Routerv3Transactor) FindAllSwaps(opts *bind.TransactOpts, swapTask SwapTask, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.contract.Transact(opts, "findAllSwaps", swapTask, slippage)
 }
 
 // FindAllSwaps is a paid mutator transaction binding the contract method 0x8d3fd28b.
 //
-// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[])[] result)
+// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,(address,bytes)[])[] result)
 func (_Routerv3 *Routerv3Session) FindAllSwaps(swapTask SwapTask, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindAllSwaps(&_Routerv3.TransactOpts, swapTask, slippage)
 }
 
 // FindAllSwaps is a paid mutator transaction binding the contract method 0x8d3fd28b.
 //
-// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[])[] result)
+// Solidity: function findAllSwaps((uint8,address,address,address,address[],uint256,uint256) swapTask, uint256 slippage) returns((uint256,uint256,(address,bytes)[])[] result)
 func (_Routerv3 *Routerv3TransactorSession) FindAllSwaps(swapTask SwapTask, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindAllSwaps(&_Routerv3.TransactOpts, swapTask, slippage)
 }
 
+// FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
+//
+// // Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,(address,bytes)[]) result)
+// func (_Routerv3 *Routerv3Transactor) FindBestClosePath(opts *bind.TransactOpts, creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
+// 	return _Routerv3.contract.Transact(opts, "findBestClosePath", creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
+// }
+
+// // FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
+// //
+// // Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,(address,bytes)[]) result)
+// func (_Routerv3 *Routerv3Session) FindBestClosePath(creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
+// 	return _Routerv3.Contract.FindBestClosePath(&_Routerv3.TransactOpts, creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
+// }
+
+// // FindBestClosePath is a paid mutator transaction binding the contract method 0xf0a29424.
+// //
+// // Solidity: function findBestClosePath(address creditAccount, (address,uint256)[] expectedBalances, (address,uint256)[] leftoverBalances, address[] connectors, uint256 slippage, (address,uint8,uint8)[] pathOptions, uint256 loops, bool force) returns((uint256,uint256,(address,bytes)[]) result)
+// func (_Routerv3 *Routerv3TransactorSession) FindBestClosePath(creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (*types.Transaction, error) {
+// 	return _Routerv3.Contract.FindBestClosePath(&_Routerv3.TransactOpts, creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
+// }
 
 // FindOneTokenPath is a paid mutator transaction binding the contract method 0x0cf7f659.
 //
-// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3Transactor) FindOneTokenPath(opts *bind.TransactOpts, tokenIn common.Address, amount *big.Int, tokenOut common.Address, creditAccount common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.contract.Transact(opts, "findOneTokenPath", tokenIn, amount, tokenOut, creditAccount, connectors, slippage)
 }
 
 // FindOneTokenPath is a paid mutator transaction binding the contract method 0x0cf7f659.
 //
-// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3Session) FindOneTokenPath(tokenIn common.Address, amount *big.Int, tokenOut common.Address, creditAccount common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindOneTokenPath(&_Routerv3.TransactOpts, tokenIn, amount, tokenOut, creditAccount, connectors, slippage)
 }
 
 // FindOneTokenPath is a paid mutator transaction binding the contract method 0x0cf7f659.
 //
-// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOneTokenPath(address tokenIn, uint256 amount, address tokenOut, address creditAccount, address[] connectors, uint256 slippage) returns((uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3TransactorSession) FindOneTokenPath(tokenIn common.Address, amount *big.Int, tokenOut common.Address, creditAccount common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindOneTokenPath(&_Routerv3.TransactOpts, tokenIn, amount, tokenOut, creditAccount, connectors, slippage)
 }
 
 // FindOpenStrategyPath is a paid mutator transaction binding the contract method 0x09c60c61.
 //
-// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3Transactor) FindOpenStrategyPath(opts *bind.TransactOpts, creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.contract.Transact(opts, "findOpenStrategyPath", creditManager, balances, leftoverBalances, target, connectors, slippage)
 }
 
 // FindOpenStrategyPath is a paid mutator transaction binding the contract method 0x09c60c61.
 //
-// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3Session) FindOpenStrategyPath(creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindOpenStrategyPath(&_Routerv3.TransactOpts, creditManager, balances, leftoverBalances, target, connectors, slippage)
 }
 
 // FindOpenStrategyPath is a paid mutator transaction binding the contract method 0x09c60c61.
 //
-// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,uint256,(address,bytes)[]))
+// Solidity: function findOpenStrategyPath(address creditManager, (address,uint256)[] balances, (address,uint256)[] leftoverBalances, address target, address[] connectors, uint256 slippage) returns((address,uint256)[], (uint256,uint256,(address,bytes)[]))
 func (_Routerv3 *Routerv3TransactorSession) FindOpenStrategyPath(creditManager common.Address, balances []Balance, leftoverBalances []Balance, target common.Address, connectors []common.Address, slippage *big.Int) (*types.Transaction, error) {
 	return _Routerv3.Contract.FindOpenStrategyPath(&_Routerv3.TransactOpts, creditManager, balances, leftoverBalances, target, connectors, slippage)
+}
+
+// MigrateRouterComponents is a paid mutator transaction binding the contract method 0xc17ea347.
+//
+// Solidity: function migrateRouterComponents(address _prevRouter) returns()
+func (_Routerv3 *Routerv3Transactor) MigrateRouterComponents(opts *bind.TransactOpts, _prevRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.contract.Transact(opts, "migrateRouterComponents", _prevRouter)
+}
+
+// MigrateRouterComponents is a paid mutator transaction binding the contract method 0xc17ea347.
+//
+// Solidity: function migrateRouterComponents(address _prevRouter) returns()
+func (_Routerv3 *Routerv3Session) MigrateRouterComponents(_prevRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.Contract.MigrateRouterComponents(&_Routerv3.TransactOpts, _prevRouter)
+}
+
+// MigrateRouterComponents is a paid mutator transaction binding the contract method 0xc17ea347.
+//
+// Solidity: function migrateRouterComponents(address _prevRouter) returns()
+func (_Routerv3 *Routerv3TransactorSession) MigrateRouterComponents(_prevRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.Contract.MigrateRouterComponents(&_Routerv3.TransactOpts, _prevRouter)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
@@ -782,46 +720,25 @@ func (_Routerv3 *Routerv3TransactorSession) RenounceOwnership() (*types.Transact
 	return _Routerv3.Contract.RenounceOwnership(&_Routerv3.TransactOpts)
 }
 
-// SetGasUsage is a paid mutator transaction binding the contract method 0xcf5f8f05.
+// SetFutureRouter is a paid mutator transaction binding the contract method 0x8a1acdc0.
 //
-// Solidity: function setGasUsage(address targetContract, bytes32 key, uint256 usage) returns()
-func (_Routerv3 *Routerv3Transactor) SetGasUsage(opts *bind.TransactOpts, targetContract common.Address, key [32]byte, usage *big.Int) (*types.Transaction, error) {
-	return _Routerv3.contract.Transact(opts, "setGasUsage", targetContract, key, usage)
+// Solidity: function setFutureRouter(address _futureRouter) returns()
+func (_Routerv3 *Routerv3Transactor) SetFutureRouter(opts *bind.TransactOpts, _futureRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.contract.Transact(opts, "setFutureRouter", _futureRouter)
 }
 
-// SetGasUsage is a paid mutator transaction binding the contract method 0xcf5f8f05.
+// SetFutureRouter is a paid mutator transaction binding the contract method 0x8a1acdc0.
 //
-// Solidity: function setGasUsage(address targetContract, bytes32 key, uint256 usage) returns()
-func (_Routerv3 *Routerv3Session) SetGasUsage(targetContract common.Address, key [32]byte, usage *big.Int) (*types.Transaction, error) {
-	return _Routerv3.Contract.SetGasUsage(&_Routerv3.TransactOpts, targetContract, key, usage)
+// Solidity: function setFutureRouter(address _futureRouter) returns()
+func (_Routerv3 *Routerv3Session) SetFutureRouter(_futureRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.Contract.SetFutureRouter(&_Routerv3.TransactOpts, _futureRouter)
 }
 
-// SetGasUsage is a paid mutator transaction binding the contract method 0xcf5f8f05.
+// SetFutureRouter is a paid mutator transaction binding the contract method 0x8a1acdc0.
 //
-// Solidity: function setGasUsage(address targetContract, bytes32 key, uint256 usage) returns()
-func (_Routerv3 *Routerv3TransactorSession) SetGasUsage(targetContract common.Address, key [32]byte, usage *big.Int) (*types.Transaction, error) {
-	return _Routerv3.Contract.SetGasUsage(&_Routerv3.TransactOpts, targetContract, key, usage)
-}
-
-// SetGasUsageBatch is a paid mutator transaction binding the contract method 0xebe6cda8.
-//
-// Solidity: function setGasUsageBatch((address,bytes32,uint256)[] batchUsages) returns()
-func (_Routerv3 *Routerv3Transactor) SetGasUsageBatch(opts *bind.TransactOpts, batchUsages []GasUsage) (*types.Transaction, error) {
-	return _Routerv3.contract.Transact(opts, "setGasUsageBatch", batchUsages)
-}
-
-// SetGasUsageBatch is a paid mutator transaction binding the contract method 0xebe6cda8.
-//
-// Solidity: function setGasUsageBatch((address,bytes32,uint256)[] batchUsages) returns()
-func (_Routerv3 *Routerv3Session) SetGasUsageBatch(batchUsages []GasUsage) (*types.Transaction, error) {
-	return _Routerv3.Contract.SetGasUsageBatch(&_Routerv3.TransactOpts, batchUsages)
-}
-
-// SetGasUsageBatch is a paid mutator transaction binding the contract method 0xebe6cda8.
-//
-// Solidity: function setGasUsageBatch((address,bytes32,uint256)[] batchUsages) returns()
-func (_Routerv3 *Routerv3TransactorSession) SetGasUsageBatch(batchUsages []GasUsage) (*types.Transaction, error) {
-	return _Routerv3.Contract.SetGasUsageBatch(&_Routerv3.TransactOpts, batchUsages)
+// Solidity: function setFutureRouter(address _futureRouter) returns()
+func (_Routerv3 *Routerv3TransactorSession) SetFutureRouter(_futureRouter common.Address) (*types.Transaction, error) {
+	return _Routerv3.Contract.SetFutureRouter(&_Routerv3.TransactOpts, _futureRouter)
 }
 
 // SetPathComponent is a paid mutator transaction binding the contract method 0x7e07e68a.
@@ -1313,14 +1230,15 @@ func (it *Routerv3RouterComponentUpdateIterator) Close() error {
 
 // Routerv3RouterComponentUpdate represents a RouterComponentUpdate event raised by the Routerv3 contract.
 type Routerv3RouterComponentUpdate struct {
-	Arg0 uint8
-	Arg1 common.Address
-	Raw  types.Log // Blockchain specific contextual infos
+	Arg0    uint8
+	Arg1    common.Address
+	Version *big.Int
+	Raw     types.Log // Blockchain specific contextual infos
 }
 
-// FilterRouterComponentUpdate is a free log retrieval operation binding the contract event 0x4e4b9c9f8df60fd37d5a5b35cafb7da6fd934317152ae9c0e0340eb24f739849.
+// FilterRouterComponentUpdate is a free log retrieval operation binding the contract event 0x154abede065a65ed31601ad4a386b9743487d106f61887037d935f6ce1c0f144.
 //
-// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1)
+// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1, uint256 version)
 func (_Routerv3 *Routerv3Filterer) FilterRouterComponentUpdate(opts *bind.FilterOpts, arg0 []uint8, arg1 []common.Address) (*Routerv3RouterComponentUpdateIterator, error) {
 
 	var arg0Rule []interface{}
@@ -1339,9 +1257,9 @@ func (_Routerv3 *Routerv3Filterer) FilterRouterComponentUpdate(opts *bind.Filter
 	return &Routerv3RouterComponentUpdateIterator{contract: _Routerv3.contract, event: "RouterComponentUpdate", logs: logs, sub: sub}, nil
 }
 
-// WatchRouterComponentUpdate is a free log subscription operation binding the contract event 0x4e4b9c9f8df60fd37d5a5b35cafb7da6fd934317152ae9c0e0340eb24f739849.
+// WatchRouterComponentUpdate is a free log subscription operation binding the contract event 0x154abede065a65ed31601ad4a386b9743487d106f61887037d935f6ce1c0f144.
 //
-// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1)
+// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1, uint256 version)
 func (_Routerv3 *Routerv3Filterer) WatchRouterComponentUpdate(opts *bind.WatchOpts, sink chan<- *Routerv3RouterComponentUpdate, arg0 []uint8, arg1 []common.Address) (event.Subscription, error) {
 
 	var arg0Rule []interface{}
@@ -1385,12 +1303,156 @@ func (_Routerv3 *Routerv3Filterer) WatchRouterComponentUpdate(opts *bind.WatchOp
 	}), nil
 }
 
-// ParseRouterComponentUpdate is a log parse operation binding the contract event 0x4e4b9c9f8df60fd37d5a5b35cafb7da6fd934317152ae9c0e0340eb24f739849.
+// ParseRouterComponentUpdate is a log parse operation binding the contract event 0x154abede065a65ed31601ad4a386b9743487d106f61887037d935f6ce1c0f144.
 //
-// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1)
+// Solidity: event RouterComponentUpdate(uint8 indexed arg0, address indexed arg1, uint256 version)
 func (_Routerv3 *Routerv3Filterer) ParseRouterComponentUpdate(log types.Log) (*Routerv3RouterComponentUpdate, error) {
 	event := new(Routerv3RouterComponentUpdate)
 	if err := _Routerv3.contract.UnpackLog(event, "RouterComponentUpdate", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// Routerv3SetFutureRouterIterator is returned from FilterSetFutureRouter and is used to iterate over the raw logs and unpacked data for SetFutureRouter events raised by the Routerv3 contract.
+type Routerv3SetFutureRouterIterator struct {
+	Event *Routerv3SetFutureRouter // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *Routerv3SetFutureRouterIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(Routerv3SetFutureRouter)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(Routerv3SetFutureRouter)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *Routerv3SetFutureRouterIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *Routerv3SetFutureRouterIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// Routerv3SetFutureRouter represents a SetFutureRouter event raised by the Routerv3 contract.
+type Routerv3SetFutureRouter struct {
+	Arg0 common.Address
+	Raw  types.Log // Blockchain specific contextual infos
+}
+
+// FilterSetFutureRouter is a free log retrieval operation binding the contract event 0x38ee79447c54ed2235ae0312a2a622f96c8dcb3ba5b20ceb62cd62edeb19ee03.
+//
+// Solidity: event SetFutureRouter(address indexed arg0)
+func (_Routerv3 *Routerv3Filterer) FilterSetFutureRouter(opts *bind.FilterOpts, arg0 []common.Address) (*Routerv3SetFutureRouterIterator, error) {
+
+	var arg0Rule []interface{}
+	for _, arg0Item := range arg0 {
+		arg0Rule = append(arg0Rule, arg0Item)
+	}
+
+	logs, sub, err := _Routerv3.contract.FilterLogs(opts, "SetFutureRouter", arg0Rule)
+	if err != nil {
+		return nil, err
+	}
+	return &Routerv3SetFutureRouterIterator{contract: _Routerv3.contract, event: "SetFutureRouter", logs: logs, sub: sub}, nil
+}
+
+// WatchSetFutureRouter is a free log subscription operation binding the contract event 0x38ee79447c54ed2235ae0312a2a622f96c8dcb3ba5b20ceb62cd62edeb19ee03.
+//
+// Solidity: event SetFutureRouter(address indexed arg0)
+func (_Routerv3 *Routerv3Filterer) WatchSetFutureRouter(opts *bind.WatchOpts, sink chan<- *Routerv3SetFutureRouter, arg0 []common.Address) (event.Subscription, error) {
+
+	var arg0Rule []interface{}
+	for _, arg0Item := range arg0 {
+		arg0Rule = append(arg0Rule, arg0Item)
+	}
+
+	logs, sub, err := _Routerv3.contract.WatchLogs(opts, "SetFutureRouter", arg0Rule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(Routerv3SetFutureRouter)
+				if err := _Routerv3.contract.UnpackLog(event, "SetFutureRouter", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseSetFutureRouter is a log parse operation binding the contract event 0x38ee79447c54ed2235ae0312a2a622f96c8dcb3ba5b20ceb62cd62edeb19ee03.
+//
+// Solidity: event SetFutureRouter(address indexed arg0)
+func (_Routerv3 *Routerv3Filterer) ParseSetFutureRouter(log types.Log) (*Routerv3SetFutureRouter, error) {
+	event := new(Routerv3SetFutureRouter)
+	if err := _Routerv3.contract.UnpackLog(event, "SetFutureRouter", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

@@ -71,12 +71,15 @@ var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\
 
 var curveBalanceABI = "[{\"name\":\"balances\",\"outputs\":[{\"type\":\"uint256\",\"name\":\"\"}],\"inputs\":[{\"type\":\"uint256\",\"name\":\"i\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"gas\":2943}]"
 
+var creditFacadev3MulticallABI = "[{\"type\":\"function\",\"name\":\"onDemandPriceUpdate\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"reserve\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"}]"
+
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
-		"Version":      versionABI,
-		"Pauser":       pauserABI,
-		"1InchOracle":  inchOracleABI,
-		"curveBalance": curveBalanceABI,
+		"Version":                 versionABI,
+		"Pauser":                  pauserABI,
+		"1InchOracle":             inchOracleABI,
+		"curveBalance":            curveBalanceABI,
+		"CreditFacadev3Multicall": creditFacadev3MulticallABI,
 	}
 	if data := abiMap[contractName]; data != "" {
 		return getABI(data)

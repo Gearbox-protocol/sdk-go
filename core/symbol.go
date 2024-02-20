@@ -41,15 +41,14 @@ func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
 var _globalCopy = map[string]*SymTOAddrStore{}
 
 func getSymToAddrStore(fileName string) *SymTOAddrStore {
-	if _globalCopy == nil || _globalCopy[fileName] == nil {
+	if _globalCopy[fileName] == nil {
 		data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
 		log.CheckFatal(err)
 		store := &SymTOAddrStore{}
 		err = json.Unmarshal([]byte(data), store)
 		log.CheckFatal(err)
-		if _globalCopy == nil {
-			_globalCopy[fileName] = store
-		}
+		//
+		_globalCopy[fileName] = store
 	}
 	return _globalCopy[fileName]
 }

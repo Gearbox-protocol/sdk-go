@@ -40,6 +40,8 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 }
 
 func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
+	// chainId := core.GetChainId(pOracle.Node.Client)
+	// addrtosym := core.GetTokenToSymbolByChainId(chainId)
 	switch txLog.Topics[0] {
 	case pOracle.topics[0]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()

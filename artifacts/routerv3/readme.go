@@ -8,24 +8,16 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func (_Routerv3 *Routerv3Caller) FindBestClosePath(opts *bind.CallOpts, creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (struct {
-	Result            RouterResult
-	GasPriceTargetRAY *big.Int
-}, error) {
+func (_Routerv3 *Routerv3Caller) FindBestClosePath(opts *bind.CallOpts, creditAccount common.Address, expectedBalances []Balance, leftoverBalances []Balance, connectors []common.Address, slippage *big.Int, pathOptions []PathOption, loops *big.Int, force bool) (RouterResult, error) {
 	var out []interface{}
 	err := _Routerv3.contract.Call(opts, &out, "findBestClosePath", creditAccount, expectedBalances, leftoverBalances, connectors, slippage, pathOptions, loops, force)
 
-	outstruct := new(struct {
-		Result            RouterResult
-		GasPriceTargetRAY *big.Int
-	})
+	outstruct := RouterResult{}
 	if err != nil {
-		return *outstruct, err
+		return outstruct, err
 	}
 
-	outstruct.Result = *abi.ConvertType(out[0], new(RouterResult)).(*RouterResult)
-	outstruct.GasPriceTargetRAY = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct = *abi.ConvertType(out[0], new(RouterResult)).(*RouterResult)
 
-	return *outstruct, err
-
+	return outstruct, err
 }
