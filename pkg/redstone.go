@@ -5,7 +5,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"math/big"
 	"net/http"
+	"sync/atomic"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
@@ -18,20 +20,36 @@ import (
 )
 
 type RedStoneMgr struct {
-	chainId       int64
-	lastResponses *core.MutexDS[common.Address, *RSPriceOnDemand]
+	chainId        int64
+	lastResponses  *core.MutexDS[common.Address, *RSPriceOnDemand]
+	redStoneTokens map[common.Address]core.Symbol
+	lastUpdatedAt  int64
+	updating       *atomic.Bool
 }
 
 type RedStoneMgrI interface {
 	GetRedStoneForAccount(tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dataCompressorv3.PriceOnDemand, prices map[string]float64)
 	GetPriceOnDemandCalls(cf common.Address, tokensNeeded []common.Address, balances core.DBBalanceFormat) []routerv3.MultiCall
-	Update()
+	Update(blockNum int64, blockPerUpdateRound int64)
+	IsRedStoneToken(token string) bool
+	GetPrice(token string) *big.Int
 }
 
 func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
+	chainId := core.GetChainId(client)
+	//
+	redStoneTokens := map[common.Address]core.Symbol{}
+	pfs := core.GetRedStonePFByChainId(chainId)
+	symToAddr := core.GetSymToAddrByChainId(chainId)
+	for sym := range pfs.Mains {
+		address := symToAddr.Tokens[string(sym)]
+		redStoneTokens[address] = sym
+	}
 	return &RedStoneMgr{
-		chainId:       core.GetChainId(client),
-		lastResponses: core.NewMutexDS[common.Address, *RSPriceOnDemand](),
+		chainId:        chainId,
+		lastResponses:  core.NewMutexDS[common.Address, *RSPriceOnDemand](),
+		redStoneTokens: redStoneTokens,
+		updating:       &atomic.Bool{},
 	}
 }
 
@@ -39,45 +57,64 @@ type RSPriceOnDemand struct {
 	CallData  string  `json:"callData"`
 	Timestamp int64   `json:"ts"`
 	Price     float64 `json:"price"`
+	PriceBI   *big.Int
 	// MetaData  string `json:"metaData"`
 	ans dcv3.PriceOnDemand
 }
 
 func (r *RSPriceOnDemand) convert(token common.Address) {
-	price := dcv3.PriceOnDemand{}
-	price.Token = token
+	priceOnDemand := dcv3.PriceOnDemand{}
+	priceOnDemand.Token = token
 	var err error
 	if len(r.CallData) >= 2 && r.CallData[:2] == "0x" {
 		r.CallData = r.CallData[2:]
 	}
-	price.CallData, err = hex.DecodeString(r.CallData) // due to 0x
+	priceOnDemand.CallData, err = hex.DecodeString(r.CallData) // due to 0x
 	if err != nil {
 		log.Warnf("failed to decode callData for token %s: %s", token, r.CallData)
 		return
 	}
-	r.ans = price
+	r.PriceBI = utils.FloatDecimalsTo64(r.Price, 8)
+	r.ans = priceOnDemand
 }
 
-func (r *RedStoneMgr) Update() {
+func (r *RedStoneMgr) IsRedStoneToken(token string) bool {
+	// TODO
+	_, ok := r.redStoneTokens[common.HexToAddress(token)]
+	return ok
+}
+
+func (r *RedStoneMgr) Update(blockNum int64, blockPerUpdateRound int64) {
+	if !r.updating.CompareAndSwap(false, true) {
+		return
+	}
+	defer func() {
+		r.updating.Store(false)
+	}()
+	//
+	if blockNum-r.lastUpdatedAt < blockPerUpdateRound {
+		return
+	}
+	r.lastUpdatedAt = blockNum
+	//
 	pfs := core.GetRedStonePFByChainId(r.chainId)
-	symToAddr := core.GetSymToAddrByChainId(r.chainId)
-	for sym, details := range pfs.Mains {
-		// log.Info(sym, details)
+	for token, sym := range r.redStoneTokens {
+		details := pfs.Mains[sym]
 		resp := getRSPriceOnDemand(sym, details)
-		for sym, resp := range resp {
-			token := symToAddr.Tokens[string(sym)]
+		{
+			resp := resp[sym]
 			resp.convert(token)
 			r.lastResponses.Set(token, resp)
 		}
 	}
 }
 
-func (r *RedStoneMgr) GetPrice(token string) (float64, bool) {
+func (r *RedStoneMgr) GetPrice(token string) *big.Int {
 	details := r.lastResponses.Get(common.HexToAddress(token))
 	if details == nil {
-		return 0, false
+		return nil
 	}
-	return details.Price, true
+	return details.PriceBI
 }
 
 func (r *RedStoneMgr) GetRedStoneForAccount(tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, prices map[string]float64) {
@@ -136,7 +173,7 @@ func getRSPriceOnDemand(sym core.Symbol, details core.RedStonePF) map[core.Symbo
 	// log.Info(details.DataServiceId, details.SignersThreshold, details.DataId)
 	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, details.DataId)
 	res, err := http.Get(url)
-	log.Info("Getting priceOnDemand", url)
+	log.Debug("Getting priceOnDemand", url)
 	if err != nil || res.StatusCode/100 != 2 {
 		respStr := ""
 		if res.Body != nil {

@@ -36,7 +36,11 @@ func PercentMul(a, b *big.Int) *big.Int {
 func PercentMulByUInt16(a *big.Int, percent uint16) *big.Int {
 	return PercentMul(a, big.NewInt(int64(percent)))
 }
-
+func FloatDecimalsTo64(a float64, decimals int8) *big.Int {
+	x := new(big.Float).Mul(big.NewFloat(a), GetExpFloat(decimals))
+	f, _ := x.Int(nil)
+	return f
+}
 func GetFloat64Decimal(_num interface{}, decimals int8) float64 {
 	type convertI interface {
 		Convert() *big.Int
