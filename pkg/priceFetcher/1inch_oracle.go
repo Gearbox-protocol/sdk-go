@@ -177,7 +177,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
 	// get 1inch token from the 1inch spot contract use 1inch api
-	// calc.addGearPrice(prices)
+	calc.addGearPrice(prices)
 	return prices
 }
 
