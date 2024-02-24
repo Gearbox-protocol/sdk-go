@@ -20,7 +20,7 @@ import (
 type RedStoneMgr struct {
 	chainId int64
 	//
-	lastPods       *core.MutexDS[common.Address, *RSPriceOnDemand] // for liquidator, third-eye , gearbox
+	lastPods       *core.MutexDS[string, *RSPriceOnDemand] // for liquidator, third-eye , gearbox
 	prices         *core.MutexDS[string, *big.Int]
 	redStoneTokens map[common.Address]core.RedStonePF
 	//
@@ -31,7 +31,6 @@ type RedStoneMgr struct {
 type RedStoneMgrI interface {
 	//
 	GetPrice(ts int64, token string) *big.Int
-	UpdateLatestPodSign(blockNum int64, blockPerUpdateRound int64)
 	IsRedStoneToken(token string) bool
 	GetPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
 }
@@ -48,7 +47,7 @@ func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 	}
 	return &RedStoneMgr{
 		chainId:        chainId,
-		lastPods:       core.NewMutexDS[common.Address, *RSPriceOnDemand](),
+		lastPods:       core.NewMutexDS[string, *RSPriceOnDemand](),
 		prices:         core.NewMutexDS[string, *big.Int](),
 		redStoneTokens: redStoneTokens,
 		updating:       &atomic.Bool{},
@@ -59,26 +58,6 @@ func (r *RedStoneMgr) IsRedStoneToken(token string) bool {
 	// TODO
 	_, ok := r.redStoneTokens[common.HexToAddress(token)]
 	return ok
-}
-
-func (r *RedStoneMgr) UpdateLatestPodSign(blockNum int64, blockPerUpdateRound int64) {
-	if !r.updating.CompareAndSwap(false, true) {
-		return
-	}
-	defer func() {
-		r.updating.Store(false)
-	}()
-	//
-	if blockNum-r.lastUpdatedAt < blockPerUpdateRound {
-		return
-	}
-	r.lastUpdatedAt = blockNum
-	for token, details := range r.redStoneTokens {
-		resp := getLatestPodSign(details)
-		{
-			r.lastPods.Set(token, resp[details.DataId].convert(token))
-		}
-	}
 }
 
 // token is address
@@ -102,16 +81,21 @@ func (r *RedStoneMgr) getHistoricPrice(ts int64, token string) (*big.Int, string
 			log.Warnf("Failed to get podSign for token %s at timestamp %d", token, ts)
 			return new(big.Int), "pod"
 		} else {
+			log.Info(ans.Timestamp)
 			return ans.convert(common.HexToAddress(token)).PriceBI, "pod"
 		}
 	}
 	return price, "api"
 }
 
+func tenthMillSec(ts int64) int64 {
+	return (ts / 10) * 10000
+}
+
 // https://api.docs.redstone.finance/methods/gethistoricalprice
 func (r *RedStoneMgr) getAPIPrice(ts int64, token string) *big.Int {
 	details := r.redStoneTokens[common.HexToAddress(token)]
-	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=redstone&toTimestamp=%d&limit=1", details.DataId, ts*1000)
+	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=redstone&toTimestamp=%d&limit=1", details.DataId, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err != nil || res.StatusCode/100 != 2 {
 		return new(big.Int)
@@ -130,49 +114,50 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string) *big.Int {
 }
 
 func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
-	if ts-time.Now().Unix() > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
+	fromWhere := ""
+	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
 		// can't be ahead more than 60 seconds
-		return r.getHistoricPodSign(ts, tokensNeeded, balances)
+		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, balances)
+	} else {
+		ans, fromWhere = r.getLatestPodSign(tokensNeeded, balances)
 	}
-	return r.getLatestPodSign(tokensNeeded, balances)
-}
-
-func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
-	//
-	for _, token := range tokensNeeded {
-		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
-			details := r.redStoneTokens[token]
-			// lat response not set
-			lastResp := r.lastPods.Get(token)
-			if lastResp == nil || time.Now().Unix()-lastResp.Timestamp > details.StalenessPeriod/2 { // can be delayed by StalenessPeriod/2
-				// log.Info(sym, details)
-				resp := getLatestPodSign(details)
-				r.lastPods.Set(token, resp[details.DataId].convert(token)) // prod/aave/1
-				lastResp = resp[details.DataId].convert(token)
-			}
-
-			{
-				if lastResp != nil {
-					ans = append(ans, lastResp.pod)
-				}
-			}
-		}
-	}
+	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
 	return
 }
 
-func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
+func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
+	fromWhere = "latest"
 	for _, token := range tokensNeeded {
 		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
 			details := r.redStoneTokens[token]
 			// lat response not set
-			lastResp := r.lastPods.Get(token)
-			if lastResp == nil || ts-lastResp.Timestamp > details.StalenessPeriod/2 || lastResp.Timestamp-ts > 30 { // back , ahead 30 secs
-				// log.Info(sym, details)
+			resp := getLatestPodSign(details)
+			lastResp := resp[details.DataId].convert(token) // prod/aave/1
+			if lastResp != nil {
+				ans = append(ans, lastResp.pod)
+				fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
+			}
+		}
+	}
+	return ans, fromWhere
+}
+
+func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+	//
+	fromWhere = "historic"
+	for _, token := range tokensNeeded {
+		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
+			key := fmt.Sprintf("%d-%s", ts, token)
+			details := r.redStoneTokens[token]
+			//
+			lastResp := r.lastPods.Get(key)
+			if lastResp == nil { // back , ahead 30 secs
 				resp := getHistoricPodSign(ts, details)
-				r.lastPods.Set(token, resp[details.DataId].convert(token)) // prod/aave/1
+				r.lastPods.Set(key, resp[details.DataId].convert(token)) // prod/aave/1
 				lastResp = resp[details.DataId].convert(token)
+			} else {
+				fromWhere = "historic-stored"
 			}
 
 			{

@@ -140,3 +140,12 @@ func (anvil *AnvilClient) RevertSnapshot(id string) {
 		log.Fatalf("revert %s to failed", id)
 	}
 }
+func (anvil *AnvilClient) NextTs(ts int64) error {
+	log.Info("Setting next block anvil ts", ts)
+	body := utils.GetJsonRPCRequestBody("evm_setNextBlockTimestamp", ts)
+	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
+	if err != nil {
+		return fmt.Errorf("set next block ts to %d failed with %s", ts, err)
+	}
+	return nil
+}

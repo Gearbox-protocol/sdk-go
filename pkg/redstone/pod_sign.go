@@ -52,7 +52,7 @@ func getLatestPodSign(details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 }
 func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
-	timestamp = timestamp * 1000 // due to node js
+	timestamp = tenthMillSec(timestamp) // due to node js
 	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
 	return getpodSign(url, "historic-"+details.DataId)
 }
