@@ -73,6 +73,12 @@ func (b *Block) AddAllowedProtocol(p *Protocol) {
 }
 
 func (b *Block) AddAllowedToken(atoken *AllowedToken) {
+	for ind, entry := range b.AllowedTokens {
+		if entry.Token == atoken.Token && entry.CreditManager == atoken.CreditManager {
+			b.AllowedTokens[ind] = atoken
+			return
+		}
+	}
 	b.AllowedTokens = append(b.AllowedTokens, atoken)
 }
 
