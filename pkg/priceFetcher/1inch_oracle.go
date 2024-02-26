@@ -97,8 +97,9 @@ func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, da
 }
 
 func get1InchAddress(chainId int64) common.Address {
-	switch chainId {
-	case 1, 7878, 1337:
+	net := log.GetBaseNet(chainId)
+	switch net {
+	case "MAINNET":
 		return common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
 	}
 	log.Fatal("Can't get the inch oracle for", chainId)

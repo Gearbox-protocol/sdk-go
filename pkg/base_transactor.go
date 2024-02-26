@@ -61,7 +61,7 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 			job, utils.ToJson(core.ToDynamicTx(tx)), receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
-	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, core.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, log.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
 	return receipt, nil
 }

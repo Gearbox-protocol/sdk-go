@@ -3,7 +3,6 @@ package core
 import (
 	"encoding/json"
 	"math/big"
-	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/common"
@@ -54,10 +53,7 @@ func getSymToAddrStore(fileName string) *SymTOAddrStore {
 }
 
 func GetRedStonePFByChainId(chainId int64) RedStone {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	data := getSymToAddrStore(fileName)
 	return data.RedStone
 }
@@ -84,33 +80,21 @@ func getAddrToSymbol(fileName string, opts map[string]bool) map[common.Address]S
 }
 
 func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	return getSymToAddrStore(fileName)
 }
 
 func GetFarmingPoolsToSymbolByChainId(chainId int64) map[common.Address]Symbol {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	return getAddrToSymbol(fileName, map[string]bool{"farmingPools": true})
 }
 
 func GetTokenToSymbolByChainId(chainId int64) map[common.Address]Symbol {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	return getAddrToSymbol(fileName, map[string]bool{"tokens": true})
 }
 func GetExchangeToSymbolByChainId(chainId int64) map[common.Address]Symbol {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	return getAddrToSymbol(fileName, map[string]bool{"exchanges": true})
 }
 
@@ -195,9 +179,6 @@ func GetTokenGroups(fileName string) *TokenGroup {
 }
 
 func GetTokenGroupsByChainId(chainId int64) *TokenGroup {
-	if chainId == 1337 || chainId == 7878 {
-		chainId = 1
-	}
-	fileName := strings.ToLower(log.GetNetworkName(chainId)) + ".jsonnet"
+	fileName := log.GetConfigFile(chainId)
 	return GetTokenGroups(fileName)
 }

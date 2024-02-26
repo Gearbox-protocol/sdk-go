@@ -40,22 +40,6 @@ func setChannel() {
 	_amqpChannel = ch
 }
 
-func GetNetworkName(chainId int64) (name string) {
-	switch chainId {
-	case 42:
-		name = "KOVAN"
-	case 5:
-		name = "GOERLI"
-	case 1:
-		name = "MAINNET"
-	case 1337:
-		name = "TEST"
-	case 7878:
-		name = "ANVIL"
-	}
-	return
-}
-
 func send(important bool, message string) {
 	if _amqpChannel == nil {
 		return

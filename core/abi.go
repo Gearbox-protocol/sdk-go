@@ -17,6 +17,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
+	"github.com/Gearbox-protocol/sdk-go/log"
 
 	// v1
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
@@ -62,7 +63,6 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolv3"
 
 	//
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
