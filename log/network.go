@@ -19,7 +19,7 @@ func (net NetworkUI) ExplorerHashUrl(txHash string) string {
 
 func NetworkUIUrl(chainId int64) NetworkUI {
 	switch chainId {
-	case 1, 7878:
+	case 1, 7878, 1337:
 		return NetworkUI{
 			ExplorerUrl: "https://etherscan.io",
 			ChartUrl:    "https://charts.gearbox.fi",
@@ -49,10 +49,8 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "KOVAN"
 	case 5:
 		name = "GOERLI"
-	case 1:
+	case 1, 1337:
 		name = "MAINNET"
-	case 1337:
-		name = "TEST"
 	case 7878:
 		name = "ANVIL"
 	case 42161:
