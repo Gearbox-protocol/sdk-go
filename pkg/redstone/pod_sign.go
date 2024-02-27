@@ -65,7 +65,7 @@ func getpodSign(url string, dataId string) map[string]*RSPriceOnDemandObj {
 		if res.Body != nil {
 			_, respStr = ReadBuffer(res.Body)
 		}
-		log.Warnf("For dataId %s , redStone failed with  err(%v) and resp(%s)", dataId, err, respStr)
+		log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, err, respStr)
 		return nil
 	}
 	data := map[string]*RSPriceOnDemandObj{}

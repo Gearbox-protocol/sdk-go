@@ -250,6 +250,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 				"6f307dc3", //underlying
 				"2f7a1881", //creditFacade
 				"313ce567", // decimals
+				"16f0115b", // pool on credit_manager
 				"70a08231", // balanceOf
 				"feaf968c", // latestRoundData
 				"95d89b41": // symbol
