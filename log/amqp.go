@@ -48,6 +48,9 @@ func send(important bool, message string) {
 	if _logConfig.ChainId == 7878 {
 		routingKey = "GOERLI"
 	}
+	if _logConfig.ChainId == 7880 {
+		routingKey = "ARBTEST"
+	}
 	for i := 0; i < 2; i++ {
 		err := _amqpChannel.Publish(
 			_logConfig.Exchange, // exchange

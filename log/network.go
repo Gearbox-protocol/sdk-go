@@ -24,7 +24,7 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://etherscan.io",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
-	case 42161:
+	case 42161, 7880:
 		return NetworkUI{
 			ExplorerUrl: "https://arbitrum.io",
 			ChartUrl:    "https://charts.gearbox.fi",
@@ -55,8 +55,8 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "ANVIL"
 	case 42161:
 		name = "ARBITRUM"
-	case 43114:
-		name = "ANVIL_ARBITRUM"
+	case 7880:
+		name = "ARBTEST"
 	}
 	return
 }
@@ -65,17 +65,11 @@ func GetBaseNet(chainId int64) string {
 	net := GetNetworkName(chainId)
 	if net == "ANVIL" {
 		net = "MAINNET"
-	} else if net == "ANVIL_ARBITRUM" {
+	} else if net == "ARBTEST" {
 		net = "ARBITRUM"
 	}
 	return net
 }
 func GetConfigFile(chainId int64) string {
-	net := GetNetworkName(chainId)
-	if net == "ANVIL" {
-		net = "MAINNET"
-	} else if net == "ANVIL_ARBITRUM" {
-		net = "ARBITRUM"
-	}
-	return strings.ToLower(net) + ".jsonnet"
+	return strings.ToLower(GetBaseNet(chainId)) + ".jsonnet"
 }
