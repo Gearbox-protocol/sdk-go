@@ -49,8 +49,10 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "KOVAN"
 	case 5:
 		name = "GOERLI"
-	case 1, 1337:
+	case 1:
 		name = "MAINNET"
+	case 1337:
+		name = "TEST"
 	case 7878:
 		name = "ANVIL"
 	case 42161:
@@ -67,6 +69,8 @@ func GetBaseNet(chainId int64) string {
 		net = "MAINNET"
 	} else if net == "ARBTEST" {
 		net = "ARBITRUM"
+	} else if net == "TEST" {
+		net = "MAINNET"
 	}
 	return net
 }
