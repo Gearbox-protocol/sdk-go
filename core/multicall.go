@@ -117,13 +117,13 @@ func (sch MulticallScheduler) GetResult() (ans []multicall.Multicall2Result) {
 
 // utils
 func MulticallAnsBigInt(result multicall.Multicall2Result) (*big.Int, bool) {
-	if result.Success {
+	if result.Success && len(result.ReturnData) >= 32 {
 		return new(big.Int).SetBytes(result.ReturnData[:32]), true
 	}
 	return big.NewInt(0), false
 }
 func MulticallAnsAddress(result multicall.Multicall2Result) (common.Address, bool) {
-	if result.Success {
+	if result.Success && len(result.ReturnData) >= 32 {
 		return common.BytesToAddress(result.ReturnData[:32]), true
 	}
 	return NULL_ADDR, false
