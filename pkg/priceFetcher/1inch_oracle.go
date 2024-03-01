@@ -101,6 +101,8 @@ func get1InchAddress(chainId int64) common.Address {
 	switch net {
 	case "MAINNET":
 		return common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
+	case "ARBITRUM":
+		return common.HexToAddress("0x0AdDd25a91563696D8567Df78D5A01C9a991F9B8")
 	}
 	log.Fatal("Can't get the inch oracle for", chainId)
 	return core.NULL_ADDR
