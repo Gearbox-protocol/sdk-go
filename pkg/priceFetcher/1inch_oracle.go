@@ -32,6 +32,41 @@ type OneInchOracle struct {
 	decimals   DecimalStoreI
 }
 
+func (o *OneInchOracle) Reset(net string) {
+	{
+		baseReset := []string{}
+		for _, baseToenSym := range o.BaseTokens {
+			if _, ok := o.symToAddr.Tokens[baseToenSym]; ok {
+				baseReset = append(baseReset, baseToenSym)
+			}
+		}
+		o.BaseTokens = baseReset
+	}
+	if net != "MAINNET" {
+		o.ConstToken = nil
+	}
+	{
+		yearnReset := []YearnSpotPriceCalc{}
+		for _, yearnToken := range o.YearnTokens {
+			symToToken := o.symToAddr.Tokens[yearnToken.Token]
+			if symToToken != core.NULL_ADDR {
+				yearnReset = append(yearnReset, yearnToken)
+			}
+		}
+		o.YearnTokens = yearnReset
+	}
+	{
+		crvReset := []CrvSpotPriceCalc{}
+		for _, crvToken := range o.CrvTokens {
+			symToToken := o.symToAddr.Tokens[crvToken.Token]
+			if symToToken != core.NULL_ADDR {
+				crvReset = append(crvReset, crvToken)
+			}
+		}
+		o.CrvTokens = crvReset
+	}
+}
+
 func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
 	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
 	for _, addr := range details.symToAddr.Tokens {
@@ -82,8 +117,11 @@ func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, da
 		}
 	}()
 	utils.SetJson([]byte(data), calc)
-	//
+
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
+	calc.Reset(log.GetBaseNet(chainId))
+
+	//
 	// delete ETH as 0xee address can't be used for getting symbol in token_store.go
 	delete(calc.symToAddr.Tokens, "ETH")
 	//
@@ -185,9 +223,11 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 }
 
 func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
-	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
-	price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
-	prices[gearToken] = (*core.BigInt)(price)
+	gearToken := calc.symToAddr.Tokens["GEAR"]
+	if gearToken != core.NULL_ADDR {
+		price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
+		prices[gearToken.Hex()] = (*core.BigInt)(price)
+	}
 }
 
 func (calc OneInchOracle) USDC() string {
@@ -224,7 +264,8 @@ func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 }
 
 func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int {
-	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2")
+	// TODO
+	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2") // for mainnet
 	d0Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(0))
 	log.CheckFatal(err)
 	d1Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(1))
@@ -236,6 +277,9 @@ func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int
 		Target:   pool,
 		CallData: d1Data,
 	}})
+	if len(results[0].ReturnData) == 0 || len(results[1].ReturnData) == 0 {
+		return new(big.Int)
+	}
 	gearBalance, ok := core.MulticallAnsBigInt(results[0])
 	if !ok {
 		log.Info("Can't get gear balance.")
