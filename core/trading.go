@@ -19,11 +19,18 @@ var tradingSymbols = []Symbol{
 	"CVX",
 	"FXS",
 	// "BLUR",
+	// on arbitrum
+	"ARB",
+	"PENDLE",
 }
 
 var baseSymbols []Symbol = []Symbol{"DAI", "ETH", "BTC", "USDC"}
 
-var farmedBaseSymbols []Symbol = []Symbol{"sDAI", "yvUSDC", "yvDAI", "stETH", "yvWBTC", "yvWETH"}
+var farmedBaseSymbols []Symbol = []Symbol{"sDAI", "yvUSDC", "yvDAI", "stETH", "yvWBTC", "yvWETH",
+	// ARBITRUM farmed
+	"wstETH",
+	"rETH",
+	"cbETH"}
 
 var TradingPairs map[TradingPair]bool
 
@@ -104,7 +111,7 @@ func Priority(sym Symbol) int {
 		return 0
 	case "WBTC", "yvWBTC", "BTC":
 		return 2
-	case "WETH", "yvWETH", "stETH", "ETH":
+	case "WETH", "yvWETH", "stETH", "ETH", "cbETH", "wstETH", "rETH":
 		return 3
 	default:
 		return 100
@@ -114,7 +121,7 @@ func Priority(sym Symbol) int {
 func GetPriceScale(p TradingPair) int64 {
 	if utils.Contains([]Symbol{"BTC", "yvWBTC"}, p.Base) {
 		return 10_000
-	} else if utils.Contains([]Symbol{"yvWETH", "ETH", "stETH"}, p.Base) {
+	} else if utils.Contains([]Symbol{"WETH", "yvWETH", "stETH", "ETH", "cbETH", "wstETH", "rETH"}, p.Base) {
 		return 1000
 	} else {
 		return 100

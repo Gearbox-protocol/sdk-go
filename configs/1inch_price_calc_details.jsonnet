@@ -13,7 +13,7 @@
     'FRAX',
     'SUSD',
     'stETH',
-    'wstETH',
+
     'GUSD',
     'LUSD',
     'SNX',
@@ -40,6 +40,12 @@
     'RPL',
     'APE',
     'LDO',
+    //
+    'ARB',
+    'PENDLE',
+    'wstETH',
+    'rETH',
+    'cbETH',
   ],
   yearnTokens: [
     {
