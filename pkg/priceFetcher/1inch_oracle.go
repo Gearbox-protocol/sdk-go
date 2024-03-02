@@ -107,7 +107,7 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	}
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
-func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
+func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data := func() string {
@@ -132,6 +132,7 @@ func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, ar
 			}
 		}
 	}
+	chainId := core.GetChainId(client)
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
 	calc.Reset(log.GetBaseNet(chainId))
 
@@ -381,9 +382,8 @@ func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
 }
 
 func (calc OneInchOracle) processArbBaseResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt) {
-	symToAddr := core.GetSymToAddrByChainId(42161)
 	for ind, entry := range results {
-		tokenAddr := symToAddr.Tokens[calc.ArbBaseTokens[ind]]
+		tokenAddr := calc.symToAddr.Tokens[calc.ArbBaseTokens[ind]] // this should be the token for the client network not neccessarily the arb network
 		if entry.Success {
 			price := new(big.Int).SetBytes(entry.ReturnData)
 			// for usdt = 18-6-2 = 10
