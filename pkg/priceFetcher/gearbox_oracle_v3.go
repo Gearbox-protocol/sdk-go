@@ -1,6 +1,8 @@
 package priceFetcher
 
 import (
+	"math/big"
+
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -12,6 +14,7 @@ import (
 type GearboxOraclev3 struct {
 	GearboxOracle
 	tokenToReserve map[string]reserveUsage
+	feedToType     map[common.Address]int
 }
 
 type reserveUsage struct {
@@ -35,8 +38,20 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			version: version,
 		},
 		tokenToReserve: map[string]reserveUsage{},
+		feedToType:     map[common.Address]int{},
 	}
 	return po
+}
+
+func (pOracle *GearboxOraclev3) addFeedToType(feed common.Address) {
+	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
+	if err != nil {
+		pOracle.feedToType[feed] = int(new(big.Int).SetBytes(typeData).Int64())
+	}
+}
+
+func (pOracle GearboxOraclev3) GetFeedType(feed common.Address) int {
+	return pOracle.feedToType[feed]
 }
 
 func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
@@ -46,11 +61,13 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 	case pOracle.topics[0]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
+		pOracle.addFeedToType(feed)
 		pOracle.tokenToFeed[token] = feed
 		return true
-	case pOracle.topics[1]:
+	case pOracle.topics[1]: // set reserve
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
+		pOracle.addFeedToType(feed)
 		pOracle.tokenToReserve[token] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token].use}
 	case pOracle.topics[2]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
