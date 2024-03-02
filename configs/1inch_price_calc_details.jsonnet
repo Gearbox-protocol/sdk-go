@@ -9,6 +9,10 @@
       price: 0,
     },
   ],
+  arbBaseTokens: [
+    'ARB',
+    'GMX',
+  ],
   baseTokens: [
     'FRAX',
     'SUSD',
@@ -41,7 +45,6 @@
     'APE',
     'LDO',
     //
-    'ARB',
     'PENDLE',
     'wstETH',
     'rETH',

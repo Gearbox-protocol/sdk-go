@@ -11,6 +11,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/calc"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
@@ -23,8 +24,12 @@ type OneInchOracle struct {
 	CrvTokens     []CrvSpotPriceCalc    `json:"crvTokens"`
 	CopyPricesFor map[string]string     `json:"copyPricesFor"`
 	//
-	crvLen         int
-	generatedCalls []multicall.Multicall2Call
+	ArbBaseTokens []string `json:"arbBaseTokens"`
+	arbEthClient  core.ClientI
+	//
+	crvLen             int
+	generatedCalls     []multicall.Multicall2Call
+	resolveArbToensToo bool
 	//
 	symToAddr  *core.SymTOAddrStore
 	inchOracle common.Address
@@ -102,7 +107,7 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	}
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
-func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, dataStrings ...string) *OneInchOracle {
+func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data := func() string {
@@ -117,7 +122,16 @@ func New1InchOracle(client core.ClientI, chainId int64, tStore DecimalStoreI, da
 		}
 	}()
 	utils.SetJson([]byte(data), calc)
-
+	{ // ARB_LOGIC
+		calc.resolveArbToensToo = arbUrl != ""
+		if log.GetBaseNet(core.GetChainId(client)) != "ARBITRUM" {
+			if arbUrl != "" {
+				var err error
+				calc.arbEthClient, err = ethclient.Dial(arbUrl)
+				log.CheckFatal(err)
+			}
+		}
+	}
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
 	calc.Reset(log.GetBaseNet(chainId))
 
@@ -177,6 +191,9 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 	if calc.generatedCalls == nil {
 		calls := []multicall.Multicall2Call{}
 		calls = append(calls, calc.GetBaseCalls()...)
+		if calc.arbEthClient == nil && calc.resolveArbToensToo { // ARB_LOGIC
+			calls = append(calls, calc.GetArbBaseCalls()...)
+		}
 		calls = append(calls, calc.GetCrvCalls()...) // yvcurve-steth - yearn token is dependent on curve
 		calls = append(calls, calc.GetYearnCalls()...)
 		calc.generatedCalls = calls
@@ -203,6 +220,13 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	till := len(calc.BaseTokens)
 	baseResults, results := results[:till], results[till:]
 	calc.processBaseResults(baseResults, prices)
+	// ARB_LOGIC
+	if calc.arbEthClient == nil && calc.resolveArbToensToo {
+		till = len(calc.ArbBaseTokens)
+		arbResults, _results := results[:till], results[till:]
+		calc.processBaseResults(arbResults, prices)
+		results = _results
+	}
 	//
 	till = calc.crvLen
 	crvResults, results := results[:till], results[till:]
@@ -217,6 +241,13 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
+	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
+		calls := calc.GetArbBaseCalls()
+		results := core.MakeMultiCall(calc.arbEthClient, blockNumber, false, calls)
+		calc.processArbBaseResults(results, prices)
+	}
+
+	// resolve arb tokens
 	// get 1inch token from the 1inch spot contract use 1inch api
 	calc.addGearPrice(prices)
 	return prices
@@ -328,6 +359,39 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 			if log.GetBaseNet(core.GetChainId(calc.client)) != "MAINNET" {
 				prices[calc.symToAddr.Tokens["USDC_e"].Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
 			}
+		}
+	}
+}
+
+func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
+	symToAddr := core.GetSymToAddrByChainId(42161)
+	pfABI := core.GetAbi("1InchOracle")
+	for _, token := range calc.ArbBaseTokens {
+		tokenAddr := symToAddr.Tokens[token]
+		data, err := pfABI.Pack("getRate", tokenAddr, symToAddr.Tokens["USDC"], false)
+		if err != nil {
+			log.Fatal(err)
+		}
+		calls = append(calls, multicall.Multicall2Call{
+			Target:   calc.inchOracle,
+			CallData: data,
+		})
+	}
+	return
+}
+
+func (calc OneInchOracle) processArbBaseResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt) {
+	symToAddr := core.GetSymToAddrByChainId(42161)
+	for ind, entry := range results {
+		tokenAddr := symToAddr.Tokens[calc.ArbBaseTokens[ind]]
+		if entry.Success {
+			price := new(big.Int).SetBytes(entry.ReturnData)
+			// for usdt = 18-6-2 = 10
+			// for wbtc = 18-8-2 = 8
+			// for gusd = 18-2-2= 14
+			normalizeDecimal := 18 - calc.decimals.GetDecimals(tokenAddr) - 2
+			price = utils.GetInt64(price, normalizeDecimal)
+			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		}
 	}
 }
