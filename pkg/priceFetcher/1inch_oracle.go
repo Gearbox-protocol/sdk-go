@@ -111,16 +111,45 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	}
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
-func getArbUrl(urls string) string {
+func getArbClient(urls string) core.ClientI {
 	for _, url := range strings.Split(urls, ",") {
-		url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
-		if strings.Contains(url, "arb-mainnet") {
-			return url
+		{
+			url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
+			if strings.Contains(url, "arb-mainnet") {
+				if client := getClient(url); client != nil {
+					return client
+				}
+			}
+		}
+		{
+			url = strings.Replace(url, "https://mainnet.infura.io", "https://arbitrum-mainnet.infura.io", 1)
+			if strings.Contains(url, "https://arbitrum-mainnet.infura.io") {
+				if client := getClient(url); client != nil {
+					return client
+				}
+			}
 		}
 	}
 	log.Fatal("Can't get arb url")
-	return ""
+	return nil
 }
+
+func getClient(url string) core.ClientI {
+	if url == "" {
+		return nil
+	}
+	ethclient, err := ethclient.Dial(url)
+	if err != nil {
+		return nil
+	}
+	_, err = ethclient.BlockNumber(context.TODO())
+	if err != nil {
+		return nil
+	}
+	return ethclient
+}
+
+// supports only infura and alchemy
 func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
@@ -140,9 +169,7 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, da
 		calc.resolveArbToensToo = arbUrl != ""
 		if log.GetBaseNet(core.GetChainId(client)) != "ARBITRUM" {
 			if arbUrl != "" {
-				var err error
-				calc.arbEthClient, err = ethclient.Dial(getArbUrl(arbUrl))
-				log.CheckFatal(err)
+				calc.arbEthClient = getArbClient(arbUrl)
 			}
 		}
 	}
