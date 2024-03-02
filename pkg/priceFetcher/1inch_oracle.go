@@ -72,10 +72,14 @@ func (o *OneInchOracle) Reset(net string) {
 	}
 }
 
+var MAINNET_GMX = common.HexToAddress("0x00eee00eee00eee00eee00eee00eee00eee00eee")
+
 func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
 	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
 	for _, addr := range details.symToAddr.Tokens {
-		addrs = append(addrs, addr)
+		if addr != MAINNET_GMX {
+			addrs = append(addrs, addr)
+		}
 	}
 	return
 }
@@ -107,6 +111,16 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	}
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
+func getArbUrl(urls string) string {
+	for _, url := range strings.Split(urls, ",") {
+		url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
+		if strings.Contains(url, "arb-mainnet") {
+			return url
+		}
+	}
+	log.Fatal("Can't get arb url")
+	return ""
+}
 func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
@@ -127,7 +141,7 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, da
 		if log.GetBaseNet(core.GetChainId(client)) != "ARBITRUM" {
 			if arbUrl != "" {
 				var err error
-				calc.arbEthClient, err = ethclient.Dial(arbUrl)
+				calc.arbEthClient, err = ethclient.Dial(getArbUrl(arbUrl))
 				log.CheckFatal(err)
 			}
 		}
@@ -374,7 +388,7 @@ func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
 			log.Fatal(err)
 		}
 		calls = append(calls, multicall.Multicall2Call{
-			Target:   calc.inchOracle,
+			Target:   get1InchAddress(42161),
 			CallData: data,
 		})
 	}
@@ -389,7 +403,11 @@ func (calc OneInchOracle) processArbBaseResults(results []multicall.Multicall2Re
 			// for usdt = 18-6-2 = 10
 			// for wbtc = 18-8-2 = 8
 			// for gusd = 18-2-2= 14
-			normalizeDecimal := 18 - calc.decimals.GetDecimals(tokenAddr) - 2
+			var decimals int8 = 18
+			if tokenAddr != MAINNET_GMX {
+				decimals = calc.decimals.GetDecimals(tokenAddr)
+			}
+			normalizeDecimal := 18 - decimals - 2
 			price = utils.GetInt64(price, normalizeDecimal)
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		}

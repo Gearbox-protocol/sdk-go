@@ -196,8 +196,5 @@
       '33AURA_33ARB_33BAL': 3,
     },
   },
-  redstone: {
-    mains: {},
-    reserves: {},
-  },
+  redstone: {},
 }
