@@ -325,6 +325,9 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		} else if calc.BaseTokens[ind] == "USDC" {
 			prices[tokenAddr.Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			if log.GetBaseNet(core.GetChainId(calc.client)) != "MAINNET" {
+				prices[calc.symToAddr.Tokens["USDC_e"].Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			}
 		}
 	}
 }
