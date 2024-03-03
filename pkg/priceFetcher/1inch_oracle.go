@@ -113,26 +113,22 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
 func getArbClient(urls string) core.ClientI {
+	newUrls := []string{}
 	for _, url := range strings.Split(urls, ",") {
 		{
 			url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
 			if strings.Contains(url, "arb-mainnet") {
-				if client := getClient(url); client != nil {
-					return client
-				}
+				newUrls = append(newUrls, url)
 			}
 		}
 		{
 			url = strings.Replace(url, "https://mainnet.infura.io", "https://arbitrum-mainnet.infura.io", 1)
 			if strings.Contains(url, "https://arbitrum-mainnet.infura.io") {
-				if client := getClient(url); client != nil {
-					return client
-				}
+				newUrls = append(newUrls, url)
 			}
 		}
 	}
-	log.Fatal("Can't get arb url")
-	return nil
+	return getClient(strings.Join(newUrls, ","))
 }
 
 func getClient(url string) core.ClientI {
@@ -140,10 +136,6 @@ func getClient(url string) core.ClientI {
 		return nil
 	}
 	ethclient, err := ethclient.Dial(url)
-	if err != nil {
-		return nil
-	}
-	_, err = ethclient.BlockNumber(context.TODO())
 	if err != nil {
 		return nil
 	}
@@ -248,6 +240,7 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 // curve dependent on base
 // const and base doesn't dependent on any token.
 func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64, ts uint64) map[string]*core.BigInt {
+	defer utils.Elapsed("GetPrices")()
 	if len(results) != len(calc.generatedCalls) {
 		log.Fatalf("call len %d, result len %d", len(calc.generatedCalls), len(results))
 	}
@@ -284,16 +277,21 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
+
+	// ARB_LOGIC
+	calc.arb(blockNumber, ts, prices)
+	// resolve arb tokens
+	// get 1inch token from the 1inch spot contract use 1inch api
+	calc.addGearPrice(prices)
+	return prices
+}
+func (calc OneInchOracle) arb(blockNumber int64, ts uint64, prices map[string]*core.BigInt) {
+	defer utils.Elapsed("arbitrum price fetch")()
 	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
 		calls := calc.GetArbBaseCalls()
 		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNumber, ts), false, calls)
 		calc.processArbBaseResults(results, prices)
 	}
-
-	// resolve arb tokens
-	// get 1inch token from the 1inch spot contract use 1inch api
-	calc.addGearPrice(prices)
-	return prices
 }
 
 func getArbBlockNum(mainBlock int64, ts uint64) int64 {

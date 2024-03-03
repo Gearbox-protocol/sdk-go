@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/pkg"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 
 	// "github.com/Gearbox-protocol/third-eye/models/chainlink_price_feed"
 	// "github.com/ethereum/go-ethereum/accounts/abi"
@@ -133,6 +134,7 @@ func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 }
 
 func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
+	defer utils.Elapsed("gerprice gearbo oracle")()
 	poABI := core.GetAbi("YearnPriceFeed")
 	prices := map[string]*big.Int{}
 	for i, entry := range results {
