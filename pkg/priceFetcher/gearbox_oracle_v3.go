@@ -15,6 +15,7 @@ type GearboxOraclev3 struct {
 	GearboxOracle
 	tokenToReserve            map[string]reserveUsage
 	compositefeedToPriceFeed0 map[common.Address]common.Address
+	feedToType                map[common.Address]int
 }
 
 type reserveUsage struct {
@@ -38,6 +39,7 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			version: version,
 		},
 		tokenToReserve:            map[string]reserveUsage{},
+		feedToType:                map[common.Address]int{},
 		compositefeedToPriceFeed0: map[common.Address]common.Address{},
 	}
 	return po
@@ -46,17 +48,17 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 func (pOracle *GearboxOraclev3) addFeedToType(feed common.Address) {
 	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
 	if err == nil {
-		if int(new(big.Int).SetBytes(typeData).Int64()) == core.V3_COMPOSITE_ORACLE {
-			priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "385aee1b", feed, 0, []byte{})
-			if err == nil {
-				pOracle.compositefeedToPriceFeed0[feed] = common.BytesToAddress(priceFeed0)
-			}
-		}
+		pOracle.feedToType[feed] = int(new(big.Int).SetBytes(typeData).Int64())
 	}
 }
 
 func (pOracle GearboxOraclev3) GetPriceFeed0(compfeed common.Address) common.Address {
 	return pOracle.compositefeedToPriceFeed0[compfeed]
+}
+
+func (pOracle GearboxOraclev3) IsRedStone(token common.Address) bool {
+	feed := pOracle.GetFeed(token.Hex())
+	return pOracle.feedToType[feed] == core.V3_REDSTONE_ORACLE
 }
 
 func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {

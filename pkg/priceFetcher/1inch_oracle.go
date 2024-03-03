@@ -286,7 +286,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	}
 	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
 		calls := calc.GetArbBaseCalls()
-		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(ts), false, calls)
+		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNum, ts), false, calls)
 		calc.processArbBaseResults(results, prices)
 	}
 
@@ -296,7 +296,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	return prices
 }
 
-func getArbBlockNum(ts uint64) int64 {
+func getArbBlockNum(mainBlock int64, ts uint64) int64 {
 	if ts != 0 {
 		etherscanAPI := utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "")
 		if etherscanAPI == "" {
@@ -308,8 +308,9 @@ func getArbBlockNum(ts uint64) int64 {
 	} else {
 		log.Fatal("ts can't be 0")
 	}
-	return 0
+	return mainBlock
 }
+
 func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
 	gearToken := calc.symToAddr.Tokens["GEAR"]
 	if gearToken != core.NULL_ADDR {
