@@ -49,13 +49,13 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 	return po
 }
 
-func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, reserve bool) {
+func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, token common.Address, reserve bool) {
 	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
 	if err == nil {
-		if pOracle.tokenToType[feed] == nil {
-			pOracle.tokenToType[feed] = map[bool][]typeAndBlock{}
+		if pOracle.tokenToType[token] == nil {
+			pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
 		}
-		pOracle.tokenToType[feed][reserve] = append(pOracle.tokenToType[feed][reserve], typeAndBlock{
+		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], typeAndBlock{
 			int(new(big.Int).SetBytes(typeData).Int64()),
 			blockNum,
 		})
@@ -91,16 +91,16 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 	blockNum := int64(txLog.BlockNumber)
 	switch txLog.Topics[0] {
 	case pOracle.topics[0]:
-		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
+		token := common.HexToAddress(txLog.Topics[1].Hex())
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
-		pOracle.addtokenToType(blockNum, feed, false)
-		pOracle.tokenToFeed[token] = feed
+		pOracle.addtokenToType(blockNum, feed, token, false)
+		pOracle.tokenToFeed[token.Hex()] = feed
 		return true
 	case pOracle.topics[1]: // set reserve
-		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
+		token := common.HexToAddress(txLog.Topics[1].Hex())
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
-		pOracle.addtokenToType(blockNum, feed, true)
-		pOracle.tokenToReserve[token] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token].use}
+		pOracle.addtokenToType(blockNum, feed, token, true)
+		pOracle.tokenToReserve[token.Hex()] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token.Hex()].use}
 	case pOracle.topics[2]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		pOracle.tokenToReserve[token] = reserveUsage{feed: pOracle.tokenToReserve[token].feed, use: txLog.Topics[2][:][63] == 1}
