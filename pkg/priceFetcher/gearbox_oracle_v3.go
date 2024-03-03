@@ -19,7 +19,7 @@ type GearboxOraclev3 struct {
 	GearboxOracle
 	tokenToReserve            map[string]reserveUsage
 	compositefeedToPriceFeed0 map[common.Address]common.Address
-	tokenToType               map[common.Address][]typeAndBlock
+	tokenToType               map[common.Address]map[bool][]typeAndBlock
 }
 
 type reserveUsage struct {
@@ -43,16 +43,19 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			version: version,
 		},
 		tokenToReserve:            map[string]reserveUsage{},
-		tokenToType:               map[common.Address][]typeAndBlock{},
+		tokenToType:               map[common.Address]map[bool][]typeAndBlock{},
 		compositefeedToPriceFeed0: map[common.Address]common.Address{},
 	}
 	return po
 }
 
-func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address) {
+func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, reserve bool) {
 	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
 	if err == nil {
-		pOracle.tokenToType[feed] = append(pOracle.tokenToType[feed], typeAndBlock{
+		if pOracle.tokenToType[feed] == nil {
+			pOracle.tokenToType[feed] = map[bool][]typeAndBlock{}
+		}
+		pOracle.tokenToType[feed][reserve] = append(pOracle.tokenToType[feed][reserve], typeAndBlock{
 			int(new(big.Int).SetBytes(typeData).Int64()),
 			blockNum,
 		})
@@ -64,15 +67,17 @@ func (pOracle GearboxOraclev3) GetPriceFeed0(compfeed common.Address) common.Add
 }
 
 func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ...int64) typeAndBlock {
-	l := len(pOracle.tokenToType[token])
+	reserve := pOracle.tokenToReserve[token.Hex()].use
+	typeAndBlocks := pOracle.tokenToType[token][reserve]
+	l := len(typeAndBlocks)
 	if len(blockNum) > 0 {
 		for i := l - 1; i >= 0; i-- {
-			if pOracle.tokenToType[token][i].BlockNum <= blockNum[0] {
-				return pOracle.tokenToType[token][i]
+			if typeAndBlocks[i].BlockNum <= blockNum[0] {
+				return typeAndBlocks[i]
 			}
 		}
 	}
-	return pOracle.tokenToType[token][l-1]
+	return typeAndBlocks[l-1]
 }
 
 func (pOracle GearboxOraclev3) IsRedStoneToken(token common.Address, blockNum ...int64) bool {
@@ -88,13 +93,13 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 	case pOracle.topics[0]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
-		pOracle.addtokenToType(blockNum, feed)
+		pOracle.addtokenToType(blockNum, feed, false)
 		pOracle.tokenToFeed[token] = feed
 		return true
 	case pOracle.topics[1]: // set reserve
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
-		pOracle.addtokenToType(blockNum, feed)
+		pOracle.addtokenToType(blockNum, feed, true)
 		pOracle.tokenToReserve[token] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token].use}
 	case pOracle.topics[2]:
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
