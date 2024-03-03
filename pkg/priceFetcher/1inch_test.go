@@ -35,7 +35,7 @@ func TestSpotPriceStore(t *testing.T) {
 	calls := store.GetCalls()
 	//
 	results := core.MakeMultiCall(client, blockNumber, false, calls)
-	require.JSONEq(t, utils.ToJson(expectedTokenPrices), utils.ToJson(store.GetPrices(results, blockNumber)))
+	require.JSONEq(t, utils.ToJson(expectedTokenPrices), utils.ToJson(store.GetPrices(results, blockNumber, 0)))
 }
 
 func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNum int64, t *testing.T) *TokensStore {

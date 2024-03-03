@@ -13,6 +13,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -246,7 +247,7 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 // yearn dependent on curve and base
 // curve dependent on base
 // const and base doesn't dependent on any token.
-func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64) map[string]*core.BigInt {
+func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64, ts uint64) map[string]*core.BigInt {
 	if len(results) != len(calc.generatedCalls) {
 		log.Fatalf("call len %d, result len %d", len(calc.generatedCalls), len(results))
 	}
@@ -285,7 +286,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	}
 	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
 		calls := calc.GetArbBaseCalls()
-		results := core.MakeMultiCall(calc.arbEthClient, blockNumber, false, calls)
+		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(ts), false, calls)
 		calc.processArbBaseResults(results, prices)
 	}
 
@@ -295,6 +296,20 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	return prices
 }
 
+func getArbBlockNum(ts uint64) int64 {
+	if ts != 0 {
+		etherscanAPI := utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "")
+		if etherscanAPI == "" {
+			log.Fatal("ETHERSCAN_API can't be empty")
+		}
+		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
+		log.CheckFatal(err)
+		return blockNum
+	} else {
+		log.Fatal("ts can't be 0")
+	}
+	return 0
+}
 func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
 	gearToken := calc.symToAddr.Tokens["GEAR"]
 	if gearToken != core.NULL_ADDR {
@@ -350,7 +365,7 @@ func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int
 		Target:   pool,
 		CallData: d1Data,
 	}})
-	if len(results[0].ReturnData) == 0 || len(results[1].ReturnData) == 0 {
+	if len(results[0].ReturnData) == 0 || len(results[1].ReturnData) == 0 || ethPriceInUSD.Cmp(new(big.Int)) == 0 {
 		return new(big.Int)
 	}
 	gearBalance, ok := core.MulticallAnsBigInt(results[0])
