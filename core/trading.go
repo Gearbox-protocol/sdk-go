@@ -21,6 +21,7 @@ var tradingSymbols = []Symbol{
 	// "BLUR",
 	// on arbitrum
 	"ARB",
+	"GMX",
 	"PENDLE",
 }
 

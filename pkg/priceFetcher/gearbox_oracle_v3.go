@@ -55,15 +55,32 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 		if pOracle.tokenToType[token] == nil {
 			pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
 		}
+		pfType := int(new(big.Int).SetBytes(typeData).Int64())
 		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], typeAndBlock{
-			int(new(big.Int).SetBytes(typeData).Int64()),
-			blockNum,
+			Type:     pfType,
+			BlockNum: blockNum,
 		})
+		if pfType == core.V3_COMPOSITE_ORACLE {
+			priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "385aee1b", feed, blockNum, []byte{}) // priceFeedType
+			log.CheckFatal(err)
+			pOracle.compositefeedToPriceFeed0[feed] = common.BytesToAddress(priceFeed0)
+		}
 	}
 }
 
 func (pOracle GearboxOraclev3) GetPriceFeed0(compfeed common.Address) common.Address {
 	return pOracle.compositefeedToPriceFeed0[compfeed]
+}
+
+// gets all the prie feeds add events
+func (pOracle GearboxOraclev3) GetPriceTokenTill(blockNum int64) {
+	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
+		[]common.Address{pOracle.Address},
+		[][]common.Hash{pOracle.topics})
+	log.CheckFatal(err)
+	for _, txLog := range txLogs {
+		pOracle.OnLog(txLog)
+	}
 }
 
 func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ...int64) typeAndBlock {
@@ -76,6 +93,10 @@ func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ..
 				return typeAndBlocks[i]
 			}
 		}
+	}
+	if l == 0 {
+		// log.Warnf("getTypeAndBlock: token %s has no typeAndBlocks: %+v", token.Hex(), blockNum)
+		return typeAndBlock{}
 	}
 	return typeAndBlocks[l-1]
 }
