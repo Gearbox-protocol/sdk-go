@@ -298,9 +298,9 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 
 func getArbBlockNum(mainBlock int64, ts uint64) int64 {
 	if ts != 0 {
-		etherscanAPI := utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "")
+		etherscanAPI := utils.GetEnvOrDefault("ARBISCAN_API_KEY", "")
 		if etherscanAPI == "" {
-			log.Fatal("ETHERSCAN_API can't be empty")
+			log.Fatal("arbiscan_api_key can't be empty")
 		}
 		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
 		log.CheckFatal(err)
