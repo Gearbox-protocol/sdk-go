@@ -286,7 +286,7 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	}
 	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
 		calls := calc.GetArbBaseCalls()
-		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNum, ts), false, calls)
+		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNumber, ts), false, calls)
 		calc.processArbBaseResults(results, prices)
 	}
 

@@ -29,6 +29,8 @@ type GearboxOracleI interface {
 	GetFeed(token string) common.Address
 	//
 	GetPriceFeed0(compfeed common.Address) common.Address
+	//
+	IsRedStoneToken(token common.Address, blockNum ...int64) bool
 }
 
 type GearboxOracle struct {
@@ -61,6 +63,10 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 
 func (pOracle GearboxOracle) GetTopics() []common.Hash {
 	return pOracle.topics
+}
+
+func (pOracle GearboxOracle) IsRedStoneToken(token common.Address, blockNum ...int64) bool {
+	return false
 }
 
 func (pOracle GearboxOracle) GetAddress() common.Address {
