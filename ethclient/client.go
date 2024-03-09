@@ -25,6 +25,7 @@ import (
 type Client struct {
 	clients   []*MutextedClient
 	chainId   int64
+	url       string
 	noOfCalls *atomic.Int32
 }
 
@@ -82,6 +83,7 @@ func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	l := int64(len(urls))
 	c := &Client{
+		url:       rawurl,
 		clients:   make([]*MutextedClient, l),
 		noOfCalls: &atomic.Int32{},
 	}
@@ -186,7 +188,8 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 		return big.NewInt(id), nil
 	}
 	// locks
-	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) { return c.ChainID(ctx) })
+	url := strings.Split(rc.url, ",")[0]
+	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) { return GetChainId(url) })
 	//
 	if v != nil {
 		atomic.SwapInt64(&(rc.chainId), v.Int64())
