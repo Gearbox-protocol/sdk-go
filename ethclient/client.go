@@ -23,10 +23,11 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients   []*MutextedClient
-	chainId   int64
-	url       string
-	noOfCalls *atomic.Int32
+	clients     []*MutextedClient
+	chainId     int64
+	url         string
+	noOfCalls   *atomic.Int32
+	flagChainId int64
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -181,6 +182,14 @@ func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient
 	return muclient, startClientId
 }
 
+func (rc *Client) FlagChainID(ctx context.Context) (*big.Int, error) {
+	if rc.flagChainId == 0 {
+		if _, err := rc.ChainID(ctx); err != nil {
+			return nil, log.WrapErrWithLine(err)
+		}
+	}
+	return big.NewInt(rc.flagChainId), nil
+}
 func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	// cache
 	id := atomic.LoadInt64(&(rc.chainId))
@@ -189,7 +198,13 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	}
 	// locks
 	url := strings.Split(rc.url, ",")[0]
-	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) { return GetChainId(url) })
+	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) {
+		flag, test, err := GetFlagAndTestChainId(url)
+		if flag != nil && rc.flagChainId == 0 {
+			atomic.SwapInt64(&(rc.flagChainId), flag.Int64())
+		}
+		return test, err
+	})
 	//
 	if v != nil {
 		atomic.SwapInt64(&(rc.chainId), v.Int64())
