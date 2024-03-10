@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"math"
 	"math/big"
 	"strings"
@@ -57,12 +58,18 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 }
 
 // / multicall contract addr
-func getMultiCallAddr() string {
+func getMultiCallAddr(chainId int64) string {
+	if log.GetBaseNet(chainId) == "ARBITRUM" {
+		return "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2"
+	}
 	return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
 }
 
 func getMultiCallContract(client ClientI) *multicall.Multicall {
-	contract, err := multicall.NewMulticall(common.HexToAddress(getMultiCallAddr()), client)
+	chainId, err := client.ChainID(context.TODO())
+	log.CheckFatal(err)
+	addr := common.HexToAddress(getMultiCallAddr(chainId.Int64()))
+	contract, err := multicall.NewMulticall(addr, client)
 	log.CheckFatal(err)
 	return contract
 }
@@ -110,13 +117,13 @@ func (sch MulticallScheduler) GetResult() (ans []multicall.Multicall2Result) {
 
 // utils
 func MulticallAnsBigInt(result multicall.Multicall2Result) (*big.Int, bool) {
-	if result.Success {
+	if result.Success && len(result.ReturnData) >= 32 {
 		return new(big.Int).SetBytes(result.ReturnData[:32]), true
 	}
 	return big.NewInt(0), false
 }
 func MulticallAnsAddress(result multicall.Multicall2Result) (common.Address, bool) {
-	if result.Success {
+	if result.Success && len(result.ReturnData) >= 32 {
 		return common.BytesToAddress(result.ReturnData[:32]), true
 	}
 	return NULL_ADDR, false

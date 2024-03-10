@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -24,7 +25,7 @@ type BaseTransactor struct {
 
 func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
-	chainId, err := client.ChainID(context.TODO())
+	chainId, err := client.(*ethclient.Client).FlagChainID(context.TODO())
 	log.CheckFatal(err)
 	//
 	if strings.HasPrefix(privateKey, "enc:") {

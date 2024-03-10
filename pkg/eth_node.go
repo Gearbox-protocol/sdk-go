@@ -34,8 +34,9 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.LogFilterLenError) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
+			strings.Contains(err.Error(), core.AnkrRangeError) ||
+			strings.Contains(err.Error(), core.LogFilterLenError) ||
 			err.Error() == core.LogFilterQueryTimeout {
 			middle := (fromBlock + toBlock) / 2
 			bottomHalfLogs, err := lf.GetLogs(fromBlock, middle-1, addrs, topics)
@@ -140,13 +141,13 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 }
 
 func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, error) {
-	url := "https://%s.etherscan.io/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
+	url := "https://%s/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
 	var suffix string
-	switch chainId {
-	case 1:
-		suffix = "api"
-	case 5:
-		suffix = "api-goerli"
+	switch log.GetBaseNet(chainId) {
+	case "MAINNET":
+		suffix = "api.etherscan.io"
+	case "ARBITRUM":
+		suffix = "api.arbiscan.io"
 	}
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
 	resp, err := http.Get(url)

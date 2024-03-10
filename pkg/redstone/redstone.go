@@ -6,7 +6,6 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"sync/atomic"
 	"time"
 
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
@@ -24,14 +23,11 @@ type RedStoneMgr struct {
 	prices         *core.MutexDS[string, *big.Int]
 	redStoneTokens map[common.Address]core.RedStonePF
 	//
-	updating      *atomic.Bool
-	lastUpdatedAt int64
 }
 
 type RedStoneMgrI interface {
 	//
 	GetPrice(ts int64, token string) *big.Int
-	IsRedStoneToken(token string) bool
 	GetPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
 }
 
@@ -41,7 +37,7 @@ func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 	redStoneTokens := map[common.Address]core.RedStonePF{}
 	pfs := core.GetRedStonePFByChainId(chainId)
 	symToAddr := core.GetSymToAddrByChainId(chainId)
-	for sym, details := range pfs.Mains {
+	for sym, details := range pfs {
 		address := symToAddr.Tokens[string(sym)]
 		redStoneTokens[address] = details
 	}
@@ -50,14 +46,7 @@ func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 		lastPods:       core.NewMutexDS[string, *RSPriceOnDemand](),
 		prices:         core.NewMutexDS[string, *big.Int](),
 		redStoneTokens: redStoneTokens,
-		updating:       &atomic.Bool{},
 	}
-}
-
-func (r *RedStoneMgr) IsRedStoneToken(token string) bool {
-	// TODO
-	_, ok := r.redStoneTokens[common.HexToAddress(token)]
-	return ok
 }
 
 // token is address

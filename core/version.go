@@ -38,7 +38,7 @@ type VersionType struct {
 func NewVersion(v int16) VersionType {
 	if v == 1 {
 		return VersionType{v: 1}
-	} else if v == 300 || v == 301 {
+	} else if v == 300 || v == 301 || v == 302 {
 		return VersionType{v: 300}
 	} else if v == 210 || v == 220 || v == 2 {
 		return VersionType{v: 2}

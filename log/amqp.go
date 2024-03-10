@@ -1,14 +1,23 @@
 package log
 
 import (
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var _amqpChannel *amqp.Channel
 var _amqpUrl string
+
+func Elapsed(what string) func() {
+	start := time.Now()
+	return func() {
+		InfoStackN(3, fmt.Sprintf("%s took %v", what, time.Since(start)))
+	}
+}
 
 // Service constructor
 func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName string) {

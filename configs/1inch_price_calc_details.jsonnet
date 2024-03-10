@@ -9,11 +9,15 @@
       price: 0,
     },
   ],
+  arbBaseTokens: [
+    'ARB',
+    'GMX',
+  ],
   baseTokens: [
     'FRAX',
     'SUSD',
     'stETH',
-    'wstETH',
+
     'GUSD',
     'LUSD',
     'SNX',
@@ -40,6 +44,11 @@
     'RPL',
     'APE',
     'LDO',
+    //
+    'PENDLE',
+    'wstETH',
+    'rETH',
+    'cbETH',
   ],
   yearnTokens: [
     {

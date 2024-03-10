@@ -64,7 +64,7 @@ type anvilTransaction struct {
 func bigIntToString(n int64) string {
 	b := big.NewInt(n).Bytes()
 	if len(b) == 0 {
-		return "0x00"
+		return "0000000000000000"
 	}
 	return hex.EncodeToString(b)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/pkg"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 
 	// "github.com/Gearbox-protocol/third-eye/models/chainlink_price_feed"
 	// "github.com/ethereum/go-ethereum/accounts/abi"
@@ -27,6 +28,10 @@ type GearboxOracleI interface {
 	GetCalls() []multicall.Multicall2Call
 	GetPrices(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
 	GetFeed(token string) common.Address
+	//
+	GetPriceFeed0(compfeed common.Address) common.Address
+	//
+	IsRedStoneToken(token common.Address, blockNum ...int64) bool
 }
 
 type GearboxOracle struct {
@@ -38,6 +43,10 @@ type GearboxOracle struct {
 	//
 	tokens []string
 	//
+}
+
+func (pOracle *GearboxOracle) GetPriceFeed0(compfeed common.Address) common.Address {
+	return core.NULL_ADDR
 }
 
 func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
@@ -55,6 +64,10 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 
 func (pOracle GearboxOracle) GetTopics() []common.Hash {
 	return pOracle.topics
+}
+
+func (pOracle GearboxOracle) IsRedStoneToken(token common.Address, blockNum ...int64) bool {
+	return false
 }
 
 func (pOracle GearboxOracle) GetAddress() common.Address {
@@ -121,6 +134,7 @@ func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 }
 
 func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
+	defer utils.Elapsed("gerprice gearbo oracle")()
 	poABI := core.GetAbi("YearnPriceFeed")
 	prices := map[string]*big.Int{}
 	for i, entry := range results {

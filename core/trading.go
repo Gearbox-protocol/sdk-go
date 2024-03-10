@@ -19,18 +19,28 @@ var tradingSymbols = []Symbol{
 	"CVX",
 	"FXS",
 	// "BLUR",
+	// on arbitrum
+	"PENDLE",
 }
+
+var arbTradingTokens = []Symbol{"GMX", "ARB"}
 
 var baseSymbols []Symbol = []Symbol{"DAI", "ETH", "BTC", "USDC"}
 
-var farmedBaseSymbols []Symbol = []Symbol{"sDAI", "yvUSDC", "yvDAI", "stETH", "yvWBTC", "yvWETH"}
+var farmedBaseSymbols []Symbol = []Symbol{"sDAI", "yvUSDC", "yvDAI", "stETH", "yvWBTC", "yvWETH",
+	// ARBITRUM farmed
+	"wstETH",
+	"rETH",
+	"cbETH"}
 
+// trading pair
 var TradingPairs map[TradingPair]bool
 
 var TokenToTradingPairs map[Symbol][]TradingPair
 
 var upperCaseToRealCase map[Symbol]Symbol
 
+// add trading and base to pair
 func updateTokenToPairs(pair TradingPair, trading, base Symbol) {
 	TokenToTradingPairs[trading] = append(TokenToTradingPairs[trading], pair)
 	TokenToTradingPairs[base] = append(TokenToTradingPairs[base], pair)
@@ -42,11 +52,13 @@ func TradingSymNoW(sym Symbol) Symbol {
 	}
 	return sym
 }
+
+// generate all the pairs - lie ETHUSDC, ARByvWETH
 func init() {
 	TradingPairs = map[TradingPair]bool{}
 	TokenToTradingPairs = map[Symbol][]TradingPair{}
 	// trading and base
-	for _, trading := range tradingSymbols {
+	for _, trading := range append(tradingSymbols, arbTradingTokens...) {
 		for _, base := range baseSymbols {
 			pair := NewTradingPair(trading, base)
 			//
@@ -72,17 +84,20 @@ func init() {
 			}
 		}
 	}
-	//
+	// STETH to stETH, STETH for matching name in the api request , stETH for config and internal details
 	upperCaseToRealCase = map[Symbol]Symbol{}
 	for _, sym := range AllTradingSymbolForDBWithW() {
 		sym = TradingSymNoW(sym)
 		upperCaseToRealCase[Symbol(strings.ToUpper(string(sym)))] = sym
 	}
 }
+func GetArbTradingTokens() []Symbol {
+	return arbTradingTokens
+}
 
 func AllTradingSymbolForDBWithW() (ans []Symbol) {
 	set := map[Symbol]bool{}
-	for _, symbols := range [][]Symbol{baseSymbols, farmedBaseSymbols, tradingSymbols} {
+	for _, symbols := range [][]Symbol{baseSymbols, arbTradingTokens, farmedBaseSymbols, tradingSymbols} {
 		for _, sym := range symbols {
 			set[sym] = true
 		}
@@ -104,7 +119,7 @@ func Priority(sym Symbol) int {
 		return 0
 	case "WBTC", "yvWBTC", "BTC":
 		return 2
-	case "WETH", "yvWETH", "stETH", "ETH":
+	case "WETH", "yvWETH", "stETH", "ETH", "cbETH", "wstETH", "rETH":
 		return 3
 	default:
 		return 100
@@ -114,7 +129,7 @@ func Priority(sym Symbol) int {
 func GetPriceScale(p TradingPair) int64 {
 	if utils.Contains([]Symbol{"BTC", "yvWBTC"}, p.Base) {
 		return 10_000
-	} else if utils.Contains([]Symbol{"yvWETH", "ETH", "stETH"}, p.Base) {
+	} else if utils.Contains([]Symbol{"WETH", "yvWETH", "stETH", "ETH", "cbETH", "wstETH", "rETH"}, p.Base) {
 		return 1000
 	} else {
 		return 100
@@ -169,7 +184,8 @@ func (s *TradingPair) UnmarshalText(text []byte) error {
 }
 
 // base and yearn tokens
-func NormalTradingTokensFor1Inch() (ans []Symbol) {
+// for 1inch config
+func InchConfigBaseTokensForTrading() (ans []Symbol) {
 	set := map[Symbol]bool{}
 	for _, symbols := range [][]Symbol{baseSymbols, tradingSymbols} {
 		for _, sym := range symbols {

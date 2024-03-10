@@ -31,11 +31,11 @@ func TestSpotPriceStore(t *testing.T) {
 	expectedTokenPrices := map[string]string{}
 	utils.ReadJsonAndSetInterface("inputs/spot_price_test.json", &expectedTokenPrices)
 	tStore := getDecimalStore(client, expectedTokenPrices, blockNumber, t)
-	store := New1InchOracle(client, 1, tStore)
+	store := New1InchOracle(client, tStore, "")
 	calls := store.GetCalls()
 	//
 	results := core.MakeMultiCall(client, blockNumber, false, calls)
-	require.JSONEq(t, utils.ToJson(expectedTokenPrices), utils.ToJson(store.GetPrices(results, blockNumber)))
+	require.JSONEq(t, utils.ToJson(expectedTokenPrices), utils.ToJson(store.GetPrices(results, blockNumber, 0)))
 }
 
 func getDecimalStore(client core.ClientI, tokenPrices map[string]string, blockNum int64, t *testing.T) *TokensStore {

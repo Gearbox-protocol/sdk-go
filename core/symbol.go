@@ -11,22 +11,17 @@ import (
 type Symbol string
 
 type RedStonePF struct {
-	Type             int      `json:"type"`
-	DataServiceId    string   `json:"dataServiceId"`
-	DataId           string   `json:"dataId"`
-	StalenessPeriod  int64    `json:"stalenessPeriod"`
-	Signers          []string `json:"signers"`
-	SignersThreshold int      `json:"signersThreshold"`
+	Type             int    `json:"type"`
+	DataServiceId    string `json:"dataServiceId"`
+	DataId           string `json:"dataId"`
+	SignersThreshold int    `json:"signersThreshold"`
 }
-type RedStone struct {
-	Mains    map[Symbol]RedStonePF `json:"mains"`
-	Reserves map[Symbol]RedStonePF `json:"reserves"`
-}
+
 type SymTOAddrStore struct {
 	Exchanges    map[string]common.Address `json:"exchanges"`
 	Tokens       map[string]common.Address `json:"tokens"`
 	FarmingPools map[string]common.Address `json:"farmingPools"`
-	RedStone     RedStone                  `json:"redStone"`
+	RedStone     map[Symbol]RedStonePF     `json:"redStone"`
 }
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
@@ -52,7 +47,7 @@ func getSymToAddrStore(fileName string) *SymTOAddrStore {
 	return _globalCopy[fileName]
 }
 
-func GetRedStonePFByChainId(chainId int64) RedStone {
+func GetRedStonePFByChainId(chainId int64) map[Symbol]RedStonePF {
 	fileName := log.GetConfigFile(chainId)
 	data := getSymToAddrStore(fileName)
 	return data.RedStone
