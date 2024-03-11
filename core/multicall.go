@@ -44,7 +44,8 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 		sch.AddJob(func() []multicall.Multicall2Result {
 			tmpResult, err := contract.TryAggregate(opts, successRequired, jobCalls)
 			if err != nil {
-				if strings.Contains(err.Error(), "OutOfGas") {
+				if strings.Contains(err.Error(), "OutOfGas") || // alchemy
+					strings.Contains(err.Error(), "we can't execute this request") { // ankr
 					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize/2)
 				} else {
 					log.Fatal(err)
