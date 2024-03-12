@@ -115,7 +115,7 @@ func AllTradingSymbolForDBWithW() (ans []Symbol) {
 
 func Priority(sym Symbol) int {
 	switch sym {
-	case "USDC", "yvUSDC", "DAI", "sDAI", "yvDAI":
+	case "USDC", "yvUSDC", "DAI", "sDAI", "yvDAI", "USDC.e", "USDC_e":
 		return 0
 	case "WBTC", "yvWBTC", "BTC":
 		return 2
