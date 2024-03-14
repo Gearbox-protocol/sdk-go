@@ -34,6 +34,11 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://kovan.etherscan.io",
 			ChartUrl:    "https://charts.kovan.gearbox.fi",
 		}
+	case 10, 7879: // optimism
+		return NetworkUI{
+			ExplorerUrl: "https://optimistic.etherscan.io",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	case 5: // goerli
 		return NetworkUI{
 			ExplorerUrl: "https://goerli.etherscan.io",
@@ -59,6 +64,10 @@ func GetNetworkName(chainId int64) (name string) {
 		name = "ARBITRUM"
 	case 7880:
 		name = "ARBTEST"
+	case 10:
+		name = "OPTIMISM"
+	case 7879:
+		name = "OPTTEST"
 	}
 	return
 }
@@ -71,6 +80,8 @@ func GetBaseNet(chainId int64) string {
 		net = "ARBITRUM"
 	} else if net == "TEST" {
 		net = "MAINNET"
+	} else if net == "OPTTEST" {
+		net = "OPTIMISM"
 	}
 	return net
 }

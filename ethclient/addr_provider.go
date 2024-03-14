@@ -2,7 +2,6 @@ package ethclient
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -51,16 +50,18 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 		log.Fatalf("forkurl not found for %s", url)
 	}
 
-	flag, _, err := getChainIdFromRPC(forkUrl)
+	_, test, err := GetFlagAndTestChainId(forkUrl)
 	if err != nil {
 		return nil, nil, log.WrapErrWithLine(err)
 	}
-	switch flag.Int64() {
+	switch test.Int64() {
 	case 1:
-		return flag, big.NewInt(7878), nil
+		return test, big.NewInt(7878), nil
 	case 42161:
-		return flag, big.NewInt(7880), nil
+		return test, big.NewInt(7880), nil
+	case 10:
+		return test, big.NewInt(7879), nil
 	default:
-		return nil, nil, fmt.Errorf("unknown chainId %d", flag)
+		return test, test, nil
 	}
 }
