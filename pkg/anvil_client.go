@@ -52,8 +52,8 @@ type anvilTransaction struct {
 	From            string `json:"from"`
 	To              string `json:"to"`
 	GasPrice        string `json:"gasPrice,omitempty"`
-	MaxPriority     string `json:"maxPriorityFeePerGas"`
-	MaxFeePerGas    string `json:"maxFeePerGas"`
+	MaxPriority     string `json:"maxPriorityFeePerGas,omitempty"`
+	MaxFeePerGas    string `json:"maxFeePerGas,omitempty"`
 	Gas             string `json:"gas"`
 	Value           string `json:"value,omitempty"`
 	Data            string `json:"data"`
@@ -64,7 +64,7 @@ type anvilTransaction struct {
 func bigIntToString(n int64) string {
 	b := big.NewInt(n).Bytes()
 	if len(b) == 0 {
-		return "0x00"
+		return "0000000000000000"
 	}
 	return hex.EncodeToString(b)
 }
@@ -80,15 +80,15 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 		return
 	}()
 
-	if tx.Type() == 1 {
+	if tx.Type() <= 1 { // 0,1
 		anvilTx = anvilTransaction{
 			From:            from.Hex(),
 			To:              tx.To().Hex(),
-			GasPrice:        hex.EncodeToString(tx.GasTipCap().Bytes()),
-			Gas:             bigIntToString(int64(tx.Gas())),
+			GasPrice:        "0x" + hex.EncodeToString(tx.GasTipCap().Bytes()),
+			Gas:             "0x" + bigIntToString(int64(tx.Gas()*2)),
 			Data:            hex.EncodeToString(tx.Data()),
-			Nonce:           bigIntToString(nonce),
-			Value:           fmt.Sprintf("%x", tx.Value()),
+			Nonce:           "0x" + bigIntToString(nonce),
+			Value:           "0x" + fmt.Sprintf("%x", tx.Value()),
 			TransactionType: bigIntToString(int64(tx.Type())),
 		}
 	} else {
@@ -107,6 +107,7 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	body := utils.GetJsonRPCRequestBody("eth_sendTransaction", anvilTx)
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
+		log.Debug(utils.ToJson(body))
 		log.Fatal("from", from, "err:", err)
 	}
 	return common.HexToHash(result.(string))
