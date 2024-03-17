@@ -130,13 +130,18 @@ type (
 		CumulativeQuotaInterest *core.BigInt `gorm:"column:cum_quota_interest" json:"cumQuotaInterest,omitempty"`
 		QuotaFees               *core.BigInt `gorm:"column:quota_fees" json:"quotaFees,omitempty"`
 		// enabled can be false but amount is always non -zero
-		Balances               *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
-		Borrower               string                `gorm:"column:borrower" json:"borrower"`
-		CollateralInUSD        float64               `gorm:"column:collateral_usd" json:"collateralInUSD"`
-		CollateralInUnderlying float64               `gorm:"column:collateral_underlying" json:"collateralInUnderlying"`
-		СumulativeIndexAtOpen  *core.BigInt          `gorm:"column:cumulative_index" json:"cumulativeIndexAtOpen"`
-		HealthFactor           *core.BigInt          `gorm:"column:health_factor" json:"healthFactor"`
-		CM                     string                `json:"-" gorm:"-"`
+		Balances *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
+		Borrower string                `gorm:"column:borrower" json:"borrower"`
+		//
+		CollateralInUSD         float64             `gorm:"column:collateral_usd" json:"collateralInUSD"`
+		CollateralInUnderlying  float64             `gorm:"column:collateral_underlying" json:"collateralInUnderlying"`
+		Collateral              *core.JsonBigIntMap `gorm:"column:collateral" json:"-"`
+		InstCollteralUnderlying float64             `gorm:"column:inst_collateral_underlying" json:"instCollateralUnderlying"`
+		InstCollteralUSD        float64             `gorm:"column:inst_collateral_usd" json:"instCollateralUSD"`
+		//
+		СumulativeIndexAtOpen *core.BigInt `gorm:"column:cumulative_index" json:"cumulativeIndexAtOpen"`
+		HealthFactor          *core.BigInt `gorm:"column:health_factor" json:"healthFactor"`
+		CM                    string       `json:"-" gorm:"-"`
 	}
 	CreditSessionUpdate struct {
 		SessionId        string       `gorm:"column:id;primaryKey"`
