@@ -19,6 +19,7 @@ type CreditManagerState struct {
 	MaxLeverageFactor int64            `gorm:"column:max_leverage"`
 	MinAmount         *core.BigInt     `gorm:"column:min_amount"`
 	MaxAmount         *core.BigInt     `gorm:"column:max_amount"`
+	TotalDebtLimit    *core.BigInt     `gorm:"column:total_debt_limit"`
 	Paused            bool             `gorm:"column:paused"`
 	Version           core.VersionType `gorm:"column:_version"`
 	Name              string           `gorm:"column:name"`
