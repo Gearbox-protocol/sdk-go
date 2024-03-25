@@ -64,7 +64,7 @@ type anvilTransaction struct {
 func bigIntToString(n int64) string {
 	b := big.NewInt(n).Bytes()
 	if len(b) == 0 {
-		return "0x00"
+		return "0000000000000000"
 	}
 	return hex.EncodeToString(b)
 }
@@ -84,11 +84,11 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 		anvilTx = anvilTransaction{
 			From:            from.Hex(),
 			To:              tx.To().Hex(),
-			GasPrice:        hex.EncodeToString(tx.GasTipCap().Bytes()),
-			Gas:             bigIntToString(int64(tx.Gas())),
+			GasPrice:        "0x" + hex.EncodeToString(tx.GasTipCap().Bytes()),
+			Gas:             "0x" + bigIntToString(int64(tx.Gas()*2)),
 			Data:            hex.EncodeToString(tx.Data()),
-			Nonce:           bigIntToString(nonce),
-			Value:           fmt.Sprintf("%x", tx.Value()),
+			Nonce:           "0x" + bigIntToString(nonce),
+			Value:           "0x" + fmt.Sprintf("%x", tx.Value()),
 			TransactionType: bigIntToString(int64(tx.Type())),
 		}
 	} else {
@@ -139,4 +139,13 @@ func (anvil *AnvilClient) RevertSnapshot(id string) {
 	if !result.(bool) {
 		log.Fatalf("revert %s to failed", id)
 	}
+}
+func (anvil *AnvilClient) NextTs(ts int64) error {
+	log.Info("Setting next block anvil ts", ts)
+	body := utils.GetJsonRPCRequestBody("evm_setNextBlockTimestamp", ts)
+	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
+	if err != nil {
+		return fmt.Errorf("set next block ts to %d failed with %s", ts, err)
+	}
+	return nil
 }

@@ -30,12 +30,17 @@ func NewToken(addr string, client core.ClientI) (*Token, error) {
 }
 
 func (t *Token) init() error {
-	contract, err := eRC20.NewERC20(common.HexToAddress(t.Address), t.client)
+	tokenAddr := common.HexToAddress(t.Address)
+	contract, err := eRC20.NewERC20(tokenAddr, t.client)
 	if err != nil {
 		return err
 	}
 	if symbol, err := contract.Symbol(&bind.CallOpts{}); err != nil {
-		return err
+		var err2 error
+		t.Symbol, err2 = SymbolFnReturnsBytes(t.client, tokenAddr)
+		if err2 != nil { // if we can't get bytes data return error
+			return err
+		}
 	} else {
 		t.Symbol = symbol
 	}
@@ -115,4 +120,21 @@ type TokenPrice struct {
 
 func (TokenPrice) TableName() string {
 	return "prices"
+}
+
+// for MKR token
+func SymbolFnReturnsBytes(client core.ClientI, tokenAddr common.Address) (string, error) {
+	symbolBytes, err := core.CallFuncWithExtraBytes(client, "95d89b41", tokenAddr, 0, nil)
+	if err != nil {
+		return "", err
+	}
+	return func() string {
+		for ind, ele := range symbolBytes {
+			if ele == 0 {
+				symbolBytes = symbolBytes[:ind]
+				break
+			}
+		}
+		return string(symbolBytes)
+	}(), nil
 }

@@ -8,15 +8,16 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
-func CalCloseAmount(params *schemas.Parameters, version core.VersionType, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func CalCloseAmount(params *schemas.Parameters, version core.VersionType, totalValue *big.Int, closureStatus int, debtDetails *DebtDetails) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	if version.Eq(1) {
-		return calCloseAmountV1(params, totalValue, schemas.IsStatusLiquidated(closureStatus), borrowedAmountWithInterest, borrowedAmount)
-	} else if version.Eq(2) {
-		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, borrowedAmountWithInterest, borrowedAmount)
+		return calCloseAmountV1(params, totalValue, schemas.IsStatusLiquidated(closureStatus), debtDetails)
+	} else if version.Eq(2) || version.Eq(300) {
+		amountToPool, remainingFunds, profit, loss = calCloseAmountV2(params, totalValue, closureStatus, debtDetails)
 	}
 	return
 }
-func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquidated bool, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+
+func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquidated bool, debtDetails *DebtDetails) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
@@ -26,6 +27,7 @@ func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquida
 	} else {
 		totalFunds = totalValue
 	}
+	borrowedAmountWithInterest := debtDetails.BorrowedAmountWithInterest()
 	// borrow amt is greater than total funds
 	if totalFunds.Cmp(borrowedAmountWithInterest) < 0 {
 		amountToPool = new(big.Int).Sub(totalFunds, big.NewInt(1))
@@ -35,7 +37,7 @@ func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquida
 			amountToPool = utils.PercentMulByUInt16(totalFunds, params.FeeLiquidation)
 			amountToPool = new(big.Int).Add(borrowedAmountWithInterest, amountToPool)
 		} else {
-			interestAmt := new(big.Int).Sub(borrowedAmountWithInterest, borrowedAmount)
+			interestAmt := debtDetails.Interest()
 			fee := utils.PercentMulByUInt16(interestAmt, params.FeeInterest)
 			amountToPool = new(big.Int).Add(borrowedAmountWithInterest, fee)
 		}
@@ -52,16 +54,12 @@ func calCloseAmountV1(params *schemas.Parameters, totalValue *big.Int, isLiquida
 }
 
 // https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditManager.sol#L1238
-func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureStatus int, borrowedAmountWithInterest, borrowedAmount *big.Int) (amountToPool, remainingFunds, profit, loss *big.Int) {
+func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureStatus int, debtDetails *DebtDetails) (amountToPool, remainingFunds, profit, loss *big.Int) {
 	loss = big.NewInt(0)
 	profit = big.NewInt(0)
 	remainingFunds = new(big.Int)
 
-	amountToPool = utils.PercentMulByUInt16(
-		new(big.Int).Sub(borrowedAmountWithInterest, borrowedAmount),
-		params.FeeInterest,
-	)
-	amountToPool = new(big.Int).Add(amountToPool, borrowedAmountWithInterest)
+	amountToPool = debtDetails.Total()
 
 	if schemas.IsStatusLiquidated(closureStatus) {
 		var totalFunds *big.Int
@@ -88,13 +86,14 @@ func calCloseAmountV2(params *schemas.Parameters, totalValue *big.Int, closureSt
 			amountToPool = totalFunds
 		}
 
+		borrowedAmountWithInterest := debtDetails.BorrowedAmountWithInterest()
 		if totalFunds.Cmp(borrowedAmountWithInterest) >= 0 {
 			profit = new(big.Int).Sub(amountToPool, borrowedAmountWithInterest)
 		} else {
 			loss = new(big.Int).Sub(borrowedAmountWithInterest, amountToPool)
 		}
 	} else {
-		profit = new(big.Int).Sub(amountToPool, borrowedAmountWithInterest)
+		profit = new(big.Int).Sub(amountToPool, debtDetails.BorrowedAmountWithInterest())
 		// reminaingFunds is totalValue - debt
 		remainingFunds = new(big.Int).Sub(totalValue, amountToPool)
 	}

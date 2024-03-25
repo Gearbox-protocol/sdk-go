@@ -63,6 +63,12 @@ func Tracef(msg string, args ...interface{}) {
 func Trace(args ...interface{}) {
 	println(TRACE, args...)
 }
+func TraceAtN(depth int, args ...interface{}) {
+	if TRACE < logLevel {
+		return
+	}
+	printlnStr(toString(TRACE), depth, args...)
+}
 func Debugf(msg string, args ...interface{}) {
 	printf(DEBUG, msg, args...)
 }
@@ -177,4 +183,7 @@ func DetectFuncAtStackN(n int) string {
 
 func WrapErrWithLine(err error) error {
 	return fmt.Errorf("%s: %v", DetectFuncAtStackN(2), err)
+}
+func WrapErrWithLineN(err error, n int) error {
+	return fmt.Errorf("%s: %v", DetectFuncAtStackN(n), err)
 }

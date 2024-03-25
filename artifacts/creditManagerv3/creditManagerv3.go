@@ -55,7 +55,7 @@ type RevocationPair struct {
 
 // CreditManagerv3MetaData contains all meta data concerning the CreditManagerv3 contract.
 var CreditManagerv3MetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addressProvider\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_pool\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ActiveCreditAccountNotSetException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AllowanceFailedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotAdapterException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotConfiguratorException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CallerNotCreditFacadeException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CreditAccountDoesNotExistException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CustomHealthFactorTooLowException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"IncorrectParameterException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotEnoughCollateralException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"OpenCloseAccountInOneBlockException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SafeTransferFromFailed\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TargetContractNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenAlreadyAddedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenNotAllowedException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooManyEnabledTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TooManyTokensException\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressException\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newConfigurator\",\"type\":\"address\"}],\"name\":\"SetCreditConfigurator\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"accountFactory\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"adapterToContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"addCollateral\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenMask\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"addToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"addressProvider\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approveCreditAccount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"enumCollateralCalcTask\",\"name\":\"task\",\"type\":\"uint8\"}],\"name\":\"calcDebtAndCollateral\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"debt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cumulativeIndexNow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\"},{\"internalType\":\"uint128\",\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\"},{\"internalType\":\"uint256\",\"name\":\"accruedInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"accruedFees\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalDebtUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalValue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalValueUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twvUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"enabledTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"quotedTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"quotedTokens\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"_poolQuotaKeeper\",\"type\":\"address\"}],\"internalType\":\"structCollateralDebtData\",\"name\":\"collateralDebtData\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"enumClaimAction\",\"name\":\"action\",\"type\":\"uint8\"}],\"name\":\"claimWithdrawals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokensToEnable\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"enumClosureAction\",\"name\":\"closureAction\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"debt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cumulativeIndexNow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\"},{\"internalType\":\"uint128\",\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\"},{\"internalType\":\"uint256\",\"name\":\"accruedInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"accruedFees\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalDebtUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalValue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalValueUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"twvUSD\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"enabledTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"quotedTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"quotedTokens\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"_poolQuotaKeeper\",\"type\":\"address\"}],\"internalType\":\"structCollateralDebtData\",\"name\":\"collateralDebtData\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"skipTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"convertToETH\",\"type\":\"bool\"}],\"name\":\"closeCreditAccount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"remainingFunds\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"loss\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenMask\",\"type\":\"uint256\"}],\"name\":\"collateralTokenByMask\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"liquidationThreshold\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"collateralTokensCount\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"contractToAdapter\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"creditAccountInfo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"debt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\"},{\"internalType\":\"uint128\",\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"quotaFees\",\"type\":\"uint128\"},{\"internalType\":\"uint256\",\"name\":\"enabledTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"flags\",\"type\":\"uint16\"},{\"internalType\":\"uint64\",\"name\":\"since\",\"type\":\"uint64\"},{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditAccounts\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditConfigurator\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"creditFacade\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"enabledTokensMaskOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fees\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"_feeInterest\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_feeLiquidation\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_liquidationDiscount\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_feeLiquidationExpired\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_liquidationDiscountExpired\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"flagsOf\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"enabledTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"collateralHints\",\"type\":\"uint256[]\"},{\"internalType\":\"uint16\",\"name\":\"minHealthFactor\",\"type\":\"uint16\"}],\"name\":\"fullCollateralCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getActiveCreditAccountOrRevert\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"getBorrowerOrRevert\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"borrower\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenMask\",\"type\":\"uint256\"}],\"name\":\"getTokenByMask\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getTokenMaskOrRevert\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenMask\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"minHealthFactor\",\"type\":\"uint16\"}],\"name\":\"isLiquidatable\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"liquidationThresholds\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"lt\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"enabledTokensMask\",\"type\":\"uint256\"},{\"internalType\":\"enumManageDebtAction\",\"name\":\"action\",\"type\":\"uint8\"}],\"name\":\"manageDebt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"newDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokensToEnable\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokensToDisable\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxEnabledTokens\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"debt\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"onBehalfOf\",\"type\":\"address\"}],\"name\":\"openCreditAccount\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pool\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolQuotaKeeper\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolService\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceOracle\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"quotedTokensMask\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"internalType\":\"structRevocationPair[]\",\"name\":\"revocations\",\"type\":\"tuple[]\"}],\"name\":\"revokeAdapterAllowances\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"scheduleWithdrawal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokensToDisable\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"}],\"name\":\"setActiveCreditAccount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"ltInitial\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"ltFinal\",\"type\":\"uint16\"},{\"internalType\":\"uint40\",\"name\":\"timestampRampStart\",\"type\":\"uint40\"},{\"internalType\":\"uint24\",\"name\":\"rampDuration\",\"type\":\"uint24\"}],\"name\":\"setCollateralTokenData\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"adapter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"targetContract\",\"type\":\"address\"}],\"name\":\"setContractAllowance\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditConfigurator\",\"type\":\"address\"}],\"name\":\"setCreditConfigurator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_creditFacade\",\"type\":\"address\"}],\"name\":\"setCreditFacade\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"_feeInterest\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_feeLiquidation\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_liquidationDiscount\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_feeLiquidationExpired\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"_liquidationDiscountExpired\",\"type\":\"uint16\"}],\"name\":\"setFees\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"flag\",\"type\":\"uint16\"},{\"internalType\":\"bool\",\"name\":\"value\",\"type\":\"bool\"}],\"name\":\"setFlagFor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"_maxEnabledTokens\",\"type\":\"uint8\"}],\"name\":\"setMaxEnabledTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_priceOracle\",\"type\":\"address\"}],\"name\":\"setPriceOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_quotedTokensMask\",\"type\":\"uint256\"}],\"name\":\"setQuotedMask\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supportsQuotas\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlying\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creditAccount\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"int96\",\"name\":\"quotaChange\",\"type\":\"int96\"},{\"internalType\":\"uint96\",\"name\":\"minQuota\",\"type\":\"uint96\"},{\"internalType\":\"uint96\",\"name\":\"maxQuota\",\"type\":\"uint96\"}],\"name\":\"updateQuota\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokensToEnable\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokensToDisable\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"weth\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawalManager\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_addressProvider\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_pool\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"_name\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"accountFactory\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"adapterToContract\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"addCollateral\",\"inputs\":[{\"name\":\"payer\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"tokensToEnable\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"addToken\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"addressProvider\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"approveCreditAccount\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"approveToken\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"spender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"calcDebtAndCollateral\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"task\",\"type\":\"uint8\",\"internalType\":\"enumCollateralCalcTask\"}],\"outputs\":[{\"name\":\"cdd\",\"type\":\"tuple\",\"internalType\":\"structCollateralDebtData\",\"components\":[{\"name\":\"debt\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeIndexNow\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"accruedInterest\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"accruedFees\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalDebtUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalValue\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalValueUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"twvUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"enabledTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"quotedTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"quotedTokens\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"_poolQuotaKeeper\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"closeCreditAccount\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"collateralTokenByMask\",\"inputs\":[{\"name\":\"tokenMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"liquidationThreshold\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"collateralTokensCount\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint8\",\"internalType\":\"uint8\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"contractToAdapter\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditAccountInfo\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"debt\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"quotaFees\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"enabledTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"flags\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"lastDebtUpdate\",\"type\":\"uint64\",\"internalType\":\"uint64\"},{\"name\":\"borrower\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditAccounts\",\"inputs\":[{\"name\":\"offset\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"limit\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"address[]\",\"internalType\":\"address[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditAccounts\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address[]\",\"internalType\":\"address[]\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditAccountsLen\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditConfigurator\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"creditFacade\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"enabledTokensMaskOf\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"execute\",\"inputs\":[{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"externalCall\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"callData\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"fees\",\"inputs\":[],\"outputs\":[{\"name\":\"_feeInterest\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_feeLiquidation\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_liquidationDiscount\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_feeLiquidationExpired\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_liquidationDiscountExpired\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"flagsOf\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"fullCollateralCheck\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"enabledTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"collateralHints\",\"type\":\"uint256[]\",\"internalType\":\"uint256[]\"},{\"name\":\"minHealthFactor\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"useSafePrices\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"enabledTokensMaskAfter\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"getActiveCreditAccountOrRevert\",\"inputs\":[],\"outputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getBorrowerOrRevert\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"borrower\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getTokenByMask\",\"inputs\":[{\"name\":\"tokenMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getTokenMaskOrRevert\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"tokenMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isLiquidatable\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"minHealthFactor\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"liquidateCreditAccount\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"collateralDebtData\",\"type\":\"tuple\",\"internalType\":\"structCollateralDebtData\",\"components\":[{\"name\":\"debt\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeIndexNow\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeIndexLastUpdate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"cumulativeQuotaInterest\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"accruedInterest\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"accruedFees\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalDebtUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalValue\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalValueUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"twvUSD\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"enabledTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"quotedTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"quotedTokens\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"_poolQuotaKeeper\",\"type\":\"address\",\"internalType\":\"address\"}]},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"isExpired\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[{\"name\":\"remainingFunds\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"loss\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"liquidationThresholds\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"lt\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"ltParams\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"ltInitial\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"ltFinal\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"timestampRampStart\",\"type\":\"uint40\",\"internalType\":\"uint40\"},{\"name\":\"rampDuration\",\"type\":\"uint24\",\"internalType\":\"uint24\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"manageDebt\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"enabledTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"action\",\"type\":\"uint8\",\"internalType\":\"enumManageDebtAction\"}],\"outputs\":[{\"name\":\"newDebt\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"tokensToEnable\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"tokensToDisable\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"maxEnabledTokens\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint8\",\"internalType\":\"uint8\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"name\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"openCreditAccount\",\"inputs\":[{\"name\":\"onBehalfOf\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"pool\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"poolQuotaKeeper\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"priceOracle\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"quotedTokensMask\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"revokeAdapterAllowances\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"revocations\",\"type\":\"tuple[]\",\"internalType\":\"structRevocationPair[]\",\"components\":[{\"name\":\"spender\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setActiveCreditAccount\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setCollateralTokenData\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"ltInitial\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"ltFinal\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"timestampRampStart\",\"type\":\"uint40\",\"internalType\":\"uint40\"},{\"name\":\"rampDuration\",\"type\":\"uint24\",\"internalType\":\"uint24\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setContractAllowance\",\"inputs\":[{\"name\":\"adapter\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"targetContract\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setCreditConfigurator\",\"inputs\":[{\"name\":\"_creditConfigurator\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setCreditFacade\",\"inputs\":[{\"name\":\"_creditFacade\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setFees\",\"inputs\":[{\"name\":\"_feeInterest\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_feeLiquidation\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_liquidationDiscount\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_feeLiquidationExpired\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"_liquidationDiscountExpired\",\"type\":\"uint16\",\"internalType\":\"uint16\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setFlagFor\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"flag\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"value\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setMaxEnabledTokens\",\"inputs\":[{\"name\":\"_maxEnabledTokens\",\"type\":\"uint8\",\"internalType\":\"uint8\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setPriceOracle\",\"inputs\":[{\"name\":\"_priceOracle\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"setQuotedMask\",\"inputs\":[{\"name\":\"_quotedTokensMask\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"underlying\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"updateQuota\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"quotaChange\",\"type\":\"int96\",\"internalType\":\"int96\"},{\"name\":\"minQuota\",\"type\":\"uint96\",\"internalType\":\"uint96\"},{\"name\":\"maxQuota\",\"type\":\"uint96\",\"internalType\":\"uint96\"}],\"outputs\":[{\"name\":\"tokensToEnable\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"tokensToDisable\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"withdrawCollateral\",\"inputs\":[{\"name\":\"creditAccount\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"tokensToDisable\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"event\",\"name\":\"SetCreditConfigurator\",\"inputs\":[{\"name\":\"newConfigurator\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"ActiveCreditAccountNotSetException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"ActiveCreditAccountOverridenException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"AllowanceFailedException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"CallerNotAdapterException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"CallerNotConfiguratorException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"CallerNotCreditFacadeException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"CloseAccountWithNonZeroDebtException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"CreditAccountDoesNotExistException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"DebtToZeroWithActiveQuotasException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"DebtUpdatedTwiceInOneBlockException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"IncorrectParameterException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"InsufficientRemainingFundsException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"NotEnoughCollateralException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"SafeTransferFromFailed\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"TargetContractNotAllowedException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"TokenAlreadyAddedException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"TokenNotAllowedException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"TooManyEnabledTokensException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"TooManyTokensException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"UpdateQuotaOnZeroDebtAccountException\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"ZeroAddressException\",\"inputs\":[]}]",
 }
 
 // CreditManagerv3ABI is the input ABI used to generate the binding from.
@@ -299,7 +299,7 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) AddressProvider() (common.
 
 // CalcDebtAndCollateral is a free data retrieval call binding the contract method 0x0d334ca6.
 //
-// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData)
+// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) cdd)
 func (_CreditManagerv3 *CreditManagerv3Caller) CalcDebtAndCollateral(opts *bind.CallOpts, creditAccount common.Address, task uint8) (CollateralDebtData, error) {
 	var out []interface{}
 	err := _CreditManagerv3.contract.Call(opts, &out, "calcDebtAndCollateral", creditAccount, task)
@@ -316,14 +316,14 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CalcDebtAndCollateral(opts *bind.
 
 // CalcDebtAndCollateral is a free data retrieval call binding the contract method 0x0d334ca6.
 //
-// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData)
+// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) cdd)
 func (_CreditManagerv3 *CreditManagerv3Session) CalcDebtAndCollateral(creditAccount common.Address, task uint8) (CollateralDebtData, error) {
 	return _CreditManagerv3.Contract.CalcDebtAndCollateral(&_CreditManagerv3.CallOpts, creditAccount, task)
 }
 
 // CalcDebtAndCollateral is a free data retrieval call binding the contract method 0x0d334ca6.
 //
-// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData)
+// Solidity: function calcDebtAndCollateral(address creditAccount, uint8 task) view returns((uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) cdd)
 func (_CreditManagerv3 *CreditManagerv3CallerSession) CalcDebtAndCollateral(creditAccount common.Address, task uint8) (CollateralDebtData, error) {
 	return _CreditManagerv3.Contract.CalcDebtAndCollateral(&_CreditManagerv3.CallOpts, creditAccount, task)
 }
@@ -437,7 +437,7 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) ContractToAdapter(arg0 com
 
 // CreditAccountInfo is a free data retrieval call binding the contract method 0x3c5bc3b2.
 //
-// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 since, address borrower)
+// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 lastDebtUpdate, address borrower)
 func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountInfo(opts *bind.CallOpts, arg0 common.Address) (struct {
 	Debt                      *big.Int
 	CumulativeIndexLastUpdate *big.Int
@@ -445,7 +445,7 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountInfo(opts *bind.Call
 	QuotaFees                 *big.Int
 	EnabledTokensMask         *big.Int
 	Flags                     uint16
-	Since                     uint64
+	LastDebtUpdate            uint64
 	Borrower                  common.Address
 }, error) {
 	var out []interface{}
@@ -458,7 +458,7 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountInfo(opts *bind.Call
 		QuotaFees                 *big.Int
 		EnabledTokensMask         *big.Int
 		Flags                     uint16
-		Since                     uint64
+		LastDebtUpdate            uint64
 		Borrower                  common.Address
 	})
 	if err != nil {
@@ -471,7 +471,7 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountInfo(opts *bind.Call
 	outstruct.QuotaFees = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
 	outstruct.EnabledTokensMask = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
 	outstruct.Flags = *abi.ConvertType(out[5], new(uint16)).(*uint16)
-	outstruct.Since = *abi.ConvertType(out[6], new(uint64)).(*uint64)
+	outstruct.LastDebtUpdate = *abi.ConvertType(out[6], new(uint64)).(*uint64)
 	outstruct.Borrower = *abi.ConvertType(out[7], new(common.Address)).(*common.Address)
 
 	return *outstruct, err
@@ -480,7 +480,7 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountInfo(opts *bind.Call
 
 // CreditAccountInfo is a free data retrieval call binding the contract method 0x3c5bc3b2.
 //
-// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 since, address borrower)
+// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 lastDebtUpdate, address borrower)
 func (_CreditManagerv3 *CreditManagerv3Session) CreditAccountInfo(arg0 common.Address) (struct {
 	Debt                      *big.Int
 	CumulativeIndexLastUpdate *big.Int
@@ -488,7 +488,7 @@ func (_CreditManagerv3 *CreditManagerv3Session) CreditAccountInfo(arg0 common.Ad
 	QuotaFees                 *big.Int
 	EnabledTokensMask         *big.Int
 	Flags                     uint16
-	Since                     uint64
+	LastDebtUpdate            uint64
 	Borrower                  common.Address
 }, error) {
 	return _CreditManagerv3.Contract.CreditAccountInfo(&_CreditManagerv3.CallOpts, arg0)
@@ -496,7 +496,7 @@ func (_CreditManagerv3 *CreditManagerv3Session) CreditAccountInfo(arg0 common.Ad
 
 // CreditAccountInfo is a free data retrieval call binding the contract method 0x3c5bc3b2.
 //
-// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 since, address borrower)
+// Solidity: function creditAccountInfo(address ) view returns(uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint128 quotaFees, uint256 enabledTokensMask, uint16 flags, uint64 lastDebtUpdate, address borrower)
 func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccountInfo(arg0 common.Address) (struct {
 	Debt                      *big.Int
 	CumulativeIndexLastUpdate *big.Int
@@ -504,18 +504,18 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccountInfo(arg0 com
 	QuotaFees                 *big.Int
 	EnabledTokensMask         *big.Int
 	Flags                     uint16
-	Since                     uint64
+	LastDebtUpdate            uint64
 	Borrower                  common.Address
 }, error) {
 	return _CreditManagerv3.Contract.CreditAccountInfo(&_CreditManagerv3.CallOpts, arg0)
 }
 
-// CreditAccounts is a free data retrieval call binding the contract method 0x741f3e3c.
+// CreditAccounts is a free data retrieval call binding the contract method 0x2c9db6f1.
 //
-// Solidity: function creditAccounts() view returns(address[])
-func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccounts(opts *bind.CallOpts) ([]common.Address, error) {
+// Solidity: function creditAccounts(uint256 offset, uint256 limit) view returns(address[] result)
+func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccounts(opts *bind.CallOpts, offset *big.Int, limit *big.Int) ([]common.Address, error) {
 	var out []interface{}
-	err := _CreditManagerv3.contract.Call(opts, &out, "creditAccounts")
+	err := _CreditManagerv3.contract.Call(opts, &out, "creditAccounts", offset, limit)
 
 	if err != nil {
 		return *new([]common.Address), err
@@ -527,18 +527,80 @@ func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccounts(opts *bind.CallOpt
 
 }
 
-// CreditAccounts is a free data retrieval call binding the contract method 0x741f3e3c.
+// CreditAccounts is a free data retrieval call binding the contract method 0x2c9db6f1.
 //
-// Solidity: function creditAccounts() view returns(address[])
-func (_CreditManagerv3 *CreditManagerv3Session) CreditAccounts() ([]common.Address, error) {
-	return _CreditManagerv3.Contract.CreditAccounts(&_CreditManagerv3.CallOpts)
+// Solidity: function creditAccounts(uint256 offset, uint256 limit) view returns(address[] result)
+func (_CreditManagerv3 *CreditManagerv3Session) CreditAccounts(offset *big.Int, limit *big.Int) ([]common.Address, error) {
+	return _CreditManagerv3.Contract.CreditAccounts(&_CreditManagerv3.CallOpts, offset, limit)
 }
 
-// CreditAccounts is a free data retrieval call binding the contract method 0x741f3e3c.
+// CreditAccounts is a free data retrieval call binding the contract method 0x2c9db6f1.
+//
+// Solidity: function creditAccounts(uint256 offset, uint256 limit) view returns(address[] result)
+func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccounts(offset *big.Int, limit *big.Int) ([]common.Address, error) {
+	return _CreditManagerv3.Contract.CreditAccounts(&_CreditManagerv3.CallOpts, offset, limit)
+}
+
+// CreditAccounts0 is a free data retrieval call binding the contract method 0x741f3e3c.
 //
 // Solidity: function creditAccounts() view returns(address[])
-func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccounts() ([]common.Address, error) {
-	return _CreditManagerv3.Contract.CreditAccounts(&_CreditManagerv3.CallOpts)
+func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccounts0(opts *bind.CallOpts) ([]common.Address, error) {
+	var out []interface{}
+	err := _CreditManagerv3.contract.Call(opts, &out, "creditAccounts0")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// CreditAccounts0 is a free data retrieval call binding the contract method 0x741f3e3c.
+//
+// Solidity: function creditAccounts() view returns(address[])
+func (_CreditManagerv3 *CreditManagerv3Session) CreditAccounts0() ([]common.Address, error) {
+	return _CreditManagerv3.Contract.CreditAccounts0(&_CreditManagerv3.CallOpts)
+}
+
+// CreditAccounts0 is a free data retrieval call binding the contract method 0x741f3e3c.
+//
+// Solidity: function creditAccounts() view returns(address[])
+func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccounts0() ([]common.Address, error) {
+	return _CreditManagerv3.Contract.CreditAccounts0(&_CreditManagerv3.CallOpts)
+}
+
+// CreditAccountsLen is a free data retrieval call binding the contract method 0xf13d0fc6.
+//
+// Solidity: function creditAccountsLen() view returns(uint256)
+func (_CreditManagerv3 *CreditManagerv3Caller) CreditAccountsLen(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _CreditManagerv3.contract.Call(opts, &out, "creditAccountsLen")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// CreditAccountsLen is a free data retrieval call binding the contract method 0xf13d0fc6.
+//
+// Solidity: function creditAccountsLen() view returns(uint256)
+func (_CreditManagerv3 *CreditManagerv3Session) CreditAccountsLen() (*big.Int, error) {
+	return _CreditManagerv3.Contract.CreditAccountsLen(&_CreditManagerv3.CallOpts)
+}
+
+// CreditAccountsLen is a free data retrieval call binding the contract method 0xf13d0fc6.
+//
+// Solidity: function creditAccountsLen() view returns(uint256)
+func (_CreditManagerv3 *CreditManagerv3CallerSession) CreditAccountsLen() (*big.Int, error) {
+	return _CreditManagerv3.Contract.CreditAccountsLen(&_CreditManagerv3.CallOpts)
 }
 
 // CreditConfigurator is a free data retrieval call binding the contract method 0xf9aa028a.
@@ -911,6 +973,61 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) LiquidationThresholds(toke
 	return _CreditManagerv3.Contract.LiquidationThresholds(&_CreditManagerv3.CallOpts, token)
 }
 
+// LtParams is a free data retrieval call binding the contract method 0x3201de4c.
+//
+// Solidity: function ltParams(address token) view returns(uint16 ltInitial, uint16 ltFinal, uint40 timestampRampStart, uint24 rampDuration)
+func (_CreditManagerv3 *CreditManagerv3Caller) LtParams(opts *bind.CallOpts, token common.Address) (struct {
+	LtInitial          uint16
+	LtFinal            uint16
+	TimestampRampStart *big.Int
+	RampDuration       *big.Int
+}, error) {
+	var out []interface{}
+	err := _CreditManagerv3.contract.Call(opts, &out, "ltParams", token)
+
+	outstruct := new(struct {
+		LtInitial          uint16
+		LtFinal            uint16
+		TimestampRampStart *big.Int
+		RampDuration       *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.LtInitial = *abi.ConvertType(out[0], new(uint16)).(*uint16)
+	outstruct.LtFinal = *abi.ConvertType(out[1], new(uint16)).(*uint16)
+	outstruct.TimestampRampStart = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.RampDuration = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+
+	return *outstruct, err
+
+}
+
+// LtParams is a free data retrieval call binding the contract method 0x3201de4c.
+//
+// Solidity: function ltParams(address token) view returns(uint16 ltInitial, uint16 ltFinal, uint40 timestampRampStart, uint24 rampDuration)
+func (_CreditManagerv3 *CreditManagerv3Session) LtParams(token common.Address) (struct {
+	LtInitial          uint16
+	LtFinal            uint16
+	TimestampRampStart *big.Int
+	RampDuration       *big.Int
+}, error) {
+	return _CreditManagerv3.Contract.LtParams(&_CreditManagerv3.CallOpts, token)
+}
+
+// LtParams is a free data retrieval call binding the contract method 0x3201de4c.
+//
+// Solidity: function ltParams(address token) view returns(uint16 ltInitial, uint16 ltFinal, uint40 timestampRampStart, uint24 rampDuration)
+func (_CreditManagerv3 *CreditManagerv3CallerSession) LtParams(token common.Address) (struct {
+	LtInitial          uint16
+	LtFinal            uint16
+	TimestampRampStart *big.Int
+	RampDuration       *big.Int
+}, error) {
+	return _CreditManagerv3.Contract.LtParams(&_CreditManagerv3.CallOpts, token)
+}
+
 // MaxEnabledTokens is a free data retrieval call binding the contract method 0x2c521c06.
 //
 // Solidity: function maxEnabledTokens() view returns(uint8)
@@ -940,6 +1057,37 @@ func (_CreditManagerv3 *CreditManagerv3Session) MaxEnabledTokens() (uint8, error
 // Solidity: function maxEnabledTokens() view returns(uint8)
 func (_CreditManagerv3 *CreditManagerv3CallerSession) MaxEnabledTokens() (uint8, error) {
 	return _CreditManagerv3.Contract.MaxEnabledTokens(&_CreditManagerv3.CallOpts)
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() view returns(string)
+func (_CreditManagerv3 *CreditManagerv3Caller) Name(opts *bind.CallOpts) (string, error) {
+	var out []interface{}
+	err := _CreditManagerv3.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() view returns(string)
+func (_CreditManagerv3 *CreditManagerv3Session) Name() (string, error) {
+	return _CreditManagerv3.Contract.Name(&_CreditManagerv3.CallOpts)
+}
+
+// Name is a free data retrieval call binding the contract method 0x06fdde03.
+//
+// Solidity: function name() view returns(string)
+func (_CreditManagerv3 *CreditManagerv3CallerSession) Name() (string, error) {
+	return _CreditManagerv3.Contract.Name(&_CreditManagerv3.CallOpts)
 }
 
 // Pool is a free data retrieval call binding the contract method 0x16f0115b.
@@ -1004,37 +1152,6 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) PoolQuotaKeeper() (common.
 	return _CreditManagerv3.Contract.PoolQuotaKeeper(&_CreditManagerv3.CallOpts)
 }
 
-// PoolService is a free data retrieval call binding the contract method 0x570a7af2.
-//
-// Solidity: function poolService() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Caller) PoolService(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _CreditManagerv3.contract.Call(opts, &out, "poolService")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// PoolService is a free data retrieval call binding the contract method 0x570a7af2.
-//
-// Solidity: function poolService() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Session) PoolService() (common.Address, error) {
-	return _CreditManagerv3.Contract.PoolService(&_CreditManagerv3.CallOpts)
-}
-
-// PoolService is a free data retrieval call binding the contract method 0x570a7af2.
-//
-// Solidity: function poolService() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3CallerSession) PoolService() (common.Address, error) {
-	return _CreditManagerv3.Contract.PoolService(&_CreditManagerv3.CallOpts)
-}
-
 // PriceOracle is a free data retrieval call binding the contract method 0x2630c12f.
 //
 // Solidity: function priceOracle() view returns(address)
@@ -1095,37 +1212,6 @@ func (_CreditManagerv3 *CreditManagerv3Session) QuotedTokensMask() (*big.Int, er
 // Solidity: function quotedTokensMask() view returns(uint256)
 func (_CreditManagerv3 *CreditManagerv3CallerSession) QuotedTokensMask() (*big.Int, error) {
 	return _CreditManagerv3.Contract.QuotedTokensMask(&_CreditManagerv3.CallOpts)
-}
-
-// SupportsQuotas is a free data retrieval call binding the contract method 0x9fd8a10c.
-//
-// Solidity: function supportsQuotas() view returns(bool)
-func (_CreditManagerv3 *CreditManagerv3Caller) SupportsQuotas(opts *bind.CallOpts) (bool, error) {
-	var out []interface{}
-	err := _CreditManagerv3.contract.Call(opts, &out, "supportsQuotas")
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// SupportsQuotas is a free data retrieval call binding the contract method 0x9fd8a10c.
-//
-// Solidity: function supportsQuotas() view returns(bool)
-func (_CreditManagerv3 *CreditManagerv3Session) SupportsQuotas() (bool, error) {
-	return _CreditManagerv3.Contract.SupportsQuotas(&_CreditManagerv3.CallOpts)
-}
-
-// SupportsQuotas is a free data retrieval call binding the contract method 0x9fd8a10c.
-//
-// Solidity: function supportsQuotas() view returns(bool)
-func (_CreditManagerv3 *CreditManagerv3CallerSession) SupportsQuotas() (bool, error) {
-	return _CreditManagerv3.Contract.SupportsQuotas(&_CreditManagerv3.CallOpts)
 }
 
 // Underlying is a free data retrieval call binding the contract method 0x6f307dc3.
@@ -1190,85 +1276,23 @@ func (_CreditManagerv3 *CreditManagerv3CallerSession) Version() (*big.Int, error
 	return _CreditManagerv3.Contract.Version(&_CreditManagerv3.CallOpts)
 }
 
-// Weth is a free data retrieval call binding the contract method 0x3fc8cef3.
-//
-// Solidity: function weth() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Caller) Weth(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _CreditManagerv3.contract.Call(opts, &out, "weth")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// Weth is a free data retrieval call binding the contract method 0x3fc8cef3.
-//
-// Solidity: function weth() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Session) Weth() (common.Address, error) {
-	return _CreditManagerv3.Contract.Weth(&_CreditManagerv3.CallOpts)
-}
-
-// Weth is a free data retrieval call binding the contract method 0x3fc8cef3.
-//
-// Solidity: function weth() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3CallerSession) Weth() (common.Address, error) {
-	return _CreditManagerv3.Contract.Weth(&_CreditManagerv3.CallOpts)
-}
-
-// WithdrawalManager is a free data retrieval call binding the contract method 0x82fe535a.
-//
-// Solidity: function withdrawalManager() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Caller) WithdrawalManager(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _CreditManagerv3.contract.Call(opts, &out, "withdrawalManager")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// WithdrawalManager is a free data retrieval call binding the contract method 0x82fe535a.
-//
-// Solidity: function withdrawalManager() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3Session) WithdrawalManager() (common.Address, error) {
-	return _CreditManagerv3.Contract.WithdrawalManager(&_CreditManagerv3.CallOpts)
-}
-
-// WithdrawalManager is a free data retrieval call binding the contract method 0x82fe535a.
-//
-// Solidity: function withdrawalManager() view returns(address)
-func (_CreditManagerv3 *CreditManagerv3CallerSession) WithdrawalManager() (common.Address, error) {
-	return _CreditManagerv3.Contract.WithdrawalManager(&_CreditManagerv3.CallOpts)
-}
-
 // AddCollateral is a paid mutator transaction binding the contract method 0x830aa745.
 //
-// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokenMask)
+// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokensToEnable)
 func (_CreditManagerv3 *CreditManagerv3Transactor) AddCollateral(opts *bind.TransactOpts, payer common.Address, creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _CreditManagerv3.contract.Transact(opts, "addCollateral", payer, creditAccount, token, amount)
 }
 
 // AddCollateral is a paid mutator transaction binding the contract method 0x830aa745.
 //
-// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokenMask)
+// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokensToEnable)
 func (_CreditManagerv3 *CreditManagerv3Session) AddCollateral(payer common.Address, creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.AddCollateral(&_CreditManagerv3.TransactOpts, payer, creditAccount, token, amount)
 }
 
 // AddCollateral is a paid mutator transaction binding the contract method 0x830aa745.
 //
-// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokenMask)
+// Solidity: function addCollateral(address payer, address creditAccount, address token, uint256 amount) returns(uint256 tokensToEnable)
 func (_CreditManagerv3 *CreditManagerv3TransactorSession) AddCollateral(payer common.Address, creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.AddCollateral(&_CreditManagerv3.TransactOpts, payer, creditAccount, token, amount)
 }
@@ -1315,88 +1339,130 @@ func (_CreditManagerv3 *CreditManagerv3TransactorSession) ApproveCreditAccount(t
 	return _CreditManagerv3.Contract.ApproveCreditAccount(&_CreditManagerv3.TransactOpts, token, amount)
 }
 
-// ClaimWithdrawals is a paid mutator transaction binding the contract method 0xc4affdf4.
+// ApproveToken is a paid mutator transaction binding the contract method 0x12ef080d.
 //
-// Solidity: function claimWithdrawals(address creditAccount, address to, uint8 action) returns(uint256 tokensToEnable)
-func (_CreditManagerv3 *CreditManagerv3Transactor) ClaimWithdrawals(opts *bind.TransactOpts, creditAccount common.Address, to common.Address, action uint8) (*types.Transaction, error) {
-	return _CreditManagerv3.contract.Transact(opts, "claimWithdrawals", creditAccount, to, action)
+// Solidity: function approveToken(address creditAccount, address token, address spender, uint256 amount) returns()
+func (_CreditManagerv3 *CreditManagerv3Transactor) ApproveToken(opts *bind.TransactOpts, creditAccount common.Address, token common.Address, spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "approveToken", creditAccount, token, spender, amount)
 }
 
-// ClaimWithdrawals is a paid mutator transaction binding the contract method 0xc4affdf4.
+// ApproveToken is a paid mutator transaction binding the contract method 0x12ef080d.
 //
-// Solidity: function claimWithdrawals(address creditAccount, address to, uint8 action) returns(uint256 tokensToEnable)
-func (_CreditManagerv3 *CreditManagerv3Session) ClaimWithdrawals(creditAccount common.Address, to common.Address, action uint8) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.ClaimWithdrawals(&_CreditManagerv3.TransactOpts, creditAccount, to, action)
+// Solidity: function approveToken(address creditAccount, address token, address spender, uint256 amount) returns()
+func (_CreditManagerv3 *CreditManagerv3Session) ApproveToken(creditAccount common.Address, token common.Address, spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.ApproveToken(&_CreditManagerv3.TransactOpts, creditAccount, token, spender, amount)
 }
 
-// ClaimWithdrawals is a paid mutator transaction binding the contract method 0xc4affdf4.
+// ApproveToken is a paid mutator transaction binding the contract method 0x12ef080d.
 //
-// Solidity: function claimWithdrawals(address creditAccount, address to, uint8 action) returns(uint256 tokensToEnable)
-func (_CreditManagerv3 *CreditManagerv3TransactorSession) ClaimWithdrawals(creditAccount common.Address, to common.Address, action uint8) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.ClaimWithdrawals(&_CreditManagerv3.TransactOpts, creditAccount, to, action)
+// Solidity: function approveToken(address creditAccount, address token, address spender, uint256 amount) returns()
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) ApproveToken(creditAccount common.Address, token common.Address, spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.ApproveToken(&_CreditManagerv3.TransactOpts, creditAccount, token, spender, amount)
 }
 
-// CloseCreditAccount is a paid mutator transaction binding the contract method 0x06cff067.
+// CloseCreditAccount is a paid mutator transaction binding the contract method 0x7687f670.
 //
-// Solidity: function closeCreditAccount(address creditAccount, uint8 closureAction, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address payer, address to, uint256 skipTokensMask, bool convertToETH) returns(uint256 remainingFunds, uint256 loss)
-func (_CreditManagerv3 *CreditManagerv3Transactor) CloseCreditAccount(opts *bind.TransactOpts, creditAccount common.Address, closureAction uint8, collateralDebtData CollateralDebtData, payer common.Address, to common.Address, skipTokensMask *big.Int, convertToETH bool) (*types.Transaction, error) {
-	return _CreditManagerv3.contract.Transact(opts, "closeCreditAccount", creditAccount, closureAction, collateralDebtData, payer, to, skipTokensMask, convertToETH)
+// Solidity: function closeCreditAccount(address creditAccount) returns()
+func (_CreditManagerv3 *CreditManagerv3Transactor) CloseCreditAccount(opts *bind.TransactOpts, creditAccount common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "closeCreditAccount", creditAccount)
 }
 
-// CloseCreditAccount is a paid mutator transaction binding the contract method 0x06cff067.
+// CloseCreditAccount is a paid mutator transaction binding the contract method 0x7687f670.
 //
-// Solidity: function closeCreditAccount(address creditAccount, uint8 closureAction, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address payer, address to, uint256 skipTokensMask, bool convertToETH) returns(uint256 remainingFunds, uint256 loss)
-func (_CreditManagerv3 *CreditManagerv3Session) CloseCreditAccount(creditAccount common.Address, closureAction uint8, collateralDebtData CollateralDebtData, payer common.Address, to common.Address, skipTokensMask *big.Int, convertToETH bool) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.CloseCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount, closureAction, collateralDebtData, payer, to, skipTokensMask, convertToETH)
+// Solidity: function closeCreditAccount(address creditAccount) returns()
+func (_CreditManagerv3 *CreditManagerv3Session) CloseCreditAccount(creditAccount common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.CloseCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount)
 }
 
-// CloseCreditAccount is a paid mutator transaction binding the contract method 0x06cff067.
+// CloseCreditAccount is a paid mutator transaction binding the contract method 0x7687f670.
 //
-// Solidity: function closeCreditAccount(address creditAccount, uint8 closureAction, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address payer, address to, uint256 skipTokensMask, bool convertToETH) returns(uint256 remainingFunds, uint256 loss)
-func (_CreditManagerv3 *CreditManagerv3TransactorSession) CloseCreditAccount(creditAccount common.Address, closureAction uint8, collateralDebtData CollateralDebtData, payer common.Address, to common.Address, skipTokensMask *big.Int, convertToETH bool) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.CloseCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount, closureAction, collateralDebtData, payer, to, skipTokensMask, convertToETH)
+// Solidity: function closeCreditAccount(address creditAccount) returns()
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) CloseCreditAccount(creditAccount common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.CloseCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount)
 }
 
 // Execute is a paid mutator transaction binding the contract method 0x09c5eabe.
 //
-// Solidity: function execute(bytes data) returns(bytes)
+// Solidity: function execute(bytes data) returns(bytes result)
 func (_CreditManagerv3 *CreditManagerv3Transactor) Execute(opts *bind.TransactOpts, data []byte) (*types.Transaction, error) {
 	return _CreditManagerv3.contract.Transact(opts, "execute", data)
 }
 
 // Execute is a paid mutator transaction binding the contract method 0x09c5eabe.
 //
-// Solidity: function execute(bytes data) returns(bytes)
+// Solidity: function execute(bytes data) returns(bytes result)
 func (_CreditManagerv3 *CreditManagerv3Session) Execute(data []byte) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.Execute(&_CreditManagerv3.TransactOpts, data)
 }
 
 // Execute is a paid mutator transaction binding the contract method 0x09c5eabe.
 //
-// Solidity: function execute(bytes data) returns(bytes)
+// Solidity: function execute(bytes data) returns(bytes result)
 func (_CreditManagerv3 *CreditManagerv3TransactorSession) Execute(data []byte) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.Execute(&_CreditManagerv3.TransactOpts, data)
 }
 
-// FullCollateralCheck is a paid mutator transaction binding the contract method 0x2d81a53b.
+// ExternalCall is a paid mutator transaction binding the contract method 0xeb23d33e.
 //
-// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor) returns(uint256)
-func (_CreditManagerv3 *CreditManagerv3Transactor) FullCollateralCheck(opts *bind.TransactOpts, creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16) (*types.Transaction, error) {
-	return _CreditManagerv3.contract.Transact(opts, "fullCollateralCheck", creditAccount, enabledTokensMask, collateralHints, minHealthFactor)
+// Solidity: function externalCall(address creditAccount, address target, bytes callData) returns(bytes result)
+func (_CreditManagerv3 *CreditManagerv3Transactor) ExternalCall(opts *bind.TransactOpts, creditAccount common.Address, target common.Address, callData []byte) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "externalCall", creditAccount, target, callData)
 }
 
-// FullCollateralCheck is a paid mutator transaction binding the contract method 0x2d81a53b.
+// ExternalCall is a paid mutator transaction binding the contract method 0xeb23d33e.
 //
-// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor) returns(uint256)
-func (_CreditManagerv3 *CreditManagerv3Session) FullCollateralCheck(creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.FullCollateralCheck(&_CreditManagerv3.TransactOpts, creditAccount, enabledTokensMask, collateralHints, minHealthFactor)
+// Solidity: function externalCall(address creditAccount, address target, bytes callData) returns(bytes result)
+func (_CreditManagerv3 *CreditManagerv3Session) ExternalCall(creditAccount common.Address, target common.Address, callData []byte) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.ExternalCall(&_CreditManagerv3.TransactOpts, creditAccount, target, callData)
 }
 
-// FullCollateralCheck is a paid mutator transaction binding the contract method 0x2d81a53b.
+// ExternalCall is a paid mutator transaction binding the contract method 0xeb23d33e.
 //
-// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor) returns(uint256)
-func (_CreditManagerv3 *CreditManagerv3TransactorSession) FullCollateralCheck(creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.FullCollateralCheck(&_CreditManagerv3.TransactOpts, creditAccount, enabledTokensMask, collateralHints, minHealthFactor)
+// Solidity: function externalCall(address creditAccount, address target, bytes callData) returns(bytes result)
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) ExternalCall(creditAccount common.Address, target common.Address, callData []byte) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.ExternalCall(&_CreditManagerv3.TransactOpts, creditAccount, target, callData)
+}
+
+// FullCollateralCheck is a paid mutator transaction binding the contract method 0x3d7e5dc4.
+//
+// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor, bool useSafePrices) returns(uint256 enabledTokensMaskAfter)
+func (_CreditManagerv3 *CreditManagerv3Transactor) FullCollateralCheck(opts *bind.TransactOpts, creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16, useSafePrices bool) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "fullCollateralCheck", creditAccount, enabledTokensMask, collateralHints, minHealthFactor, useSafePrices)
+}
+
+// FullCollateralCheck is a paid mutator transaction binding the contract method 0x3d7e5dc4.
+//
+// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor, bool useSafePrices) returns(uint256 enabledTokensMaskAfter)
+func (_CreditManagerv3 *CreditManagerv3Session) FullCollateralCheck(creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16, useSafePrices bool) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.FullCollateralCheck(&_CreditManagerv3.TransactOpts, creditAccount, enabledTokensMask, collateralHints, minHealthFactor, useSafePrices)
+}
+
+// FullCollateralCheck is a paid mutator transaction binding the contract method 0x3d7e5dc4.
+//
+// Solidity: function fullCollateralCheck(address creditAccount, uint256 enabledTokensMask, uint256[] collateralHints, uint16 minHealthFactor, bool useSafePrices) returns(uint256 enabledTokensMaskAfter)
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) FullCollateralCheck(creditAccount common.Address, enabledTokensMask *big.Int, collateralHints []*big.Int, minHealthFactor uint16, useSafePrices bool) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.FullCollateralCheck(&_CreditManagerv3.TransactOpts, creditAccount, enabledTokensMask, collateralHints, minHealthFactor, useSafePrices)
+}
+
+// LiquidateCreditAccount is a paid mutator transaction binding the contract method 0xe2f1490f.
+//
+// Solidity: function liquidateCreditAccount(address creditAccount, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address to, bool isExpired) returns(uint256 remainingFunds, uint256 loss)
+func (_CreditManagerv3 *CreditManagerv3Transactor) LiquidateCreditAccount(opts *bind.TransactOpts, creditAccount common.Address, collateralDebtData CollateralDebtData, to common.Address, isExpired bool) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "liquidateCreditAccount", creditAccount, collateralDebtData, to, isExpired)
+}
+
+// LiquidateCreditAccount is a paid mutator transaction binding the contract method 0xe2f1490f.
+//
+// Solidity: function liquidateCreditAccount(address creditAccount, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address to, bool isExpired) returns(uint256 remainingFunds, uint256 loss)
+func (_CreditManagerv3 *CreditManagerv3Session) LiquidateCreditAccount(creditAccount common.Address, collateralDebtData CollateralDebtData, to common.Address, isExpired bool) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.LiquidateCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount, collateralDebtData, to, isExpired)
+}
+
+// LiquidateCreditAccount is a paid mutator transaction binding the contract method 0xe2f1490f.
+//
+// Solidity: function liquidateCreditAccount(address creditAccount, (uint256,uint256,uint256,uint128,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address[],address) collateralDebtData, address to, bool isExpired) returns(uint256 remainingFunds, uint256 loss)
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) LiquidateCreditAccount(creditAccount common.Address, collateralDebtData CollateralDebtData, to common.Address, isExpired bool) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.LiquidateCreditAccount(&_CreditManagerv3.TransactOpts, creditAccount, collateralDebtData, to, isExpired)
 }
 
 // ManageDebt is a paid mutator transaction binding the contract method 0x432017e8.
@@ -1420,25 +1486,25 @@ func (_CreditManagerv3 *CreditManagerv3TransactorSession) ManageDebt(creditAccou
 	return _CreditManagerv3.Contract.ManageDebt(&_CreditManagerv3.TransactOpts, creditAccount, amount, enabledTokensMask, action)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x8fe3f93f.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x43fe7bbe.
 //
-// Solidity: function openCreditAccount(uint256 debt, address onBehalfOf) returns(address creditAccount)
-func (_CreditManagerv3 *CreditManagerv3Transactor) OpenCreditAccount(opts *bind.TransactOpts, debt *big.Int, onBehalfOf common.Address) (*types.Transaction, error) {
-	return _CreditManagerv3.contract.Transact(opts, "openCreditAccount", debt, onBehalfOf)
+// Solidity: function openCreditAccount(address onBehalfOf) returns(address creditAccount)
+func (_CreditManagerv3 *CreditManagerv3Transactor) OpenCreditAccount(opts *bind.TransactOpts, onBehalfOf common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "openCreditAccount", onBehalfOf)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x8fe3f93f.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x43fe7bbe.
 //
-// Solidity: function openCreditAccount(uint256 debt, address onBehalfOf) returns(address creditAccount)
-func (_CreditManagerv3 *CreditManagerv3Session) OpenCreditAccount(debt *big.Int, onBehalfOf common.Address) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.OpenCreditAccount(&_CreditManagerv3.TransactOpts, debt, onBehalfOf)
+// Solidity: function openCreditAccount(address onBehalfOf) returns(address creditAccount)
+func (_CreditManagerv3 *CreditManagerv3Session) OpenCreditAccount(onBehalfOf common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.OpenCreditAccount(&_CreditManagerv3.TransactOpts, onBehalfOf)
 }
 
-// OpenCreditAccount is a paid mutator transaction binding the contract method 0x8fe3f93f.
+// OpenCreditAccount is a paid mutator transaction binding the contract method 0x43fe7bbe.
 //
-// Solidity: function openCreditAccount(uint256 debt, address onBehalfOf) returns(address creditAccount)
-func (_CreditManagerv3 *CreditManagerv3TransactorSession) OpenCreditAccount(debt *big.Int, onBehalfOf common.Address) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.OpenCreditAccount(&_CreditManagerv3.TransactOpts, debt, onBehalfOf)
+// Solidity: function openCreditAccount(address onBehalfOf) returns(address creditAccount)
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) OpenCreditAccount(onBehalfOf common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.OpenCreditAccount(&_CreditManagerv3.TransactOpts, onBehalfOf)
 }
 
 // RevokeAdapterAllowances is a paid mutator transaction binding the contract method 0x3031b01a.
@@ -1460,27 +1526,6 @@ func (_CreditManagerv3 *CreditManagerv3Session) RevokeAdapterAllowances(creditAc
 // Solidity: function revokeAdapterAllowances(address creditAccount, (address,address)[] revocations) returns()
 func (_CreditManagerv3 *CreditManagerv3TransactorSession) RevokeAdapterAllowances(creditAccount common.Address, revocations []RevocationPair) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.RevokeAdapterAllowances(&_CreditManagerv3.TransactOpts, creditAccount, revocations)
-}
-
-// ScheduleWithdrawal is a paid mutator transaction binding the contract method 0xf9f31cb0.
-//
-// Solidity: function scheduleWithdrawal(address creditAccount, address token, uint256 amount) returns(uint256 tokensToDisable)
-func (_CreditManagerv3 *CreditManagerv3Transactor) ScheduleWithdrawal(opts *bind.TransactOpts, creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _CreditManagerv3.contract.Transact(opts, "scheduleWithdrawal", creditAccount, token, amount)
-}
-
-// ScheduleWithdrawal is a paid mutator transaction binding the contract method 0xf9f31cb0.
-//
-// Solidity: function scheduleWithdrawal(address creditAccount, address token, uint256 amount) returns(uint256 tokensToDisable)
-func (_CreditManagerv3 *CreditManagerv3Session) ScheduleWithdrawal(creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.ScheduleWithdrawal(&_CreditManagerv3.TransactOpts, creditAccount, token, amount)
-}
-
-// ScheduleWithdrawal is a paid mutator transaction binding the contract method 0xf9f31cb0.
-//
-// Solidity: function scheduleWithdrawal(address creditAccount, address token, uint256 amount) returns(uint256 tokensToDisable)
-func (_CreditManagerv3 *CreditManagerv3TransactorSession) ScheduleWithdrawal(creditAccount common.Address, token common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _CreditManagerv3.Contract.ScheduleWithdrawal(&_CreditManagerv3.TransactOpts, creditAccount, token, amount)
 }
 
 // SetActiveCreditAccount is a paid mutator transaction binding the contract method 0xe09357a4.
@@ -1712,6 +1757,27 @@ func (_CreditManagerv3 *CreditManagerv3Session) UpdateQuota(creditAccount common
 // Solidity: function updateQuota(address creditAccount, address token, int96 quotaChange, uint96 minQuota, uint96 maxQuota) returns(uint256 tokensToEnable, uint256 tokensToDisable)
 func (_CreditManagerv3 *CreditManagerv3TransactorSession) UpdateQuota(creditAccount common.Address, token common.Address, quotaChange *big.Int, minQuota *big.Int, maxQuota *big.Int) (*types.Transaction, error) {
 	return _CreditManagerv3.Contract.UpdateQuota(&_CreditManagerv3.TransactOpts, creditAccount, token, quotaChange, minQuota, maxQuota)
+}
+
+// WithdrawCollateral is a paid mutator transaction binding the contract method 0x5a6f45de.
+//
+// Solidity: function withdrawCollateral(address creditAccount, address token, uint256 amount, address to) returns(uint256 tokensToDisable)
+func (_CreditManagerv3 *CreditManagerv3Transactor) WithdrawCollateral(opts *bind.TransactOpts, creditAccount common.Address, token common.Address, amount *big.Int, to common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.contract.Transact(opts, "withdrawCollateral", creditAccount, token, amount, to)
+}
+
+// WithdrawCollateral is a paid mutator transaction binding the contract method 0x5a6f45de.
+//
+// Solidity: function withdrawCollateral(address creditAccount, address token, uint256 amount, address to) returns(uint256 tokensToDisable)
+func (_CreditManagerv3 *CreditManagerv3Session) WithdrawCollateral(creditAccount common.Address, token common.Address, amount *big.Int, to common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.WithdrawCollateral(&_CreditManagerv3.TransactOpts, creditAccount, token, amount, to)
+}
+
+// WithdrawCollateral is a paid mutator transaction binding the contract method 0x5a6f45de.
+//
+// Solidity: function withdrawCollateral(address creditAccount, address token, uint256 amount, address to) returns(uint256 tokensToDisable)
+func (_CreditManagerv3 *CreditManagerv3TransactorSession) WithdrawCollateral(creditAccount common.Address, token common.Address, amount *big.Int, to common.Address) (*types.Transaction, error) {
+	return _CreditManagerv3.Contract.WithdrawCollateral(&_CreditManagerv3.TransactOpts, creditAccount, token, amount, to)
 }
 
 // CreditManagerv3SetCreditConfiguratorIterator is returned from FilterSetCreditConfigurator and is used to iterate over the raw logs and unpacked data for SetCreditConfigurator events raised by the CreditManagerv3 contract.

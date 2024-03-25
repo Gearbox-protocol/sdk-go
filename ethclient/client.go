@@ -23,9 +23,11 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients   []*MutextedClient
-	chainId   int64
-	noOfCalls *atomic.Int32
+	clients     []*MutextedClient
+	chainId     int64
+	url         string
+	noOfCalls   *atomic.Int32
+	flagChainId int64
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -82,6 +84,7 @@ func Dial(rawurl string) (*Client, error) {
 	urls := strings.Split(rawurl, ",")
 	l := int64(len(urls))
 	c := &Client{
+		url:       rawurl,
 		clients:   make([]*MutextedClient, l),
 		noOfCalls: &atomic.Int32{},
 	}
@@ -116,8 +119,8 @@ func errorHandler(err error, mc *MutextedClient) bool {
 		} else if strings.Contains(err.Error(), "504") { // Gateway Timeout server error
 			// channel/connection is not open
 			mc.addSleepForSecs(30)
-		} else if strings.Contains(err.Error(), "500") { // Internal server error
-			mc.addSleepForSecs(30)
+			// } else if strings.Contains(err.Error(), "500") { // Internal server error
+			// 	mc.addSleepForSecs(30)
 		} else if strings.Contains(err.Error(), "your node is running with state pruning") {
 			// this error occurs in definder state engine, when trying to get multicall data for latest blocknum
 			log.Info("sleeping for 15 secs")
@@ -179,6 +182,14 @@ func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient
 	return muclient, startClientId
 }
 
+func (rc *Client) FlagChainID(ctx context.Context) (*big.Int, error) {
+	if rc.flagChainId == 0 {
+		if _, err := rc.ChainID(ctx); err != nil {
+			return nil, log.WrapErrWithLine(err)
+		}
+	}
+	return big.NewInt(rc.flagChainId), nil
+}
 func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	// cache
 	id := atomic.LoadInt64(&(rc.chainId))
@@ -186,7 +197,14 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 		return big.NewInt(id), nil
 	}
 	// locks
-	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) { return c.ChainID(ctx) })
+	url := strings.Split(rc.url, ",")[0]
+	v, err := getDataViaRetry(rc, func(c *ethclient.Client) (*big.Int, error) {
+		flag, test, err := GetFlagAndTestChainId(url)
+		if flag != nil && rc.flagChainId == 0 {
+			atomic.SwapInt64(&(rc.flagChainId), flag.Int64())
+		}
+		return test, err
+	})
 	//
 	if v != nil {
 		atomic.SwapInt64(&(rc.chainId), v.Int64())
@@ -379,7 +397,7 @@ func NewReq() Req {
 }
 func (r Req) print(args ...interface{}) {
 	allArgs := []interface{}{r.uuid, time.Since(r.ts)}
-	log.Trace(append(allArgs, args...)...)
+	log.TraceAtN(4, append(allArgs, args...)...)
 }
 
 func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Client) (T, error)) (T, error) {
@@ -400,6 +418,8 @@ func getDataViaRetry[T any](wrapperClient *Client, getData func(c *ethclient.Cli
 		if !errorHandler(errOne, mc) {
 			ignoreClients[clientInd] = true
 			req.print("not handled", ignoreClients)
+		} else {
+			req.print("handled", errOne)
 		}
 		mc.Unlock(req)
 		// if all clients are ignore(return error), we can return this error

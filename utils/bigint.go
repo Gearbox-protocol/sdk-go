@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"golang.org/x/exp/constraints"
 )
 
@@ -35,9 +36,27 @@ func PercentMul(a, b *big.Int) *big.Int {
 func PercentMulByUInt16(a *big.Int, percent uint16) *big.Int {
 	return PercentMul(a, big.NewInt(int64(percent)))
 }
-
-func GetFloat64Decimal(num *big.Int, decimals int8) float64 {
-	floatBorrowedAmount, _ := GetFloat64(num, decimals).Float64()
+func FloatDecimalsTo64(a float64, decimals int8) *big.Int {
+	x := new(big.Float).Mul(big.NewFloat(a), GetExpFloat(decimals))
+	f, _ := x.Int(nil)
+	return f
+}
+func GetFloat64Decimal(_num interface{}, decimals int8) float64 {
+	type convertI interface {
+		Convert() *big.Int
+	}
+	var bigInt *big.Int
+	switch v := _num.(type) {
+	case *big.Int:
+		bigInt = v
+	default:
+		coreBigInt, ok := _num.(convertI)
+		if !ok {
+			log.Fatal("GetFloat64Decimal received unknown type")
+		}
+		bigInt = coreBigInt.Convert()
+	}
+	floatBorrowedAmount, _ := GetFloat64(bigInt, decimals).Float64()
 	return floatBorrowedAmount
 }
 
@@ -152,4 +171,12 @@ func DiffMoreThanFraction(oldValue, newValue *big.Int, diff *big.Float) bool {
 	newFloat := new(big.Float).SetInt(newValue)
 	value := new(big.Float).Quo(new(big.Float).Sub(newFloat, oldFloat), ifZeroReturnOneBigInt(oldFloat))
 	return new(big.Float).Abs(value).Cmp(diff) > 0
+}
+
+func BytesToUInt16(data []byte) uint16 {
+	return uint16(new(big.Int).SetBytes(data).Int64())
+}
+
+func BigIntAdd3(a, b, c *big.Int) *big.Int {
+	return new(big.Int).Add(a, new(big.Int).Add(b, c))
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -24,7 +25,7 @@ type BaseTransactor struct {
 
 func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
-	chainId, err := client.ChainID(context.TODO())
+	chainId, err := client.(*ethclient.Client).FlagChainID(context.TODO())
 	log.CheckFatal(err)
 	//
 	if strings.HasPrefix(privateKey, "enc:") {
@@ -61,7 +62,7 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 			job, utils.ToJson(core.ToDynamicTx(tx)), receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
-	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, core.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, log.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
 	return receipt, nil
 }

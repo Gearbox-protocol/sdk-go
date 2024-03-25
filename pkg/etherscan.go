@@ -36,14 +36,22 @@ func (e EtherScan) makeRequest(q url.Values) (response *http.Response, reqReq er
 		}
 		if response.StatusCode != 200 {
 			if response.StatusCode != 502 { // on bad gateway retry
-				return nil, fmt.Errorf("status code: %d %s", response.StatusCode, utils.ReadJsonReader(response.Body))
+				data, err := utils.ReadJsonReader(response.Body)
+				if err != nil {
+					return nil, fmt.Errorf("status code: %d %s", response.StatusCode, err)
+				}
+				return nil, fmt.Errorf("status code: %d %s", response.StatusCode, data)
 			}
 		} else {
 			return response, nil
 		}
 		log.Info("retrying", i)
 	}
-	return nil, fmt.Errorf("status code: %d %s", response.StatusCode, utils.ReadJsonReader(response.Body))
+	data, err := utils.ReadJsonReader(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("status code: %d %s", response.StatusCode, err)
+	}
+	return nil, fmt.Errorf("status code: %d %s", response.StatusCode, data)
 }
 
 func min[T int | int64](a, b T) T {

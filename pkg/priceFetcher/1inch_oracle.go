@@ -6,10 +6,14 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
+	"github.com/Gearbox-protocol/sdk-go/calc"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -21,8 +25,12 @@ type OneInchOracle struct {
 	CrvTokens     []CrvSpotPriceCalc    `json:"crvTokens"`
 	CopyPricesFor map[string]string     `json:"copyPricesFor"`
 	//
-	crvLen         int
-	generatedCalls []multicall.Multicall2Call
+	ArbBaseTokens []string `json:"arbBaseTokens"`
+	arbEthClient  core.ClientI
+	//
+	crvLen             int
+	generatedCalls     []multicall.Multicall2Call
+	resolveArbToensToo bool
 	//
 	symToAddr  *core.SymTOAddrStore
 	inchOracle common.Address
@@ -30,10 +38,49 @@ type OneInchOracle struct {
 	decimals   DecimalStoreI
 }
 
+func (o *OneInchOracle) Reset(net string) {
+	{
+		baseReset := []string{}
+		for _, baseToenSym := range o.BaseTokens {
+			if _, ok := o.symToAddr.Tokens[baseToenSym]; ok {
+				baseReset = append(baseReset, baseToenSym)
+			}
+		}
+		o.BaseTokens = baseReset
+	}
+	if net != "MAINNET" {
+		o.ConstToken = nil
+	}
+	{
+		yearnReset := []YearnSpotPriceCalc{}
+		for _, yearnToken := range o.YearnTokens {
+			symToToken := o.symToAddr.Tokens[yearnToken.Token]
+			if symToToken != core.NULL_ADDR {
+				yearnReset = append(yearnReset, yearnToken)
+			}
+		}
+		o.YearnTokens = yearnReset
+	}
+	{
+		crvReset := []CrvSpotPriceCalc{}
+		for _, crvToken := range o.CrvTokens {
+			symToToken := o.symToAddr.Tokens[crvToken.Token]
+			if symToToken != core.NULL_ADDR {
+				crvReset = append(crvReset, crvToken)
+			}
+		}
+		o.CrvTokens = crvReset
+	}
+}
+
+var MAINNET_GMX = common.HexToAddress("0x00eee00eee00eee00eee00eee00eee00eee00eee")
+
 func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
 	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
 	for _, addr := range details.symToAddr.Tokens {
-		addrs = append(addrs, addr)
+		if addr != MAINNET_GMX {
+			addrs = append(addrs, addr)
+		}
 	}
 	return
 }
@@ -49,6 +96,7 @@ type ConstTokenPriceCalc struct {
 }
 type YearnSpotPriceCalc struct {
 	Token      string `json:"token"`
+	IsMaker    bool   `json:"isMaker"`
 	Underlying string `json:"underlying"`
 }
 
@@ -57,7 +105,45 @@ type DecimalStoreI interface {
 	GetDecimalsForList([]common.Address)
 }
 
-func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Address, tStore DecimalStoreI, dataStrings ...string) *OneInchOracle {
+func JsonnetStringInchConfig(syms []core.Symbol) string {
+	var subPhrase []string
+	for _, sym := range syms {
+		subPhrase = append(subPhrase, fmt.Sprintf(`'%s'`, sym))
+	}
+	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
+}
+func getArbClient(urls string) core.ClientI {
+	newUrls := []string{}
+	for _, url := range strings.Split(urls, ",") {
+		{
+			url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
+			if strings.Contains(url, "arb-mainnet") {
+				newUrls = append(newUrls, url)
+			}
+		}
+		{
+			url = strings.Replace(url, "https://mainnet.infura.io", "https://arbitrum-mainnet.infura.io", 1)
+			if strings.Contains(url, "https://arbitrum-mainnet.infura.io") {
+				newUrls = append(newUrls, url)
+			}
+		}
+	}
+	return getClient(strings.Join(newUrls, ","))
+}
+
+func getClient(url string) core.ClientI {
+	if url == "" {
+		return nil
+	}
+	ethclient, err := ethclient.Dial(url)
+	if err != nil {
+		return nil
+	}
+	return ethclient
+}
+
+// supports only infura and alchemy
+func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data := func() string {
@@ -72,15 +158,41 @@ func New1InchOracle(client core.ClientI, chainId int64, inchOracle common.Addres
 		}
 	}()
 	utils.SetJson([]byte(data), calc)
-	//
+	{ // ARB_LOGIC
+		calc.resolveArbToensToo = arbUrl != ""
+		if log.GetBaseNet(core.GetChainId(client)) != "ARBITRUM" {
+			if arbUrl != "" {
+				calc.arbEthClient = getArbClient(arbUrl)
+			}
+		}
+	}
+	chainId := core.GetChainId(client)
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
-	calc.inchOracle = inchOracle
+	calc.Reset(log.GetBaseNet(chainId))
+
+	//
+	// delete ETH as 0xee address can't be used for getting symbol in token_store.go
+	delete(calc.symToAddr.Tokens, "ETH")
+	//
+	calc.inchOracle = get1InchAddress(chainId)
 	calc.client = client
 	calc.setCrvCallLen()
 
 	// decimal store
 	calc.decimals = tStore
 	return calc
+}
+
+func get1InchAddress(chainId int64) common.Address {
+	net := log.GetBaseNet(chainId)
+	switch net {
+	case "MAINNET":
+		return common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
+	case "ARBITRUM":
+		return common.HexToAddress("0x0AdDd25a91563696D8567Df78D5A01C9a991F9B8")
+	}
+	log.Fatal("Can't get the inch oracle for", chainId)
+	return core.NULL_ADDR
 }
 
 func (calc *OneInchOracle) setCrvCallLen() {
@@ -114,6 +226,9 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 	if calc.generatedCalls == nil {
 		calls := []multicall.Multicall2Call{}
 		calls = append(calls, calc.GetBaseCalls()...)
+		if calc.arbEthClient == nil && calc.resolveArbToensToo { // ARB_LOGIC
+			calls = append(calls, calc.GetArbBaseCalls()...)
+		}
 		calls = append(calls, calc.GetCrvCalls()...) // yvcurve-steth - yearn token is dependent on curve
 		calls = append(calls, calc.GetYearnCalls()...)
 		calc.generatedCalls = calls
@@ -124,7 +239,8 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 // yearn dependent on curve and base
 // curve dependent on base
 // const and base doesn't dependent on any token.
-func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64) map[string]*core.BigInt {
+func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64, ts uint64) map[string]*core.BigInt {
+	defer utils.Elapsed("GetPrices")()
 	if len(results) != len(calc.generatedCalls) {
 		log.Fatalf("call len %d, result len %d", len(calc.generatedCalls), len(results))
 	}
@@ -140,6 +256,13 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	till := len(calc.BaseTokens)
 	baseResults, results := results[:till], results[till:]
 	calc.processBaseResults(baseResults, prices)
+	// ARB_LOGIC
+	if calc.arbEthClient == nil && calc.resolveArbToensToo {
+		till = len(calc.ArbBaseTokens)
+		arbResults, _results := results[:till], results[till:]
+		calc.processBaseResults(arbResults, prices)
+		results = _results
+	}
 	//
 	till = calc.crvLen
 	crvResults, results := results[:till], results[till:]
@@ -154,15 +277,48 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 		token := calc.symToAddr.Tokens[tokenSym]
 		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
 	}
+
+	// ARB_LOGIC
+	calc.arb(blockNumber, ts, prices)
+	// resolve arb tokens
 	// get 1inch token from the 1inch spot contract use 1inch api
 	calc.addGearPrice(prices)
 	return prices
 }
+func (calc OneInchOracle) arb(blockNumber int64, ts uint64, prices map[string]*core.BigInt) {
+	defer utils.Elapsed("arbitrum price fetch")()
+	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
+		calls := calc.GetArbBaseCalls()
+		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNumber, ts), false, calls)
+		calc.processArbBaseResults(results, prices)
+	}
+}
+
+func getArbBlockNum(mainBlock int64, ts uint64) int64 {
+	if ts != 0 {
+		etherscanAPI := utils.GetEnvOrDefault("ARBISCAN_API_KEY", "")
+		if etherscanAPI == "" {
+			log.Fatal("arbiscan_api_key can't be empty")
+		}
+		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
+		log.CheckFatal(err)
+		return blockNum
+	} else {
+		log.Fatal("ts can't be 0")
+	}
+	return mainBlock
+}
 
 func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
-	gearToken := calc.symToAddr.Tokens["GEAR"].Hex()
-	price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
-	prices[gearToken] = (*core.BigInt)(price)
+	gearToken := calc.symToAddr.Tokens["GEAR"]
+	if gearToken != core.NULL_ADDR {
+		price := calc.getGearPriceFromCurve(prices[calc.symToAddr.Tokens["WETH"].Hex()].Convert())
+		prices[gearToken.Hex()] = (*core.BigInt)(price)
+	}
+}
+
+func (calc OneInchOracle) USDC() string {
+	return calc.symToAddr.Tokens["USDC"].Hex()
 }
 
 // get the price from 1inch api for `token to usdc quote`
@@ -171,7 +327,7 @@ func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 	decimals := calc.decimals.GetDecimals(token)
 	url := fmt.Sprintf("https://api.1inch.io/v5.0/1/quote?fromTokenAddress=%s&toTokenAddress=%s&amount=%s",
 		token.Hex(),
-		calc.symToAddr.Tokens["USDC"].Hex(),
+		calc.USDC(),
 		utils.GetExpInt(decimals+2), // 100 token units for price in 10^8 for usdc
 	)
 	resp, err := http.Get(url)
@@ -195,7 +351,8 @@ func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 }
 
 func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int {
-	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2")
+	// TODO
+	pool := common.HexToAddress("0x0E9B5B092caD6F1c5E6bc7f89Ffe1abb5c95F1C2") // for mainnet
 	d0Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(0))
 	log.CheckFatal(err)
 	d1Data, err := core.GetAbi("curveBalance").Pack("balances", big.NewInt(1))
@@ -207,6 +364,9 @@ func (calc OneInchOracle) getGearPriceFromCurve(ethPriceInUSD *big.Int) *big.Int
 		Target:   pool,
 		CallData: d1Data,
 	}})
+	if len(results[0].ReturnData) == 0 || len(results[1].ReturnData) == 0 || ethPriceInUSD.Cmp(new(big.Int)) == 0 {
+		return new(big.Int)
+	}
 	gearBalance, ok := core.MulticallAnsBigInt(results[0])
 	if !ok {
 		log.Info("Can't get gear balance.")
@@ -252,21 +412,68 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		} else if calc.BaseTokens[ind] == "USDC" {
 			prices[tokenAddr.Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			if log.GetBaseNet(core.GetChainId(calc.client)) != "MAINNET" {
+				prices[calc.symToAddr.Tokens["USDC_e"].Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			}
+		}
+	}
+}
+
+func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
+	symToAddr := core.GetSymToAddrByChainId(42161)
+	pfABI := core.GetAbi("1InchOracle")
+	for _, token := range calc.ArbBaseTokens {
+		tokenAddr := symToAddr.Tokens[token]
+		data, err := pfABI.Pack("getRate", tokenAddr, symToAddr.Tokens["USDC"], false)
+		if err != nil {
+			log.Fatal(err)
+		}
+		calls = append(calls, multicall.Multicall2Call{
+			Target:   get1InchAddress(42161),
+			CallData: data,
+		})
+	}
+	return
+}
+
+func (calc OneInchOracle) processArbBaseResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt) {
+	for ind, entry := range results {
+		tokenAddr := calc.symToAddr.Tokens[calc.ArbBaseTokens[ind]] // this should be the token for the client network not neccessarily the arb network
+		if entry.Success {
+			price := new(big.Int).SetBytes(entry.ReturnData)
+			// for usdt = 18-6-2 = 10
+			// for wbtc = 18-8-2 = 8
+			// for gusd = 18-2-2= 14
+			var decimals int8 = 18
+			if tokenAddr != MAINNET_GMX {
+				decimals = calc.decimals.GetDecimals(tokenAddr)
+			}
+			normalizeDecimal := 18 - decimals - 2
+			price = utils.GetInt64(price, normalizeDecimal)
+			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		}
 	}
 }
 
 func (calc OneInchOracle) GetYearnCalls() (calls []multicall.Multicall2Call) {
 	data, err := hex.DecodeString("99530b06") // pricepershare
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.CheckFatal(err)
+	makerABI := core.GetAbi("MakerDAI")
+	makerData, err := makerABI.Pack("convertToAssets", utils.GetExpInt(18))
+	log.CheckFatal(err)
 	for _, details := range calc.YearnTokens {
 		tokenAddr := calc.symToAddr.Tokens[details.Token]
-		calls = append(calls, multicall.Multicall2Call{
-			Target:   tokenAddr,
-			CallData: data,
-		})
+		if details.IsMaker {
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   tokenAddr,
+				CallData: makerData,
+			})
+		} else {
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   tokenAddr,
+				CallData: data,
+			})
+		}
 	}
 	return
 }
@@ -368,4 +575,62 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 		}
 		ind++
 	}
+}
+
+func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBalanceFormat, underlying string) float64 {
+	tradingToken, baseToken := calc.TradingAndBaseTokens(core.GetChainId(o.client), bal, underlying)
+	if tradingToken == "" {
+		return 0
+	}
+	//
+	prices := map[string]*core.BigInt{}
+	//
+	{ // getting price via multicall
+		inchOracle := get1InchAddress(core.GetChainId(o.client))
+		tokens := []common.Address{common.HexToAddress(tradingToken), common.HexToAddress(baseToken)}
+		usdc := o.symToAddr.Tokens["USDC"]
+		//
+		pfABI := core.GetAbi("1InchOracle")
+		calls := []multicall.Multicall2Call{}
+		for _, token := range tokens {
+			data, err := pfABI.Pack("getRate", token, usdc, false)
+			log.CheckFatal(err)
+			calls = append(calls, multicall.Multicall2Call{
+				Target:   inchOracle,
+				CallData: data,
+			})
+		}
+		results := core.MakeMultiCall(o.client, blockNum, false, calls)
+		for ind, entry := range results {
+			tokenAddr := tokens[ind]
+			if entry.Success {
+				price := new(big.Int).SetBytes(entry.ReturnData)
+				// for usdt = 18-6-2 = 10
+				// for wbtc = 18-8-2 = 8
+				// for gusd = 18-2-2= 14
+				normalizeDecimal := 18 - o.decimals.GetDecimals(tokenAddr) - 2
+				price = utils.GetInt64(price, normalizeDecimal)
+				prices[tokenAddr.Hex()] = (*core.BigInt)(price)
+			} else if usdc == tokenAddr {
+				prices[tokenAddr.Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
+			}
+		}
+	}
+	return GetTradingPriceFrom1Inch(prices, tradingToken, baseToken)
+}
+
+func GetTradingPriceFrom1Inch(prices map[string]*core.BigInt, tradingToken, baseToken string) float64 {
+	getPrice := func(token string) *big.Int {
+		p := prices[token]
+		if p == nil {
+			return new(big.Int)
+		}
+		return p.Convert()
+	}
+	tradingPrice := utils.GetFloat64Decimal(getPrice(tradingToken), 8)
+	basePrice := utils.GetFloat64Decimal(getPrice(baseToken), 8)
+	if tradingPrice == 0 || basePrice == 0 {
+		return 0
+	}
+	return tradingPrice / basePrice
 }

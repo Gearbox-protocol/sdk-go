@@ -36,27 +36,17 @@ type VersionType struct {
 }
 
 func NewVersion(v int16) VersionType {
-	if v == 1 || v == 2 {
-		return VersionType{v: v}
-	} else if v == 210 || v == 220 {
-		return VersionType{v: 2}
-	} else if v == 300 {
+	if v == 1 {
+		return VersionType{v: 1}
+	} else if v == 300 || v == 301 || v == 302 {
 		return VersionType{v: 300}
+	} else if v == 210 || v == 220 || v == 2 {
+		return VersionType{v: 2}
+	} else if v == 10_000 { // for testing
+		return VersionType{v: 10000}
 	}
-	log.Fatal("version not supported")
+	log.Fatal("version not supported", v)
 	panic("")
-}
-
-func (v VersionType) Decimals() int8 {
-	switch v.v {
-	case 1:
-		return 18 // eth decimals
-	case 2:
-		return 8 // USD decimals
-	default:
-		log.Fatal("version not supported")
-		panic("")
-	}
 }
 
 func (v VersionType) IsGBv1() bool {
@@ -69,6 +59,9 @@ func (v VersionType) IsPriceInUSD() bool {
 
 func (v VersionType) MoreThan(cmpAgainst VersionType) bool {
 	return v.v > cmpAgainst.v
+}
+func (v VersionType) LessThan(cmpAgainst VersionType) bool {
+	return v.v < cmpAgainst.v
 }
 func (v VersionType) MoreThanEq(cmpAgainst VersionType) bool {
 	return v.v >= cmpAgainst.v
