@@ -44,6 +44,7 @@
     'RPL',
     'APE',
     'LDO',
+    'GHO',
     //
     'PENDLE',
     'wstETH',
