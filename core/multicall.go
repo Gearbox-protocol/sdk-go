@@ -1,13 +1,13 @@
 package core
 
 import (
-	"context"
 	"math"
 	"math/big"
 	"strings"
 	"sync"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall3"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -67,10 +67,18 @@ func getMultiCallAddr(chainId int64) string {
 	return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
 }
 
-func getMultiCallContract(client ClientI) *multicall.Multicall {
-	chainId, err := client.ChainID(context.TODO())
-	log.CheckFatal(err)
-	addr := common.HexToAddress(getMultiCallAddr(chainId.Int64()))
+type MulticallI interface {
+	TryAggregate(opts *bind.CallOpts, successRequired bool, calls []multicall.Multicall2Call) ([]multicall.Multicall2Result, error)
+}
+
+func getMultiCallContract(client ClientI) MulticallI {
+	chainId := GetChainId(client)
+	if log.GetBaseNet(chainId) == "OPTIMISM" {
+		contract, err := multicall3.NewMulticall3(common.HexToAddress("0xcA11bde05977b3631167028862bE2a173976CA11"), client)
+		log.CheckFatal(err)
+		return Multicall3{contract}
+	}
+	addr := common.HexToAddress(getMultiCallAddr(chainId))
 	contract, err := multicall.NewMulticall(addr, client)
 	log.CheckFatal(err)
 	return contract
