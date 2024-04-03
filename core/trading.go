@@ -47,7 +47,7 @@ func updateTokenToPairs(pair TradingPair, trading, base Symbol) {
 }
 
 func TradingSymNoW(sym Symbol) Symbol {
-	if sym[0] == 'W' {
+	if sym == "WBTC" || sym == "WETH" {
 		sym = sym[1:]
 	}
 	return sym

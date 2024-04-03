@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"time"
+
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -155,7 +157,6 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 }
 
 func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Hash) (int64, error) {
-
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(fromBlock),
 		ToBlock:   big.NewInt(toBlock),
@@ -166,7 +167,9 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 			topics,
 		},
 	}
-	logs, err := c.Client.FilterLogs(context.Background(), query)
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	//
+	logs, err := c.Client.FilterLogs(ctx, query)
 	if err != nil {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||

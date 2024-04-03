@@ -17,6 +17,9 @@ var versionABI string = "[{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"in
 
 // if version is not set it is 1 else get from contract
 func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
+	if common.HexToAddress(addr).Hex() == "0x39E6C2E1757ae4354087266E2C3EA9aC4257C1eb" { // bcz https://optimistic.etherscan.io/address/0x39E6C2E1757ae4354087266E2C3EA9aC4257C1eb#readContract has version as string
+		return NewVersion(1)
+	}
 	var opts *bind.CallOpts
 	if blockNum != 0 {
 		opts = &bind.CallOpts{BlockNumber: big.NewInt(blockNum)}

@@ -67,7 +67,10 @@
     ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     SUSD: '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9',
   },
-  farmingPools: {},
+  farmingPools: {
+    sdUSDCV3: '0x73302b63Ad4a16C498f26dB89cb27F37a72E4E04',
+    sdWETHV3: '0xC1FEC69a416Fedb2fD7ED59641B8A7Fed75d775a',
+  },
   ids: {
     cvx3Crv: 9,
     cvxcrvFRAX: 100,
@@ -173,6 +176,7 @@
       ezETH_WETH_BPT: 2,
       weETH_ezETH_rswETH: 3,
       GHO_USDT_USDC: 3,
+      rsETH_WETH: 2,
       BPT_rETH_ETH: 2,
       BPT_WSTETH_ETH: 2,
       BPT_ROAD: 3,
