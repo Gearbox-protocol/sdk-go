@@ -11,9 +11,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/calc"
 	"github.com/Gearbox-protocol/sdk-go/core"
-	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
-	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -26,7 +24,7 @@ type OneInchOracle struct {
 	CopyPricesFor map[string]string     `json:"copyPricesFor"`
 	//
 	ArbBaseTokens []string `json:"arbBaseTokens"`
-	arbEthClient  core.ClientI
+	OptBaseTokens []string `json:"optBaseTokens"`
 	//
 	crvLen             int
 	generatedCalls     []multicall.Multicall2Call
@@ -36,6 +34,8 @@ type OneInchOracle struct {
 	inchOracle common.Address
 	client     core.ClientI
 	decimals   DecimalStoreI
+	//
+	extraurls *URLsAndResolve
 }
 
 func (o *OneInchOracle) Reset(net string) {
@@ -74,11 +74,12 @@ func (o *OneInchOracle) Reset(net string) {
 }
 
 var MAINNET_GMX = common.HexToAddress("0x00eee00eee00eee00eee00eee00eee00eee00eee")
+var MAINNET_OP = common.HexToAddress("0x00fff00fff00fff00fff00fff00fff00fff00fff")
 
 func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
 	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
 	for _, addr := range details.symToAddr.Tokens {
-		if addr != MAINNET_GMX {
+		if !utils.Contains([]common.Address{MAINNET_GMX, MAINNET_OP}, addr) {
 			addrs = append(addrs, addr)
 		}
 	}
@@ -112,38 +113,36 @@ func JsonnetStringInchConfig(syms []core.Symbol) string {
 	}
 	return fmt.Sprintf(`{baseTokens: [%s]}`, strings.Join(subPhrase, ","))
 }
-func getArbClient(urls string) core.ClientI {
-	newUrls := []string{}
-	for _, url := range strings.Split(urls, ",") {
-		{
-			url = strings.Replace(url, "eth-mainnet", "arb-mainnet", 1)
-			if strings.Contains(url, "arb-mainnet") {
-				newUrls = append(newUrls, url)
-			}
-		}
-		{
-			url = strings.Replace(url, "https://mainnet.infura.io", "https://arbitrum-mainnet.infura.io", 1)
-			if strings.Contains(url, "https://arbitrum-mainnet.infura.io") {
-				newUrls = append(newUrls, url)
-			}
-		}
-	}
-	return getClient(strings.Join(newUrls, ","))
+
+type URLsAndResolve struct {
+	Resolve       bool   `json:"resolve"`
+	Urls          string `json:"urls"`
+	arbclient     core.ClientI
+	mainclient    core.ClientI
+	optclient     core.ClientI
+	lastMainBlock int64
+	result        map[string]*core.BigInt
 }
 
-func getClient(url string) core.ClientI {
-	if url == "" {
-		return nil
+func (d *URLsAndResolve) resolve(client core.ClientI) {
+	if d.Resolve {
+		d.mainclient = getNetworkClient(d.Urls, "MAINNET")
+		d.arbclient = getNetworkClient(d.Urls, "ARBITRUM")
+		d.optclient = getNetworkClient(d.Urls, "OPTIMISM")
+	} else {
+		switch log.GetBaseNet(core.GetChainId(client)) {
+		case "MAINNET":
+			d.mainclient = client
+		case "OPTIMISM":
+			d.optclient = client
+		case "ARBITRUM":
+			d.arbclient = client
+		}
 	}
-	ethclient, err := ethclient.Dial(url)
-	if err != nil {
-		return nil
-	}
-	return ethclient
 }
 
 // supports only infura and alchemy
-func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, dataStrings ...string) *OneInchOracle {
+func New1InchOracle(client core.ClientI, tStore DecimalStoreI, details URLsAndResolve, dataStrings ...string) *OneInchOracle {
 	calc := &OneInchOracle{}
 	// get 1inch jsonnet
 	data := func() string {
@@ -158,17 +157,12 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, arbUrl string, da
 		}
 	}()
 	utils.SetJson([]byte(data), calc)
-	{ // ARB_LOGIC
-		calc.resolveArbToensToo = arbUrl != ""
-		if log.GetBaseNet(core.GetChainId(client)) != "ARBITRUM" {
-			if arbUrl != "" {
-				calc.arbEthClient = getArbClient(arbUrl)
-			}
-		}
-	}
+
 	chainId := core.GetChainId(client)
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
 	calc.Reset(log.GetBaseNet(chainId))
+	details.resolve(client)
+	calc.extraurls = &details
 
 	//
 	// delete ETH as 0xee address can't be used for getting symbol in token_store.go
@@ -226,8 +220,11 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 	if calc.generatedCalls == nil {
 		calls := []multicall.Multicall2Call{}
 		calls = append(calls, calc.GetBaseCalls()...)
-		if calc.arbEthClient == nil && calc.resolveArbToensToo { // ARB_LOGIC
+		switch log.GetBaseNet(core.GetChainId(calc.client)) {
+		case "ARBITRUM": // ARB_LOGIC
 			calls = append(calls, calc.GetArbBaseCalls()...)
+		case "OPTIMISM":
+			calls = append(calls, calc.GetOptBaseCalls()...)
 		}
 		calls = append(calls, calc.GetCrvCalls()...) // yvcurve-steth - yearn token is dependent on curve
 		calls = append(calls, calc.GetYearnCalls()...)
@@ -257,11 +254,21 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	baseResults, results := results[:till], results[till:]
 	calc.processBaseResults(baseResults, prices)
 	// ARB_LOGIC
-	if calc.arbEthClient == nil && calc.resolveArbToensToo {
+	switch log.GetBaseNet(core.GetChainId(calc.client)) {
+	case "ARBITRUM":
 		till = len(calc.ArbBaseTokens)
 		arbResults, _results := results[:till], results[till:]
-		calc.processBaseResults(arbResults, prices)
+		calc.processSeparateBaseResults(arbResults, prices, calc.ArbBaseTokens)
 		results = _results
+	case "OPTIMISM":
+		till = len(calc.OptBaseTokens)
+		optResults, _results := results[:till], results[till:]
+		calc.processSeparateBaseResults(optResults, prices, calc.OptBaseTokens)
+		results = _results
+	case "MAINNET":
+		// ARB_LOGIC
+		calc.arbForMainnet(ts, prices)
+		calc.optForMainnet(ts, prices)
 	}
 	//
 	till = calc.crvLen
@@ -275,38 +282,15 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	for tokenSym, fromTokenSym := range calc.CopyPricesFor {
 		fromToken := calc.symToAddr.Tokens[fromTokenSym]
 		token := calc.symToAddr.Tokens[tokenSym]
-		prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
+		if fromToken != core.NULL_ADDR && token != core.NULL_ADDR {
+			prices[token.Hex()] = core.NewBigInt(prices[fromToken.Hex()])
+		}
 	}
 
-	// ARB_LOGIC
-	calc.arb(blockNumber, ts, prices)
 	// resolve arb tokens
 	// get 1inch token from the 1inch spot contract use 1inch api
 	calc.addGearPrice(prices)
 	return prices
-}
-func (calc OneInchOracle) arb(blockNumber int64, ts uint64, prices map[string]*core.BigInt) {
-	defer utils.Elapsed("arbitrum price fetch")()
-	if calc.resolveArbToensToo && calc.arbEthClient != nil { //ARB_LOGIC
-		calls := calc.GetArbBaseCalls()
-		results := core.MakeMultiCall(calc.arbEthClient, getArbBlockNum(blockNumber, ts), false, calls)
-		calc.processArbBaseResults(results, prices)
-	}
-}
-
-func getArbBlockNum(mainBlock int64, ts uint64) int64 {
-	if ts != 0 {
-		etherscanAPI := utils.GetEnvOrDefault("ARBISCAN_API_KEY", "")
-		if etherscanAPI == "" {
-			log.Fatal("arbiscan_api_key can't be empty")
-		}
-		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
-		log.CheckFatal(err)
-		return blockNum
-	} else {
-		log.Fatal("ts can't be 0")
-	}
-	return mainBlock
 }
 
 func (calc OneInchOracle) addGearPrice(prices map[string]*core.BigInt) {
@@ -419,33 +403,16 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 	}
 }
 
-func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
-	symToAddr := core.GetSymToAddrByChainId(42161)
-	pfABI := core.GetAbi("1InchOracle")
-	for _, token := range calc.ArbBaseTokens {
-		tokenAddr := symToAddr.Tokens[token]
-		data, err := pfABI.Pack("getRate", tokenAddr, symToAddr.Tokens["USDC"], false)
-		if err != nil {
-			log.Fatal(err)
-		}
-		calls = append(calls, multicall.Multicall2Call{
-			Target:   get1InchAddress(42161),
-			CallData: data,
-		})
-	}
-	return
-}
-
-func (calc OneInchOracle) processArbBaseResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt) {
+func (calc OneInchOracle) processSeparateBaseResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt, tokens []string) {
 	for ind, entry := range results {
-		tokenAddr := calc.symToAddr.Tokens[calc.ArbBaseTokens[ind]] // this should be the token for the client network not neccessarily the arb network
+		tokenAddr := calc.symToAddr.Tokens[tokens[ind]] // this should be the token for the client network not neccessarily the arb network
 		if entry.Success {
 			price := new(big.Int).SetBytes(entry.ReturnData)
 			// for usdt = 18-6-2 = 10
 			// for wbtc = 18-8-2 = 8
 			// for gusd = 18-2-2= 14
 			var decimals int8 = 18
-			if tokenAddr != MAINNET_GMX {
+			if !utils.Contains([]common.Address{MAINNET_GMX, MAINNET_OP}, tokenAddr) {
 				decimals = calc.decimals.GetDecimals(tokenAddr)
 			}
 			normalizeDecimal := 18 - decimals - 2

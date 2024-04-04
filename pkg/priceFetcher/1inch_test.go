@@ -31,7 +31,7 @@ func TestSpotPriceStore(t *testing.T) {
 	expectedTokenPrices := map[string]string{}
 	utils.ReadJsonAndSetInterface("inputs/spot_price_test.json", &expectedTokenPrices)
 	tStore := getDecimalStore(client, expectedTokenPrices, blockNumber, t)
-	store := New1InchOracle(client, tStore, "")
+	store := New1InchOracle(client, tStore, URLsAndResolve{})
 	calls := store.GetCalls()
 	//
 	results := core.MakeMultiCall(client, blockNumber, false, calls)

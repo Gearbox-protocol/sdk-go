@@ -150,6 +150,8 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 		suffix = "api.etherscan.io"
 	case "ARBITRUM":
 		suffix = "api.arbiscan.io"
+	case "OPTIMISM":
+		suffix = "api-optimistic.etherscan.io"
 	}
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
 	resp, err := http.Get(url)

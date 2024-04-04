@@ -167,7 +167,8 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 			topics,
 		},
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer func() { cancel() }()
 	//
 	logs, err := c.Client.FilterLogs(ctx, query)
 	if err != nil {

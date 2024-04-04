@@ -13,6 +13,9 @@
     'ARB',
     'GMX',
   ],
+  optBaseTokens: [
+    'OP',
+  ],
   baseTokens: [
     'FRAX',
     'SUSD',
@@ -46,10 +49,12 @@
     'LDO',
     'GHO',
     //
-    'PENDLE',
+    'PENDLE',  // on arbitrum
     'wstETH',
     'rETH',
     'cbETH',
+    //
+    'WLD',  // on optimism
   ],
   yearnTokens: [
     {
