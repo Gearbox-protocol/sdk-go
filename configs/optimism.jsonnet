@@ -67,6 +67,7 @@
     ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     SUSD: '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9',
   },
+  farmingPools: {},
   ids: {
     cvx3Crv: 9,
     cvxcrvFRAX: 100,
@@ -182,6 +183,7 @@
       wstETH_rETH_cbETH: 3,
       rETH_WETH_BPT: 2,
       '33AURA_33ARB_33BAL': 3,
+      ezETH_wstETH: 2,
     },
   },
   redstone: {
@@ -195,6 +197,12 @@
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'LINK',
+      signersThreshold: 5,
+    },
+    OP: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'OP',
       signersThreshold: 5,
     },
     USDC: {
