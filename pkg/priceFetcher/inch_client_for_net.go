@@ -126,8 +126,11 @@ func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*cor
 	defer utils.Elapsed("optimism price fetch")()
 	if calc.extraurls.optclient != nil {
 		calls := calc.GetOptBaseCalls()
-		log.Info(mainnetTs, getOptBlockNum(mainnetTs))
-		results := core.MakeMultiCall(calc.extraurls.optclient, getOptBlockNum(mainnetTs), false, calls)
+		optblock := getOptBlockNum(mainnetTs)
+		if optblock == 0 {
+			return
+		}
+		results := core.MakeMultiCall(calc.extraurls.optclient, optblock, false, calls)
 		calc.processSeparateBaseResults(results, prices, calc.OptBaseTokens)
 	}
 }
@@ -139,7 +142,10 @@ func getOptBlockNum(ts uint64) int64 {
 			log.Fatal("optimism_api_key can't be empty")
 		}
 		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 10, int64(ts))
-		log.CheckFatal(err)
+		if err != nil {
+			// log.Fatal("")
+			return 0
+		}
 		return blockNum
 	} else {
 		log.Fatal("ts can't be 0")
