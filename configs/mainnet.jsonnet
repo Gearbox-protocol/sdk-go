@@ -356,6 +356,7 @@
       stkcvxcrvUSDUSDT: 'crvUSDUSDT',
       stkcvxcrvUSDFRAX: 'crvUSDFRAX',
       stkcvxcrvUSDETHCRV: 'crvUSDETHCRV',
+      cvxcrvUSDT: 'crvUSDT',
     },
     balancerTokens: {
       '50WETH_50AURA': 2,
@@ -380,6 +381,7 @@
       wstETH_rETH_cbETH: 3,
       rETH_WETH_BPT: 2,
       '33AURA_33ARB_33BAL': 3,
+      ezETH_wstETH: 2,
     },
   },
   redstone: {
