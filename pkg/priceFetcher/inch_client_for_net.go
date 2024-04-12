@@ -137,6 +137,13 @@ func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*cor
 
 func getOptBlockNum(ts uint64) int64 {
 	if ts != 0 {
+		blockNum, err := pkg.MoralisGetBlockNumForTs(10, int64(ts))
+		if err == nil {
+			return blockNum
+		}
+	}
+	//
+	if ts != 0 {
 		etherscanAPI := utils.GetEnvOrDefault("OPTIMISM_API_KEY", "")
 		if etherscanAPI == "" {
 			log.Fatal("optimism_api_key can't be empty")

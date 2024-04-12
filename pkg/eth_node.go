@@ -173,3 +173,35 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 	}
 	return blockNum, nil
 }
+func MoralisGetBlockNumForTs(chainId int64, ts int64) (int64, error) {
+	var chain string
+	switch log.GetBaseNet(chainId) {
+	case "MAINNET":
+		chain = "eth"
+	case "ARBITRUM":
+		chain = "arbitrum"
+	case "OPTIMISM":
+		chain = "optimism"
+	}
+	url := "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=%s&date=%d"
+	url = fmt.Sprintf(url, chain, ts)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("accept", "application/json")
+	moralis := utils.GetEnvOrDefault("MORALIS_API_KEY", "")
+	req.Header.Set("X-API-Key", moralis)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	//s
+	type respBody struct {
+		Block int64 `json:"block"`
+	}
+	msg := &respBody{}
+	utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
+	return msg.Block, nil
+}
