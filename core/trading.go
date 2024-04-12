@@ -24,6 +24,9 @@ var tradingSymbols = []Symbol{
 }
 
 var arbTradingTokens = []Symbol{"GMX", "ARB"}
+var opTradingTokens = []Symbol{"WLD",
+	"SNX",
+	"OP"}
 
 var baseSymbols []Symbol = []Symbol{"DAI", "ETH", "BTC", "USDC"}
 
@@ -58,7 +61,7 @@ func init() {
 	TradingPairs = map[TradingPair]bool{}
 	TokenToTradingPairs = map[Symbol][]TradingPair{}
 	// trading and base
-	for _, trading := range append(tradingSymbols, arbTradingTokens...) {
+	for _, trading := range append(tradingSymbols, append(arbTradingTokens, opTradingTokens...)...) {
 		for _, base := range baseSymbols {
 			pair := NewTradingPair(trading, base)
 			//
@@ -94,10 +97,13 @@ func init() {
 func GetArbTradingTokens() []Symbol {
 	return arbTradingTokens
 }
+func GetOptTradingTokens() []Symbol {
+	return opTradingTokens
+}
 
 func AllTradingSymbolForDBWithW() (ans []Symbol) {
 	set := map[Symbol]bool{}
-	for _, symbols := range [][]Symbol{baseSymbols, arbTradingTokens, farmedBaseSymbols, tradingSymbols} {
+	for _, symbols := range [][]Symbol{baseSymbols, arbTradingTokens, opTradingTokens, farmedBaseSymbols, tradingSymbols} {
 		for _, sym := range symbols {
 			set[sym] = true
 		}
