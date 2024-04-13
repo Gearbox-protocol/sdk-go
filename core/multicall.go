@@ -45,6 +45,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 			tmpResult, err := contract.TryAggregate(opts, successRequired, jobCalls)
 			if err != nil {
 				if strings.Contains(err.Error(), "OutOfGas") || // alchemy
+					strings.Contains(err.Error(), "out of gas") || // ankr
 					strings.Contains(err.Error(), "524: A timeout occurred") || // anvil
 					strings.Contains(err.Error(), "we can't execute this request") { // ankr
 					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize/2)
