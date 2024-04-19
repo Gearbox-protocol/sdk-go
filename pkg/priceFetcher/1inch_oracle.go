@@ -448,8 +448,8 @@ func (calc OneInchOracle) GetYearnCalls() (calls []multicall.Multicall2Call) {
 func (calc OneInchOracle) processYearnResults(results []multicall.Multicall2Result, prices map[string]*core.BigInt) {
 	for ind, entry := range results {
 		if entry.Success {
-			pricePerShare := new(big.Int).SetBytes(entry.ReturnData[:32])
 			tokenAddr := calc.symToAddr.Tokens[calc.YearnTokens[ind].Token]
+			pricePerShare := new(big.Int).SetBytes(entry.ReturnData[:32])
 			underlyingAddr := calc.symToAddr.Tokens[calc.YearnTokens[ind].Underlying]
 			price := new(big.Int).Mul(pricePerShare, prices[underlyingAddr.Hex()].Convert())
 			prices[tokenAddr.Hex()] = (*core.BigInt)(utils.GetInt64(price,

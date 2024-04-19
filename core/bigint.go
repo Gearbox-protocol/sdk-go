@@ -76,7 +76,7 @@ func SubCoreAndInt(a *BigInt, b *big.Int) *BigInt {
 	if a != nil {
 		return (*BigInt)(new(big.Int).Sub(a.Convert(), b))
 	}
-	return NewBigInt((*BigInt)(b))
+	return (*BigInt)(new(big.Int).Neg(b))
 }
 
 func (z *BigInt) Scan(value interface{}) error {
