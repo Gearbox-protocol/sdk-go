@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -84,6 +85,23 @@ func GetBaseNet(chainId int64) string {
 		net = "OPTIMISM"
 	}
 	return net
+}
+func GetNetworkToChainId(net string) int64 {
+	switch strings.ToUpper(net) {
+	case "MAINNET":
+		return 1
+	case "KOVAN":
+		return 42
+	case "GOERLI":
+		return 5
+	case "ARBITRUM":
+		return 42161
+	case "OPTIMISM":
+		return 10
+	default:
+		log.Fatal("network to chainid not found", net)
+	}
+	return 0
 }
 func GetConfigFile(chainId int64) string {
 	return strings.ToLower(GetBaseNet(chainId)) + ".jsonnet"

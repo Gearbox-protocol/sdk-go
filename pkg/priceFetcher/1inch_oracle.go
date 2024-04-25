@@ -237,7 +237,7 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 // curve dependent on base
 // const and base doesn't dependent on any token.
 func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64, ts uint64) map[string]*core.BigInt {
-	defer utils.Elapsed("GetPrices")()
+	defer utils.Elapsed(fmt.Sprintf("GetPrices for block: %d", blockNumber))()
 	if len(results) != len(calc.generatedCalls) {
 		log.Fatalf("call len %d, result len %d", len(calc.generatedCalls), len(results))
 	}

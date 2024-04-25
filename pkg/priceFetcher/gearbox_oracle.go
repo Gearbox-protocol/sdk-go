@@ -134,7 +134,7 @@ func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 }
 
 func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
-	defer utils.Elapsed("gerprice gearbo oracle")()
+	defer utils.Elapsed("getprice gearbox oracle")()
 	poABI := core.GetAbi("YearnPriceFeed")
 	prices := map[string]*big.Int{}
 	for i, entry := range results {

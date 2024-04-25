@@ -115,6 +115,9 @@ func errorHandler(err error, mc *MutextedClient) bool {
 		if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
 			log.Trace("sleeping due to ", err.Error())
 			mc.addSleepForSecs(60)
+		} else if strings.Contains(err.Error(), "not processed yet. Please try again") {
+			log.Trace("sleeping due to ", err.Error())
+			mc.addSleepForSecs(5)
 		} else if strings.HasPrefix(err.Error(), "429") { // too many request on infura
 			mc.addSleepForSecs(sleepFor429Error(err.Error()))
 		} else if strings.Contains(err.Error(), "custom rate limits that you have exceeded") { // trace_transaction on alchemy exceeded custom throughput limit
