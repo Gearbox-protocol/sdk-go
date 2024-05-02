@@ -43,7 +43,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			strings.Contains(err.Error(), core.LogFilterQueryTimeout) {
 			middle := (fromBlock + toBlock) / 2
 			if middle > fromBlock {
-				log.Fatal("middle > fromBlock", middle, fromBlock, err)
+				return nil, fmt.Errorf("middle > fromBlock %d, %d, %s", middle, fromBlock, err, addrs, topics)
 			}
 			bottomHalfLogs, err := lf.GetLogs(fromBlock, middle-1, addrs, topics)
 			if err != nil {
