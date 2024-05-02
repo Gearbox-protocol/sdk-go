@@ -537,5 +537,11 @@
       dataId: 'weETH_FUNDAMENTAL',
       signersThreshold: 5,
     },
+    rswETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'rswETH/ETH',
+      signersThreshold: 5,
+    },
   },
 }
