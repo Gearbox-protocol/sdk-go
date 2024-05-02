@@ -18,10 +18,11 @@ type RedStonePF struct {
 }
 
 type SymTOAddrStore struct {
-	Exchanges    map[string]common.Address `json:"exchanges"`
-	Tokens       map[string]common.Address `json:"tokens"`
-	FarmingPools map[string]common.Address `json:"farmingPools"`
-	RedStone     map[Symbol]RedStonePF     `json:"redStone"`
+	Exchanges         map[string]common.Address `json:"exchanges"`
+	Tokens            map[string]common.Address `json:"tokens"`
+	FarmingPools      map[string]common.Address `json:"farmingPools"`
+	RedStone          map[Symbol]RedStonePF     `json:"redStone"`
+	CompositeRedStone map[Symbol]RedStonePF     `json:"compositeRedStone"`
 }
 
 func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
@@ -51,6 +52,11 @@ func GetRedStonePFByChainId(chainId int64) map[Symbol]RedStonePF {
 	fileName := log.GetConfigFile(chainId)
 	data := getSymToAddrStore(fileName)
 	return data.RedStone
+}
+func GetCompositeRedStonePFByChainId(chainId int64) map[Symbol]RedStonePF {
+	fileName := log.GetConfigFile(chainId)
+	data := getSymToAddrStore(fileName)
+	return data.CompositeRedStone
 }
 
 func getAddrToSymbol(fileName string, opts map[string]bool) map[common.Address]Symbol {

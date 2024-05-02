@@ -523,4 +523,12 @@
       signersThreshold: 5,
     },
   },
+  compositeRedstone: {
+    weETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'weETH_FUNDAMENTAL',
+      signersThreshold: 5,
+    },
+  },
 }

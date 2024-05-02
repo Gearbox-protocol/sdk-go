@@ -16,55 +16,78 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+type redStoneDS struct {
+	data map[string]core.RedStonePF
+}
+
+func (r redStoneDS) Get(token string, composite bool) core.RedStonePF {
+	if composite {
+		return r.data["Composite"+token]
+	}
+	return r.data[token]
+}
+
 type RedStoneMgr struct {
 	chainId int64
 	//
 	lastPods       *core.MutexDS[string, *RSPriceOnDemand] // for liquidator, third-eye , gearbox
 	prices         *core.MutexDS[string, *big.Int]
-	redStoneTokens map[common.Address]core.RedStonePF
+	redStoneTokens redStoneDS
 	//
 }
 
 type RedStoneMgrI interface {
 	//
-	GetPrice(ts int64, token string) *big.Int
-	GetPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
+	GetPrice(ts int64, token string, composite bool) *big.Int
+	GetPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
 }
 
 func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 	chainId := core.GetChainId(client)
 	//
-	redStoneTokens := map[common.Address]core.RedStonePF{}
-	pfs := core.GetRedStonePFByChainId(chainId)
+	redStoneTokens := map[string]core.RedStonePF{}
 	symToAddr := core.GetSymToAddrByChainId(chainId)
-	for sym, details := range pfs {
-		address := symToAddr.Tokens[string(sym)]
-		redStoneTokens[address] = details
+	{ // redstone
+		pfs := core.GetRedStonePFByChainId(chainId)
+		for sym, details := range pfs {
+			address := symToAddr.Tokens[string(sym)].Hex()
+			redStoneTokens[address] = details
+		}
 	}
+	{ // composite redstone
+		pfs := core.GetCompositeRedStonePFByChainId(chainId)
+		for sym, details := range pfs {
+			address := symToAddr.Tokens[string(sym)].Hex()
+			redStoneTokens["Composite"+address] = details
+		}
+	}
+	//
 	return &RedStoneMgr{
-		chainId:        chainId,
-		lastPods:       core.NewMutexDS[string, *RSPriceOnDemand](),
-		prices:         core.NewMutexDS[string, *big.Int](),
-		redStoneTokens: redStoneTokens,
+		chainId:  chainId,
+		lastPods: core.NewMutexDS[string, *RSPriceOnDemand](),
+		prices:   core.NewMutexDS[string, *big.Int](),
+		redStoneTokens: redStoneDS{
+			data: redStoneTokens,
+		},
 	}
 }
 
 // token is address
-func (r *RedStoneMgr) GetPrice(ts int64, token string) *big.Int {
+func (r *RedStoneMgr) GetPrice(ts int64, token string, composite bool) *big.Int {
 	key := fmt.Sprintf("%d-%s", ts, token)
 	if price := r.prices.Get(key); price != nil {
 		return price
 	}
-	price, fromWhere := r.getHistoricPrice(ts, token)
+	price, fromWhere := r.getHistoricPrice(ts, token, composite)
 	r.prices.Set(key, price)
-	log.Infof("RedStone price at %d for %s from %s is %d", ts, r.redStoneTokens[common.HexToAddress(token)].DataId, fromWhere, price)
+	log.Infof("RedStone price at %d for %s from %s is %d", ts, r.redStoneTokens.Get(token, composite).DataId, fromWhere, price)
 	return price
 }
-func (r *RedStoneMgr) getHistoricPrice(ts int64, token string) (*big.Int, string) {
+func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (*big.Int, string) {
 
-	price := r.getAPIPrice(ts, token)
+	price := r.getAPIPrice(ts, token, composite)
 	if price.Cmp(new(big.Int)) == 0 {
-		details := r.redStoneTokens[common.HexToAddress(token)]
+		details := r.redStoneTokens.Get(token, composite)
 		ans := getHistoricPodSign(ts, details)[details.DataId]
 		if ans == nil {
 			log.Warnf("Failed to get podSign for token %s at timestamp %d", token, ts)
@@ -82,8 +105,8 @@ func tenthMillSec(ts int64) int64 {
 }
 
 // https://api.docs.redstone.finance/methods/gethistoricalprice
-func (r *RedStoneMgr) getAPIPrice(ts int64, token string) *big.Int {
-	details := r.redStoneTokens[common.HexToAddress(token)]
+func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.Int {
+	details := r.redStoneTokens.Get(token, composite)
 	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=redstone&toTimestamp=%d&limit=1", details.DataId, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err != nil || res.StatusCode/100 != 2 {
@@ -102,24 +125,24 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string) *big.Int {
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
 }
 
-func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
+func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
 	fromWhere := ""
 	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
 		// can't be ahead more than 60 seconds
-		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, balances)
+		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, composite, balances)
 	} else {
-		ans, fromWhere = r.getLatestPodSign(tokensNeeded, balances)
+		ans, fromWhere = r.getLatestPodSign(tokensNeeded, composite, balances)
 	}
 	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
 	return
 }
 
-func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "latest"
 	for _, token := range tokensNeeded {
 		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
-			details := r.redStoneTokens[token]
+			details := r.redStoneTokens.Get(token.Hex(), composite)
 			// lat response not set
 			resp := getLatestPodSign(details)
 			lastResp := resp[details.DataId].convert(token) // prod/aave/1
@@ -132,13 +155,13 @@ func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, balances c
 	return ans, fromWhere
 }
 
-func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []common.Address, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "historic"
 	for _, token := range tokensNeeded {
 		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
 			key := fmt.Sprintf("%d-%s", ts, token)
-			details := r.redStoneTokens[token]
+			details := r.redStoneTokens.Get(token.Hex(), composite)
 			//
 			lastResp := r.lastPods.Get(key)
 			if lastResp == nil { // back , ahead 30 secs
