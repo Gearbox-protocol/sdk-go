@@ -122,6 +122,9 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.I
 		log.Warnf("Failed to get historic price for token %s at timestamp %d. resbody: %s", token, ts, body)
 		return new(big.Int)
 	}
+	if len(parsedResp) == 0 {
+		log.Info("empty response from redstone api", url, token)
+	}
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
 }
 

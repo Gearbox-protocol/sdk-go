@@ -253,6 +253,7 @@
     yvSTETH: '0x15a2B3CfaFd696e1C783FE99eed168b78a3A371e',
     GMX: '0x00eee00eee00eee00eee00eee00eee00eee00eee',
     OP: '0x00fff00fff00fff00fff00fff00fff00fff00fff',
+    'weETH/ETH': '0x8C23b9E4CB9884e807294c4b4C33820333cC613c',
     'G-BLOCK': '0xf568F6C71aE0439B8d3FFD60Ceba9B1DcB5819bF',
     'G-OBS': '0x26F7D7509490B292AFBB0443A7A371d345B5f684',
     stETH: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
@@ -514,6 +515,12 @@
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'MKR',
+      signersThreshold: 5,
+    },
+    'weETH/ETH': {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'weETH_FUNDAMENTAL',
       signersThreshold: 5,
     },
     stETH: {

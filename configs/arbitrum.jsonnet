@@ -1,6 +1,7 @@
 {
   network: 'arbitrum',
   exchanges: {
+    PANCAKESWAP_V3_ROUTER: '0x1b81D678ffb9C0263b24A97847620C99d213eB14',
     CAMELOT_V3_ROUTER: '0x1F721E2E82F6676FCE4eA07A5958cF098D339e18',
     CURVE_CRVUSD_FRAX_POOL: '0x2FE7AE43591E534C256A1594D326e5779E302Ff4',
     CURVE_2CRV_POOL_ARB: '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
@@ -135,6 +136,7 @@
       USDeDAI: 2,
       MtEthena: 2,
       GHOUSDe: 2,
+      pufETHwstE: 2,
       wstETHCRV: 2,
       '2CRV': 2,
       '3c-crvUSD': 3,
@@ -316,6 +318,20 @@
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'rETH',
+      signersThreshold: 5,
+    },
+  },
+  compositeRedstone: {
+    ezETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'ezETH/ETH',
+      signersThreshold: 5,
+    },
+    rsETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'rsETH/ETH',
       signersThreshold: 5,
     },
   },
