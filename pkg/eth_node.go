@@ -42,6 +42,9 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
 			strings.Contains(err.Error(), core.LogFilterQueryTimeout) {
 			middle := (fromBlock + toBlock) / 2
+			if middle > fromBlock {
+				log.Fatal("middle > fromBlock", middle, fromBlock, err)
+			}
 			bottomHalfLogs, err := lf.GetLogs(fromBlock, middle-1, addrs, topics)
 			if err != nil {
 				return []types.Log{}, err
