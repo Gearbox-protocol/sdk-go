@@ -536,12 +536,7 @@
       dataServiceId: 'redstone-primary-prod',
       dataId: 'weETH_FUNDAMENTAL',
       signersThreshold: 5,
-    },
-    rswETH: {
-      type: 15,
-      dataServiceId: 'redstone-primary-prod',
-      dataId: 'rswETH/ETH',
-      signersThreshold: 5,
+      token: '0x8C23b9E4CB9884e807294c4b4C33820333cC613c',
     },
   },
 }

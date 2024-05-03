@@ -91,7 +91,6 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 				}
 			}
-			log.Info("here", "done")
 		}
 		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
 	}

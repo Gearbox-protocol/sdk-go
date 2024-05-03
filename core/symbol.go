@@ -11,10 +11,11 @@ import (
 type Symbol string
 
 type RedStonePF struct {
-	Type             int    `json:"type"`
-	DataServiceId    string `json:"dataServiceId"`
-	DataId           string `json:"dataId"`
-	SignersThreshold int    `json:"signersThreshold"`
+	Type             int            `json:"type"`
+	DataServiceId    string         `json:"dataServiceId"`
+	DataId           string         `json:"dataId"`
+	SignersThreshold int            `json:"signersThreshold"`
+	UnderlyingToken  common.Address `json:"token"`
 }
 
 type SymTOAddrStore struct {

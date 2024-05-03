@@ -59,8 +59,9 @@ func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 	{ // redstone
 		pfs := core.GetRedStonePFByChainId(chainId)
 		for sym, details := range pfs {
-			address := symToAddr.Tokens[string(sym)].Hex()
-			redStoneTokens[address] = details
+			address := symToAddr.Tokens[string(sym)]
+			details.UnderlyingToken = address
+			redStoneTokens[address.Hex()] = details
 		}
 	}
 	{ // composite redstone
@@ -103,7 +104,7 @@ func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (
 			return new(big.Int), "pod"
 		} else {
 			log.Info(ans.Timestamp)
-			return ans.convert(common.HexToAddress(token)).PriceBI, "pod"
+			return ans.convert(details.UnderlyingToken).PriceBI, "pod"
 		}
 	}
 	return price, "api"
@@ -157,7 +158,7 @@ func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []TokenAndFeedType, balances
 			details := r.redStoneTokens.Get(token.Token.Hex(), token.IsComposite())
 			// lat response not set
 			resp := getLatestPodSign(details)
-			lastResp := resp[details.DataId].convert(token.Token) // prod/aave/1
+			lastResp := resp[details.DataId].convert(details.UnderlyingToken) // prod/aave/1
 			if lastResp != nil {
 				ans = append(ans, lastResp.pod)
 				fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
@@ -178,8 +179,8 @@ func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []TokenAndFeedTy
 			lastResp := r.lastPods.Get(key)
 			if lastResp == nil { // back , ahead 30 secs
 				resp := getHistoricPodSign(ts, details)
-				r.lastPods.Set(key, resp[details.DataId].convert(token.Token)) // prod/aave/1
-				lastResp = resp[details.DataId].convert(token.Token)
+				r.lastPods.Set(key, resp[details.DataId].convert(details.UnderlyingToken)) // prod/aave/1
+				lastResp = resp[details.DataId].convert(details.UnderlyingToken)
 			} else {
 				fromWhere = "historic-stored"
 			}
