@@ -17,9 +17,9 @@ type typeAndBlock struct {
 }
 type GearboxOraclev3 struct {
 	GearboxOracle
-	tokenToReserve            map[string]reserveUsage
-	compositefeedToPriceFeed0 map[common.Address]common.Address
-	tokenToType               map[common.Address]map[bool][]typeAndBlock
+	tokenToReserve                 map[string]reserveUsage
+	compositefeedToUnderlyingFeeds map[string]common.Address
+	tokenToType                    map[common.Address]map[bool][]typeAndBlock
 }
 
 type reserveUsage struct {
@@ -42,9 +42,9 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			},
 			version: version,
 		},
-		tokenToReserve:            map[string]reserveUsage{},
-		tokenToType:               map[common.Address]map[bool][]typeAndBlock{},
-		compositefeedToPriceFeed0: map[common.Address]common.Address{},
+		tokenToReserve:                 map[string]reserveUsage{},
+		tokenToType:                    map[common.Address]map[bool][]typeAndBlock{},
+		compositefeedToUnderlyingFeeds: map[string]common.Address{},
 	}
 	return po
 }
@@ -61,10 +61,17 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 			BlockNum: blockNum,
 		}
 		if pfType == core.V3_COMPOSITE_ORACLE {
-			priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "385aee1b", feed, blockNum, []byte{}) // priceFeedType
-			log.CheckFatal(err)
-			pf0 := common.BytesToAddress(priceFeed0)
-			pOracle.compositefeedToPriceFeed0[feed] = pf0
+			fn := func(sig string) common.Address {
+				priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, sig, feed, blockNum, []byte{}) // priceFeedType
+				log.CheckFatal(err)
+				return common.BytesToAddress(priceFeed0)
+			}
+			//
+			pf0 := fn("385aee1b")
+			pf1 := fn("ab0ca0e1")
+			pOracle.compositefeedToUnderlyingFeeds[feed.Hex()+"pf0"] = pf0
+			pOracle.compositefeedToUnderlyingFeeds[feed.Hex()+"pf1"] = pf1
+			//
 			pf0Type, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", pf0, blockNum, []byte{})
 			if err == nil {
 				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
@@ -76,8 +83,12 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 	}
 }
 
-func (pOracle GearboxOraclev3) GetPriceFeed0(compfeed common.Address) common.Address {
-	return pOracle.compositefeedToPriceFeed0[compfeed]
+func (pOracle GearboxOraclev3) GetUnderlyingPF(compfeed common.Address, pf0 bool) common.Address {
+	if pf0 {
+		return pOracle.compositefeedToUnderlyingFeeds[compfeed.Hex()+"pf0"]
+	} else {
+		return pOracle.compositefeedToUnderlyingFeeds[compfeed.Hex()+"pf1"]
+	}
 }
 
 // gets all the prie feeds add events
