@@ -56,15 +56,23 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 			pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
 		}
 		pfType := int(new(big.Int).SetBytes(typeData).Int64())
-		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], typeAndBlock{
+		obj := typeAndBlock{
 			Type:     pfType,
 			BlockNum: blockNum,
-		})
+		}
 		if pfType == core.V3_COMPOSITE_ORACLE {
 			priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "385aee1b", feed, blockNum, []byte{}) // priceFeedType
 			log.CheckFatal(err)
-			pOracle.compositefeedToPriceFeed0[feed] = common.BytesToAddress(priceFeed0)
+			pf0 := common.BytesToAddress(priceFeed0)
+			pOracle.compositefeedToPriceFeed0[feed] = pf0
+			pf0Type, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", pf0, blockNum, []byte{})
+			if err == nil {
+				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
+					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
+				}
+			}
 		}
+		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
 	}
 }
 
@@ -101,9 +109,9 @@ func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ..
 	return typeAndBlocks[l-1]
 }
 
-func (pOracle GearboxOraclev3) IsRedStoneToken(token common.Address, blockNum ...int64) bool {
+func (pOracle GearboxOraclev3) GetPFType(token common.Address, blockNum ...int64) int {
 	data := pOracle.getTypeAndBlock(token, blockNum...)
-	return data.Type == core.V3_REDSTONE_ORACLE
+	return data.Type
 }
 
 func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
@@ -122,7 +130,7 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
 		pOracle.addtokenToType(blockNum, feed, token, true)
 		pOracle.tokenToReserve[token.Hex()] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token.Hex()].use}
-	case pOracle.topics[2]:
+	case pOracle.topics[2]: // change from reserve to main feed, vice verse
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		pOracle.tokenToReserve[token] = reserveUsage{feed: pOracle.tokenToReserve[token].feed, use: txLog.Topics[2][:][63] == 1}
 	}

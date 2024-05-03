@@ -31,7 +31,7 @@ type GearboxOracleI interface {
 	//
 	GetPriceFeed0(compfeed common.Address) common.Address
 	//
-	IsRedStoneToken(token common.Address, blockNum ...int64) bool
+	GetPFType(token common.Address, blockNum ...int64) int
 }
 
 type GearboxOracle struct {
@@ -66,8 +66,8 @@ func (pOracle GearboxOracle) GetTopics() []common.Hash {
 	return pOracle.topics
 }
 
-func (pOracle GearboxOracle) IsRedStoneToken(token common.Address, blockNum ...int64) bool {
-	return false
+func (pOracle GearboxOracle) GetPFType(token common.Address, blockNum ...int64) int {
+	return core.V3_BACKEND_GENERAL_ORACLE
 }
 
 func (pOracle GearboxOracle) GetAddress() common.Address {

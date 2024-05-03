@@ -36,10 +36,19 @@ type RedStoneMgr struct {
 	//
 }
 
+type TokenAndFeedType struct {
+	Token  common.Address
+	PFType int
+}
+
+func (obj TokenAndFeedType) IsComposite() bool {
+	return obj.PFType == core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
+}
+
 type RedStoneMgrI interface {
 	//
 	GetPrice(ts int64, token string, composite bool) *big.Int
-	GetPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
+	GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
 }
 
 func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
@@ -128,27 +137,27 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.I
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
 }
 
-func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
+func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
 	fromWhere := ""
 	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
 		// can't be ahead more than 60 seconds
-		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, composite, balances)
+		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, balances)
 	} else {
-		ans, fromWhere = r.getLatestPodSign(tokensNeeded, composite, balances)
+		ans, fromWhere = r.getLatestPodSign(tokensNeeded, balances)
 	}
 	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
 	return
 }
 
-func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "latest"
 	for _, token := range tokensNeeded {
-		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
-			details := r.redStoneTokens.Get(token.Hex(), composite)
+		if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
+			details := r.redStoneTokens.Get(token.Token.Hex(), token.IsComposite())
 			// lat response not set
 			resp := getLatestPodSign(details)
-			lastResp := resp[details.DataId].convert(token) // prod/aave/1
+			lastResp := resp[details.DataId].convert(token.Token) // prod/aave/1
 			if lastResp != nil {
 				ans = append(ans, lastResp.pod)
 				fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
@@ -158,19 +167,19 @@ func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []common.Address, composite 
 	return ans, fromWhere
 }
 
-func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []common.Address, composite bool, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "historic"
 	for _, token := range tokensNeeded {
-		if balances[token.Hex()].IsEnabled && balances[token.Hex()].HasBalanceMoreThanOne() {
-			key := fmt.Sprintf("%d-%s", ts, token)
-			details := r.redStoneTokens.Get(token.Hex(), composite)
+		if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
+			key := fmt.Sprintf("%d-%s", ts, token.Token)
+			details := r.redStoneTokens.Get(token.Token.Hex(), token.IsComposite())
 			//
 			lastResp := r.lastPods.Get(key)
 			if lastResp == nil { // back , ahead 30 secs
 				resp := getHistoricPodSign(ts, details)
-				r.lastPods.Set(key, resp[details.DataId].convert(token)) // prod/aave/1
-				lastResp = resp[details.DataId].convert(token)
+				r.lastPods.Set(key, resp[details.DataId].convert(token.Token)) // prod/aave/1
+				lastResp = resp[details.DataId].convert(token.Token)
 			} else {
 				fromWhere = "historic-stored"
 			}
