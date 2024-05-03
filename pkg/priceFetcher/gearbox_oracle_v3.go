@@ -15,11 +15,17 @@ type typeAndBlock struct {
 	Type     int
 	BlockNum int64
 }
+
+type _d struct {
+	PF0      common.Address
+	PF1      common.Address
+	Decimals int8
+}
 type GearboxOraclev3 struct {
 	GearboxOracle
-	tokenToReserve                 map[string]reserveUsage
-	compositefeedToUnderlyingFeeds map[string]common.Address
-	tokenToType                    map[common.Address]map[bool][]typeAndBlock
+	tokenToReserve       map[string]reserveUsage
+	compositefeedDetails map[common.Address]_d
+	tokenToType          map[common.Address]map[bool][]typeAndBlock
 }
 
 type reserveUsage struct {
@@ -42,9 +48,9 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			},
 			version: version,
 		},
-		tokenToReserve:                 map[string]reserveUsage{},
-		tokenToType:                    map[common.Address]map[bool][]typeAndBlock{},
-		compositefeedToUnderlyingFeeds: map[string]common.Address{},
+		tokenToReserve:       map[string]reserveUsage{},
+		tokenToType:          map[common.Address]map[bool][]typeAndBlock{},
+		compositefeedDetails: map[common.Address]_d{},
 	}
 	return po
 }
@@ -69,8 +75,15 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 			//
 			pf0 := fn("385aee1b")
 			pf1 := fn("ab0ca0e1")
-			pOracle.compositefeedToUnderlyingFeeds[feed.Hex()+"pf0"] = pf0
-			pOracle.compositefeedToUnderlyingFeeds[feed.Hex()+"pf1"] = pf1
+			pOracle.compositefeedDetails[feed] = _d{
+				PF0: pf0,
+				PF1: pf1,
+				Decimals: func() int8 {
+					decimals, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "313ce567", feed, blockNum, []byte{})
+					log.CheckFatal(err)
+					return int8(new(big.Int).SetBytes(decimals).Int64())
+				}(),
+			}
 			//
 			pf0Type, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", pf0, blockNum, []byte{})
 			if err == nil {
@@ -78,17 +91,14 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 				}
 			}
+			log.Info("here", "done")
 		}
 		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
 	}
 }
 
-func (pOracle GearboxOraclev3) GetUnderlyingPF(compfeed common.Address, pf0 bool) common.Address {
-	if pf0 {
-		return pOracle.compositefeedToUnderlyingFeeds[compfeed.Hex()+"pf0"]
-	} else {
-		return pOracle.compositefeedToUnderlyingFeeds[compfeed.Hex()+"pf1"]
-	}
+func (pOracle GearboxOraclev3) GetCompositeFeedDetails(compfeed common.Address) _d {
+	return pOracle.compositefeedDetails[compfeed]
 }
 
 // gets all the prie feeds add events

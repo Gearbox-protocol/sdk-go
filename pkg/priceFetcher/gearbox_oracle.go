@@ -29,7 +29,7 @@ type GearboxOracleI interface {
 	GetPrices(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
 	GetFeed(token string) common.Address
 	//
-	GetUnderlyingPF(compfeed common.Address, pf0 bool) common.Address
+	GetCompositeFeedDetails(compfeed common.Address) _d
 	//
 	GetPFType(token common.Address, blockNum ...int64) int
 }
@@ -45,8 +45,8 @@ type GearboxOracle struct {
 	//
 }
 
-func (pOracle *GearboxOracle) GetUnderlyingPF(compfeed common.Address, _ bool) common.Address {
-	return core.NULL_ADDR
+func (pOracle *GearboxOracle) GetCompositeFeedDetails(compfeed common.Address) _d {
+	return _d{}
 }
 
 func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
