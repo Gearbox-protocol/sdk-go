@@ -62,11 +62,11 @@ type Calculator struct {
 
 func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	poolDetails PoolForCalcI,
-	account AccountForCalcI, feeInterest uint16,
+	account AccountForCalcI, feeInterest uint16, failure bool,
 ) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	pfVersion := schemas.VersionToPFVersion(account.GetVersion(), false)
 	if pfVersion.ToVersion().Eq(300) {
-		return c.CalcAccountFieldsv3(pfVersion, ts, blockNum, poolDetails, account, feeInterest)
+		return c.CalcAccountFieldsv3(pfVersion, ts, blockNum, poolDetails, account, feeInterest, failure)
 	}
 
 	// logic for v1 and v2

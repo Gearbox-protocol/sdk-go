@@ -110,6 +110,7 @@ func TestCalcFields(t *testing.T) {
 		input.PoolDetails,
 		input.Account,
 		input.FeeInterest,
+		true,
 	)
 	if calHF.Cmp(utils.StringToInt("13225")) != 0 {
 		t.Fatalf("calculated HF(%d) is wrong", calHF)
@@ -141,6 +142,7 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 		//
 		input.Account,
 		input.FeeInterest,
+		true,
 	)
 	if calHF.Cmp(utils.StringToInt("2725195")) != 0 {
 		t.Fatalf("calculated HF(%d) is wrong", calHF)

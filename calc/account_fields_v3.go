@@ -31,10 +31,10 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // - whenever there is updateQuota, cumulative quota intereest and fees are stored in creditManager and cumulativeQuotaIndex for account is updated.
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
-func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
+func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16, failure bool) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	defer func() {
 		err := recover()
-		if err != nil {
+		if err != nil && failure {
 			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 		}
 	}()

@@ -24,10 +24,12 @@ import (
 
 // Client defines typed wrappers for the Ethereum RPC API.
 type Client struct {
-	clients     []*MutextedClient
-	chainId     int64
-	url         string
-	noOfCalls   *atomic.Int32
+	clients []*MutextedClient
+	// this is 1, 42161 etc.
+	chainId   int64
+	url       string
+	noOfCalls *atomic.Int32
+	// this is the testnet id like 7878,7880
 	flagChainId int64
 }
 
@@ -188,6 +190,7 @@ func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient
 	return muclient, startClientId
 }
 
+// this i 1, 42161 etc. flag is underlying id and test /chainid is the testnet id like 7878,7880
 func (rc *Client) FlagChainID(ctx context.Context) (*big.Int, error) {
 	if rc.flagChainId == 0 {
 		if _, err := rc.ChainID(ctx); err != nil {
