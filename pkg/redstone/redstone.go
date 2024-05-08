@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
@@ -139,6 +140,12 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.I
 }
 
 func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
+	defer func() {
+		if err := recover(); err != nil {
+			debug.PrintStack()
+			log.Error(err)
+		}
+	}()
 	fromWhere := ""
 	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
 		// can't be ahead more than 60 seconds
