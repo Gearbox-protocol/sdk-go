@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"time"
 
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -60,12 +61,20 @@ func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RS
 func getpodSign(url string, dataId string) map[string]*RSPriceOnDemandObj {
 	res, err := http.Get(url)
 	log.Debug("Getting priceOnDemand", url)
-	if err != nil || res.StatusCode/100 != 2 {
+	if err != nil {
+		time.Sleep(10 * time.Second)
+		secondTryResp := getpodSign(url, dataId)
+		if secondTryResp == nil {
+			log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, err)
+		}
+		return secondTryResp
+	}
+	if res.StatusCode/100 != 2 {
 		respStr := ""
 		if res.Body != nil {
 			_, respStr = ReadBuffer(res.Body)
 		}
-		log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, err, respStr)
+		log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, respStr)
 		return nil
 	}
 	data := map[string]*RSPriceOnDemandObj{}
