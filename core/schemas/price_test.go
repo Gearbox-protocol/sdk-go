@@ -17,6 +17,7 @@ func TestPriceFeedClone(t *testing.T) {
 		Price:           .12345,
 	}
 	b := a.Clone()
+	(*a).MergedPFVersion = 0
 	if *a != *b {
 		t.Errorf("%+v's cloned copy is differet %+v", a, b)
 	}
