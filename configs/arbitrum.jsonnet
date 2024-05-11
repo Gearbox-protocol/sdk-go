@@ -325,8 +325,9 @@
     ezETH: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
-      dataId: 'ezETH/ETH',
+      dataId: 'ezETH_FUNDAMENTAL',
       signersThreshold: 5,
+      token: '0x07299E4E806e4253727084c0493fFDf6fB2dBa3D',
     },
     rsETH: {
       type: 15,

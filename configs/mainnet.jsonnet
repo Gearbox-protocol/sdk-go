@@ -538,5 +538,33 @@
       signersThreshold: 5,
       token: '0x8C23b9E4CB9884e807294c4b4C33820333cC613c',
     },
+    ezETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'ezETH_FUNDAMENTAL',
+      signersThreshold: 5,
+      token: '0xFb56Fb16B4F33A875b01881Da7458E09D286208e',
+    },
+    rswETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'rswETH_FUNDAMENTAL',
+      signersThreshold: 5,
+      token: '0x7fF63E75F48aad6F4bE97E75C6421f348f19fE7F',
+    },
+    pufETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'pufETH_FUNDAMENTAL',
+      signersThreshold: 5,
+      token: '0xBdb778F566b6cEd70D3d329DD1D14E221fFe1ba5',
+    },
+    rsETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'rsETH_FUNDAMENTAL',
+      signersThreshold: 5,
+      token: '0xf08D818be34C82cB5e3f33AC78F8268828764F17',
+    },
   },
 }
