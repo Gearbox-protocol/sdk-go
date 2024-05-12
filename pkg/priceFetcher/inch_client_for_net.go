@@ -79,8 +79,8 @@ func _getClient(url string) core.ClientI {
 // arbitrum
 // arbitrum
 func (calc OneInchOracle) arbForMainnet(mainnetTs uint64, prices map[string]*core.BigInt) {
-	defer utils.Elapsed("arbitrum price fetch")()
 	if calc.extraurls.arbclient != nil {
+		defer utils.Elapsed("arbitrum price fetch")()
 		calls := calc.GetArbBaseCalls()
 		results := core.MakeMultiCall(calc.extraurls.arbclient, getArbBlockNum(mainnetTs), false, calls)
 		calc.processSeparateBaseResults(results, prices, calc.ArbBaseTokens)
@@ -123,8 +123,8 @@ func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
 // optimism
 // optimism
 func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*core.BigInt) {
-	defer utils.Elapsed("optimism price fetch")()
 	if calc.extraurls.optclient != nil {
+		defer utils.Elapsed("optimism price fetch")()
 		calls := calc.GetOptBaseCalls()
 		optblock := getOptBlockNum(mainnetTs)
 		if optblock == 0 {
