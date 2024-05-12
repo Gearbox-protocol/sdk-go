@@ -57,11 +57,11 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 }
 
 func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, token common.Address, reserve bool) {
+	if pOracle.tokenToType[token] == nil {
+		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
+	}
 	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
 	if err == nil {
-		if pOracle.tokenToType[token] == nil {
-			pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
-		}
 		pfType := int(new(big.Int).SetBytes(typeData).Int64())
 		obj := typeAndBlock{
 			Type:     pfType,
@@ -95,6 +95,12 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 			}
 		}
 		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
+	} else {
+		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], typeAndBlock{
+			Type:     core.V3_CHAINLINK_ORACLE,
+			BlockNum: blockNum,
+			Feed:     feed,
+		})
 	}
 }
 
