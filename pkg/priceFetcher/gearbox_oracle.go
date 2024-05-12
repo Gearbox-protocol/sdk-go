@@ -32,6 +32,7 @@ type GearboxOracleI interface {
 	GetCompositeFeedDetails(compfeed common.Address) _d
 	//
 	GetPFType(token common.Address, blockNum ...int64) int
+	GetFeedForBlock(token common.Address, blockNum int64) common.Address
 }
 
 type GearboxOracle struct {
@@ -104,6 +105,10 @@ func (pOracle *GearboxOracle) OnLog(txLog types.Log) bool {
 		return true
 	}
 	return false
+}
+
+func (pOracle GearboxOracle) GetFeedForBlock(token common.Address, blockNum int64) common.Address {
+	return core.NULL_ADDR
 }
 
 func (pOracle *GearboxOracle) GetTokens() []string {

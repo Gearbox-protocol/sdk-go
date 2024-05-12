@@ -14,6 +14,7 @@ import (
 type typeAndBlock struct {
 	Type     int
 	BlockNum int64
+	Feed     common.Address
 }
 
 type _d struct {
@@ -65,6 +66,7 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 		obj := typeAndBlock{
 			Type:     pfType,
 			BlockNum: blockNum,
+			Feed:     feed,
 		}
 		if pfType == core.V3_COMPOSITE_ORACLE {
 			fn := func(sig string) common.Address {
@@ -79,7 +81,7 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 				PF0: pf0,
 				PF1: pf1,
 				Decimals: func() int8 {
-					decimals, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "313ce567", feed, blockNum, []byte{})
+					decimals, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "313ce567", pf0, blockNum, []byte{})
 					log.CheckFatal(err)
 					return int8(new(big.Int).SetBytes(decimals).Int64())
 				}(),
@@ -115,16 +117,16 @@ func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ..
 	reserve := pOracle.tokenToReserve[token.Hex()].use
 	typeAndBlocks := pOracle.tokenToType[token][reserve]
 	l := len(typeAndBlocks)
-	if len(blockNum) > 0 {
+	if l == 0 {
+		// log.Warnf("getTypeAndBlock: token %s has no typeAndBlocks: %+v", token.Hex(), blockNum)
+		return typeAndBlock{}
+	}
+	if len(blockNum) > 0 && blockNum[0] != 0 {
 		for i := l - 1; i >= 0; i-- {
 			if typeAndBlocks[i].BlockNum <= blockNum[0] {
 				return typeAndBlocks[i]
 			}
 		}
-	}
-	if l == 0 {
-		// log.Warnf("getTypeAndBlock: token %s has no typeAndBlocks: %+v", token.Hex(), blockNum)
-		return typeAndBlock{}
 	}
 	return typeAndBlocks[l-1]
 }
@@ -132,6 +134,10 @@ func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ..
 func (pOracle GearboxOraclev3) GetPFType(token common.Address, blockNum ...int64) int {
 	data := pOracle.getTypeAndBlock(token, blockNum...)
 	return data.Type
+}
+func (pOracle GearboxOraclev3) GetFeedForBlock(token common.Address, blockNum int64) common.Address {
+	data := pOracle.getTypeAndBlock(token, blockNum)
+	return data.Feed
 }
 
 func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
