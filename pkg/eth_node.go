@@ -106,8 +106,15 @@ func (lf Node) GasPrice(txHash common.Hash, baseFee *big.Int) *big.Int {
 	if pending {
 		log.Fatalf("Tx is pending, something not right %s", txHash.Hex())
 	}
-	if tx.Type() == 2 {
-		return new(big.Int).Add(tx.GasTipCap(), baseFee)
+	if tx.Type() == 2 { // types/t_dynamic_fee.go:110(effectiveGasPrice)
+		if baseFee == nil {
+			return tx.GasFeeCap()
+		}
+		tip := new(big.Int).Sub(tx.GasFeeCap(), baseFee)
+		if tip.Cmp(tx.GasTipCap()) > 0 {
+			tip.Set(tx.GasTipCap())
+		}
+		return tip.Add(tip, baseFee)
 	} else {
 		return tx.GasPrice()
 	}
