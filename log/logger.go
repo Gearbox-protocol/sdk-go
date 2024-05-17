@@ -22,19 +22,19 @@ func printf(severity LEVEL, msg string, args ...interface{}) string {
 	if severity < logLevel {
 		return ""
 	}
-	_log := fmt.Sprintf(severityFormat(toString(severity))+DetectFuncAtStackN(3)+msg, args...)
+	_log := fmt.Sprintf(severityFormat(severity.ToString())+DetectFuncAtStackN(3)+msg, args...)
 	if testLogModule == nil {
 		log.Println(_log)
 	} else {
 		testLogModule.Log(_log)
 	}
-	return fmt.Sprintf(severityFormat(toString(severity))+msg, args...)
+	return fmt.Sprintf(severityFormat(severity.ToString())+msg, args...)
 }
 func println(severity LEVEL, args ...interface{}) string {
 	if severity < logLevel {
 		return ""
 	}
-	return printlnStr(toString(severity), 4, args...)
+	return printlnStr(severity.ToString(), 4, args...)
 }
 func printlnStr(severity string, depth int, args ...interface{}) string {
 	_log := severityFormat(severity) + DetectFuncAtStackN(depth) + fmt.Sprintln(args...)
@@ -67,7 +67,7 @@ func TraceAtN(depth int, args ...interface{}) {
 	if TRACE < logLevel {
 		return
 	}
-	printlnStr(toString(TRACE), depth, args...)
+	printlnStr(TRACE.ToString(), depth, args...)
 }
 func Debugf(msg string, args ...interface{}) {
 	printf(DEBUG, msg, args...)

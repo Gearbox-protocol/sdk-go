@@ -18,7 +18,7 @@ const (
 	AMQP
 )
 
-func toString(lvl LEVEL) string {
+func (lvl LEVEL) ToString() string {
 	switch lvl {
 	case TRACE:
 		return "TRACE"
