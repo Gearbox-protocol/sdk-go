@@ -75,7 +75,7 @@ func SendRiskAlert(event RiskAlert) {
 		RiskAlert:     event,
 		LoggingConfig: _logConfig,
 	})
-	send(true, _log)
+	send(_log, AMQP, true)
 }
 
 func postReqToRisk(alert riskMsgFullScheme) {

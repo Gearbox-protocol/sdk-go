@@ -49,7 +49,7 @@ func setChannel() {
 	_amqpChannel = ch
 }
 
-func send(important bool, message string) {
+func send(message string, alertType LEVEL, important ...bool) {
 	if _amqpChannel == nil {
 		return
 	}
@@ -66,8 +66,13 @@ func send(important bool, message string) {
 			amqp.Publishing{
 				ContentType: "text/plain",
 				Body:        []byte(message),
-				Headers:     amqp.Table{"important": important},
-				AppId:       _logConfig.App,
+				Headers: amqp.Table{"important": func() bool {
+					if len(important) == 0 {
+						return false
+					}
+					return important[0]
+				}(), "type": int(alertType)},
+				AppId: _logConfig.App,
 				// UserId:      _logConfig.Instance,
 			})
 		if err != nil {

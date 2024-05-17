@@ -78,13 +78,13 @@ func Debug(args ...interface{}) {
 
 func Warnf(msg string, args ...interface{}) {
 	if _log := printf(WARN, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, WARN)
 	}
 }
 
 func Warn(args ...interface{}) {
 	if _log := println(WARN, args...); _log != "" {
-		send(false, _log)
+		send(_log, WARN)
 	}
 }
 
@@ -108,20 +108,20 @@ func InfoStackN(n int, v ...interface{}) {
 
 func Errorf(msg string, args ...interface{}) {
 	if _log := printf(ERROR, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, ERROR)
 	}
 }
 
 func Error(args ...interface{}) {
 	if _log := println(ERROR, args...); _log != "" {
-		send(false, _log)
+		send(_log, ERROR)
 	}
 }
 
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
 	if _log := printf(FATAL, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, FATAL)
 	}
 	os.Exit(1)
 }
@@ -129,7 +129,7 @@ func Fatalf(msg string, args ...interface{}) {
 func Fatal(args ...interface{}) {
 	debug.PrintStack()
 	if _log := println(FATAL, args...); _log != "" {
-		send(false, _log)
+		send(_log, FATAL)
 	}
 	os.Exit(1)
 }
@@ -143,19 +143,19 @@ func CheckFatal(err error) {
 		} else {
 			testLogModule.Log(msg)
 		}
-		send(false, msg)
+		send(msg, FATAL)
 		os.Exit(1)
 	}
 }
 
 func AMQPMsgf(msg string, args ...interface{}) {
 	_log := printf(AMQP, msg, args...)
-	send(false, _log)
+	send(_log, AMQP)
 }
 
 func AMQPMsg(args ...interface{}) {
 	_log := println(AMQP, args...)
-	send(false, _log)
+	send(_log, AMQP)
 }
 
 // //
