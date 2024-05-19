@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
+	"strconv"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
@@ -79,4 +81,28 @@ func SetJson(byteValue []byte, data interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func InterfaceToInt(v interface{}) (int64, error) {
+	switch ans := v.(type) {
+	case string:
+		num, err := strconv.ParseInt(ans, 10, 64)
+		if err != nil {
+			return 0, fmt.Errorf("err(%v) while converting %s to int", err, ans)
+		}
+		return num, nil
+	case int64, int, int32, int16:
+		return reflect.ValueOf(ans).Int(), nil
+	case float64:
+		return int64(ans), nil
+	case json.Number:
+		num, err := ans.Int64()
+		if err != nil {
+			f, err := ans.Float64()
+			return int64(f), err
+		}
+		return num, err
+	default:
+		return 0, fmt.Errorf("can't convert %v to int", v)
+	}
 }
