@@ -157,11 +157,11 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 	url := "https://%s/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
 	var suffix string
 	switch log.GetBaseNet(chainId) {
-	case "MAINNET":
+	case log.MAINNET:
 		suffix = "api.etherscan.io"
-	case "ARBITRUM":
+	case log.ARBITRUM:
 		suffix = "api.arbiscan.io"
-	case "OPTIMISM":
+	case log.OPTIMISM:
 		suffix = "api-optimistic.etherscan.io"
 	}
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
@@ -187,11 +187,11 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 func MoralisGetBlockNumForTs(chainId int64, ts int64) (int64, error) {
 	var chain string
 	switch log.GetBaseNet(chainId) {
-	case "MAINNET":
+	case log.MAINNET:
 		chain = "eth"
-	case "ARBITRUM":
+	case log.ARBITRUM:
 		chain = "arbitrum"
-	case "OPTIMISM":
+	case log.OPTIMISM:
 		chain = "optimism"
 	}
 	url := "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=%s&date=%d"

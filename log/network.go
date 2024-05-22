@@ -49,54 +49,66 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 	return NetworkUI{}
 }
 
-func GetNetworkName(chainId int64) (name string) {
+type NETWORK string
+
+var KOVAN NETWORK = "KOVAN"
+var GOERLI NETWORK = "GOERLI"
+var MAINNET NETWORK = "MAINNET"
+var TEST NETWORK = "TEST"
+var ANVIL NETWORK = "ANVIL"
+var ARBITRUM NETWORK = "ARBITRUM"
+var ARBTEST NETWORK = "ARBTEST"
+var OPTIMISM NETWORK = "OPTIMISM"
+var OPTTEST NETWORK = "OPTTEST"
+
+func GetNetworkName(chainId int64) (name NETWORK) {
 	switch chainId {
 	case 42:
-		name = "KOVAN"
+		name = KOVAN
 	case 5:
-		name = "GOERLI"
+		name = GOERLI
 	case 1:
-		name = "MAINNET"
+		name = MAINNET
 	case 1337:
-		name = "TEST"
+		name = TEST
 	case 7878:
-		name = "ANVIL"
+		name = ANVIL
 	case 42161:
-		name = "ARBITRUM"
+		name = ARBITRUM
 	case 7880:
-		name = "ARBTEST"
+		name = ARBTEST
 	case 10:
-		name = "OPTIMISM"
+		name = OPTIMISM
 	case 7879:
-		name = "OPTTEST"
+		name = OPTTEST
 	}
 	return
 }
 
-func GetBaseNet(chainId int64) string {
+func GetBaseNet(chainId int64) NETWORK {
 	net := GetNetworkName(chainId)
-	if net == "ANVIL" {
-		net = "MAINNET"
-	} else if net == "ARBTEST" {
-		net = "ARBITRUM"
-	} else if net == "TEST" {
-		net = "MAINNET"
-	} else if net == "OPTTEST" {
-		net = "OPTIMISM"
+	if net == ANVIL {
+		net = MAINNET
+	} else if net == ARBTEST {
+		net = ARBITRUM
+	} else if net == TEST {
+		net = MAINNET
+	} else if net == OPTTEST {
+		net = OPTIMISM
 	}
 	return net
 }
-func GetNetworkToChainId(net string) int64 {
-	switch strings.ToUpper(net) {
-	case "MAINNET":
+func GetNetworkToChainId(net NETWORK) int64 {
+	switch net {
+	case MAINNET:
 		return 1
-	case "KOVAN":
+	case KOVAN:
 		return 42
-	case "GOERLI":
+	case GOERLI:
 		return 5
-	case "ARBITRUM":
+	case ARBITRUM:
 		return 42161
-	case "OPTIMISM":
+	case OPTIMISM:
 		return 10
 	default:
 		log.Fatal("network to chainid not found", net)
@@ -104,5 +116,5 @@ func GetNetworkToChainId(net string) int64 {
 	return 0
 }
 func GetConfigFile(chainId int64) string {
-	return strings.ToLower(GetBaseNet(chainId)) + ".jsonnet"
+	return strings.ToLower(string(GetBaseNet(chainId))) + ".jsonnet"
 }

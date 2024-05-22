@@ -16,16 +16,16 @@ type prefixs struct {
 	alchemy string
 }
 
-func rpcRrefixForDifferentProviders(network string) prefixs {
+func rpcRrefixForDifferentProviders(network log.NETWORK) prefixs {
 	var infura, alchemy string
 	switch network {
-	case "ARBITRUM":
+	case log.ARBITRUM:
 		infura = "https://arbitrum-mainnet.infura.io"
 		alchemy = "arb-mainnet"
-	case "OPTIMISM":
+	case log.OPTIMISM:
 		infura = "https://optimism-mainnet.infura.io"
 		alchemy = "opt-mainnet"
-	case "MAINNET":
+	case log.MAINNET:
 		infura = "https://mainnet.infura.io"
 		alchemy = "eth-mainnet"
 	}
@@ -38,7 +38,7 @@ func rpcRrefixForDifferentProviders(network string) prefixs {
 	}
 }
 
-func getNetworkClient(urls string, toNetwork string) core.ClientI {
+func GetNetworkClient(urls string, toNetwork log.NETWORK) core.ClientI {
 	newUrls := []string{}
 	toPrefixes := rpcRrefixForDifferentProviders(toNetwork)
 	for _, url := range strings.Split(urls, ",") {
@@ -48,7 +48,7 @@ func getNetworkClient(urls string, toNetwork string) core.ClientI {
 			continue
 		}
 		// getNewClient
-		for _, fromNetwork := range []string{"ARBITRUM", "MAINNET", "OPTIMISM"} {
+		for _, fromNetwork := range []log.NETWORK{log.ARBITRUM, log.MAINNET, log.OPTIMISM} {
 			fromPrefixes := rpcRrefixForDifferentProviders(fromNetwork)
 			if strings.Contains(url, fromPrefixes.alchemy) {
 				url = strings.Replace(url, fromPrefixes.alchemy, toPrefixes.alchemy, 1)

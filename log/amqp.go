@@ -60,7 +60,7 @@ func send(message string, alertType LEVEL, important ...bool) {
 	for i := 0; i < 2; i++ {
 		err := _amqpChannel.Publish(
 			_logConfig.Exchange, // exchange
-			routingKey,          // routing key
+			string(routingKey),  // routing key
 			false,               // mandatory
 			false,               // immediate
 			amqp.Publishing{

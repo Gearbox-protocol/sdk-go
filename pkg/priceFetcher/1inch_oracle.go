@@ -38,7 +38,7 @@ type OneInchOracle struct {
 	extraurls *URLsAndResolve
 }
 
-func (o *OneInchOracle) Reset(net string) {
+func (o *OneInchOracle) Reset(net log.NETWORK) {
 	{
 		baseReset := []string{}
 		for _, baseToenSym := range o.BaseTokens {
@@ -48,7 +48,7 @@ func (o *OneInchOracle) Reset(net string) {
 		}
 		o.BaseTokens = baseReset
 	}
-	if net != "MAINNET" {
+	if net != log.MAINNET {
 		o.ConstToken = nil
 	}
 	{
@@ -126,16 +126,16 @@ type URLsAndResolve struct {
 
 func (d *URLsAndResolve) resolve(client core.ClientI) {
 	if d.Resolve {
-		d.mainclient = getNetworkClient(d.Urls, "MAINNET")
-		d.arbclient = getNetworkClient(d.Urls, "ARBITRUM")
-		d.optclient = getNetworkClient(d.Urls, "OPTIMISM")
+		d.mainclient = GetNetworkClient(d.Urls, log.MAINNET)
+		d.arbclient = GetNetworkClient(d.Urls, log.ARBITRUM)
+		d.optclient = GetNetworkClient(d.Urls, log.OPTIMISM)
 	} else {
 		switch log.GetBaseNet(core.GetChainId(client)) {
-		case "MAINNET":
+		case log.MAINNET:
 			d.mainclient = client
-		case "OPTIMISM":
+		case log.OPTIMISM:
 			d.optclient = client
-		case "ARBITRUM":
+		case log.ARBITRUM:
 			d.arbclient = client
 		}
 	}
@@ -180,9 +180,9 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, details URLsAndRe
 func get1InchAddress(chainId int64) common.Address {
 	net := log.GetBaseNet(chainId)
 	switch net {
-	case "MAINNET":
+	case log.MAINNET:
 		return common.HexToAddress("0x07D91f5fb9Bf7798734C3f606dB065549F6893bb")
-	case "ARBITRUM", "OPTIMISM":
+	case log.ARBITRUM, log.OPTIMISM:
 		return common.HexToAddress("0x0AdDd25a91563696D8567Df78D5A01C9a991F9B8")
 	}
 	log.Fatal("Can't get the inch oracle for", chainId)
@@ -221,9 +221,9 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 		calls := []multicall.Multicall2Call{}
 		calls = append(calls, calc.GetBaseCalls()...)
 		switch log.GetBaseNet(core.GetChainId(calc.client)) {
-		case "ARBITRUM": // ARB_LOGIC
+		case log.ARBITRUM: // ARB_LOGIC
 			calls = append(calls, calc.GetArbBaseCalls()...)
-		case "OPTIMISM":
+		case log.OPTIMISM:
 			calls = append(calls, calc.GetOptBaseCalls()...)
 		}
 		calls = append(calls, calc.GetCrvCalls()...) // yvcurve-steth - yearn token is dependent on curve
@@ -255,17 +255,17 @@ func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockN
 	calc.processBaseResults(baseResults, prices)
 	// ARB_LOGIC
 	switch log.GetBaseNet(core.GetChainId(calc.client)) {
-	case "ARBITRUM":
+	case log.ARBITRUM:
 		till = len(calc.ArbBaseTokens)
 		arbResults, _results := results[:till], results[till:]
 		calc.processSeparateBaseResults(arbResults, prices, calc.ArbBaseTokens)
 		results = _results
-	case "OPTIMISM":
+	case log.OPTIMISM:
 		till = len(calc.OptBaseTokens)
 		optResults, _results := results[:till], results[till:]
 		calc.processSeparateBaseResults(optResults, prices, calc.OptBaseTokens)
 		results = _results
-	case "MAINNET":
+	case log.MAINNET:
 		// ARB_LOGIC
 		calc.arbForMainnet(ts, prices)
 		calc.optForMainnet(ts, prices)
@@ -396,7 +396,7 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		} else if calc.BaseTokens[ind] == "USDC" {
 			prices[tokenAddr.Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
-			if log.GetBaseNet(core.GetChainId(calc.client)) != "MAINNET" {
+			if log.GetBaseNet(core.GetChainId(calc.client)) != log.MAINNET {
 				prices[calc.symToAddr.Tokens["USDC_e"].Hex()] = (*core.BigInt)(big.NewInt(1000_000_00))
 			}
 		}
