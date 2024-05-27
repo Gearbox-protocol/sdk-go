@@ -17,7 +17,7 @@ type typeAndBlock struct {
 	Feed     common.Address
 }
 
-type _d struct {
+type compositeFeedDetails struct {
 	PF0      common.Address
 	PF1      common.Address
 	Decimals int8
@@ -25,7 +25,7 @@ type _d struct {
 type GearboxOraclev3 struct {
 	GearboxOracle
 	tokenToReserve       map[string]reserveUsage
-	compositefeedDetails map[common.Address]_d
+	compositefeedDetails map[common.Address]compositeFeedDetails
 	tokenToType          map[common.Address]map[bool][]typeAndBlock
 }
 
@@ -51,16 +51,13 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 		},
 		tokenToReserve:       map[string]reserveUsage{},
 		tokenToType:          map[common.Address]map[bool][]typeAndBlock{},
-		compositefeedDetails: map[common.Address]_d{},
+		compositefeedDetails: map[common.Address]compositeFeedDetails{},
 	}
 	return po
 }
 
-func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, token common.Address, reserve bool) {
-	if pOracle.tokenToType[token] == nil {
-		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
-	}
-	typeData, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
+func GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI) (typeAndBlock, compositeFeedDetails) {
+	typeData, err := core.CallFuncWithExtraBytes(client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
 	if err == nil {
 		pfType := int(new(big.Int).SetBytes(typeData).Int64())
 		obj := typeAndBlock{
@@ -68,43 +65,55 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 			BlockNum: blockNum,
 			Feed:     feed,
 		}
+		compositeDetails := compositeFeedDetails{}
 		if pfType == core.V3_COMPOSITE_ORACLE {
 			fn := func(sig string) common.Address {
-				priceFeed0, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, sig, feed, blockNum, []byte{}) // priceFeedType
+				priceFeed0, err := core.CallFuncWithExtraBytes(client, sig, feed, blockNum, []byte{}) // priceFeedType
 				log.CheckFatal(err)
 				return common.BytesToAddress(priceFeed0)
 			}
 			//
 			pf0 := fn("385aee1b")
 			pf1 := fn("ab0ca0e1")
-			pOracle.compositefeedDetails[feed] = _d{
+			compositeDetails = compositeFeedDetails{
 				PF0: pf0,
 				PF1: pf1,
 				Decimals: func() int8 {
-					decimals, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "313ce567", pf0, blockNum, []byte{})
+					decimals, err := core.CallFuncWithExtraBytes(client, "313ce567", pf0, blockNum, []byte{})
 					log.CheckFatal(err)
 					return int8(new(big.Int).SetBytes(decimals).Int64())
 				}(),
 			}
 			//
-			pf0Type, err := core.CallFuncWithExtraBytes(pOracle.Node.Client, "3fd0875f", pf0, blockNum, []byte{})
+			pf0Type, err := core.CallFuncWithExtraBytes(client, "3fd0875f", pf0, blockNum, []byte{})
 			if err == nil {
 				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 				}
 			}
 		}
-		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
+		return obj, compositeDetails
 	} else {
-		pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], typeAndBlock{
+		return typeAndBlock{
 			Type:     core.V3_CHAINLINK_ORACLE,
 			BlockNum: blockNum,
 			Feed:     feed,
-		})
+		}, compositeFeedDetails{}
 	}
 }
 
-func (pOracle GearboxOraclev3) GetCompositeFeedDetails(compfeed common.Address) _d {
+func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, token common.Address, reserve bool) {
+	if pOracle.tokenToType[token] == nil {
+		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
+	}
+	obj, compositeDetails := GetPF01AndFeedType(feed, blockNum, pOracle.Node.Client)
+	if obj.Type == core.V3_COMPOSITE_ORACLE || obj.Type == core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE {
+		pOracle.compositefeedDetails[feed] = compositeDetails
+	}
+	pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], obj)
+}
+
+func (pOracle GearboxOraclev3) GetCompositeFeedDetails(compfeed common.Address) compositeFeedDetails {
 	return pOracle.compositefeedDetails[compfeed]
 }
 

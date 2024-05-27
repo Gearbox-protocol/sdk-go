@@ -544,10 +544,10 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 	}
 }
 
-func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBalanceFormat, underlying string) float64 {
+func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBalanceFormat, underlying string) (float64, error) {
 	tradingToken, baseToken := calc.TradingAndBaseTokens(core.GetChainId(o.client), bal, underlying)
 	if tradingToken == "" {
-		return 0
+		return 0, nil
 	}
 	//
 	prices := map[string]*core.BigInt{}
@@ -561,7 +561,9 @@ func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBal
 		calls := []multicall.Multicall2Call{}
 		for _, token := range tokens {
 			data, err := pfABI.Pack("getRate", token, usdc, false)
-			log.CheckFatal(err)
+			if err != nil {
+				return 0, log.WrapErrWithLine(err)
+			}
 			calls = append(calls, multicall.Multicall2Call{
 				Target:   inchOracle,
 				CallData: data,
@@ -583,7 +585,7 @@ func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBal
 			}
 		}
 	}
-	return GetTradingPriceFrom1Inch(prices, tradingToken, baseToken)
+	return GetTradingPriceFrom1Inch(prices, tradingToken, baseToken), nil
 }
 
 func GetTradingPriceFrom1Inch(prices map[string]*core.BigInt, tradingToken, baseToken string) float64 {
