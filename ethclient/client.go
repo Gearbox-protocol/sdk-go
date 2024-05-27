@@ -206,12 +206,12 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 		return big.NewInt(id), nil
 	}
 	// locks
-	url := strings.Split(rc.url, ",")[0]
 	v, err := getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) {
-		flag, test, err := GetFlagAndTestChainId(url)
+		flag, test, err := GetFlagAndTestChainId(c.url)
 		if flag != nil && rc.flagChainId == 0 {
 			atomic.SwapInt64(&(rc.flagChainId), flag.Int64())
 		}
+		log.Info(test, err, c.url)
 		return test, err
 	})
 	//
