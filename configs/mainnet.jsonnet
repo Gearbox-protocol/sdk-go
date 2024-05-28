@@ -445,12 +445,6 @@
       dataId: 'USDC',
       signersThreshold: 5,
     },
-    USDC_e: {
-      type: 15,
-      dataServiceId: 'redstone-primary-prod',
-      dataId: 'USDC',
-      signersThreshold: 5,
-    },
     USDT: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
@@ -487,10 +481,22 @@
       dataId: 'LUSD',
       signersThreshold: 5,
     },
+    USDe: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'USDe',
+      signersThreshold: 5,
+    },
     FXS: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'FXS',
+      signersThreshold: 5,
+    },
+    LDO: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'LDO',
       signersThreshold: 5,
     },
     BAL: {
@@ -511,10 +517,34 @@
       dataId: 'GHO',
       signersThreshold: 5,
     },
+    crvFRAX: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'crvFRAX',
+      signersThreshold: 5,
+    },
+    crvUSD: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'crvUSD',
+      signersThreshold: 5,
+    },
     MKR: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'MKR',
+      signersThreshold: 5,
+    },
+    APE: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'APE',
+      signersThreshold: 5,
+    },
+    sDAI: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'sDAI',
       signersThreshold: 5,
     },
     'weETH/ETH': {
@@ -527,6 +557,12 @@
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'stETH',
+      signersThreshold: 5,
+    },
+    '3CRV': {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: '3Crv',
       signersThreshold: 5,
     },
   },
