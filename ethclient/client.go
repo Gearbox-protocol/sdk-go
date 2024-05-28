@@ -211,7 +211,6 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 		if flag != nil && rc.flagChainId == 0 {
 			atomic.SwapInt64(&(rc.flagChainId), flag.Int64())
 		}
-		log.Info(test, err, c.url)
 		return test, err
 	})
 	//
@@ -227,7 +226,8 @@ func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Blo
 
 func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
 	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Block, error) {
-		if log.GetBaseNet(rc.chainId) == "OPTIMISM" {
+		block, err := c.client.BlockByNumber(ctx, number)
+		if err != nil && strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") {
 			data, err := utils.JsonRPCMakeRequest(c.url, utils.GetJsonRPCRequestBody("eth_getBlockByNumber", fmt.Sprintf("0x%x", number), false))
 			if err != nil {
 				return nil, err
@@ -239,7 +239,7 @@ func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Bl
 			}
 			return types.NewBlockWithHeader(&types.Header{Time: uint64(num)}), nil
 		}
-		return c.client.BlockByNumber(ctx, number)
+		return block, err
 	})
 }
 
