@@ -35,7 +35,7 @@ func WsFetchBlockNumFrom(_ctx context.Context, syncedTill int64, wsProvider stri
 			// - syncs all blocks till latest blockNum when there is an error in websocket and there is resubscription of ws
 			// - handles rollback and ignores all the block until `syncedTill`
 			if syncedTill != 0 {
-				for nextBlock := syncedTill + interval; nextBlock <= latestBlockNum; nextBlock++ {
+				for nextBlock := syncedTill + interval; nextBlock <= latestBlockNum; nextBlock += interval {
 					var ts uint64
 					if !(len(dontGetTs) != 0 && dontGetTs[0]) {
 						if latestBlockNum == nextBlock { // for latest block, we get timestamp from ws subscrption
