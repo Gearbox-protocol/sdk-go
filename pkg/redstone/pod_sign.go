@@ -49,23 +49,23 @@ func (r *RSPriceOnDemandObj) convert(token common.Address) *RSPriceOnDemand {
 func getLatestPodSign(details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
 	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, details.DataId)
-	return getpodSign(url, "latest-"+details.DataId)
+	return getpodSign(url, "latest-"+details.DataId, -1)
 }
 func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
 	timestamp = tenthMillSec(timestamp) // due to node js
 	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
-	return getpodSign(url, "historic-"+details.DataId)
+	return getpodSign(url, "historic-"+details.DataId, timestamp)
 }
 
-func getpodSign(url string, dataId string) map[string]*RSPriceOnDemandObj {
+func getpodSign(url string, dataId string, timestamp int64) map[string]*RSPriceOnDemandObj {
 	res, err := http.Get(url)
 	log.Debug("Getting priceOnDemand", url)
 	if err != nil {
 		time.Sleep(10 * time.Second)
-		secondTryResp := getpodSign(url, dataId)
+		secondTryResp := getpodSign(url, dataId, timestamp)
 		if secondTryResp == nil {
-			log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, err)
+			log.Warnf("For dataId %s , redStone failed with err(%v) ts: %d, url: %s", dataId, err, timestamp, url)
 		}
 		return secondTryResp
 	}
@@ -74,7 +74,7 @@ func getpodSign(url string, dataId string) map[string]*RSPriceOnDemandObj {
 		if res.Body != nil {
 			_, respStr = ReadBuffer(res.Body)
 		}
-		log.Warnf("For dataId %s , redStone failed with err(%v) and resp(%s)", dataId, respStr)
+		log.Warnf("For dataId %s , redStone failed resp(%s) for ts: %d. url: %s", dataId, respStr, timestamp, url)
 		return nil
 	}
 	data := map[string]*RSPriceOnDemandObj{}
