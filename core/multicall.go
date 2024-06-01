@@ -67,6 +67,7 @@ func getMultiCallAddr(chainId int64) string {
 	if log.GetBaseNet(chainId) == "ARBITRUM" {
 		return "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2"
 	}
+	// on optimism and arbitrum
 	return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
 }
 

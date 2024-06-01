@@ -32,7 +32,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var logs []types.Log
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
-	if err != nil {
+	if err != nil && toBlock-fromBlock > 1 {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
 			strings.Contains(err.Error(), core.AnkrRangeError) ||
@@ -41,6 +41,12 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			(strings.Contains(err.Error(), "we can't execute this request") && core.GetChainId(lf.Client) == 42161) || // for arbitrum get logs for account Manager
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
 			strings.Contains(err.Error(), core.LogFilterQueryTimeout) {
+			if len(topics) > 0 {
+				log.Info(len(topics[0]))
+			}
+			if len(topics) > 1 {
+				log.Info(len(topics[1]))
+			}
 			middle := (fromBlock + toBlock) / 2
 			if middle < fromBlock {
 				return nil, fmt.Errorf("middle > fromBlock %d, %d, %s", middle, fromBlock, err)
@@ -132,6 +138,27 @@ func (lf Node) GetReceipt(txHash common.Hash) *types.Receipt {
 	return receipt
 }
 
+func (lf Node) onGetLogsError(err error, queryFrom, queryTill int64, hexAddrs []common.Address, treasuryAddrTopic []common.Hash) ([]types.Log, error) {
+	if !strings.Contains(err.Error(), "exceed max topics") {
+		return nil, err
+	}
+	batchSize := 1000
+	ans := []types.Log{}
+
+	topicsForRequest := []common.Hash{}
+	for len(treasuryAddrTopic) > 0 {
+		splitPoint := min(batchSize, len(treasuryAddrTopic))
+		topicsForRequest, treasuryAddrTopic = treasuryAddrTopic[:splitPoint], treasuryAddrTopic[splitPoint:]
+		log.Info("batch split", len(topicsForRequest))
+		firstLogs, err := lf.GetLogsForTransfer(queryFrom, queryTill, hexAddrs, topicsForRequest)
+		if err != nil {
+			return firstLogs, log.WrapErrWithLine(err)
+		}
+		ans = append(ans, firstLogs...)
+	}
+	return ans, nil
+}
+
 func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.Address, treasuryAddrTopic []common.Hash) ([]types.Log, error) {
 	topics := [][]common.Hash{
 		{
@@ -142,13 +169,13 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	// from treasury to other address
 	logs, err := lf.GetLogs(queryFrom, queryTill, hexAddrs, append(topics, treasuryAddrTopic, otherAddrTopic))
 	if err != nil {
-		return logs, err
+		return lf.onGetLogsError(err, queryFrom, queryTill, hexAddrs, treasuryAddrTopic) // in small batches, another code in this function is ignored
 	}
 
 	// from other address to treasury
 	newLogs, err := lf.GetLogs(queryFrom, queryTill, hexAddrs, append(topics, otherAddrTopic, treasuryAddrTopic))
 	if err != nil {
-		return logs, err
+		return lf.onGetLogsError(err, queryFrom, queryTill, hexAddrs, treasuryAddrTopic) // in small batches, another code in this function is ignored
 	}
 	return append(newLogs, logs...), nil
 }
