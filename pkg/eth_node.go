@@ -41,12 +41,6 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			(strings.Contains(err.Error(), "we can't execute this request") && core.GetChainId(lf.Client) == 42161) || // for arbitrum get logs for account Manager
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
 			strings.Contains(err.Error(), core.LogFilterQueryTimeout) {
-			if len(topics) > 0 {
-				log.Info(len(topics[0]))
-			}
-			if len(topics) > 1 {
-				log.Info(len(topics[1]))
-			}
 			middle := (fromBlock + toBlock) / 2
 			if middle < fromBlock {
 				return nil, fmt.Errorf("middle > fromBlock %d, %d, %s", middle, fromBlock, err)
