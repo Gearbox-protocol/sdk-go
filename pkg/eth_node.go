@@ -143,7 +143,6 @@ func (lf Node) onGetLogsError(err error, queryFrom, queryTill int64, hexAddrs []
 	for len(treasuryAddrTopic) > 0 {
 		splitPoint := min(batchSize, len(treasuryAddrTopic))
 		topicsForRequest, treasuryAddrTopic = treasuryAddrTopic[:splitPoint], treasuryAddrTopic[splitPoint:]
-		log.Info("batch split", len(topicsForRequest))
 		firstLogs, err := lf.GetLogsForTransfer(queryFrom, queryTill, hexAddrs, topicsForRequest)
 		if err != nil {
 			return firstLogs, log.WrapErrWithLine(err)

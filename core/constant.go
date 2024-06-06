@@ -47,3 +47,5 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 	}
 	return ""
 }
+
+var WAD = utils.GetExpInt(18)

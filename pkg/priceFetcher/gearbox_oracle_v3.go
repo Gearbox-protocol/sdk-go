@@ -24,16 +24,20 @@ type compositeFeedDetails struct {
 }
 type GearboxOraclev3 struct {
 	GearboxOracle
-	tokenToReserve       map[string]reserveUsage
+	tokenToReserve       map[string]ReserveUsage
 	compositefeedDetails map[common.Address]compositeFeedDetails
 	tokenToType          map[common.Address]map[bool][]typeAndBlock
 }
 
-type reserveUsage struct {
-	feed common.Address
-	use  bool
+type ReserveUsage struct {
+	Feed common.Address
+	Use  bool
 }
 
+func (pOracle GearboxOraclev3) GetReserveFeed(token string) *ReserveUsage {
+	data := pOracle.tokenToReserve[token]
+	return &data
+}
 func NewGearboxOraclev3(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOraclev3{
 		GearboxOracle: GearboxOracle{
@@ -49,7 +53,7 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 			},
 			version: version,
 		},
-		tokenToReserve:       map[string]reserveUsage{},
+		tokenToReserve:       map[string]ReserveUsage{},
 		tokenToType:          map[common.Address]map[bool][]typeAndBlock{},
 		compositefeedDetails: map[common.Address]compositeFeedDetails{},
 	}
@@ -129,7 +133,7 @@ func (pOracle GearboxOraclev3) GetPriceTokenTill(blockNum int64) {
 }
 
 func (pOracle GearboxOraclev3) getTypeAndBlock(token common.Address, blockNum ...int64) typeAndBlock {
-	reserve := pOracle.tokenToReserve[token.Hex()].use
+	reserve := pOracle.tokenToReserve[token.Hex()].Use
 	typeAndBlocks := pOracle.tokenToType[token][reserve]
 	l := len(typeAndBlocks)
 	if l == 0 {
@@ -170,17 +174,17 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 		token := common.HexToAddress(txLog.Topics[1].Hex())
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
 		pOracle.addtokenToType(blockNum, feed, token, true)
-		pOracle.tokenToReserve[token.Hex()] = reserveUsage{feed: feed, use: pOracle.tokenToReserve[token.Hex()].use}
+		pOracle.tokenToReserve[token.Hex()] = ReserveUsage{Feed: feed, Use: pOracle.tokenToReserve[token.Hex()].Use}
 	case pOracle.topics[2]: // change from reserve to main feed, vice verse
 		token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
-		pOracle.tokenToReserve[token] = reserveUsage{feed: pOracle.tokenToReserve[token].feed, use: txLog.Topics[2][:][63] == 1}
+		pOracle.tokenToReserve[token] = ReserveUsage{Feed: pOracle.tokenToReserve[token].Feed, Use: txLog.Topics[2][:][63] == 1}
 	}
 	return false
 }
 
 func (pOracle GearboxOraclev3) GetFeed(token string) common.Address {
-	if pOracle.tokenToReserve[token].use { // set reserve
-		return pOracle.tokenToReserve[token].feed
+	if pOracle.tokenToReserve[token].Use { // set reserve
+		return pOracle.tokenToReserve[token].Feed
 	}
 	return pOracle.tokenToFeed[token]
 }
@@ -193,8 +197,8 @@ func (pOracle *GearboxOraclev3) GetCalls() []multicall.Multicall2Call {
 	calls := make([]multicall.Multicall2Call, 0, len(pOracle.tokenToFeed))
 	tokens := make([]string, 0, len(pOracle.tokenToFeed))
 	for token, feed := range pOracle.tokenToFeed {
-		if pOracle.tokenToReserve[token].use { // set reserve
-			feed = pOracle.tokenToReserve[token].feed
+		if pOracle.tokenToReserve[token].Use { // set reserve
+			feed = pOracle.tokenToReserve[token].Feed
 		}
 		tokens = append(tokens, token)
 		calls = append(calls, multicall.Multicall2Call{

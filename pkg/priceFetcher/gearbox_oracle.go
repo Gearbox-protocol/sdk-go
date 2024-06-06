@@ -33,6 +33,7 @@ type GearboxOracleI interface {
 	//
 	GetPFType(token common.Address, blockNum ...int64) int
 	GetFeedForBlock(token common.Address, blockNum int64) common.Address
+	GetReserveFeed(token string) *ReserveUsage
 }
 
 type GearboxOracle struct {
@@ -61,6 +62,10 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 		topics:  []common.Hash{core.Topic("NewPriceFeed(address,address)")},
 	}
 	return po
+}
+
+func (pOracle GearboxOracle) GetReserveFeed(token string) *ReserveUsage {
+	return &ReserveUsage{}
 }
 
 func (pOracle GearboxOracle) GetTopics() []common.Hash {

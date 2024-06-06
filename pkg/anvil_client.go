@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"math/big"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -35,12 +37,14 @@ func (anvil *AnvilClient) StopImpersonateAccount(account string) error {
 	return err
 }
 
-func (anvil *AnvilClient) SendAsImpersonator(impAccount common.Address, tx *types.Transaction, nonce ...int64) common.Hash {
+func (anvil *AnvilClient) SendAsImpersonator(impAccount common.Address, tx *types.Transaction, nonce ...int64) (common.Hash, error) {
 	// defer func() {
 	// 	log.CheckFatal(anvil.StopImpersonateAccount(impAccount.Hex()))
 	// }()
 	err := anvil.ImpersonateAccount(impAccount.Hex())
-	log.CheckFatal(err)
+	if err != nil {
+		return common.Hash{}, log.WrapErrWithLine(err)
+	}
 	if len(nonce) > 0 {
 		return anvil.SendTransaction(impAccount, tx, nonce[0])
 	} else {
@@ -69,7 +73,7 @@ func bigIntToString(n int64) string {
 	return hex.EncodeToString(b)
 }
 
-func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transaction, nonceArr ...int64) common.Hash {
+func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transaction, nonceArr ...int64) (common.Hash, error) {
 	var anvilTx anvilTransaction
 	nonce := func() (nonce int64) {
 		if nonceArr == nil {
@@ -108,9 +112,9 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	result, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	if err != nil {
 		log.Debug(utils.ToJson(body))
-		log.Fatal("from", from, "err:", err)
+		return common.Hash{}, log.WrapErrWithLine(err)
 	}
-	return common.HexToHash(result.(string))
+	return common.HexToHash(result.(string)), nil
 }
 
 func (anvil *AnvilClient) SetEthBalance(to common.Address, value *big.Int) {
@@ -148,4 +152,17 @@ func (anvil *AnvilClient) NextTs(ts int64) error {
 		return fmt.Errorf("set next block ts to %d failed with %s", ts, err)
 	}
 	return nil
+}
+
+// utils
+func GetImpersonationTopts(impersonateAddr common.Address, gasPrice *big.Int, gasLimit uint64) *bind.TransactOpts {
+	topts := &bind.TransactOpts{
+		From:     impersonateAddr,
+		Context:  context.Background(),
+		Signer:   func(_ common.Address, tx *types.Transaction) (*types.Transaction, error) { return tx, nil },
+		NoSend:   true,
+		GasPrice: gasPrice,
+		GasLimit: gasLimit,
+	}
+	return topts
 }

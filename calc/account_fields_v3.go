@@ -34,8 +34,11 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16, failure bool) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
 	defer func() {
 		err := recover()
-		if err != nil && failure {
-			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+		if err != nil {
+			log.Errorf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+			if failure {
+				log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+			}
 		}
 	}()
 	debtDetails = c.getDebtDetails(pfVersion, ts, blockNum, poolDetails, session, feeInterest)
