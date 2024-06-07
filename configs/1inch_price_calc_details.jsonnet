@@ -19,6 +19,7 @@
   baseTokens: [
     'FRAX',
     'SUSD',
+    'crvUSD',
     'stETH',
 
     'GUSD',
