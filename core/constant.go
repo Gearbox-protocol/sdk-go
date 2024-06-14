@@ -13,6 +13,7 @@ const QueryMoreThan10000Error = "query returned more than 10000 results"
 const LogFilterQueryTimeout = "Query timeout exceeded. Consider reducing your block range."
 const NoderealFilterLogError = "exceed maximum block range:"
 const AnkrRangeError = "block range is too wide"
+const AnvilManagerError = "cannot_be_a_base"
 const NoOfBlocksPerMin int64 = 5
 const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
 const SECONDS_PER_YEAR = 86400 * 365

@@ -111,6 +111,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 	if err != nil {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
+			strings.Contains(err.Error(), core.AnvilManagerError) ||
 			strings.Contains(err.Error(), "exceed max topics") ||
 			strings.Contains(err.Error(), core.AnkrRangeError) ||
 			strings.Contains(err.Error(), core.LogFilterLenError) {
@@ -175,6 +176,7 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 	if err != nil {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
+			strings.Contains(err.Error(), core.AnvilManagerError) ||
 			strings.Contains(err.Error(), "exceed max topics") ||
 			strings.Contains(err.Error(), core.AnkrRangeError) ||
 			strings.Contains(err.Error(), core.LogFilterLenError) {

@@ -35,6 +35,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	if err != nil && toBlock-fromBlock > 1 {
 		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
 			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
+			strings.Contains(err.Error(), core.AnvilManagerError) ||
 			strings.Contains(err.Error(), core.AnkrRangeError) ||
 			strings.Contains(err.Error(), "exceed max topics") || // for anvil
 			strings.Contains(err.Error(), core.LogFilterLenError) ||

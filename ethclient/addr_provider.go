@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -40,28 +41,31 @@ func forkUrl(resp interface{}) string {
 
 func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 	body := utils.GetJsonRPCRequestBody("anvil_nodeInfo")
-	resp, err := utils.JsonRPCMakeRequest(url, body)
+	_, err := utils.JsonRPCMakeRequest(url, body)
 	if err != nil {
 		return getChainIdFromRPC(url)
 	}
 
-	forkUrl := forkUrl(resp)
-	if forkUrl == "" {
-		log.Fatalf("forkurl not found for %s", url)
+	var flagChainId *big.Int = new(big.Int)
+	for _, netId := range []int64{1, 42161, 10} {
+		addrs := core.GetSymToAddrByChainId(netId)
+		usdc := addrs.Tokens["USDC"]
+		client, err := ethclient.Dial(url)
+		log.CheckFatal(err)
+		_, err = core.CallFuncWithExtraBytes(client, "95d89b41", usdc, 0, nil)
+		if err == nil {
+			flagChainId = big.NewInt(netId)
+			break
+		}
 	}
-
-	_, test, err := GetFlagAndTestChainId(forkUrl)
-	if err != nil {
-		return nil, nil, log.WrapErrWithLine(err)
-	}
-	switch test.Int64() {
+	switch flagChainId.Int64() {
 	case 1:
-		return test, big.NewInt(7878), nil
+		return flagChainId, big.NewInt(7878), nil
 	case 42161:
-		return test, big.NewInt(7880), nil
+		return flagChainId, big.NewInt(7880), nil
 	case 10:
-		return test, big.NewInt(7879), nil
+		return flagChainId, big.NewInt(7879), nil
 	default:
-		return test, test, nil
+		return flagChainId, flagChainId, nil
 	}
 }
