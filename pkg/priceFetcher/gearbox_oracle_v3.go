@@ -61,7 +61,7 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 }
 
 func GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI) (typeAndBlock, compositeFeedDetails) {
-	typeData, err := core.CallFuncWithExtraBytes(client, "3fd0875f", feed, blockNum, []byte{}) // priceFeedType
+	typeData, err := core.CallFuncWithExtraBytes(client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
 	if err == nil {
 		pfType := int(new(big.Int).SetBytes(typeData).Int64())
 		obj := typeAndBlock{
@@ -72,7 +72,7 @@ func GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI
 		compositeDetails := compositeFeedDetails{}
 		if pfType == core.V3_COMPOSITE_ORACLE {
 			fn := func(sig string) common.Address {
-				priceFeed0, err := core.CallFuncWithExtraBytes(client, sig, feed, blockNum, []byte{}) // priceFeedType
+				priceFeed0, err := core.CallFuncWithExtraBytes(client, sig, feed, 0, []byte{}) // priceFeedType
 				log.CheckFatal(err)
 				return common.BytesToAddress(priceFeed0)
 			}
@@ -83,13 +83,13 @@ func GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI
 				PF0: pf0,
 				PF1: pf1,
 				Decimals: func() int8 {
-					decimals, err := core.CallFuncWithExtraBytes(client, "313ce567", pf0, blockNum, []byte{})
+					decimals, err := core.CallFuncWithExtraBytes(client, "313ce567", pf0, 0, []byte{})
 					log.CheckFatal(err)
 					return int8(new(big.Int).SetBytes(decimals).Int64())
 				}(),
 			}
 			//
-			pf0Type, err := core.CallFuncWithExtraBytes(client, "3fd0875f", pf0, blockNum, []byte{})
+			pf0Type, err := core.CallFuncWithExtraBytes(client, "3fd0875f", pf0, 0, []byte{})
 			if err == nil {
 				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
