@@ -58,6 +58,8 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 			break
 		}
 	}
+	// log.Debug(getChainIdFromRPC(url))
+	// log.Debug(flagChainId, "chainids")
 	switch flagChainId.Int64() {
 	case 1:
 		return flagChainId, big.NewInt(7878), nil

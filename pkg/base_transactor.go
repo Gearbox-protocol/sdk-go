@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
-	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -25,8 +24,7 @@ type BaseTransactor struct {
 
 func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
-	chainId, err := client.(*ethclient.Client).FlagChainID(context.TODO())
-	log.CheckFatal(err)
+	chainId := core.GetChainId(client)
 	//
 	if strings.HasPrefix(privateKey, "enc:") {
 		fmt.Printf("Enter password:")
@@ -38,13 +36,13 @@ func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec 
 	if addr != "" && common.HexToAddress(addr) != wallet.Address {
 		log.Fatal("Wrong prv key with addr", wallet.Address)
 	}
-	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId.Int64()))
+	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId))
 	log.CheckFatal(err)
 	//
 	return &BaseTransactor{
 		Topts:      topts,
 		Client:     client,
-		ChainId:    chainId.Int64(),
+		ChainId:    chainId,
 		timeoutSec: timeoutSec,
 	}
 }
