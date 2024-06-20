@@ -94,7 +94,10 @@ func getArbBlockNum(ts uint64) int64 {
 			log.Fatal("arbiscan_api_key can't be empty")
 		}
 		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
-		log.CheckFatal(err)
+		if err != nil {
+			log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 42161, int64(ts)))
+			return 0
+		}
 		return blockNum
 	} else {
 		log.Fatal("ts can't be 0")
@@ -150,7 +153,7 @@ func getOptBlockNum(ts uint64) int64 {
 		}
 		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 10, int64(ts))
 		if err != nil {
-			// log.Fatal("")
+			log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 10, int64(ts)))
 			return 0
 		}
 		return blockNum

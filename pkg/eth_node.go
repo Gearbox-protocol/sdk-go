@@ -174,7 +174,7 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	return append(newLogs, logs...), nil
 }
 
-func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, error) {
+func GetEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
 	url := "https://%s/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
 	var suffix string
 	switch log.GetBaseNet(chainId) {
@@ -186,6 +186,10 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 		suffix = "api-optimistic.etherscan.io"
 	}
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
+	return url
+}
+func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, error) {
+	url := GetEtherscanUrl(etherscanAPI, chainId, ts)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
