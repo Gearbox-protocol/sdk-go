@@ -87,14 +87,16 @@ func GetNetworkName(chainId int64) (name NETWORK) {
 
 func GetBaseNet(chainId int64) NETWORK {
 	net := GetNetworkName(chainId)
-	if net == ANVIL {
+	if net == ANVIL || net == MAINNET {
 		net = MAINNET
-	} else if net == ARBTEST {
+	} else if net == ARBTEST || net == ARBITRUM {
 		net = ARBITRUM
 	} else if net == TEST {
 		net = MAINNET
-	} else if net == OPTTEST {
+	} else if net == OPTTEST || net == OPTIMISM {
 		net = OPTIMISM
+	} else {
+		Fatal("base net not found", chainId)
 	}
 	return net
 }
@@ -108,6 +110,8 @@ func GetNetworkToChainId(net NETWORK) int64 {
 		return 5
 	case ARBITRUM:
 		return 42161
+	case ANVIL:
+		return 7878
 	case OPTIMISM:
 		return 10
 	default:

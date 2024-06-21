@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -124,6 +125,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 func (c Calculator) convertToUSD(amount *big.Int, token string, version schemas.PFVersion, blockNum int64) *big.Int {
 	tokenDecimals := c.Store.GetToken(token).Decimals
 	tokenPrice := c.Store.GetPrices(token, version, blockNum)
+	log.Info(amount, tokenPrice, token)
 	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals)
 	return tokenValueInUSD
 }
