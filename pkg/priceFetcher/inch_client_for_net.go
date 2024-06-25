@@ -2,6 +2,7 @@ package priceFetcher
 
 import (
 	"strings"
+	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -93,12 +94,17 @@ func getArbBlockNum(ts uint64) int64 {
 		if etherscanAPI == "" {
 			log.Fatal("arbiscan_api_key can't be empty")
 		}
-		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
-		if err != nil {
-			log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 42161, int64(ts)))
-			return 0
+		var err error
+		for i := 0; i < 2; i++ {
+			blockNum, _err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
+			if _err == nil {
+				return blockNum
+			}
+			time.Sleep(5 * time.Second)
+			err = _err
 		}
-		return blockNum
+		log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 42161, int64(ts)))
+		return 0
 	} else {
 		log.Fatal("ts can't be 0")
 	}
@@ -151,12 +157,17 @@ func getOptBlockNum(ts uint64) int64 {
 		if etherscanAPI == "" {
 			log.Fatal("optimism_api_key can't be empty")
 		}
-		blockNum, err := pkg.GetBlockNumForTs(etherscanAPI, 10, int64(ts))
-		if err != nil {
-			log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 10, int64(ts)))
-			return 0
+		var err error
+		for i := 0; i < 2; i++ {
+			blockNum, _err := pkg.GetBlockNumForTs(etherscanAPI, 10, int64(ts))
+			if _err == nil {
+				return blockNum
+			}
+			time.Sleep(5 * time.Second)
+			err = _err
 		}
-		return blockNum
+		log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 10, int64(ts)))
+		return 0
 	} else {
 		log.Fatal("ts can't be 0")
 	}
