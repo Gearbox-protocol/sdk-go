@@ -33,15 +33,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil && toBlock-fromBlock > 1 {
-		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
-			strings.Contains(err.Error(), core.AnvilManagerError) ||
-			strings.Contains(err.Error(), core.AnkrRangeError) ||
-			strings.Contains(err.Error(), "exceed max topics") || // for anvil
-			strings.Contains(err.Error(), core.LogFilterLenError) ||
-			(strings.Contains(err.Error(), "we can't execute this request") && core.GetChainId(lf.Client) == 42161) || // for arbitrum get logs for account Manager
-			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
-			strings.Contains(err.Error(), core.LogFilterQueryTimeout) {
+		if core.EthLogErrorCheck(err, lf.Client) {
 			middle := (fromBlock + toBlock) / 2
 			if middle < fromBlock {
 				return nil, fmt.Errorf("middle > fromBlock %d, %d, %s", middle, fromBlock, err)

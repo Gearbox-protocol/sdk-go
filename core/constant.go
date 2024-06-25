@@ -2,6 +2,7 @@ package core
 
 import (
 	"math/big"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -14,9 +15,28 @@ const LogFilterQueryTimeout = "Query timeout exceeded. Consider reducing your bl
 const NoderealFilterLogError = "exceed maximum block range:"
 const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
+const InfuraError = "query returned more than 113 results"
 const NoOfBlocksPerMin int64 = 5
 const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
 const SECONDS_PER_YEAR = 86400 * 365
+
+func EthLogErrorCheck(err error, client ClientI) bool {
+	if err != nil {
+		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
+			strings.Contains(err.Error(), NoderealFilterLogError) ||
+			strings.Contains(err.Error(), AnvilManagerError) ||
+			strings.Contains(err.Error(), AnkrRangeError) ||
+			strings.Contains(err.Error(), "exceed max topics") || // for anvil
+			strings.Contains(err.Error(), LogFilterLenError) ||
+			strings.Contains(err.Error(), InfuraError) ||
+			(strings.Contains(err.Error(), "we can't execute this request") && GetChainId(client) == 42161) || // for arbitrum get logs for account Manager
+			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
+			strings.Contains(err.Error(), LogFilterQueryTimeout) {
+			return true
+		}
+	}
+	return false
+}
 
 var WETHPrice, USDCPrice *big.Int
 

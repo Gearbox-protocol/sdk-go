@@ -12,7 +12,6 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
@@ -109,12 +108,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
-			strings.Contains(err.Error(), core.AnvilManagerError) ||
-			strings.Contains(err.Error(), "exceed max topics") ||
-			strings.Contains(err.Error(), core.AnkrRangeError) ||
-			strings.Contains(err.Error(), core.LogFilterLenError) {
+		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 
 			log.Debugf("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
@@ -174,12 +168,7 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 	//
 	logs, err := c.Client.FilterLogs(ctx, query)
 	if err != nil {
-		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
-			strings.Contains(err.Error(), core.AnvilManagerError) ||
-			strings.Contains(err.Error(), "exceed max topics") ||
-			strings.Contains(err.Error(), core.AnkrRangeError) ||
-			strings.Contains(err.Error(), core.LogFilterLenError) {
+		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 			foundHigh, err := c.FindLastLogBound(middle, toBlock, topics)
 			if err != nil {
