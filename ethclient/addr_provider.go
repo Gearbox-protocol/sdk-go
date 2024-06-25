@@ -58,16 +58,10 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 			break
 		}
 	}
-	// log.Debug(getChainIdFromRPC(url))
-	// log.Debug(flagChainId, "chainids")
-	switch flagChainId.Int64() {
-	case 1:
-		return flagChainId, big.NewInt(7878), nil
-	case 42161:
-		return flagChainId, big.NewInt(7880), nil
-	case 10:
-		return flagChainId, big.NewInt(7879), nil
-	default:
-		return flagChainId, flagChainId, nil
+	client, err := ethclient.Dial(url)
+	if err != nil {
+		return flagChainId, nil, err
 	}
+	testChainId, err := client.ChainID(context.Background())
+	return flagChainId, testChainId, err
 }
