@@ -34,6 +34,7 @@ type GearboxOracleI interface {
 	GetPFType(token common.Address, blockNum ...int64) int
 	GetFeedForBlock(token common.Address, blockNum int64) common.Address
 	GetReserveFeed(token string) *ReserveUsage
+	GetFeedAndType(token string, reserve bool) (typeAndBlock, error)
 }
 
 type GearboxOracle struct {
@@ -83,6 +84,9 @@ func (pOracle GearboxOracle) GetAddress() common.Address {
 // overridden in gearbox_oracle_v3.go
 func (pOracle GearboxOracle) GetFeed(token string) common.Address {
 	return pOracle.tokenToFeed[token]
+}
+func (pOracle GearboxOracle) GetFeedAndType(token string, reserve bool) (typeAndBlock, error) {
+	return typeAndBlock{}, nil
 }
 
 func (pOracle *GearboxOracle) GetVersion() core.VersionType {

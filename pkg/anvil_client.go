@@ -117,10 +117,11 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 	return common.HexToHash(result.(string)), nil
 }
 
-func (anvil *AnvilClient) SetEthBalance(to common.Address, value *big.Int) {
-	body := utils.GetJsonRPCRequestBody("anvil_setBalance", to.Hex(), fmt.Sprintf("%x", value))
+func (anvil *AnvilClient) SetEthBalance(to common.Address, value *big.Int) error {
+	body := utils.GetJsonRPCRequestBody("anvil_setBalance", to.Hex(), fmt.Sprintf("0x%x", value))
+	log.Info(body)
 	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
-	log.CheckFatal(err)
+	return err
 }
 func (anvil *AnvilClient) EvmMine() {
 	body := utils.GetJsonRPCRequestBody("evm_mine")

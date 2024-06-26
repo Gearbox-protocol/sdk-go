@@ -38,8 +38,9 @@ type RedStoneMgr struct {
 }
 
 type TokenAndFeedType struct {
-	Token  common.Address
-	PFType int
+	Token    common.Address
+	Reversed bool
+	PFType   int
 }
 
 func (obj TokenAndFeedType) IsComposite() bool {

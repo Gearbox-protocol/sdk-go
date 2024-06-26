@@ -1,6 +1,7 @@
 package priceFetcher
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
@@ -37,6 +38,13 @@ type ReserveUsage struct {
 func (pOracle GearboxOraclev3) GetReserveFeed(token string) *ReserveUsage {
 	data := pOracle.tokenToReserve[token]
 	return &data
+}
+func (pOracle GearboxOraclev3) GetFeedAndType(token string, reserve bool) (typeAndBlock, error) {
+	data := pOracle.tokenToType[common.HexToAddress(token)][reserve]
+	if len(data) == 0 {
+		return typeAndBlock{}, fmt.Errorf("GetMainFeed: token %s has no main feed", token)
+	}
+	return data[len(data)-1], nil
 }
 func NewGearboxOraclev3(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOraclev3{
