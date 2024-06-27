@@ -170,8 +170,13 @@ func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []TokenAndFeedType, balances
 			if lastResp != nil {
 				ans = append(ans, lastResp.pod)
 				fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
+			} else {
+				log.Info(utils.ToJson(resp), token, details.DataId)
 			}
 		}
+	}
+	if fromWhere == "latest" {
+		log.Info(tokensNeeded, utils.ToJson(balances))
 	}
 	return ans, fromWhere
 }

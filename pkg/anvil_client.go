@@ -119,7 +119,6 @@ func (anvil *AnvilClient) SendTransaction(from common.Address, tx *types.Transac
 
 func (anvil *AnvilClient) SetEthBalance(to common.Address, value *big.Int) error {
 	body := utils.GetJsonRPCRequestBody("anvil_setBalance", to.Hex(), fmt.Sprintf("0x%x", value))
-	log.Info(body)
 	_, err := utils.JsonRPCMakeRequest(anvil.url, body)
 	return err
 }

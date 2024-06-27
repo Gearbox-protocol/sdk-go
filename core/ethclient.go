@@ -70,7 +70,7 @@ func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, bl
 	return bytes, err
 }
 
-func GetAddress(client ClientI, field string, version int64) common.Address {
+func GetAddress(client ClientI, field string, version int64) (common.Address, error) {
 	providerAddr := GetAddressProvider(GetChainId(client), NewVersion(300))
 	fbytes := []byte(field)
 	slot := make([]byte, 32)
@@ -80,8 +80,7 @@ func GetAddress(client ClientI, field string, version int64) common.Address {
 	slot = append(slot, hash[:]...)
 	//
 	addr, err := CallFuncWithExtraBytes(client, "b76b70d5", common.HexToAddress(providerAddr), 0, slot) // addresses
-	log.CheckFatal(err)
-	return common.BytesToAddress(addr)
+	return common.BytesToAddress(addr), err
 
 }
 
