@@ -56,6 +56,7 @@ type AllowedToken struct {
 	BlockNumber        int64        `gorm:"column:block_num;primaryKey"`
 	CreditManager      string       `gorm:"column:credit_manager;primaryKey"`
 	Configurator       string       `gorm:"column:configurator"`
+	LogID              uint         `gorm:"column:log_id"`
 	Token              string       `gorm:"column:token;primaryKey"`
 	LiquidityThreshold *core.BigInt `gorm:"column:liquiditythreshold"`
 	DisableBlock       int64        `gorm:"column:disable_block"`

@@ -10,6 +10,7 @@ type TokenLTRamp struct {
 	LtFinal       uint16 `gorm:"column:lt_final"`
 	RampStart     uint64 `gorm:"column:ramp_start"`
 	RampEnd       uint64 `gorm:"column:ramp_end"`
+	LogID         uint   `gorm:"column:log_id"`
 }
 
 func (TokenLTRamp) TableName() string {
