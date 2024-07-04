@@ -12,6 +12,8 @@
   arbBaseTokens: [
     'ARB',
     'GMX',
+    'ezETH',
+    'USDe',
   ],
   optBaseTokens: [
     'OP',

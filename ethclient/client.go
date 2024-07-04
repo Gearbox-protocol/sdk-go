@@ -227,10 +227,10 @@ func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Blo
 func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
 	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Block, error) {
 		block, err := c.client.BlockByNumber(ctx, number)
-		if err != nil && strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") {
+		if err != nil && (strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") || strings.Contains(strings.ToLower(err.Error()), "invalid transaction v, r, s values")) {
 			data, err := utils.JsonRPCMakeRequest(c.url, utils.GetJsonRPCRequestBody("eth_getBlockByNumber", fmt.Sprintf("0x%x", number), false))
 			if err != nil {
-				return nil, err
+				return nil, log.WrapErrWithLine(err)
 			}
 			ts := data.(map[string]interface{})["timestamp"]
 			num, err := strconv.ParseInt(ts.(string)[2:], 16, 64)
