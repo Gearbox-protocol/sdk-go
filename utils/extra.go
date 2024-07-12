@@ -1,6 +1,11 @@
 package utils
 
-import "github.com/Gearbox-protocol/sdk-go/log"
+import (
+	"bytes"
+	"io"
+
+	"github.com/Gearbox-protocol/sdk-go/log"
+)
 
 func ConvertToListOfInt64(list interface{}) (parsedInts []int64) {
 	switch ints := list.(type) {
@@ -33,4 +38,14 @@ func ListOfInt64List(_outList interface{}) (ans [][]int64) {
 		ans = outList
 	}
 	return
+}
+
+func ReadAndCreateReader(in io.Reader) (io.Reader, string, error) {
+	b := bytes.NewBuffer(nil)
+	_, err := b.ReadFrom(in)
+	if err != nil {
+		return nil, "", err
+	}
+	s := b.String()
+	return bytes.NewBuffer([]byte(s)), s, nil
 }
