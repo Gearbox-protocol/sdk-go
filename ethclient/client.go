@@ -114,7 +114,9 @@ func sleepFor429Error(msg string) int64 {
 func errorHandler(err error, mc *MutextedClient) bool {
 	if err != nil {
 		// fmt.Println("retrying")
-		if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
+		if strings.Contains(err.Error(), "connection reset by peer") || err.Error() == "unexpected EOF" {
+			mc.addSleepForSecs(3)
+		} else if strings.HasPrefix(err.Error(), "execution aborted (timeout =") {
 			log.Trace("sleeping due to ", err.Error())
 			mc.addSleepForSecs(60)
 		} else if strings.Contains(err.Error(), "not processed yet. Please try again") {
