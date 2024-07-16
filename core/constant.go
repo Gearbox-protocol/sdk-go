@@ -15,6 +15,7 @@ const LogFilterQueryTimeout = "Query timeout exceeded. Consider reducing your bl
 const NoderealFilterLogError = "exceed maximum block range:"
 const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
+const AclhemyExceedError = "Your app has exceeded its compute units per second capacity"
 const InfuraError = "query returned more than 113 results"
 const NoOfBlocksPerMin int64 = 5
 const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
@@ -26,6 +27,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), NoderealFilterLogError) ||
 			strings.Contains(err.Error(), AnvilManagerError) ||
 			strings.Contains(err.Error(), AnkrRangeError) ||
+			strings.Contains(err.Error(), AclhemyExceedError) ||
 			strings.Contains(err.Error(), "exceed max topics") || // for anvil
 			strings.Contains(err.Error(), LogFilterLenError) ||
 			strings.Contains(err.Error(), InfuraError) ||
