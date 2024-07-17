@@ -43,6 +43,7 @@
     LUSD: '0xc40F949F8a4e094D1b49a23ea9241D289B7b2819',
     RPL: '0xC81D1F0EB955B0c020E5d5b264E1FF72c14d1401',
     rETH: '0x9Bcef72be871e61ED4fBbc7630889beE758eb81D',
+    ezETH: '0x2416092f143378750bb29b79eD961ab195CcEea5',
     PENDLE: '0xBC7B1Ff1c6989f006a1185318eD4E7b5796e66E1',
     frxETH: '0x6806411765Af15Bddd26f8f544A34cC40cb9838B',
     sfrxETH: '0x484c2D6e3cDd945a8B2DF735e079178C1036578c',
@@ -282,5 +283,13 @@
       signersThreshold: 5,
     },
   },
-  compositeRedstone: {},
+  compositeRedstone: {
+    ezETH: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'ezETH/ETH',
+      signersThreshold: 5,
+      token: '0x658f8e60c57ad62a9299ef6c7b1da9a0d1d1e681',
+    },
+  },
 }
