@@ -19,7 +19,6 @@ import (
 type BaseTransactor struct {
 	Topts      *bind.TransactOpts
 	Client     core.ClientI
-	ChainId    int64
 	timeoutSec int
 }
 
@@ -43,7 +42,6 @@ func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec 
 	return &BaseTransactor{
 		Topts:      topts,
 		Client:     client,
-		ChainId:    chainId,
 		timeoutSec: timeoutSec,
 	}
 }
@@ -69,7 +67,7 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 		return int64(ts.Time)
 
 	}()
-	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d. Ts: %s", job, log.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d. Ts: %s", job, log.NetworkUIUrl(core.GetChainId(p.Client)).ExplorerUrl, receipt.TxHash.Hex(),
 		utils.GetFloat64Decimal(ethUsed, 18), gasUsed, time.Unix(ts, 0))
 	return receipt, nil
 }
