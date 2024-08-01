@@ -138,7 +138,8 @@ func errorHandler(err error, mc *MutextedClient) bool {
 			//This request is not supported because your node is running with state pruning. Run with --pruning=archive.
 		} else if err.Error() == "header not found" { // makemulticall failed with this error in definder
 			mc.addSleepForSecs(15)
-		} else if strings.Contains(err.Error(), "EVM error FatalExternalError") { // anvil error
+		} else if strings.Contains(err.Error(), "EVM error FatalExternalError")  || 
+		 strings.Contains(err.Error(), "failed to get storage") {// anvil error
 			log.Trace("Trying on anvil error")
 			mc.addSleepForSecs(3)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
