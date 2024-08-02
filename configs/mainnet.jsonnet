@@ -409,6 +409,7 @@
       rETH_wETH_BPT: 2,
       '33AURA_33ARB_33BAL': 3,
       ezETH_wstETH: 2,
+      bpt_ethtri: 3,
     },
   },
   redstone: {
