@@ -176,7 +176,7 @@ func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []TokenAndFeedType, balances
 		}
 	}
 	if fromWhere == "latest" {
-		log.Info(tokensNeeded, utils.ToJson(balances))
+		log.Debug(tokensNeeded, utils.ToJson(balances))
 	}
 	return ans, fromWhere
 }
