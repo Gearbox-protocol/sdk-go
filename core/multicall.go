@@ -46,7 +46,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 		if end > callsLen {
 			end = callsLen
 		}
-
+		line := log.DetectFuncAtStackN(2)
 		jobCalls := calls[callsInd:end]
 		sch.AddJob(func() []multicall.Multicall2Result {
 			tmpResult, err := contract.TryAggregate(opts, successRequired, jobCalls)
@@ -62,7 +62,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 				} else if strings.Contains(err.Error(), "Unknown block number") { // on alchemy in the trading-price
 					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize)
 				} else {
-					log.Fatal(err, blockNum, toHex(calls) )
+					log.Fatal(line, err, blockNum, toHex(calls) )
 				}
 			}
 			return tmpResult
