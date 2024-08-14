@@ -23,7 +23,6 @@
     'SUSD',
     'crvUSD',
     'stETH',
-
     'GUSD',
     'LUSD',
     'SNX',
@@ -58,6 +57,8 @@
     'cbETH',
     //
     'WLD',  // on optimism
+    // for gpointb arbitrum
+    'rsETH',
   ],
   yearnTokens: [
     {
