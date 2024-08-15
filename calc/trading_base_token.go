@@ -22,16 +22,28 @@ func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, underlying st
 	if !ok {
 		return "", ""
 	}
-
-	return tradingAndBase(loadSymToAddrStore(chainId), otherToken, underlying)
+	syms := loadSymToAddrStore(chainId)
+	tradingToken, baseToken, ok  = tradingAndBase(syms, otherToken, underlying)
+	if !ok {
+		return "", ""
+	}
+	return
 }
 
 // trading priority is higher than base
-func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, base string) {
-	if core.Priority(m[common.HexToAddress(a)]) > core.Priority(m[common.HexToAddress(b)]) {
-		return a, b
+func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, base string, ok bool) {
+	asym := m[common.HexToAddress(a)]
+	if asym  == "WETH" || asym == "WBTC" {
+		asym = asym[1:]
+	}
+	bsym := m[common.HexToAddress(b)]
+	if bsym == "WETH" || bsym == "WBTC" {
+		bsym = bsym[1:]
+	}
+	if core.Priority(asym) > core.Priority(bsym) {
+		return a, b, core.TradingPairs[core.TradingPair{Trading: asym, Base: bsym}]
 	} else {
-		return b, a
+		return b, a, core.TradingPairs[core.TradingPair{Trading: bsym, Base: asym}]
 	}
 }
 
