@@ -71,6 +71,9 @@ func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, 
 					utils.GetExpInt(4)),
 				quotaInUSD,
 			) // quoted value
+			if session.GetAddr() == "0x779DEACAF3a8E529DE9f1c668bDD6dabFe060c68" {
+				log.Info(token, "tv", tokenValueInUSD, "tvw", tokenTwvValueInUSD, "price",c.Store.GetPrices(token, pfVersion, blockNum), c.Store.GetLiqThreshold(ts, session.GetCM(), token))
+			}
 
 			// sum
 			totalValueInUSD = new(big.Int).Add(totalValueInUSD, tokenValueInUSD)
@@ -80,6 +83,9 @@ func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, 
 	}
 	//
 	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, pfVersion, blockNum)
+	if session.GetAddr() == "0x779DEACAF3a8E529DE9f1c668bDD6dabFe060c68" {
+		log.Info( calTotalValue, "price",c.Store.GetPrices(underlying, pfVersion, blockNum))
+	}
 	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, pfVersion, blockNum)
 	if debtDetails.borrowedAmount.Cmp(big.NewInt(0)) == 0 {
 		calHF = big.NewInt(65535)
