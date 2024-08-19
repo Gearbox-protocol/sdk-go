@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -31,7 +32,7 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // - whenever there is updateQuota, cumulative quota intereest and fees are stored in creditManager and cumulativeQuotaIndex for account is updated.
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
-func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16, failure bool) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails) {
+func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16, failure bool) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails, profile string) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -71,9 +72,8 @@ func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, 
 					utils.GetExpInt(4)),
 				quotaInUSD,
 			) // quoted value
-			if session.GetAddr() == "0x779DEACAF3a8E529DE9f1c668bDD6dabFe060c68" {
-				log.Info(token, "tv", tokenValueInUSD, "tvw", tokenTwvValueInUSD, "price",c.Store.GetPrices(token, pfVersion, blockNum), c.Store.GetLiqThreshold(ts, session.GetCM(), token))
-			}
+			profile += fmt.Sprintf("%s: tv: %s tvw: %s price: %s, lt: %v\n",
+				token, tokenValueInUSD, tokenTwvValueInUSD, c.Store.GetPrices(token, pfVersion, blockNum), c.Store.GetLiqThreshold(ts, session.GetCM(), token))
 
 			// sum
 			totalValueInUSD = new(big.Int).Add(totalValueInUSD, tokenValueInUSD)
@@ -84,7 +84,7 @@ func (c Calculator) CalcAccountFieldsv3(pfVersion schemas.PFVersion, ts uint64, 
 	//
 	calTotalValue = c.convertFromUSD(totalValueInUSD, underlying, pfVersion, blockNum)
 	if session.GetAddr() == "0x779DEACAF3a8E529DE9f1c668bDD6dabFe060c68" {
-		log.Info( calTotalValue, "price",c.Store.GetPrices(underlying, pfVersion, blockNum))
+		profile += fmt.Sprintf("%s priceunderlying: %s", calTotalValue, c.Store.GetPrices(underlying, pfVersion, blockNum))
 	}
 	calThresholdValue = c.convertFromUSD(tvwValueInUSD, underlying, pfVersion, blockNum)
 	if debtDetails.borrowedAmount.Cmp(big.NewInt(0)) == 0 {

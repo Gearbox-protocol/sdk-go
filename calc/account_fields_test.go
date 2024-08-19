@@ -104,7 +104,7 @@ func TestCalcFields(t *testing.T) {
 	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields.json", &input)
 	// //
 
-	calHF, calTotalValue, calThresholdValue, calDebtDetails := Calculator{Store: input.store}.CalcAccountFields(
+	calHF, calTotalValue, calThresholdValue, calDebtDetails, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
 		0,
 		input.PoolDetails,
@@ -134,7 +134,7 @@ func TestCalcFieldsWithFeeInterest(t *testing.T) {
 	utils.ReadJsonAndSetInterface("../inputs/calc_account_fields_v2.json", &input)
 	// //
 
-	calHF, calTotalValue, calThresholdValue, calDebtDetails := Calculator{Store: input.store}.CalcAccountFields(
+	calHF, calTotalValue, calThresholdValue, calDebtDetails, _ := Calculator{Store: input.store}.CalcAccountFields(
 		0,
 		0,
 		//
