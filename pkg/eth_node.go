@@ -159,11 +159,19 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	}
 
 	// from other address to treasury
-	newLogs, err := lf.GetLogs(queryFrom, queryTill, hexAddrs, append(topics, otherAddrTopic, treasuryAddrTopic))
-	if err != nil {
-		return lf.onGetLogsError(err, queryFrom, queryTill, hexAddrs, treasuryAddrTopic) // in small batches, another code in this function is ignored
+	{
+		newLogs, err := lf.GetLogs(queryFrom, queryTill, hexAddrs, append(topics, otherAddrTopic, treasuryAddrTopic))
+		if err != nil {
+			return lf.onGetLogsError(err, queryFrom, queryTill, hexAddrs, treasuryAddrTopic) // in small batches, another code in this function is ignored
+		}
+		logs = append(logs, newLogs...)
+
 	}
-	return append(newLogs, logs...), nil
+	sort.SliceStable(logs, func(i, j int) bool {
+		return logs[i].BlockNumber < logs[j].BlockNumber ||
+			(logs[i].BlockNumber == logs[j].BlockNumber && logs[i].Index < logs[j].Index)
+	})
+	return logs, nil
 }
 
 func GetEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
