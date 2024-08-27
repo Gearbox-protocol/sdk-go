@@ -97,7 +97,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, token string, composite bool) *big.Int 
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (*big.Int, string) {
 
-	price := r.getAPIPrice(ts, token, composite)
+	price := r.getAPIPrice(ts, token, composite, "redstone-primary-prod")
 	if price.Cmp(new(big.Int)) == 0 {
 		details := r.redStoneTokens.Get(token, composite)
 		ans := getHistoricPodSign(ts, details)[details.DataId]
@@ -117,9 +117,9 @@ func tenthMillSec(ts int64) int64 {
 }
 
 // https://api.docs.redstone.finance/methods/gethistoricalprice
-func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.Int {
+func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provider string) *big.Int {
 	details := r.redStoneTokens.Get(token, composite)
-	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=redstone&toTimestamp=%d&limit=1", details.DataId, tenthMillSec(ts))
+	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId,provider, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err != nil || res.StatusCode/100 != 2 {
 		return new(big.Int)
@@ -135,7 +135,12 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool) *big.I
 		return new(big.Int)
 	}
 	if len(parsedResp) == 0 {
-		log.Info("empty response from redstone api", url, token)
+		log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
+		if provider == "redstone-primary-prod" { // try on another provider
+			return r.getAPIPrice(ts, token, composite, "redstone")
+		} else {
+			log.Fatal("can't get price for token ", token, " at timestamp ", ts)
+		}
 	}
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
 }
