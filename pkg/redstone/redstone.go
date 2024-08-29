@@ -135,7 +135,7 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 		return new(big.Int)
 	}
 	if len(parsedResp) == 0 {
-		log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
+		// log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
 		if provider == "redstone-primary-prod" { // try on another provider
 			return r.getAPIPrice(ts, token, composite, "redstone")
 		} else {
