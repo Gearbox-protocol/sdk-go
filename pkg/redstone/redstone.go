@@ -96,9 +96,9 @@ func (r *RedStoneMgr) GetPrice(ts int64, token string, composite bool) *big.Int 
 	return price
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (*big.Int, string) {
-
 	price := r.getAPIPrice(ts, token, composite, "redstone-primary-prod")
 	if price.Cmp(new(big.Int)) == 0 {
+		log.Warn("price from api for ", token, " is 0.composite: ", composite)
 		details := r.redStoneTokens.Get(token, composite)
 		ans := getHistoricPodSign(ts, details)[details.DataId]
 		if ans == nil {
@@ -139,7 +139,7 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 		if provider == "redstone-primary-prod" { // try on another provider
 			return r.getAPIPrice(ts, token, composite, "redstone")
 		} else {
-			log.Fatal("can't get price for token ", token, " at timestamp ", ts)
+			return new(big.Int)
 		}
 	}
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
