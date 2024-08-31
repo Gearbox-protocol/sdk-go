@@ -492,7 +492,7 @@
     WBTC: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
-      dataId: 'WBTC',
+      dataId: 'BTC',
       signersThreshold: 5,
     },
     WETH: {
