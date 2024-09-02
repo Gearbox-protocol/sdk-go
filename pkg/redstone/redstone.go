@@ -96,7 +96,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, token string, composite bool) *big.Int 
 	return price
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (*big.Int, string) {
-	price := r.getAPIPrice(ts, token, composite, "redstone-primary-prod")
+	price := r.getAPIPrice(ts, token, composite, "redstone")
 	if price.Cmp(new(big.Int)) == 0 {
 		log.Warn("price from api for ", token, " is 0.composite: ", composite)
 		details := r.redStoneTokens.Get(token, composite)
@@ -136,8 +136,8 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 	}
 	if len(parsedResp) == 0 {
 		// log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
-		if provider == "redstone-primary-prod" { // try on another provider
-			return r.getAPIPrice(ts, token, composite, "redstone")
+		if provider == "redstone" { // try on another provider
+			return r.getAPIPrice(ts, token, composite, "redstone-primary-prod")
 		} else {
 			return new(big.Int)
 		}
