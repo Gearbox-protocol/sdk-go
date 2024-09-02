@@ -121,7 +121,17 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 	details := r.redStoneTokens.Get(token, composite)
 	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId,provider, tenthMillSec(ts))
 	res, err := http.Get(url)
-	if err != nil || res.StatusCode/100 != 2 {
+	if err == nil && res.StatusCode == 403 { // from cloudflare
+		log.Info("sleeping in getAPIPrice at ", ts)
+		time.Sleep(1*time.Minute)
+		return r.getAPIPrice(ts, token, composite, provider)
+	} else if err != nil || res.StatusCode/100 != 2 {
+		if err == nil {
+			body ,err2:=io.ReadAll(res.Body)
+			log.Warn(err, res.StatusCode, string(body), err2)
+		} else {
+			log.Warn(err)
+		}
 		return new(big.Int)
 	}
 	// from historic api
