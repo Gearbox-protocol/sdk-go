@@ -12,6 +12,9 @@ import (
 
 func NewDBClient(con string, config *gorm.Config) *gorm.DB {
 	urls := func () []string {
+		if !strings.Contains(con, "@") {
+			return []string{con}
+		}
 		s:= strings.Split(con, "@")
 		front := s[0]
 		s = strings.Split(s[1], "/")
