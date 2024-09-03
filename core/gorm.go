@@ -33,10 +33,18 @@ func newDB(url string, cof *gorm.Config) (*gorm.DB, error){
 }
 
 func selectDB(urls []string,  cof *gorm.Config) (db *gorm.DB, err error) {
+	data := &struct {
+		RecoveryMode bool `gorm:"column:pg_is_in_recovery"`
+	}{}
 	for ind:=0;  ind< len(urls); ind++ { // for each url, try 2 times
 		for i:=0;i< 2 ; i++ {
 			db, err = newDB(urls[ind], cof)
 			if !isServerDown(err)  {
+				err = db.Raw("SELECT pg_is_in_recovery();").First(data).Error
+				if err != nil || data.RecoveryMode {
+					log.Info("Recovery mode", ind)
+					break
+				}
 				log.Info("using gorm db ind", ind)
 				return db, err
 			}
