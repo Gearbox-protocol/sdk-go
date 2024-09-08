@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -174,7 +175,7 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 	return logs, nil
 }
 
-func GetEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
+func getEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
 	url := "https://%s/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
 	var suffix string
 	switch log.GetBaseNet(chainId) {
@@ -188,8 +189,14 @@ func GetEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
 	return url
 }
-func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, error) {
-	url := GetEtherscanUrl(etherscanAPI, chainId, ts)
+// dont use outside sdk-go, chainid should be of main network, not testnet
+func getEtherscanBlockNum(chainId int64, ts int64) (int64, error) {
+	etherscanAPI := utils.GetEnvOrDefault(fmt.Sprintf("%s_API_KEY", log.GetNetworkName(chainId)), "")
+	if etherscanAPI == "" {
+		log.Fatalf("%s_API_KEY can't be empty", log.GetNetworkName(chainId))
+	}
+
+	url := getEtherscanUrl(etherscanAPI, chainId, ts)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
@@ -209,7 +216,13 @@ func GetBlockNumForTs(etherscanAPI string, chainId int64, ts int64) (int64, erro
 	}
 	return blockNum, nil
 }
-func MoralisGetBlockNumForTs(chainId int64, ts int64) (int64, error) {
+// dont use outside sdk-go, chainid should be of main network, not testnet
+func getMoralisBlockNum(chainId int64, ts int64) (int64, error) {
+	moralis := utils.GetEnvOrDefault("MORALIS_API_KEY", "")
+	if moralis == "" {
+		return 0, fmt.Errorf("MORALIS_API_KEY not set")
+	}
+	//
 	var chain string
 	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
@@ -226,7 +239,6 @@ func MoralisGetBlockNumForTs(chainId int64, ts int64) (int64, error) {
 		return 0, err
 	}
 	req.Header.Set("accept", "application/json")
-	moralis := utils.GetEnvOrDefault("MORALIS_API_KEY", "")
 	req.Header.Set("X-API-Key", moralis)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -240,4 +252,35 @@ func MoralisGetBlockNumForTs(chainId int64, ts int64) (int64, error) {
 	msg := &respBody{}
 	utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
 	return msg.Block, nil
+}
+
+
+func GetBlockNum(ts uint64, chainId int64) int64 {
+	network := log.GetBaseNet(chainId)
+	chainId = log.GetNetworkToChainId(network)
+	if ts == 0 {
+		log.Fatalf("ts can't be 0 for %d", chainId)
+	}
+	//
+	var errEtherScan error
+	{
+		for i := 0; i < 2; i++ {
+			blockNum, _err := getEtherscanBlockNum(chainId, int64(ts))
+			if _err == nil {
+				return blockNum
+			}
+			time.Sleep(5 * time.Second)
+			errEtherScan = _err
+		}
+	}
+	var moralisErr error
+	{
+		blockNum, err := getMoralisBlockNum(chainId, int64(ts))
+		if err == nil {
+			return blockNum
+		}
+		moralisErr = err
+	}
+	log.Warn( "for ts", ts, chainId, "blockNum is 0", errEtherScan, moralisErr)
+	return 0
 }

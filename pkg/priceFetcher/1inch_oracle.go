@@ -124,6 +124,8 @@ type URLsAndResolve struct {
 	result        map[string]*core.BigInt
 }
 
+// if resolve is set, set all 3 clients.
+// else client for given network
 func (d *URLsAndResolve) resolve(client core.ClientI) {
 	if d.Resolve {
 		d.mainclient = GetNetworkClient(d.Urls, log.MAINNET)
@@ -236,6 +238,9 @@ func (calc *OneInchOracle) GetCalls() []multicall.Multicall2Call {
 // yearn dependent on curve and base
 // curve dependent on base
 // const and base doesn't dependent on any token.
+// for mainnet fetch all 3network tokens.
+// for optimism, mainnet+optimism
+// for arbitrum, mainnet+optimism
 func (calc OneInchOracle) GetPrices(results []multicall.Multicall2Result, blockNumber int64, ts uint64) map[string]*core.BigInt {
 	defer utils.Elapsed(fmt.Sprintf("GetPrices for block: %d", blockNumber))()
 	if len(results) != len(calc.generatedCalls) {

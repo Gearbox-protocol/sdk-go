@@ -76,6 +76,7 @@ func (mdl TokensStore) Exists(token common.Address) bool {
 	return ok
 }
 
+// filter already fetched tokens
 func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.Address) {
 	for _, addr := range addrs {
 		if mdl.tokens[addr] == nil {
@@ -84,6 +85,7 @@ func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.
 	}
 	return
 }
+// if already has data on that token, doesn't fetch again
 func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
 	mdl.mu.Lock()
 	defer mdl.mu.Unlock()

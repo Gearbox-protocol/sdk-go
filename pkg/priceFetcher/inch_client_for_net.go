@@ -2,7 +2,6 @@ package priceFetcher
 
 import (
 	"strings"
-	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -83,32 +82,13 @@ func (calc OneInchOracle) arbForMainnet(mainnetTs uint64, prices map[string]*cor
 	if calc.extraurls.arbclient != nil {
 		defer utils.Elapsed("arbitrum price fetch")()
 		calls := calc.GetArbBaseCalls()
-		results := core.MakeMultiCall(calc.extraurls.arbclient, getArbBlockNum(mainnetTs), false, calls)
+		arbblock := pkg.GetBlockNum(mainnetTs, 42161)
+		if arbblock == 0 {
+			return
+		}
+		results := core.MakeMultiCall(calc.extraurls.arbclient, arbblock, false, calls)
 		calc.processSeparateBaseResults(results, prices, calc.ArbBaseTokens)
 	}
-}
-
-func getArbBlockNum(ts uint64) int64 {
-	if ts != 0 {
-		etherscanAPI := utils.GetEnvOrDefault("ARBISCAN_API_KEY", "")
-		if etherscanAPI == "" {
-			log.Fatal("arbiscan_api_key can't be empty")
-		}
-		var err error
-		for i := 0; i < 2; i++ {
-			blockNum, _err := pkg.GetBlockNumForTs(etherscanAPI, 42161, int64(ts))
-			if _err == nil {
-				return blockNum
-			}
-			time.Sleep(5 * time.Second)
-			err = _err
-		}
-		log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 42161, int64(ts)))
-		return 0
-	} else {
-		log.Fatal("ts can't be 0")
-	}
-	return 0
 }
 
 func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
@@ -135,43 +115,13 @@ func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*cor
 	if calc.extraurls.optclient != nil {
 		defer utils.Elapsed("optimism price fetch")()
 		calls := calc.GetOptBaseCalls()
-		optblock := getOptBlockNum(mainnetTs)
+		optblock := pkg.GetBlockNum(mainnetTs, 10)
 		if optblock == 0 {
 			return
 		}
 		results := core.MakeMultiCall(calc.extraurls.optclient, optblock, false, calls)
 		calc.processSeparateBaseResults(results, prices, calc.OptBaseTokens)
 	}
-}
-
-func getOptBlockNum(ts uint64) int64 {
-	if ts != 0 {
-		blockNum, err := pkg.MoralisGetBlockNumForTs(10, int64(ts))
-		if err == nil {
-			return blockNum
-		}
-	}
-	//
-	if ts != 0 {
-		etherscanAPI := utils.GetEnvOrDefault("OPTIMISM_API_KEY", "")
-		if etherscanAPI == "" {
-			log.Fatal("optimism_api_key can't be empty")
-		}
-		var err error
-		for i := 0; i < 2; i++ {
-			blockNum, _err := pkg.GetBlockNumForTs(etherscanAPI, 10, int64(ts))
-			if _err == nil {
-				return blockNum
-			}
-			time.Sleep(5 * time.Second)
-			err = _err
-		}
-		log.Warn(err, "for ts", ts, pkg.GetEtherscanUrl(etherscanAPI, 10, int64(ts)))
-		return 0
-	} else {
-		log.Fatal("ts can't be 0")
-	}
-	return 0
 }
 
 func (calc OneInchOracle) GetOptBaseCalls() (calls []multicall.Multicall2Call) {
