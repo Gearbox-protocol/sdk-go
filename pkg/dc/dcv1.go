@@ -93,8 +93,7 @@ func getCMDatav1(data mainnet.DataTypesCreditManagerData) CMCallData {
 
 func getCreditAccountDatav1(client core.ClientI, cfAddrv1 common.Address, blockNum int64, data mainnet.DataTypesCreditAccountDataExtended) (CreditAccountCallData, error) {
 	latestFormat := CreditAccountCallData{
-		// 	IsSuccessful              bool
-		// PriceFeedsNeeded          []common.Address
+		IsSuccessful: true,
 		Addr:          data.Addr,
 		Borrower:      data.Borrower,
 		CreditManager: data.CreditManager,

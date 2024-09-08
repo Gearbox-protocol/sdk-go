@@ -61,6 +61,7 @@ func getCMDatav2(values dcv2.CreditManagerData) CMCallData {
 }
 func getAccountDatav2(values dcv2.CreditAccountData) CreditAccountCallData {
 	return CreditAccountCallData{
+		IsSuccessful: true,
 		Addr:           values.Addr,
 		Borrower:       values.Borrower,
 		CreditManager:  values.CreditManager,

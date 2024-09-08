@@ -49,6 +49,7 @@ func getAccountDatav3(values dcv3.CreditAccountData) CreditAccountCallData {
 		log.Warn("getAccountDatav3: IsSuccessful is false", values.Addr.Hex())
 	}
 	return CreditAccountCallData{
+		IsSuccessful: values.IsSuccessful,
 		Addr:           values.Addr,
 		Borrower:       values.Borrower,
 		CreditManager:  values.CreditManager,

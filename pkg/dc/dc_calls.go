@@ -81,6 +81,7 @@ type CMCallData struct {
 }
 
 type CreditAccountCallData struct {
+	IsSuccessful bool
 	Addr           common.Address `json:"address"`
 	Borrower       common.Address `json:"borrower"`
 	CreditManager  common.Address `json:"creditManager"`
