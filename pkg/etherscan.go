@@ -18,10 +18,10 @@ type EtherScan struct {
 	retryTimes int
 }
 
-func NewEtherScan(url string) *EtherScan {
+func NewEtherScan(url string, apiKey string) *EtherScan {
 	return &EtherScan{
 		url:        url,
-		ApiKey:     utils.GetEnvOrPanic("ETHERSCAN_API_KEY"),
+		ApiKey:     apiKey,
 		retryTimes: 3,
 	}
 }
