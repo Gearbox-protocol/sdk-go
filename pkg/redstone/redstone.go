@@ -159,7 +159,7 @@ func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, bala
 	defer func() {
 		if err := recover(); err != nil {
 			debug.PrintStack()
-			log.Error(err)
+			log.Error(err, ts, utils.ToJson(tokensNeeded), balances)
 		}
 	}()
 	fromWhere := ""
