@@ -89,3 +89,8 @@ func GetChainId(client ClientI) int64 {
 	log.CheckFatal(err)
 	return chainId.Int64()
 }
+func GetBaseChainId(client ClientI) int64 {
+	chainId, err := client.(interface { BaseChainID(ctx context.Context) (*big.Int, error) }).BaseChainID(context.TODO())
+	log.CheckFatal(err)
+	return chainId.Int64()
+}

@@ -46,7 +46,7 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 		return getChainIdFromRPC(url)
 	}
 
-	var flagChainId *big.Int = new(big.Int)
+	var baseChainId *big.Int = new(big.Int)
 	for _, netId := range []int64{1, 42161, 10} {
 		addrs := core.GetSymToAddrByChainId(netId)
 		usdc := addrs.Tokens["USDC"]
@@ -54,14 +54,14 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 		log.CheckFatal(err)
 		_, err = core.CallFuncWithExtraBytes(client, "95d89b41", usdc, 0, nil)
 		if err == nil {
-			flagChainId = big.NewInt(netId)
+			baseChainId = big.NewInt(netId)
 			break
 		}
 	}
 	client, err := ethclient.Dial(url)
 	if err != nil {
-		return flagChainId, nil, err
+		return baseChainId, nil, err
 	}
 	testChainId, err := client.ChainID(context.Background())
-	return flagChainId, testChainId, err
+	return baseChainId, testChainId, err
 }

@@ -30,7 +30,7 @@ type Client struct {
 	url       string
 	noOfCalls *atomic.Int32
 	// this is the testnet id like 7878,7880
-	flagChainId int64
+	baseChainId int64
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -194,13 +194,13 @@ func (rc Client) getClient(ignoreClients map[int]bool, req Req) (*MutextedClient
 }
 
 // this i 1, 42161 etc. flag is underlying id and test /chainid is the testnet id like 7878,7880
-func (rc *Client) FlagChainID(ctx context.Context) (*big.Int, error) {
-	if rc.flagChainId == 0 {
+func (rc *Client) BaseChainID(ctx context.Context) (*big.Int, error) {
+	if rc.baseChainId == 0 {
 		if _, err := rc.ChainID(ctx); err != nil {
 			return nil, log.WrapErrWithLine(err)
 		}
 	}
-	return big.NewInt(rc.flagChainId), nil
+	return big.NewInt(rc.baseChainId), nil
 }
 func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	// cache
@@ -210,9 +210,9 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	}
 	// locks
 	v, err := getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) {
-		flag, test, err := GetFlagAndTestChainId(c.url)
-		if flag != nil && rc.flagChainId == 0 {
-			atomic.SwapInt64(&(rc.flagChainId), flag.Int64())
+		base, test, err := GetFlagAndTestChainId(c.url)
+		if base != nil && rc.baseChainId == 0 {
+			atomic.SwapInt64(&(rc.baseChainId), base.Int64())
 		}
 		return test, err
 	})
