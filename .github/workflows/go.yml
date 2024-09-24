@@ -2,28 +2,27 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.19
-    - name: Generate Test files
-      uses: actions/cache@v2
-      id: cache-jsonnet-test  # give it a name for checking the cache hit-or-not
-      with:
-        path: ./inputs/  # what we cache: the folder
-        key: ${{ runner.os }}-${{ hashFiles('./jsonnet/**') }}
-    - run: go install github.com/google/go-jsonnet/cmd/...@latest && ./generate-test.sh
-      if: steps.cache-jsonnet-test.outputs.cache-hit != 'true'
-    - name: Test lib build
-      run: go vet ./...   && go test ./calc ./core ./core/schemas ./log ./test ./utils
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20.10
+      - name: Generate Test files
+        uses: actions/cache@v2
+        id: cache-jsonnet-test # give it a name for checking the cache hit-or-not
+        with:
+          path: ./inputs/ # what we cache: the folder
+          key: ${{ runner.os }}-${{ hashFiles('./jsonnet/**') }}
+      - run: go install github.com/google/go-jsonnet/cmd/...@latest && ./generate-test.sh
+        if: steps.cache-jsonnet-test.outputs.cache-hit != 'true'
+      - name: Test lib build
+        run: go vet ./...   && go test ./calc ./core ./core/schemas ./log ./test ./utils

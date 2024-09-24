@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -18,14 +19,12 @@ import (
 type BaseTransactor struct {
 	Topts      *bind.TransactOpts
 	Client     core.ClientI
-	ChainId    int64
 	timeoutSec int
 }
 
 func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec int) *BaseTransactor {
 	//
-	chainId, err := client.ChainID(context.TODO())
-	log.CheckFatal(err)
+	chainId := core.GetChainId(client)
 	//
 	if strings.HasPrefix(privateKey, "enc:") {
 		fmt.Printf("Enter password:")
@@ -37,13 +36,12 @@ func NewBaseTransactor(addr, privateKey string, client core.ClientI, timeoutSec 
 	if addr != "" && common.HexToAddress(addr) != wallet.Address {
 		log.Fatal("Wrong prv key with addr", wallet.Address)
 	}
-	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId.Int64()))
+	topts, err := bind.NewKeyedTransactorWithChainID(wallet.PrivateKey, big.NewInt(chainId))
 	log.CheckFatal(err)
 	//
 	return &BaseTransactor{
 		Topts:      topts,
 		Client:     client,
-		ChainId:    chainId.Int64(),
 		timeoutSec: timeoutSec,
 	}
 }
@@ -61,8 +59,16 @@ func (p *BaseTransactor) WaitForTx(job string, tx *types.Transaction) (*types.Re
 			job, utils.ToJson(core.ToDynamicTx(tx)), receipt)
 	}
 	ethUsed, gasUsed := p.getEthUsed(receipt)
-	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d.", job, core.NetworkUIUrl(p.ChainId).ExplorerUrl, receipt.TxHash.Hex(),
-		utils.GetFloat64Decimal(ethUsed, 18), gasUsed)
+	ts := func() int64 {
+		ts, err := p.Client.HeaderByNumber(context.TODO(), receipt.BlockNumber)
+		if err != nil {
+			return 0
+		}
+		return int64(ts.Time)
+
+	}()
+	log.AMQPMsgf("%s TxHash: %s/tx/%s used eth %f  and gas used is %d. Ts: %s", job, log.NetworkUIUrl(core.GetChainId(p.Client)).ExplorerUrl, receipt.TxHash.Hex(),
+		utils.GetFloat64Decimal(ethUsed, 18), gasUsed, time.Unix(ts, 0))
 	return receipt, nil
 }
 

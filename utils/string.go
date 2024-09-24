@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func Contains(s []string, e string) bool {
+func Contains[T comparable](s []T, e T) bool {
 	for _, a := range s {
 		if a == e {
 			return true
@@ -121,6 +121,12 @@ func ReadFromEnv(val interface{}) {
 		switch envVarDS.Type.Kind() {
 		case reflect.String:
 			rv.Field(i).SetString(value)
+		case reflect.Slice: // setting array of strings
+			arr := strings.Split(strings.Trim(value, " "), ",")
+			if arr[0] == "" {
+				arr = []string{}
+			}
+			rv.Field(i).Set(reflect.ValueOf(arr))
 		case reflect.Int64, reflect.Int32, reflect.Int, reflect.Int16:
 			num, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
@@ -142,6 +148,8 @@ func ReadFromEnv(val interface{}) {
 				log.Fatalf("Err(%s) while getting env float %s", err, envField)
 			}
 			rv.Field(i).SetFloat(f)
+		default:
+			log.Fatal(envVarDS.Type.Kind())
 		}
 	}
 }

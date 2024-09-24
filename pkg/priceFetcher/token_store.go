@@ -76,6 +76,7 @@ func (mdl TokensStore) Exists(token common.Address) bool {
 	return ok
 }
 
+// filter already fetched tokens
 func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.Address) {
 	for _, addr := range addrs {
 		if mdl.tokens[addr] == nil {
@@ -84,6 +85,7 @@ func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.
 	}
 	return
 }
+// if already has data on that token, doesn't fetch again
 func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
 	mdl.mu.Lock()
 	defer mdl.mu.Unlock()
@@ -114,9 +116,16 @@ func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
 		result = itr.Next()
 		var sym string
 		if result.Success {
-			if values, _ := tokenABI.Unpack("symbol", result.ReturnData); len(values) > 0 {
-				sym = values[0].(string)
+			if values, err := tokenABI.Unpack("symbol", result.ReturnData); err == nil {
+				if len(values) > 0 {
+					sym = values[0].(string)
+				}
+			} else {
+				sym, _ = schemas.SymbolFnReturnsBytes(mdl.client, addr)
 			}
+		}
+		if sym == "" {
+			log.Fatal("can't get symbol for token", addr.Hex())
 		}
 		if ok {
 			mdl.tokens[addr] = &schemas.Token{
