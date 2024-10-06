@@ -27,14 +27,29 @@ type (
 		// v3
 		LTRamp       []*schemas_v3.TokenLTRamp  `gorm:"foreignKey:block_num" json:"-"`
 		QuotaDetails []*schemas_v3.QuotaDetails `gorm:"foreignKey:block_num" json:"-"`
+
+		Relations []*Relation `gorm:"foreignKey:block_num"`
 		// AccountQuotaInfo []*schemas_v3.AccountQuotaInfo `gorm:"foreignKey:block_num" json:"-"`
 	}
 )
+
+
+
 
 func (Block) TableName() string {
 	return "blocks"
 }
 
+type Relation struct {
+	Owner string `gorm:"column:owner"`
+	BlockNum int64 `gorm:"column:block_num"`
+	Dependent string `gorm:"column:dependent"`
+	Type string `gorm:"column:category"` 
+}
+
+func (Relation) TableName() string {
+	return "relations"
+}
 // v3
 
 func (b *Block) AddTokenLTRamp(details *schemas_v3.TokenLTRamp) {
@@ -42,6 +57,9 @@ func (b *Block) AddTokenLTRamp(details *schemas_v3.TokenLTRamp) {
 }
 func (b *Block) AddQuotaDetails(details *schemas_v3.QuotaDetails) {
 	b.QuotaDetails = append(b.QuotaDetails, details)
+}
+func (b *Block) AddRelation(details *Relation) {
+	b.Relations = append(b.Relations, details)
 }
 
 // func (b *Block) AddAccountQuotaInfo(details *schemas_v3.AccountQuotaInfo) {

@@ -14,6 +14,8 @@ type PoolState struct {
 	BaseBorrowAPYBI        *core.BigInt     `gorm:"column:base_borrow_apy_bi"`
 	DepositAPYBI           *core.BigInt     `gorm:"column:deposit_apy_bi"`
 	Version                core.VersionType `gorm:"column:_version"`
+	Market string `gorm:"column:market" json:"market"`
+	PriceOracle PriceOracleT `gorm:"column:price_oracle" json:"priceOracle"`
 	//
 	Name string `gorm:"column:name"`
 }

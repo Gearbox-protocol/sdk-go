@@ -7,12 +7,16 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
 
+type PriceOracleT string
 type TokenOracle struct {
+	PriceOracle PriceOracleT     `gorm:"primaryKey;column:price_oracle" json:"priceOracle"`
 	BlockNumber int64            `gorm:"primaryKey;column:block_num" json:"blockNum"`
 	Token       string           `gorm:"primaryKey;column:token" json:"token"`
 	Oracle      string           `gorm:"column:oracle" json:"oracle"`
 	Feed        string           `gorm:"column:feed" json:"feed"`
-	Version     core.VersionType `gorm:"primaryKey;column:version" json:"version"`
+	DisabledAt  int64            `gorm:"column:disabled_at"`
+	Dirty bool `gorm:"-"`
+	Version     core.VersionType `gorm:"column:version" json:"version"`
 	Reserve     bool             `gorm:"primaryKey;column:reserve" json:"reserve"`
 	FeedType    string           `gorm:"feed_type" json:"-"`
 	Underlyings []string         `gorm:"-"`
@@ -31,10 +35,10 @@ func (TokenOracle) TableName() string {
 type PriceFeed struct {
 	ID int64 `gorm:"column:id;autoIncrement:true" json:"-"`
 	//
-	BlockNumber     int64           `gorm:"primaryKey;column:block_num" json:"blockNum"`
-	Token           string          `gorm:"primaryKey;column:token" json:"token"`
-	MergedPFVersion MergedPFVersion `gorm:"primaryKey;column:merged_pf_version" json:"mergedPFVersion"`
-	Feed            string          `gorm:"column:feed" json:"feed"`
+	BlockNumber int64 `gorm:"primaryKey;column:block_num" json:"blockNum"`
+	// Token           string          `gorm:"primaryKey;column:token" json:"token"`
+	// MergedPFVersion MergedPFVersion `gorm:"primaryKey;column:merged_pf_version" json:"mergedPFVersion"`
+	Feed string `gorm:"column:feed" json:"feed"`
 	//
 	RoundId int64        `gorm:"column:round_id" json:"roundId"`
 	PriceBI *core.BigInt `gorm:"column:price_bi" json:"priceBI"`
@@ -42,12 +46,10 @@ type PriceFeed struct {
 }
 
 func (pf PriceFeed) String() string {
-	return fmt.Sprintf("Feed(%s) at block %d for token %s with Price %f. merged_pfVersion: %v",
+	return fmt.Sprintf("Feed(%s) at block %d with Price %f",
 		pf.Feed,
 		pf.BlockNumber,
-		pf.Token,
 		pf.Price,
-		pf.MergedPFVersion,
 	)
 }
 

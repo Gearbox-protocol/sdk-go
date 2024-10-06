@@ -11,7 +11,7 @@ import (
 
 type TokenDetailsForCalcI interface {
 	GetToken(token string) *schemas.Token
-	GetPrices(underlyingToken string, version schemas.PFVersion, blockNums ...int64) *big.Int
+	GetPrices(cm,underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
 	GetLiqThreshold(ts uint64, cm, token string) *big.Int
 }
 
@@ -64,9 +64,9 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	poolDetails PoolForCalcI,
 	account AccountForCalcI, feeInterest uint16, failure bool,
 ) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails, profile string) {
-	pfVersion := schemas.VersionToPFVersion(account.GetVersion(), false)
-	if pfVersion.ToVersion().Eq(300) {
-		return c.CalcAccountFieldsv3(pfVersion, ts, blockNum, poolDetails, account, feeInterest, failure)
+	version := account.GetVersion()
+	if version.Eq(300) {
+		return c.CalcAccountFieldsv3(version, ts, blockNum, poolDetails, account, feeInterest, failure)
 	}
 
 	// logic for v1 and v2
@@ -78,7 +78,7 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	for token, balance := range account.GetBalances() {
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
-			tokenValueInUSD := c.convertToUSD(balance.BI.Convert(), token, pfVersion, blockNum)
+			tokenValueInUSD := c.convertToUSD(account.GetCM(),balance.BI.Convert(), token, version, blockNum)
 			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(ts, account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
@@ -95,21 +95,22 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 		interest:       new(big.Int).Sub(calBorrowWithInterest, account.GetBorrowedAmount()),
 	}
 	//
-	calTotalValue = c.convertFromUSD(calTotalValueInUSD, underlyingToken, pfVersion, blockNum)
+	calTotalValue = c.convertFromUSD(account.GetCM(), calTotalValueInUSD, underlyingToken, version, blockNum)
 	calThresholdValue = utils.GetInt64(
 		c.convertFromUSD(
+			account.GetCM(),
 			calThresholdValueInUSD,
-			underlyingToken, pfVersion, blockNum,
+			underlyingToken, version, blockNum,
 		),
 		4, // div by the per factor
 	)
 	//
-	if pfVersion.ToVersion().Eq(1) {
+	if version.Eq(1) {
 		calHF = new(big.Int).Quo(
 			utils.GetInt64(calThresholdValue, -4),
 			debtDetails.Total(),
 		)
-	} else if pfVersion.ToVersion().Eq(2) {
+	} else if version.Eq(2) {
 		//https://github.com/Gearbox-protocol/core-v2/blob/da38b329f0c59e4a3dcedc993192bbc849d981f5/contracts/credit/CreditFacade.sol#L1206
 		fees := utils.PercentMul(debtDetails.Interest(), big.NewInt(int64(feeInterest)))
 		debtDetails.total = new(big.Int).Add(debtDetails.total, fees)
@@ -121,15 +122,15 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	return
 }
 
-func (c Calculator) convertToUSD(amount *big.Int, token string, version schemas.PFVersion, blockNum int64) *big.Int {
+func (c Calculator) convertToUSD(cm string, amount *big.Int, token string, version core.VersionType, blockNum int64) *big.Int {
 	tokenDecimals := c.Store.GetToken(token).Decimals
-	tokenPrice := c.Store.GetPrices(token, version, blockNum)
+	tokenPrice := c.Store.GetPrices(cm, token, version, blockNum)
 	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals)
 	return tokenValueInUSD
 }
-func (c Calculator) convertFromUSD(amount *big.Int, underlyingToken string, pfVersion schemas.PFVersion, blockNum int64) *big.Int {
+func (c Calculator) convertFromUSD(cm string,amount *big.Int, underlyingToken string, version core.VersionType, blockNum int64) *big.Int {
 	underlyingDecimals := c.Store.GetToken(underlyingToken).Decimals
-	underlyingPrice := c.Store.GetPrices(underlyingToken, pfVersion, blockNum)
+	underlyingPrice := c.Store.GetPrices(cm, underlyingToken, version, blockNum)
 	value := new(big.Int).Quo(utils.GetInt64(amount, -1*underlyingDecimals), underlyingPrice)
 	return value
 }
