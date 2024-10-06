@@ -59,10 +59,13 @@ var RAY *big.Int = utils.GetExpInt(RAY_DECIMALS)
 func GetAddressProvider(chainId int64, version VersionType) string {
 	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
+		// if version == NewVersion(300) { // later when the v3 is switched to v3.1
+		// 	return "0x0000000000000000000000000000000000000310"
+		// }
 		if version == NewVersion(300) {
 			return "0x9ea7b04da02a5373317d745c1571c84aad03321d"
 		}
-		return "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d"
+		return "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0x0000000000000000000000000000000000000310"// v31
 	case log.ARBITRUM:
 		return "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
 	case log.OPTIMISM:

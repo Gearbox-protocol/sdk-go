@@ -49,12 +49,12 @@ func (a account) GetVersion() core.VersionType {
 // ///////////
 // ///////////
 type store struct {
-	Prices        map[schemas.PFVersion]map[string]*core.BigInt
+	Prices        map[core.VersionType]map[string]*core.BigInt
 	LiqThresholds map[string]map[string]*big.Int `json:"LT"`
 	Tokens        map[string]*schemas.Token
 }
 
-func (s store) GetPrices(token string, version schemas.PFVersion, blockNums ...int64) *big.Int {
+func (s store) GetPrices(cm string, token string, version core.VersionType, blockNums ...int64) *big.Int {
 	return s.Prices[version][token].Convert()
 }
 func (s store) GetToken(token string) *schemas.Token {

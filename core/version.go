@@ -93,6 +93,16 @@ func (z *VersionType) Scan(value interface{}) error {
 	return nil
 }
 
+func (z VersionType) Decimals() int8{
+	if z.Eq(1) {
+		return 18
+	} else if z.MoreThan(NewVersion(1)) {
+		return 8
+	}
+	log.Fatal("")
+	return 0
+}
+
 func (z VersionType) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Itoa(int(z.v))), nil
 }
