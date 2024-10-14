@@ -15,7 +15,6 @@ type TokenOracle struct {
 	Oracle      string           `gorm:"column:oracle" json:"oracle"`
 	Feed        string           `gorm:"column:feed" json:"feed"`
 	DisabledAt  int64            `gorm:"column:disabled_at"`
-	Dirty bool `gorm:"-"`
 	Version     core.VersionType `gorm:"column:version" json:"version"`
 	Reserve     bool             `gorm:"primaryKey;column:reserve" json:"reserve"`
 	FeedType    string           `gorm:"feed_type" json:"-"`
