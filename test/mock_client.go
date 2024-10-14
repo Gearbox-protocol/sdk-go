@@ -352,7 +352,7 @@ func (t *TestClient) getPrice(blockNum int64, tokenAddr string) *big.Int {
 		value, _ := new(big.Int).SetString("1000000000000000000", 10)
 		return value
 	} else {
-		panic(fmt.Sprintf("token(%s) price not present", tokenAddr))
+		panic(fmt.Sprintf("token(%s) price not present at %d", tokenAddr, blockNum))
 	}
 }
 func (t *TestClient) PendingCodeAt(ctx context.Context, contract common.Address) ([]byte, error) {

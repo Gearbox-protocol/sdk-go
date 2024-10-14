@@ -11,7 +11,7 @@ import (
 
 type TokenDetailsForCalcI interface {
 	GetToken(token string) *schemas.Token
-	GetPrices(cm,underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
+	GetPrices(cm, underlyingToken string, version core.VersionType, blockNums ...int64) *big.Int
 	GetLiqThreshold(ts uint64, cm, token string) *big.Int
 }
 
@@ -78,11 +78,12 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 	for token, balance := range account.GetBalances() {
 		if balance.IsEnabled && balance.HasBalanceMoreThanOne() {
 			//
-			tokenValueInUSD := c.convertToUSD(account.GetCM(),balance.BI.Convert(), token, version, blockNum)
+			tokenValueInUSD := c.convertToUSD(account.GetCM(), balance.BI.Convert(), token, version, blockNum)
 			tokenThresholdValueInUSD := new(big.Int).Mul(tokenValueInUSD, c.Store.GetLiqThreshold(ts, account.GetCM(), token))
 			//
 			calThresholdValueInUSD = new(big.Int).Add(calThresholdValueInUSD, tokenThresholdValueInUSD)
 			calTotalValueInUSD = new(big.Int).Add(calTotalValueInUSD, tokenValueInUSD)
+			profile += fmt.Sprintf("token:%s price: %s, tv:%s tvw: %s", token, c.Store.GetPrices(account.GetCM(), token, version, blockNum), tokenValueInUSD, tokenThresholdValueInUSD)
 		}
 	}
 
@@ -128,7 +129,7 @@ func (c Calculator) convertToUSD(cm string, amount *big.Int, token string, versi
 	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals)
 	return tokenValueInUSD
 }
-func (c Calculator) convertFromUSD(cm string,amount *big.Int, underlyingToken string, version core.VersionType, blockNum int64) *big.Int {
+func (c Calculator) convertFromUSD(cm string, amount *big.Int, underlyingToken string, version core.VersionType, blockNum int64) *big.Int {
 	underlyingDecimals := c.Store.GetToken(underlyingToken).Decimals
 	underlyingPrice := c.Store.GetPrices(cm, underlyingToken, version, blockNum)
 	value := new(big.Int).Quo(utils.GetInt64(amount, -1*underlyingDecimals), underlyingPrice)

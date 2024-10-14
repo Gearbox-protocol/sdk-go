@@ -41,7 +41,7 @@ type VersionType struct {
 func NewVersion(v int16) VersionType {
 	if v == 1 {
 		return VersionType{v: 1}
-	} else if v == 300 || v == 301 || v == 302 {
+	} else if v == 300 || v == 301 || v == 302 || v == 310 {
 		return VersionType{v: 300}
 	} else if v == 210 || v == 220 || v == 2 {
 		return VersionType{v: 2}
@@ -93,7 +93,7 @@ func (z *VersionType) Scan(value interface{}) error {
 	return nil
 }
 
-func (z VersionType) Decimals() int8{
+func (z VersionType) Decimals() int8 {
 	if z.Eq(1) {
 		return 18
 	} else if z.MoreThan(NewVersion(1)) {
