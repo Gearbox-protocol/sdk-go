@@ -5,9 +5,15 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type PriceOracleT string
+
+func (a PriceOracleT) Hex() common.Address {
+	return common.HexToAddress(string(a))
+}
+
 type TokenOracle struct {
 	PriceOracle PriceOracleT     `gorm:"primaryKey;column:price_oracle" json:"priceOracle"`
 	BlockNumber int64            `gorm:"primaryKey;column:block_num" json:"blockNum"`
@@ -37,7 +43,7 @@ type PriceFeed struct {
 	BlockNumber int64 `gorm:"primaryKey;column:block_num" json:"blockNum"`
 	// Token           string          `gorm:"primaryKey;column:token" json:"token"`
 	// MergedPFVersion MergedPFVersion `gorm:"primaryKey;column:merged_pf_version" json:"mergedPFVersion"`
-	Feed string `gorm:"column:feed" json:"feed"`
+	Feed string `gorm:"primaryKey;column:feed" json:"feed"`
 	//
 	RoundId int64        `gorm:"column:round_id" json:"roundId"`
 	PriceBI *core.BigInt `gorm:"column:price_bi" json:"priceBI"`
