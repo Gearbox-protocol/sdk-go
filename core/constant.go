@@ -63,9 +63,10 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 		// 	return "0x0000000000000000000000000000000000000310"
 		// }
 		if version == NewVersion(300) {
-			return "0x9ea7b04da02a5373317d745c1571c84aad03321d"
+			return "0xde1112a0960b9619da7f91d51fb571cdefe48b5e"
+			// return "0x9ea7b04da02a5373317d745c1571c84aad03321d"
 		}
-		return "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0x0000000000000000000000000000000000000310"// v31
+		return "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0xde1112a0960b9619da7f91d51fb571cdefe48b5e" // v31
 	case log.ARBITRUM:
 		return "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
 	case log.OPTIMISM:
