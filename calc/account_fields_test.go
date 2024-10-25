@@ -54,7 +54,7 @@ type store struct {
 	Tokens        map[string]*schemas.Token
 }
 
-func (s store) GetPrices(cm string, token string, version core.VersionType, blockNums ...int64) *big.Int {
+func (s store) GetPriceOnBlock(cm string, token string, version core.VersionType, blockNums ...int64) *big.Int {
 	return s.Prices[version][token].Convert()
 }
 func (s store) GetToken(token string) *schemas.Token {

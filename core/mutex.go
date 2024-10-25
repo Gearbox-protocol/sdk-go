@@ -37,6 +37,14 @@ func (ds *MutexDS[T, K]) Set(key T, val K) {
 	defer ds.mu.Unlock()
 	ds.m[key] = val
 }
+func (ds *MutexDS[T, K]) Keys() (ans []T) {
+	ds.mu.Lock()
+	defer ds.mu.Unlock()
+	for k := range ds.m {
+		ans = append(ans, k)
+	}
+	return ans
+}
 func (ds *MutexDS[T, K]) GetInner() map[T]K {
 	return ds.m
 }
