@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/redstone"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/pkg"
 	redstonemgr "github.com/Gearbox-protocol/sdk-go/pkg/redstone"
@@ -51,7 +52,7 @@ func (pOracle GearboxOraclev3) GetFeedAndType(token string, reserve bool) (typeA
 	}
 	return data[len(data)-1], nil
 }
-func NewGearboxOraclev3(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
+func NewGearboxOraclev3(addr schemas.PriceOracleT, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOraclev3{
 		GearboxOracle: GearboxOracle{
 			Address:     addr,
@@ -60,7 +61,8 @@ func NewGearboxOraclev3(addr common.Address, version core.VersionType, client co
 				Client: client,
 			},
 			topics: []common.Hash{
-				core.Topic("SetPriceFeed(address,address,uint32,bool,bool)"),   // main
+				core.Topic("SetPriceFeed(address,address,uint32,bool,bool)"),   // main v3
+				core.Topic("SetPriceFeed(address,address,uint32,bool"),         // main v310
 				core.Topic("SetReservePriceFeed(address,address,uint32,bool)"), // reserve
 				core.Topic("SetReservePriceFeedStatus(address,bool)"),          // change
 			},
@@ -223,12 +225,12 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 // gets all the prie feeds add events
 func (pOracle GearboxOraclev3) GetPriceTokenTill(blockNum int64) {
 	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
-		[]common.Address{pOracle.Address},
+		[]common.Address{common.HexToAddress(string(pOracle.Address))},
 		[][]common.Hash{pOracle.topics})
 	log.CheckFatal(err)
 	// feedToTicker
 	for _, txLog := range txLogs {
-		if pOracle.topics[0] == txLog.Topics[0] {
+		if pOracle.topics[0] == txLog.Topics[0] || pOracle.topics[1] == txLog.Topics[0] {
 			token := common.HexToAddress(txLog.Topics[1].Hex())
 			feed := common.HexToAddress(txLog.Topics[2].Hex())
 			pOracle.feedToTicker[feed] = token
@@ -273,18 +275,17 @@ func (pOracle *GearboxOraclev3) OnLog(txLog types.Log) bool {
 	// addrtosym := core.GetTokenToSymbolByChainId(chainId)
 	blockNum := int64(txLog.BlockNumber)
 	switch txLog.Topics[0] {
-	case pOracle.topics[0]:
+	case pOracle.topics[0], pOracle.topics[1]:
 		token := common.HexToAddress(txLog.Topics[1].Hex())
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
 		pOracle.addtokenToType(blockNum, feed, token, false)
 		pOracle.tokenToFeed[token.Hex()] = feed
 		return true
-	case pOracle.topics[1]: // set reserve
+	case pOracle.topics[2]: // set reserve
 		token := common.HexToAddress(txLog.Topics[1].Hex())
 		feed := common.HexToAddress(txLog.Topics[2].Hex())
 		pOracle.addtokenToType(blockNum, feed, token, true)
-		// pOracle.tokenToReserve[token.Hex()] = ReserveUsage{Feed: feed, Use: pOracle.tokenToReserve[token.Hex()].Use}
-	case pOracle.topics[2]: // change from reserve to main feed, vice verse
+	case pOracle.topics[3]: // change from reserve to main feed, vice verse
 		// token := common.HexToAddress(txLog.Topics[1].Hex()).Hex()
 		// pOracle.tokenToReserve[token] = ReserveUsage{Feed: pOracle.tokenToReserve[token].Feed, Use: txLog.Topics[2][:][63] == 1}
 	}

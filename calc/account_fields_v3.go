@@ -72,7 +72,7 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 				quotaInUSD,
 			) // quoted value
 			profile += fmt.Sprintf("%s: tv: %s tvw: %s price: %s, lt: %v\n",
-				token, tokenValueInUSD, tokenTwvValueInUSD, c.Store.GetPrices(session.GetCM(), token, version, blockNum), c.Store.GetLiqThreshold(ts, session.GetCM(), token))
+				token, tokenValueInUSD, tokenTwvValueInUSD, c.Store.GetPriceOnBlock(session.GetCM(), token, version, blockNum), c.Store.GetLiqThreshold(ts, session.GetCM(), token))
 
 			// sum
 			totalValueInUSD = new(big.Int).Add(totalValueInUSD, tokenValueInUSD)
@@ -81,8 +81,8 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 		}
 	}
 	//
-	calTotalValue = c.convertFromUSD(session.GetCM(),totalValueInUSD, underlying, version, blockNum)
-		profile += fmt.Sprintf("%s priceunderlying: %s", calTotalValue, c.Store.GetPrices(session.GetCM(), underlying, version, blockNum))
+	calTotalValue = c.convertFromUSD(session.GetCM(), totalValueInUSD, underlying, version, blockNum)
+	profile += fmt.Sprintf("%s priceunderlying: %s", calTotalValue, c.Store.GetPriceOnBlock(session.GetCM(), underlying, version, blockNum))
 	calThresholdValue = c.convertFromUSD(session.GetCM(), tvwValueInUSD, underlying, version, blockNum)
 	if debtDetails.borrowedAmount.Cmp(big.NewInt(0)) == 0 {
 		calHF = big.NewInt(65535)
@@ -120,7 +120,7 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 	baseInterestSinceUpdate := GetbaseInterest(poolDetails.GetCumIndexNow(), session)
 
 	cumQuotaInterest, quotaFees := session.GetQuotaCumInterestAndFees()
-	extraQuotaInterest := calcExtraQuotaInterest( ts, blockNum, poolDetails, session)
+	extraQuotaInterest := calcExtraQuotaInterest(ts, blockNum, poolDetails, session)
 
 	// total interest = base interest + extra quota interest + cumQuotaInterest
 	accruedInterest := new(big.Int).Add(baseInterestSinceUpdate, extraQuotaInterest)
@@ -141,7 +141,7 @@ func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum
 	}
 }
 
-func calcExtraQuotaInterest( ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI) *big.Int {
+func calcExtraQuotaInterest(ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI) *big.Int {
 	balances := session.GetBalances()
 	poolQuotas := poolDetails.GetPoolQuotaDetails()
 	totalQuotedInterest := big.NewInt(0)

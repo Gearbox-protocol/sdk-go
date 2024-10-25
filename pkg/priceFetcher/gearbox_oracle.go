@@ -5,6 +5,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -19,7 +20,7 @@ import (
 type GearboxOracleI interface {
 	//
 	GetPriceTokenTill(blockNum int64)
-	GetAddress() common.Address
+	GetAddress() schemas.PriceOracleT
 	GetVersion() core.VersionType
 	GetTokens() []string
 	GetTopics() []common.Hash
@@ -38,7 +39,7 @@ type GearboxOracleI interface {
 }
 
 type GearboxOracle struct {
-	Address     common.Address
+	Address     schemas.PriceOracleT
 	tokenToFeed map[string]common.Address
 	Node        *pkg.Node
 	version     core.VersionType
@@ -54,7 +55,7 @@ func (GearboxOracle) GetFeedInfo(feed common.Address) *FeedInfo {
 
 func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
 	po := &GearboxOracle{
-		Address:     addr,
+		Address:     schemas.PriceOracleT(addr.Hex()),
 		tokenToFeed: map[string]common.Address{},
 		Node: &pkg.Node{
 			Client: client,
@@ -77,7 +78,7 @@ func (pOracle GearboxOracle) GetPFType(token common.Address, blockNum ...int64) 
 	return core.V3_BACKEND_GENERAL_ORACLE
 }
 
-func (pOracle GearboxOracle) GetAddress() common.Address {
+func (pOracle GearboxOracle) GetAddress() schemas.PriceOracleT {
 	return pOracle.Address
 }
 
@@ -96,7 +97,7 @@ func (pOracle *GearboxOracle) GetVersion() core.VersionType {
 // gets all the prie feeds add events
 func (pOracle *GearboxOracle) GetPriceTokenTill(blockNum int64) {
 	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
-		[]common.Address{pOracle.Address},
+		[]common.Address{common.HexToAddress(string(pOracle.Address))},
 		[][]common.Hash{pOracle.topics})
 	log.CheckFatal(err)
 	for _, txLog := range txLogs {
