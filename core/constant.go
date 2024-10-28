@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"math/big"
 	"strings"
 
@@ -62,11 +63,15 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 		// if version == NewVersion(300) { // later when the v3 is switched to v3.1
 		// 	return "0x0000000000000000000000000000000000000310"
 		// }
+		v310Addr := "0x2b8f5e69c35c1aff4ccc71458ca26c2f313c3ed3"
+		if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
+			v310Addr = addr
+		}
 		if version == NewVersion(300) {
-			return "0x2b8f5e69c35c1aff4ccc71458ca26c2f313c3ed3"
+			return v310Addr
 			// return "0x9ea7b04da02a5373317d745c1571c84aad03321d"
 		}
-		return "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0x2b8f5e69c35c1aff4ccc71458ca26c2f313c3ed3" // v31
+		return fmt.Sprintf("0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,%s", v310Addr) // v31
 	case log.ARBITRUM:
 		return "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
 	case log.OPTIMISM:
