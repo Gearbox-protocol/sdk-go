@@ -50,7 +50,14 @@ type ClientI interface {
 }
 
 // only use for calls that return address(20 bytes) or (amount 32 bytes) basically datatype uint256
-func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
+func CallFuncGetSingleValue(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
+	bytes, err := CallFuncGetAllData(client, sigStr, to, blockNum, extra)
+	if len(bytes) > 32 {
+		bytes = bytes[:32]
+	}
+	return bytes, err
+}
+func CallFuncGetAllData(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
 	data, err := hex.DecodeString(sigStr) // enabledTokens
 	log.CheckFatal(err)
 	data = append(data, extra...)
@@ -64,9 +71,6 @@ func CallFuncWithExtraBytes(client ClientI, sigStr string, to common.Address, bl
 		blockBI = big.NewInt(blockNum)
 	}
 	bytes, err := client.CallContract(context.TODO(), msg, blockBI)
-	if len(bytes) > 32 {
-		bytes = bytes[:32]
-	}
 	return bytes, err
 }
 
@@ -79,7 +83,7 @@ func GetAddress(client ClientI, field string, version int64) (common.Address, er
 	hash := common.BytesToHash(big.NewInt(version).Bytes())
 	slot = append(slot, hash[:]...)
 	//
-	addr, err := CallFuncWithExtraBytes(client, "b76b70d5", common.HexToAddress(providerAddr), 0, slot) // addresses
+	addr, err := CallFuncGetSingleValue(client, "b76b70d5", common.HexToAddress(providerAddr), 0, slot) // addresses
 	return common.BytesToAddress(addr), err
 
 }
@@ -90,7 +94,9 @@ func GetChainId(client ClientI) int64 {
 	return chainId.Int64()
 }
 func GetBaseChainId(client ClientI) int64 {
-	chainId, err := client.(interface { BaseChainID(ctx context.Context) (*big.Int, error) }).BaseChainID(context.TODO())
+	chainId, err := client.(interface {
+		BaseChainID(ctx context.Context) (*big.Int, error)
+	}).BaseChainID(context.TODO())
 	log.CheckFatal(err)
 	return chainId.Int64()
 }

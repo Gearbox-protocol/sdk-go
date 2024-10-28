@@ -101,7 +101,7 @@ func GetExchangeToSymbolByChainId(chainId int64) map[common.Address]Symbol {
 }
 
 func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
-	decimals, err := CallFuncWithExtraBytes(client, "313ce567", addr, blockNum, nil) // decimals
+	decimals, err := CallFuncGetSingleValue(client, "313ce567", addr, blockNum, nil) // decimals
 	if err != nil {
 		log.Fatalf("Can't get decimals for addr(%s) : %s", addr, err)
 	}

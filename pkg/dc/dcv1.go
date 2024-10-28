@@ -14,7 +14,7 @@ import (
 func GetMask(client core.ClientI, blockNum int64, cfAddr, accountAddr common.Address) *big.Int {
 	extra := make([]byte, 12)
 	extra = append(extra, accountAddr.Bytes()...)
-	returnData, err := core.CallFuncWithExtraBytes(client, "b451cecc", cfAddr, blockNum, extra) // enabledTokens
+	returnData, err := core.CallFuncGetSingleValue(client, "b451cecc", cfAddr, blockNum, extra) // enabledTokens
 	log.CheckFatal(err)
 	return new(big.Int).SetBytes(returnData)
 
@@ -44,8 +44,8 @@ func getPoolDataV1(data mainnet.DataTypesPoolData) PoolCallData {
 		Version: (*core.BigInt)(big.NewInt(1)),
 		//
 		// TotalDebtLimit:          nil,
-		CreditManagerDebtParams: nil,
-		Quotas:                  nil,
+		// CreditManagerDebtParams: nil,
+		// Quotas: nil,
 		//
 		// IsWETH:                 data.IsWETH,
 		// ExpectedLiquidityLimit: data.ExpectedLiquidityLimit,
@@ -61,7 +61,7 @@ func getCMDatav1(data mainnet.DataTypesCreditManagerData) CMCallData {
 		// CreditConfigurator:
 		Underlying: data.UnderlyingToken,
 		// Pool:
-		BaseBorrowRate: (*core.BigInt)(data.BorrowRate),
+		// BaseBorrowRate: (*core.BigInt)(data.BorrowRate),
 		// TotalDebt
 		// TotalDebtLimit
 		MinDebt: (*core.BigInt)(data.MinAmount),
@@ -79,7 +79,7 @@ func getCMDatav1(data mainnet.DataTypesCreditManagerData) CMCallData {
 		// LiquidationDiscount
 		// FeeLiquidationExpired
 		// LiquidationDiscountExpired
-		Quotas: nil,
+		// Quotas: nil,
 		// not found
 		// IsPaused
 		// IsWETH:             data.IsWETH,
@@ -93,43 +93,46 @@ func getCMDatav1(data mainnet.DataTypesCreditManagerData) CMCallData {
 
 func getCreditAccountDatav1(client core.ClientI, cfAddrv1 common.Address, blockNum int64, data mainnet.DataTypesCreditAccountDataExtended) (CreditAccountCallData, error) {
 	latestFormat := CreditAccountCallData{
-		IsSuccessful: true,
-		Addr:          data.Addr,
-		Borrower:      data.Borrower,
-		CreditManager: data.CreditManager,
-		Underlying:    data.UnderlyingToken,
-		// CreditFacade
-		// Underlying
-		BorrowedAmount: (*core.BigInt)(data.BorrowedAmount),
-		Debt:           (*core.BigInt)(data.BorrowedAmountPlusInterest),
-		//:                  data.BorrowedAmountPlusInterest,
 		CumulativeIndexAtOpen: (*core.BigInt)(data.CumulativeIndexAtOpen),
 		// CumulativeIndexLastUpdate: nil,
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
-		//
-		QuotaFeeCalc: QuotaFeeCalc{
-			AccruedInterest: (*core.BigInt)(new(big.Int).Sub(
-				data.BorrowedAmountPlusInterest,
-				data.BorrowedAmount,
-			)),
-			AccruedFees: (*core.BigInt)(new(big.Int)),
-			Version:     core.NewVersion(1),
-		},
-		// TotalDebtUSD
-		TotalValue: (*core.BigInt)(data.TotalValue),
-		// TotalValueUSD
-		// TwvUSD
-		// EnabledTokensMask
-		HealthFactor:   (*core.BigInt)(data.HealthFactor),
-		BaseBorrowRate: (*core.BigInt)(data.BorrowRate),
-		// AggregatedBorrowRate
-		Since: uint64(data.Since.Int64()),
-		// ExpirationDate
-		// ActiveBot
-		// MaxApprovedBots
-		// SchedultedWithdrawals
+		CreditAccountInner: CreditAccountInner{
+			IsSuccessful:  true,
+			Addr:          data.Addr,
+			Borrower:      data.Borrower,
+			CreditManager: data.CreditManager,
+			CreditFacade:  core.NULL_ADDR,
+			Underlying:    data.UnderlyingToken,
+			// CreditFacade
+			// Underlying
+			BorrowedAmount: (*core.BigInt)(data.BorrowedAmount),
+			Debt:           (*core.BigInt)(data.BorrowedAmountPlusInterest),
+			//:                  data.BorrowedAmountPlusInterest,
+			//
+			QuotaFeeCalc: QuotaFeeCalc{
+				AccruedInterest: (*core.BigInt)(new(big.Int).Sub(
+					data.BorrowedAmountPlusInterest,
+					data.BorrowedAmount,
+				)),
+				AccruedFees: (*core.BigInt)(new(big.Int)),
+				Version:     core.NewVersion(1),
+			},
+			// TotalDebtUSD
+			TotalValue: (*core.BigInt)(data.TotalValue),
+			// TotalValueUSD
+			// TwvUSD
+			// EnabledTokensMask
+			HealthFactor: (*core.BigInt)(data.HealthFactor),
+			// AggregatedBorrowRate
+			// BaseBorrowRate: (*core.BigInt)(data.BorrowRate),
+			// Since: uint64(data.Since.Int64()),
+			// ExpirationDate
+			// ActiveBot
+			// MaxApprovedBots
+			// SchedultedWithdrawals
 
-		RepayAmountv1v2: (*core.BigInt)(data.RepayAmount),
+			RepayAmountv1v2: (*core.BigInt)(data.RepayAmount),
+		},
 		// LiquidationAmount: data.LiquidationAmount,
 		// CanBeClosed:       data.CanBeClosed,
 		// BorrowedAmount:    data.BorrowedAmount,
@@ -152,12 +155,12 @@ func convertv1ToBalance(balances []mainnet.DataTypesTokenBalance, mask *big.Int)
 		dcv2Balances = append(dcv2Balances, core.TokenBalanceCallData{
 			Token: balance.Token.Hex(),
 			DBTokenBalance: core.DBTokenBalance{
-				BI:           (*core.BigInt)(balance.Balance),
-				IsForbidden:  !balance.IsAllowed, // is set on credit manager
-				IsEnabled:    isEnabled,          // is used by credit account
-				IsQuoted:     false,
-				Quota:        new(core.BigInt),
-				QuotaRate:    0,
+				BI:          (*core.BigInt)(balance.Balance),
+				IsForbidden: !balance.IsAllowed, // is set on credit manager
+				IsEnabled:   isEnabled,          // is used by credit account
+				IsQuoted:    false,
+				Quota:       new(core.BigInt),
+				// QuotaRate:    0,
 				QuotaIndexLU: new(core.BigInt),
 				Ind:          i,
 			},

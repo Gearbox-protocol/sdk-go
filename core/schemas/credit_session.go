@@ -119,12 +119,12 @@ type (
 		Since                 int64
 	}
 	CreditSessionSnapshot struct {
-		ID                      int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
-		BlockNum                int64        `gorm:"column:block_num" json:"blockNum"`
-		SessionId               string       `gorm:"column:session_id" json:"sessionId"`
-		BorrowedAmountBI        *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
-		BorrowedAmount          float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
-		ExtraQuotaAPY           float64      `gorm:"column:extra_quota_apy" json:"extraQuotaAPY"`
+		ID               int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
+		BlockNum         int64        `gorm:"column:block_num" json:"blockNum"`
+		SessionId        string       `gorm:"column:session_id" json:"sessionId"`
+		BorrowedAmountBI *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
+		BorrowedAmount   float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
+		// ExtraQuotaAPY           float64      `gorm:"column:extra_quota_apy" json:"extraQuotaAPY"`
 		TotalValueBI            *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
 		TotalValue              float64      `gorm:"column:total_value" json:"totalValue"`
 		CumulativeQuotaInterest *core.BigInt `gorm:"column:cum_quota_interest" json:"cumQuotaInterest,omitempty"`
@@ -182,30 +182,30 @@ func (ses CreditSession) StatusAt(blockNum int64) int {
 }
 
 // in 10**27
-func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) float64 {
-	if totalValue.Convert().Cmp(big.NewInt(0)) == 0 {
-		return 0
-	}
-	//
-	total := new(big.Float)
-	for _, balance := range balances {
-		if balance.IsQuoted && balance.Quota != nil {
-			total = new(big.Float).Add(
-				total,
-				new(big.Float).Mul(
-					utils.GetFloat64(balance.Quota.Convert(), 0),
-					big.NewFloat(float64(balance.QuotaRate)),
-				),
-			)
-		}
-	}
-	totalValueF := utils.GetFloat64(totalValue.Convert(), 0)
-	val, _ := new(big.Float).Quo(total, totalValueF).Float64()
-	return val
-}
+// func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) float64 {
+// 	if totalValue.Convert().Cmp(big.NewInt(0)) == 0 {
+// 		return 0
+// 	}
+// 	//
+// 	total := new(big.Float)
+// 	for _, balance := range balances {
+// 		if balance.IsQuoted && balance.Quota != nil {
+// 			total = new(big.Float).Add(
+// 				total,
+// 				new(big.Float).Mul(
+// 					utils.GetFloat64(balance.Quota.Convert(), 0),
+// 					big.NewFloat(float64(balance.QuotaRate)),
+// 				),
+// 			)
+// 		}
+// 	}
+// 	totalValueF := utils.GetFloat64(totalValue.Convert(), 0)
+// 	val, _ := new(big.Float).Quo(total, totalValueF).Float64()
+// 	return val
+// }
 
-func QuotaBorrowRAY(extraQuotaAPY float64) *big.Int {
-	f := new(big.Float).Mul(big.NewFloat(extraQuotaAPY), utils.GetExpFloat(23))
-	val, _ := f.Int(nil)
-	return val
-}
+// func QuotaBorrowRAY(extraQuotaAPY float64) *big.Int {
+// 	f := new(big.Float).Mul(big.NewFloat(extraQuotaAPY), utils.GetExpFloat(23))
+// 	val, _ := f.Int(nil)
+// 	return val
+// }

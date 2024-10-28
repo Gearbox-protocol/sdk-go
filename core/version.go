@@ -131,7 +131,7 @@ func (v VersionType) Eq(in int16) bool {
 	return v.v == in
 }
 func FetchVersionOptimized(addr common.Address, blockNum int64, client ClientI) VersionType {
-	_version, err := CallFuncWithExtraBytes(client, "54fd4d50", addr, blockNum, nil)
+	_version, err := CallFuncGetSingleValue(client, "54fd4d50", addr, blockNum, nil)
 	if err != nil {
 		return NewVersion(1)
 	}

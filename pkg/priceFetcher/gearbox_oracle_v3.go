@@ -129,13 +129,13 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(token common.Address, feed co
 		return
 	}
 	fn := func(_feed common.Address, sig string) common.Address {
-		priceFeed0, err := core.CallFuncWithExtraBytes(client, sig, _feed, 0, []byte{}) // priceFeedType
+		priceFeed0, err := core.CallFuncGetSingleValue(client, sig, _feed, 0, []byte{}) // priceFeedType
 		if err != nil {
 			log.Fatal(_feed, sig, err)
 		}
 		return common.BytesToAddress(priceFeed0)
 	}
-	typeData, err := core.CallFuncWithExtraBytes(client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
+	typeData, err := core.CallFuncGetSingleValue(client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
 	if err == nil {
 		pfType := int(new(big.Int).SetBytes(typeData).Int64())
 		obj := &FeedInfo{
@@ -152,12 +152,12 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(token common.Address, feed co
 			obj.PF0 = pf0
 			obj.PF1 = pf1
 			obj.DecimalsPF0 = func() int8 {
-				decimals, err := core.CallFuncWithExtraBytes(client, "313ce567", pf0, 0, []byte{}) // decimals
+				decimals, err := core.CallFuncGetSingleValue(client, "313ce567", pf0, 0, []byte{}) // decimals
 				log.CheckFatal(err)
 				return int8(new(big.Int).SetBytes(decimals).Int64())
 			}()
 			//
-			pf0Type, err := core.CallFuncWithExtraBytes(client, "3fd0875f", pf0, 0, []byte{})
+			pf0Type, err := core.CallFuncGetSingleValue(client, "3fd0875f", pf0, 0, []byte{})
 			if err == nil {
 				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
 					_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)

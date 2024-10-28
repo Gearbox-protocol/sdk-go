@@ -52,7 +52,7 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 		usdc := addrs.Tokens["USDC"]
 		client, err := ethclient.Dial(url)
 		log.CheckFatal(err)
-		_, err = core.CallFuncWithExtraBytes(client, "95d89b41", usdc, 0, nil)
+		_, err = core.CallFuncGetSingleValue(client, "95d89b41", usdc, 0, nil) // chainId
 		if err == nil {
 			baseChainId = big.NewInt(netId)
 			break

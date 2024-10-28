@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
+
 func toHex(calls []multicall.Multicall2Call) []string {
 	ans := []string{}
 	for _, call := range calls {
@@ -20,6 +21,7 @@ func toHex(calls []multicall.Multicall2Call) []string {
 	}
 	return ans
 }
+
 // make multicall
 func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
 	contract := getMultiCallContract(client)
@@ -62,7 +64,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 				} else if strings.Contains(err.Error(), "Unknown block number") { // on alchemy in the trading-price
 					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize)
 				} else {
-					log.Fatal(line, err, blockNum, toHex(calls) )
+					log.Fatal(line, err, blockNum, toHex(calls))
 				}
 			}
 			return tmpResult
@@ -172,4 +174,29 @@ func (c *MulticallResultIterator) Next() multicall.Multicall2Result {
 	ans := c.results[c.ind]
 	c.ind++
 	return ans
+}
+
+type MulticallZip struct {
+	results []multicall.Multicall2Result
+	ind     int
+	offset  int
+	zipper  [][]interface{}
+}
+
+func NewMulticallZip(results []multicall.Multicall2Result, zipper [][]interface{}) *MulticallZip {
+	return &MulticallZip{
+		results: results,
+		zipper:  zipper,
+	}
+}
+
+func (c *MulticallZip) Next() ([]multicall.Multicall2Result, []interface{}) {
+	if c.ind == len(c.zipper) {
+		log.Fatal("ind exceeded len of results")
+	}
+	zip := c.zipper[c.ind]
+	ans := c.results[c.offset : c.offset+len(zip)]
+	c.offset += len(c.zipper[c.ind])
+	c.ind++
+	return ans, zip
 }

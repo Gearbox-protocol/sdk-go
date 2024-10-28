@@ -52,8 +52,8 @@ type DBTokenBalance struct {
 	Quota     *BigInt `json:"quota,omitempty"`
 	// TODO add last updated index
 	QuotaIndexLU *BigInt `json:"quotaIndexLU,omitempty"`
-	QuotaRate    uint16  `json:"quotaRate,omitempty"`
-	F            float64 `json:"F"`
+	// QuotaRate    uint16  `json:"quotaRate,omitempty"`
+	F float64 `json:"F"`
 	//
 } // @name DBTokenBalance
 
