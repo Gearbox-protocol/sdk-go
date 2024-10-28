@@ -3,9 +3,11 @@ package dc
 import (
 	"reflect"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccountCompressor"
 	dcv2 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/dataCompressorv2"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressor/mainnet"
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,6 +15,8 @@ import (
 
 func GetPoolDataFromDCCall(data interface{}) (PoolCallData, error) {
 	switch values := data.(type) {
+	case poolCompressor.PoolState:
+		return getPoolDatav310(values), nil
 	case dcv3.PoolData:
 		return getPoolDatav3(values), nil
 	case dcv2.PoolData:
@@ -26,6 +30,8 @@ func GetPoolDataFromDCCall(data interface{}) (PoolCallData, error) {
 }
 func GetCMDataFromDCCall(data interface{}) (CMCallData, error) {
 	switch values := data.(type) {
+	case poolCompressor.CreditManagerData:
+		return getCMDatav310(values), nil
 	case dcv3.CreditManagerData:
 		return getCMDatav3(values), nil
 	case dcv2.CreditManagerData:
@@ -39,6 +45,12 @@ func GetCMDataFromDCCall(data interface{}) (CMCallData, error) {
 }
 func GetAccountDataFromDCCall(client core.ClientI, cfAddrv1 common.Address, blockNum int64, data interface{}) (CreditAccountCallData, error) {
 	switch values := data.(type) {
+	case CreditAccountv310:
+		return GetCreditAccountv310(values), nil
+	case creditAccountCompressor.CreditAccountData:
+		return CreditAccountCallData{
+			CreditAccountInner: GetCreditAccountv310Inner(values),
+		}, nil
 	case dcv3.CreditAccountData:
 		return getAccountDatav3(values), nil
 	case dcv2.CreditAccountData:

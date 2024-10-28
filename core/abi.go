@@ -10,12 +10,14 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addressProvider"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/contractsRegister"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccountCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfiguratorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/poolQuotaKeeperv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/redstone"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/updatePriceFeed"
@@ -108,6 +110,9 @@ func GetAbi(contractName string) *abi.ABI {
 	if abi := fn(v3Map, contractName); abi != nil {
 		return abi
 	}
+	if abi := fn(v310Map, contractName); abi != nil {
+		return abi
+	}
 	if abi := fn(adapterMap, contractName); abi != nil {
 		return abi
 	}
@@ -165,12 +170,16 @@ var v3Map = AbiMap{
 	"CreditManagerv3":      {ABI: creditManagerv3.CreditManagerv3ABI},
 	"CreditFacadev3":       {ABI: creditFacadev3.CreditFacadev3ABI},
 	"CreditConfiguratorv3": {ABI: creditConfiguratorv3.CreditConfiguratorv3ABI},
+	"PoolQuotaKeeper":      {ABI: poolQuotaKeeperv3.PoolQuotaKeeperv3ABI},
 	"Poolv3":               {ABI: poolv3.Poolv3ABI},
 	"DataCompressorv3":     {ABI: dataCompressorv3.DataCompressorv3ABI},
 	"InchFarming":          {ABI: inchFarmingPool.InchFarmingPoolABI},
 	"PriceOraclev3":        {ABI: priceOraclev3.PriceOraclev3ABI},
 	"UpdatePriceFeed":      {ABI: updatePriceFeed.UpdatePriceFeedABI},
 	"RedStone":             {ABI: redstone.RedstoneABI},
+}
+var v310Map = AbiMap{
+	"CreditAccountCompressor": {ABI: creditAccountCompressor.CreditAccountCompressorABI},
 }
 var adapterMap = AbiMap{
 	//

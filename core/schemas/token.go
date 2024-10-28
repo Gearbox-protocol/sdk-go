@@ -125,7 +125,7 @@ func (TokenPrice) TableName() string {
 
 // for MKR token
 func SymbolFnReturnsBytes(client core.ClientI, tokenAddr common.Address) (string, error) {
-	symbolBytes, err := core.CallFuncWithExtraBytes(client, "95d89b41", tokenAddr, 0, nil)
+	symbolBytes, err := core.CallFuncGetSingleValue(client, "95d89b41", tokenAddr, 0, nil)
 	if err != nil {
 		return "", err
 	}

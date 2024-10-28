@@ -38,17 +38,17 @@ type PoolCallData struct {
 	ExpectedLiquidity  *core.BigInt   `json:"expectedLiquidity"`
 	TotalBorrowed      *core.BigInt   `json:"totalBorrowed"`
 	// TotalDebtLimit          *core.BigInt
-	CreditManagerDebtParams []dcv3.CreditManagerDebtParams `json:"creditManagerDebtParams,omitempty"`
-	TotalAssets             *core.BigInt                   `json:"-"`
-	TotalSupply             *core.BigInt                   `json:"-"`
-	SupplyRate              *core.BigInt                   `json:"depositAPY"`
-	BaseInterestRate        *core.BigInt                   `json:"baseBorrowRate"` // DC_CHANGED
-	DieselRateRAY           *core.BigInt                   `json:"dieselRate"`
-	WithdrawFee             *core.BigInt                   `json:"withdrawFee"`
-	CumulativeIndexRAY      *core.BigInt                   `json:"cumulativeIndex"`
+	// CreditManagerDebtParams []dcv3.CreditManagerDebtParams `json:"creditManagerDebtParams,omitempty"`
+	TotalAssets        *core.BigInt `json:"-"`
+	TotalSupply        *core.BigInt `json:"-"`
+	SupplyRate         *core.BigInt `json:"depositAPY"`
+	BaseInterestRate   *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
+	DieselRateRAY      *core.BigInt `json:"dieselRate"`
+	WithdrawFee        *core.BigInt `json:"withdrawFee"`
+	CumulativeIndexRAY *core.BigInt `json:"cumulativeIndex"`
 	// BaseInterestIndexLU     *core.BigInt
-	Version *core.BigInt     `json:"version"`
-	Quotas  []dcv3.QuotaInfo `json:"quotas,omitempty"`
+	Version *core.BigInt `json:"version"`
+	// Quotas  []dcv3.QuotaInfo `json:"quotas,omitempty"`
 }
 
 type CMCallData struct {
@@ -60,9 +60,9 @@ type CMCallData struct {
 	// Pool                       common.Address
 	// TotalDebt                  *big.Int
 	// TotalDebtLimit             *big.Int
-	BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
-	MinDebt        *core.BigInt `json:"minAmount"`
-	MaxDebt        *core.BigInt `json:"maxAmount"`
+	// BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
+	MinDebt *core.BigInt `json:"minAmount"`
+	MaxDebt *core.BigInt `json:"maxAmount"`
 	// AvailableToBorrow          *big.Int
 	// CollateralTokens           []common.Address
 	Adapters []dcv3.ContractAdapter `json:"adapters"`
@@ -76,21 +76,20 @@ type CMCallData struct {
 	// LiquidationDiscount        uint16
 	// FeeLiquidationExpired      uint16
 	// LiquidationDiscountExpired uint16
-	Quotas []dcv3.QuotaInfo `json:"quotas,omitempty"`
+	// Quotas []dcv3.QuotaInfo `json:"quotas,omitempty"`
 	// IsPaused bool
 }
 
-type CreditAccountCallData struct {
-	IsSuccessful bool
+type CreditAccountInner struct {
+	IsSuccessful   bool
 	Addr           common.Address `json:"address"`
 	Borrower       common.Address `json:"borrower"`
 	CreditManager  common.Address `json:"creditManager"`
+	CreditFacade   common.Address `json:"-"`
 	Underlying     common.Address `json:"underlyingToken"`
 	BorrowedAmount *core.BigInt   `json:"borrowedAmount"` // DC_CHANGED
 	Debt           *core.BigInt   `json:"debt"`
 	// TODO:"totalBorrowedWithInterst" is removed
-	CumulativeIndexAtOpen   *core.BigInt `json:"cumulativeIndexAtOpen"`
-	CumulativeQuotaInterest *core.BigInt `json:"cumulativeQuotaInterest,omitempty"`
 	QuotaFeeCalc
 	TotalValue *core.BigInt `json:"totalValue"`
 
@@ -98,11 +97,16 @@ type CreditAccountCallData struct {
 	// TotalValueUSD
 	// TwvUSD
 	// EnabledTokensMask
-	HealthFactor   *core.BigInt `json:"healthFactor"`
-	BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
+	HealthFactor *core.BigInt `json:"healthFactor"`
+	// BaseBorrowRate *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
 	// AggregatedBorrowRate
-	Since    uint64                      `json:"since"`
+	// Since    uint64                      `json:"since"`
 	Balances []core.TokenBalanceCallData `json:"balances"`
+}
+type CreditAccountCallData struct {
+	CreditAccountInner
+	CumulativeIndexAtOpen   *core.BigInt `json:"cumulativeIndexAtOpen"`
+	CumulativeQuotaInterest *core.BigInt `json:"cumulativeQuotaInterest,omitempty"`
 }
 
 type QuotaFeeCalc struct {

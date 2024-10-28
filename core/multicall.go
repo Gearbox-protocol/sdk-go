@@ -177,3 +177,28 @@ func (c *MulticallResultIterator) Next() multicall.Multicall2Result {
 	c.ind++
 	return ans
 }
+
+type MulticallZip struct {
+	results []multicall.Multicall2Result
+	ind     int
+	offset  int
+	zipper  [][]interface{}
+}
+
+func NewMulticallZip(results []multicall.Multicall2Result, zipper [][]interface{}) *MulticallZip {
+	return &MulticallZip{
+		results: results,
+		zipper:  zipper,
+	}
+}
+
+func (c *MulticallZip) Next() ([]multicall.Multicall2Result, []interface{}) {
+	if c.ind == len(c.zipper) {
+		log.Fatal("ind exceeded len of results")
+	}
+	zip := c.zipper[c.ind]
+	ans := c.results[c.offset : c.offset+len(zip)]
+	c.offset += len(c.zipper[c.ind])
+	c.ind++
+	return ans, zip
+}

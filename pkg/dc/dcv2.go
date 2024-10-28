@@ -40,9 +40,9 @@ func getPoolDatav2(blockNum int64, data dcv2.PoolData) PoolCallData {
 
 func getCMDatav2(values dcv2.CreditManagerData) CMCallData {
 	return CMCallData{
-		Addr:           values.Addr,
-		Underlying:     values.Underlying,
-		BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
+		Addr:       values.Addr,
+		Underlying: values.Underlying,
+		// BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
 		//
 		MinDebt: (*core.BigInt)(values.MinAmount),
 		MaxDebt: (*core.BigInt)(values.MaxAmount),
@@ -56,42 +56,45 @@ func getCMDatav2(values dcv2.CreditManagerData) CMCallData {
 			}
 			return
 		}(),
-		Quotas: nil,
+		// Quotas: nil,
 	}
 }
 func getAccountDatav2(values dcv2.CreditAccountData) CreditAccountCallData {
 	return CreditAccountCallData{
-		IsSuccessful: true,
-		Addr:           values.Addr,
-		Borrower:       values.Borrower,
-		CreditManager:  values.CreditManager,
-		Underlying:     values.Underlying,
-		BorrowedAmount: (*core.BigInt)(values.BorrowedAmount),
-		Debt:           (*core.BigInt)(values.BorrowedAmountPlusInterestAndFees),
-		// (*core.BigInt)(values.BorrowedAmountPlusInterest),
 		CumulativeIndexAtOpen:   (*core.BigInt)(values.CumulativeIndexAtOpen),
 		CumulativeQuotaInterest: new(core.BigInt), // D_BY_US
-		//
-		QuotaFeeCalc: QuotaFeeCalc{
-			Version: core.NewVersion(int16(values.Version)),
-			AccruedInterest: (*core.BigInt)(new(big.Int).Sub(
-				values.BorrowedAmountPlusInterest,
-				values.BorrowedAmount,
-			)),
-			AccruedFees: (*core.BigInt)(new(big.Int).Sub(
-				values.BorrowedAmountPlusInterestAndFees,
-				values.BorrowedAmountPlusInterest,
-			)),
-		},
-		//
-		TotalValue:     (*core.BigInt)(values.TotalValue),
-		HealthFactor:   (*core.BigInt)(values.HealthFactor),
-		BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
-		Since:          uint64(values.Since.Int64()),
-		Balances:       Convertv2ToBalance(values.Balances),
+		CreditAccountInner: CreditAccountInner{
+			IsSuccessful:   true,
+			Addr:           values.Addr,
+			Borrower:       values.Borrower,
+			CreditFacade:   core.NULL_ADDR,
+			CreditManager:  values.CreditManager,
+			Underlying:     values.Underlying,
+			BorrowedAmount: (*core.BigInt)(values.BorrowedAmount),
+			Debt:           (*core.BigInt)(values.BorrowedAmountPlusInterestAndFees),
+			// (*core.BigInt)(values.BorrowedAmountPlusInterest),
+			//
+			QuotaFeeCalc: QuotaFeeCalc{
+				Version: core.NewVersion(int16(values.Version)),
+				AccruedInterest: (*core.BigInt)(new(big.Int).Sub(
+					values.BorrowedAmountPlusInterest,
+					values.BorrowedAmount,
+				)),
+				AccruedFees: (*core.BigInt)(new(big.Int).Sub(
+					values.BorrowedAmountPlusInterestAndFees,
+					values.BorrowedAmountPlusInterest,
+				)),
+			},
+			//
+			TotalValue:   (*core.BigInt)(values.TotalValue),
+			HealthFactor: (*core.BigInt)(values.HealthFactor),
+			// BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
+			// Since:          uint64(values.Since.Int64()),
+			Balances: Convertv2ToBalance(values.Balances),
 
-		//
-		RepayAmountv1v2: (*core.BigInt)(values.RepayAmount),
+			//
+			RepayAmountv1v2: (*core.BigInt)(values.RepayAmount),
+		},
 	}
 }
 func Convertv2ToBalance(balances []dcv2.TokenBalance) (dcv2Balances []core.TokenBalanceCallData) {
@@ -99,12 +102,12 @@ func Convertv2ToBalance(balances []dcv2.TokenBalance) (dcv2Balances []core.Token
 		dcv2Balances = append(dcv2Balances, core.TokenBalanceCallData{
 			Token: balance.Token.Hex(),
 			DBTokenBalance: core.DBTokenBalance{
-				BI:           (*core.BigInt)(balance.Balance),
-				IsForbidden:  !balance.IsAllowed, // is set on credit manager
-				IsEnabled:    balance.IsEnabled,  // is used by credit account
-				IsQuoted:     false,
-				Quota:        new(core.BigInt),
-				QuotaRate:    0,
+				BI:          (*core.BigInt)(balance.Balance),
+				IsForbidden: !balance.IsAllowed, // is set on credit manager
+				IsEnabled:   balance.IsEnabled,  // is used by credit account
+				IsQuoted:    false,
+				Quota:       new(core.BigInt),
+				// QuotaRate:    0,
 				QuotaIndexLU: new(core.BigInt),
 				Ind:          ind,
 			},
