@@ -42,6 +42,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev2"
 
 	// adapter
+	"github.com/Gearbox-protocol/sdk-go/artifacts/addrProviderv310"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/baseRewardPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoKovan"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/lidoMock"
@@ -180,6 +181,7 @@ var v3Map = AbiMap{
 }
 var v310Map = AbiMap{
 	"CreditAccountCompressor": {ABI: creditAccountCompressor.CreditAccountCompressorABI},
+	"AddressProviderv310":     {ABI: addrProviderv310.Addrv310ABI},
 }
 var adapterMap = AbiMap{
 	//
