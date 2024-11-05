@@ -88,12 +88,13 @@ func (ts SortedPriceFeed) Less(i, j int) bool {
 }
 
 type TokenCurrentPrice struct {
-	PriceBI  *core.BigInt `gorm:"column:price_bi"`
-	Price    float64      `gorm:"column:price"`
-	BlockNum int64        `gorm:"column:block_num"`
-	Token    string       `gorm:"column:token;primaryKey" json:"token"`
-	PriceSrc string       `gorm:"column:price_source;primaryKey" json:"-"`
-	Save     bool         `json:"-" gorm:"-"`
+	PriceBI     *core.BigInt `gorm:"column:price_bi"`
+	Price       float64      `gorm:"column:price"`
+	BlockNum    int64        `gorm:"column:block_num"`
+	Token       string       `gorm:"column:token;primaryKey" json:"token"`
+	PriceSrc    string       `gorm:"column:price_source;primaryKey" json:"-"`
+	Save        bool         `json:"-" gorm:"-"`
+	PriceOracle PriceOracleT `gorm:"column:price_oracle;primaryKey" json:"-"`
 }
 
 func (TokenCurrentPrice) TableName() string {
