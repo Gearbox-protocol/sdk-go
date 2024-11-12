@@ -18,10 +18,25 @@ const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
 const AclhemyExceedError = "Your app has exceeded its compute units per second capacity"
 const InfuraError = "query returned more than 113 results"
-const NoOfBlocksPerMin int64 = 5
-const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
 const SECONDS_PER_YEAR = 86400 * 365
 
+func NoOfBlocksPerHr(client ClientI) int64 {
+	return NoOfBlocksPerMin(client) * 60
+}
+func NoOfBlocksPerMin(client ClientI) int64 {
+	chainId := GetChainId(client)
+	switch log.GetBaseNet(chainId) {
+	case log.MAINNET:
+		return 5
+	case log.ARBITRUM:
+		return 240
+	case log.OPTIMISM:
+		return 30
+
+	}
+	log.Fatal("block per min not set for chainId", chainId)
+	return 0
+}
 func EthLogErrorCheck(err error, client ClientI) bool {
 	if err != nil {
 		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
