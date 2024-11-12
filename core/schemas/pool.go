@@ -14,8 +14,8 @@ type PoolState struct {
 	BaseBorrowAPYBI        *core.BigInt     `gorm:"column:base_borrow_apy_bi"`
 	DepositAPYBI           *core.BigInt     `gorm:"column:deposit_apy_bi"`
 	Version                core.VersionType `gorm:"column:_version"`
-	Market string `gorm:"column:market" json:"market"`
-	PriceOracle PriceOracleT `gorm:"column:price_oracle" json:"priceOracle"`
+	Market                 string           `gorm:"column:market" json:"market"`
+	PriceOracle            PriceOracleT     `gorm:"column:price_oracle" json:"priceOracle"`
 	//
 	Name string `gorm:"column:name"`
 }
@@ -70,6 +70,7 @@ type TvlSnapshots struct {
 	AvailableLiquidity float64 `gorm:"column:available_liquidity"`
 	CATotalValue       float64 `gorm:"column:ca_total_value"`
 	ExpectedLiq        float64 `gorm:"column:expected_liq"`
+	Market             string  `gorm:"column:market;primaryKey"`
 }
 
 func (TvlSnapshots) TableName() string {
