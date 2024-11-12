@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
-	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -19,39 +18,25 @@ const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
 const AclhemyExceedError = "Your app has exceeded its compute units per second capacity"
 const InfuraError = "query returned more than 113 results"
+const SECONDS_PER_YEAR = 86400 * 365
 
-// const NoOfBlocksPerMin int64 = 5
-// const NoOfBlocksPerHr int64 = NoOfBlocksPerMin * 60
-
-func BlockPer(c int64, d time.Duration) int64 {
-	if d == time.Hour {
-		return blockPerMin(c) * 60
-	} else if d == time.Minute {
-		return blockPerMin(c)
-	}
-	log.Fatalf("unsupported duration %v", d)
-	return 0
+func NoOfBlocksPerHr(client ClientI) int64 {
+	return NoOfBlocksPerMin(client) * 60
 }
-
-func blockPerMin(chainId int64) int64 {
-	net := log.GetBaseNet(chainId)
-	switch net {
+func NoOfBlocksPerMin(client ClientI) int64 {
+	chainId := GetChainId(client)
+	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
 		return 5
 	case log.ARBITRUM:
-		return 4 * 60
-	case log.SONIC:
-		return 2 * 60
+		return 240
 	case log.OPTIMISM:
-		return 4 * 60
-	default:
-		log.Fatalf("unsupported chainId %d", chainId)
+		return 30
+
 	}
+	log.Fatal("block per min not set for chainId", chainId)
 	return 0
 }
-
-const SECONDS_PER_YEAR = 86400 * 365
-
 func EthLogErrorCheck(err error, client ClientI) bool {
 	if err != nil {
 		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
