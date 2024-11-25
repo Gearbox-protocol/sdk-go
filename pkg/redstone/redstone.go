@@ -51,6 +51,7 @@ type RedStoneMgrI interface {
 	//
 	GetPrice(ts int64, token string, composite bool) *big.Int
 	GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
+	GetPodSignWithRedstoneToken(ts int64, red core.RedStonePF) (ans dcv3.PriceOnDemand)
 }
 
 func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
@@ -119,15 +120,15 @@ func tenthMillSec(ts int64) int64 {
 // https://api.docs.redstone.finance/methods/gethistoricalprice
 func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provider string) *big.Int {
 	details := r.redStoneTokens.Get(token, composite)
-	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId,provider, tenthMillSec(ts))
+	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId, provider, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err == nil && res.StatusCode == 403 { // from cloudflare
 		log.Info("sleeping in getAPIPrice at ", ts)
-		time.Sleep(1*time.Minute)
+		time.Sleep(1 * time.Minute)
 		return r.getAPIPrice(ts, token, composite, provider)
 	} else if err != nil || res.StatusCode/100 != 2 {
 		if err == nil {
-			body ,err2:=io.ReadAll(res.Body)
+			body, err2 := io.ReadAll(res.Body)
 			log.Warn(err, res.StatusCode, string(body), err2)
 		} else {
 			log.Warn(err)
@@ -168,6 +169,26 @@ func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, bala
 		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, balances)
 	} else {
 		ans, fromWhere = r.getLatestPodSign(tokensNeeded, balances)
+	}
+	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
+	return
+}
+
+func (r *RedStoneMgr) GetPodSignWithRedstoneToken(ts int64, red core.RedStonePF) (ans dcv3.PriceOnDemand) {
+	defer func() {
+		if err := recover(); err != nil {
+			debug.PrintStack()
+			log.Error(err, ts, utils.ToJson(red))
+		}
+	}()
+	fromWhere := ""
+	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
+		// can't be ahead more than 60 seconds
+		fromWhere = fmt.Sprintf("historic-%d", ts)
+		ans = getHistoricPodSign(ts, red)[red.DataId].convert(red.UnderlyingToken).pod
+	} else {
+		fromWhere = "latest"
+		ans = getLatestPodSign(red)[red.DataId].convert(red.UnderlyingToken).pod
 	}
 	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
 	return

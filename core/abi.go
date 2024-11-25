@@ -17,6 +17,8 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/redstone"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/updatePriceFeed"
 	"github.com/Gearbox-protocol/sdk-go/log"
 
 	// v1
@@ -167,6 +169,8 @@ var v3Map = AbiMap{
 	"DataCompressorv3":     {ABI: dataCompressorv3.DataCompressorv3ABI},
 	"InchFarming":          {ABI: inchFarmingPool.InchFarmingPoolABI},
 	"PriceOraclev3":        {ABI: priceOraclev3.PriceOraclev3ABI},
+	"UpdatePriceFeed":      {ABI: updatePriceFeed.UpdatePriceFeedABI},
+	"RedStone":             {ABI: redstone.RedstoneABI},
 }
 var adapterMap = AbiMap{
 	//

@@ -15,6 +15,7 @@ type TokenOracle struct {
 	Version     core.VersionType `gorm:"primaryKey;column:version" json:"version"`
 	Reserve     bool             `gorm:"primaryKey;column:reserve" json:"reserve"`
 	FeedType    string           `gorm:"feed_type" json:"-"`
+	Underlyings []string         `gorm:"-"`
 }
 
 func (t TokenOracle) String() string {
