@@ -49,8 +49,8 @@ func (obj TokenAndFeedType) IsComposite() bool {
 
 type RedStoneMgrI interface {
 	//
-	GetPrice(ts int64, token string, composite bool) *big.Int
-	GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand)
+	GetPrice(ts int64, details core.RedStonePF) *big.Int
+	GetPodSign(ts int64, tokensNeeded []core.RedStonePF) (ans []dcv3.PriceOnDemand)
 	GetPodSignWithRedstoneToken(ts int64, red core.RedStonePF) (ans dcv3.PriceOnDemand)
 }
 
@@ -86,24 +86,23 @@ func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 }
 
 // token is address
-func (r *RedStoneMgr) GetPrice(ts int64, token string, composite bool) *big.Int {
-	key := fmt.Sprintf("%d-%s", ts, token)
+func (r *RedStoneMgr) GetPrice(ts int64, details core.RedStonePF) *big.Int {
+	key := fmt.Sprintf("%d-%s", ts, details.UnderlyingToken)
 	if price := r.prices.Get(key); price != nil {
 		return price
 	}
-	price, fromWhere := r.getHistoricPrice(ts, token, composite)
+	price, fromWhere := r.getHistoricPrice(ts, details)
 	r.prices.Set(key, price)
-	log.Infof("RedStone price at %d for %s from %s is %d", ts, r.redStoneTokens.Get(token, composite).DataId, fromWhere, price)
+	log.Infof("RedStone price at %d for %s from %s is %d", ts, details.DataId, fromWhere, price)
 	return price
 }
-func (r *RedStoneMgr) getHistoricPrice(ts int64, token string, composite bool) (*big.Int, string) {
-	price := r.getAPIPrice(ts, token, composite, "redstone")
+func (r *RedStoneMgr) getHistoricPrice(ts int64, details core.RedStonePF) (*big.Int, string) {
+	price := r.getAPIPrice(ts, details, "redstone")
 	if price.Cmp(new(big.Int)) == 0 {
-		log.Warn("price from api for ", token, " is 0.composite: ", composite)
-		details := r.redStoneTokens.Get(token, composite)
+		log.Warn("price from api for ", details.UnderlyingToken, " is 0")
 		ans := getHistoricPodSign(ts, details)[details.DataId]
 		if ans == nil {
-			log.Warnf("Failed to get podSign for token %s at timestamp %d", token, ts)
+			log.Warnf("Failed to get podSign for token %s at timestamp %d", details.UnderlyingToken, ts)
 			return new(big.Int), "pod"
 		} else {
 			log.Info(ans.Timestamp)
@@ -118,14 +117,13 @@ func tenthMillSec(ts int64) int64 {
 }
 
 // https://api.docs.redstone.finance/methods/gethistoricalprice
-func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provider string) *big.Int {
-	details := r.redStoneTokens.Get(token, composite)
+func (r *RedStoneMgr) getAPIPrice(ts int64, details core.RedStonePF, provider string) *big.Int {
 	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId, provider, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err == nil && res.StatusCode == 403 { // from cloudflare
 		log.Info("sleeping in getAPIPrice at ", ts)
 		time.Sleep(1 * time.Minute)
-		return r.getAPIPrice(ts, token, composite, provider)
+		return r.getAPIPrice(ts, details, provider)
 	} else if err != nil || res.StatusCode/100 != 2 {
 		if err == nil {
 			body, err2 := io.ReadAll(res.Body)
@@ -142,13 +140,13 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 	reader, body := ReadBuffer(res.Body)
 	err = utils.ReadJsonReaderAndSetInterface(reader, &parsedResp)
 	if err != nil {
-		log.Warnf("Failed to get historic price for token %s at timestamp %d. resbody: %s", token, ts, body)
+		log.Warnf("Failed to get historic price for token %s at timestamp %d. resbody: %s", details.UnderlyingToken, ts, body)
 		return new(big.Int)
 	}
 	if len(parsedResp) == 0 {
 		// log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
 		if provider == "redstone" { // try on another provider
-			return r.getAPIPrice(ts, token, composite, "redstone-primary-prod")
+			return r.getAPIPrice(ts, details, "redstone-primary-prod")
 		} else {
 			return new(big.Int)
 		}
@@ -156,19 +154,19 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, token string, composite bool, provid
 	return utils.FloatDecimalsTo64(parsedResp[0].Value, 8)
 }
 
-func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand) {
+func (r *RedStoneMgr) GetPodSign(ts int64, tokensNeeded []core.RedStonePF) (ans []dcv3.PriceOnDemand) {
 	defer func() {
 		if err := recover(); err != nil {
 			debug.PrintStack()
-			log.Error(err, ts, utils.ToJson(tokensNeeded), balances)
+			log.Error(err, ts, utils.ToJson(tokensNeeded))
 		}
 	}()
 	fromWhere := ""
 	if time.Now().Unix()-ts > 30 { // https://github.com/Gearbox-protocol/oracles-v3/blob/main/contracts/oracles/updatable/RedstonePriceFeed.sol#L196-L203
 		// can't be ahead more than 60 seconds
-		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded, balances)
+		ans, fromWhere = r.getHistoricPodSign(ts, tokensNeeded)
 	} else {
-		ans, fromWhere = r.getLatestPodSign(tokensNeeded, balances)
+		ans, fromWhere = r.getLatestPodSign(tokensNeeded)
 	}
 	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
 	return
@@ -194,52 +192,50 @@ func (r *RedStoneMgr) GetPodSignWithRedstoneToken(ts int64, red core.RedStonePF)
 	return
 }
 
-func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getLatestPodSign(tokensNeeded []core.RedStonePF) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "latest"
-	for _, token := range tokensNeeded {
-		if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
-			details := r.redStoneTokens.Get(token.Token.Hex(), token.IsComposite())
-			// lat response not set
-			resp := getLatestPodSign(details)
-			lastResp := resp[details.DataId].convert(details.UnderlyingToken) // prod/aave/1
-			if lastResp != nil {
-				ans = append(ans, lastResp.pod)
-				fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
-			} else {
-				log.Info(utils.ToJson(resp), token, details.DataId)
-			}
+	for _, details := range tokensNeeded {
+		// if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
+		// lat response not set
+		resp := getLatestPodSign(details)
+		lastResp := resp[details.DataId].convert(details.UnderlyingToken) // prod/aave/1
+		if lastResp != nil {
+			ans = append(ans, lastResp.pod)
+			fromWhere = fmt.Sprintf("latest-%d", lastResp.Timestamp)
+		} else {
+			log.Info(utils.ToJson(resp), details.UnderlyingToken, details.DataId)
 		}
+		// }
 	}
 	if fromWhere == "latest" {
-		log.Debug(tokensNeeded, utils.ToJson(balances))
+		log.Debug(tokensNeeded)
 	}
 	return ans, fromWhere
 }
 
-func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []TokenAndFeedType, balances core.DBBalanceFormat) (ans []dcv3.PriceOnDemand, fromWhere string) {
+func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []core.RedStonePF) (ans []dcv3.PriceOnDemand, fromWhere string) {
 	//
 	fromWhere = "historic"
-	for _, token := range tokensNeeded {
-		if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
-			key := fmt.Sprintf("%d-%s", ts, token.Token)
-			details := r.redStoneTokens.Get(token.Token.Hex(), token.IsComposite())
-			//
-			lastResp := r.lastPods.Get(key)
-			if lastResp == nil { // back , ahead 30 secs
-				resp := getHistoricPodSign(ts, details)
-				r.lastPods.Set(key, resp[details.DataId].convert(details.UnderlyingToken)) // prod/aave/1
-				lastResp = resp[details.DataId].convert(details.UnderlyingToken)
-			} else {
-				fromWhere = "historic-stored"
-			}
+	for _, details := range tokensNeeded {
+		// if balances[token.Token.Hex()].IsEnabled && balances[token.Token.Hex()].HasBalanceMoreThanOne() {
+		key := fmt.Sprintf("%d-%s", ts, details.UnderlyingToken)
+		//
+		lastResp := r.lastPods.Get(key)
+		if lastResp == nil { // back , ahead 30 secs
+			resp := getHistoricPodSign(ts, details)
+			r.lastPods.Set(key, resp[details.DataId].convert(details.UnderlyingToken)) // prod/aave/1
+			lastResp = resp[details.DataId].convert(details.UnderlyingToken)
+		} else {
+			fromWhere = "historic-stored"
+		}
 
-			{
-				if lastResp != nil {
-					ans = append(ans, lastResp.pod)
-				}
+		{
+			if lastResp != nil {
+				ans = append(ans, lastResp.pod)
 			}
 		}
+		// }
 	}
 	return
 }

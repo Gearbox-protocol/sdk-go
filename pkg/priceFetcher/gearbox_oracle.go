@@ -25,15 +25,15 @@ type GearboxOracleI interface {
 	GetTopics() []common.Hash
 	OnLog(txLog types.Log) bool
 	//
-	GetCalls() []multicall.Multicall2Call
-	GetPrices(results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
+	GetCalls(int64) []multicall.Multicall2Call
+	GetPrices(ts int64, results []multicall.Multicall2Result, blockNum int64) map[string]*big.Int
 	GetFeed(token string) common.Address
+	GetFeedInfo(feed common.Address) *FeedInfo
 	//
-	GetCompositeFeedDetails(compfeed common.Address) compositeFeedDetails
 	//
 	GetPFType(token common.Address, blockNum ...int64) int
 	GetFeedForBlock(token common.Address, blockNum int64) common.Address
-	GetReserveFeed(token string) *ReserveUsage
+	HasReserveFeed(token string) bool
 	GetFeedAndType(token string, reserve bool) (typeAndBlock, error)
 }
 
@@ -48,8 +48,8 @@ type GearboxOracle struct {
 	//
 }
 
-func (pOracle *GearboxOracle) GetCompositeFeedDetails(compfeed common.Address) compositeFeedDetails {
-	return compositeFeedDetails{}
+func (GearboxOracle) GetFeedInfo(feed common.Address) *FeedInfo {
+	return nil
 }
 
 func NewGearboxOracle(addr common.Address, version core.VersionType, client core.ClientI) GearboxOracleI {
@@ -65,8 +65,8 @@ func NewGearboxOracle(addr common.Address, version core.VersionType, client core
 	return po
 }
 
-func (pOracle GearboxOracle) GetReserveFeed(token string) *ReserveUsage {
-	return &ReserveUsage{}
+func (pOracle GearboxOracle) HasReserveFeed(token string) bool {
+	return false
 }
 
 func (pOracle GearboxOracle) GetTopics() []common.Hash {
@@ -129,7 +129,7 @@ func (pOracle *GearboxOracle) GetTokens() []string {
 }
 
 // overridden in gearbox_oracle_v3.go
-func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
+func (pOracle *GearboxOracle) GetCalls(_ int64) []multicall.Multicall2Call {
 	poABI := core.GetAbi("YearnPriceFeed")
 	data, err := poABI.Pack("latestRoundData")
 	log.CheckFatal(err)
@@ -147,19 +147,23 @@ func (pOracle *GearboxOracle) GetCalls() []multicall.Multicall2Call {
 	return calls
 }
 
-func (pOracle *GearboxOracle) GetPrices(results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
+func (pOracle *GearboxOracle) GetPrices(ts int64, results []multicall.Multicall2Result, _ int64) map[string]*big.Int {
 	defer utils.Elapsed("getprice gearbox oracle")()
 	poABI := core.GetAbi("YearnPriceFeed")
 	prices := map[string]*big.Int{}
-	for i, entry := range results {
+	log.Info("total calls", len(results), "push price", len(results)-len(pOracle.tokens))
+	log.Info(results[0])
+	for i, entry := range results[len(results)-len(pOracle.tokens):] {
 		if entry.Success {
 			value, err := poABI.Unpack("latestRoundData", entry.ReturnData)
 			if err != nil {
-				log.Fatalf("for token %s, err: %s", pOracle.tokens[i], err)
+				log.Fatalf("for token %s, feed: %s err: %s", pOracle.tokens[i], pOracle.tokenToFeed[pOracle.tokens[i]], err)
 			}
 			// latestData := abi.ConvertType(value[0], new(LatestData)).(*LatestData)
 			answer := value[1].(*big.Int)
 			prices[pOracle.tokens[i]] = answer
+		} else {
+			log.Info(i, "failed token", pOracle.tokens[i], "failed feed", pOracle.tokenToFeed[pOracle.tokens[i]])
 		}
 	}
 	return prices

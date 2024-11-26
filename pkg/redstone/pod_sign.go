@@ -55,6 +55,7 @@ func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RS
 	// prod/aave/1
 	timestamp = tenthMillSec(timestamp) // due to node js
 	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
+	// log.Info(url)
 	return getpodSign(url, "historic-"+details.DataId, timestamp)
 }
 
