@@ -95,7 +95,7 @@ func (info FeedInfo) GetRedstonePF() core.RedStonePF {
 	}
 }
 
-func redstoneDetails(feed common.Address, client core.ClientI) (feedToken common.Address, signThreshold int, dataId string) {
+func RedstoneDetails(feed common.Address, client core.ClientI) (feedToken common.Address, signThreshold int, dataId string) {
 	contract, err := redstone.NewRedstone(feed, client)
 	log.CheckFatal(err)
 	feedToken, err = contract.Token(nil)
@@ -153,7 +153,7 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 			pf0Type, err := core.CallFuncWithExtraBytes(client, "3fd0875f", pf0, 0, []byte{})
 			if err == nil {
 				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
-					_, signThreshold, dataId := redstoneDetails(pf0, pOracle.Node.Client)
+					_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)
 					//
 					obj.SignThreshold = signThreshold
 					obj.DataId = dataId
@@ -172,7 +172,7 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 				obj.Type = core.V3_PULL_UNDERLYING_ORACLE
 			}
 		} else if pfType == core.V3_REDSTONE_ORACLE {
-			token, signThreshold, dataId := redstoneDetails(feed, pOracle.Node.Client)
+			token, signThreshold, dataId := RedstoneDetails(feed, pOracle.Node.Client)
 			//
 			obj.FeedToken = token
 			obj.SignThreshold = signThreshold
