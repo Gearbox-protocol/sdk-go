@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/google/uuid"
 )
 
@@ -127,6 +128,31 @@ func GetRiskMsgTimer() TimerFn {
 			return timer, true, false
 		}
 		return timer, false, false
+	}
+}
+
+func SendMsgIfCountMoreThan(timer time.Duration, threshold int) func(string, string) {
+	m := map[string]*struct {
+		count int
+		start time.Time
+	}{}
+	return func(hash string, msg string) {
+		if m[hash] == nil {
+			m[hash] = &struct {
+				count int
+				start time.Time
+			}{count: 1, start: time.Now()}
+		} else {
+			a := m[hash]
+			a.count += 1
+			m[hash] = a
+		}
+		if m[hash].count > threshold {
+			log.Warn("alertCount: %s, msg: %s", m[hash].count, msg)
+		}
+		if time.Since(m[hash].start) > timer {
+			m[hash] = nil
+		}
 	}
 }
 
