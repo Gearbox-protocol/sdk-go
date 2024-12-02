@@ -151,7 +151,10 @@ func SendMsgIfCountMoreThan(timer time.Duration, threshold int) func(string, str
 			log.Warn("alertCount: %s, msg: %s", m[hash].count, msg)
 		}
 		if time.Since(m[hash].start) > timer {
-			m[hash] = nil
+			m[hash] = &struct {
+				count int
+				start time.Time
+			}{count: 1, start: time.Now()}
 		}
 	}
 }

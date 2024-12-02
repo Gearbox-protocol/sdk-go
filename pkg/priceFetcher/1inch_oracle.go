@@ -31,6 +31,7 @@ type OneInchOracle struct {
 	resolveArbToensToo bool
 	//
 	symToAddr  *core.SymTOAddrStore
+	allSyms    []string
 	inchOracle common.Address
 	client     core.ClientI
 	decimals   DecimalStoreI
@@ -38,7 +39,7 @@ type OneInchOracle struct {
 	extraurls *URLsAndResolve
 }
 
-func (o *OneInchOracle) Reset(net log.NETWORK) {
+func (o *OneInchOracle) Reset(net log.NETWORK) (all []string) {
 	{
 		baseReset := []string{}
 		for _, baseToenSym := range o.BaseTokens {
@@ -47,6 +48,7 @@ func (o *OneInchOracle) Reset(net log.NETWORK) {
 			}
 		}
 		o.BaseTokens = baseReset
+		all = append(all, baseReset...)
 	}
 	if net != log.MAINNET {
 		o.ConstToken = nil
@@ -57,6 +59,7 @@ func (o *OneInchOracle) Reset(net log.NETWORK) {
 			symToToken := o.symToAddr.Tokens[yearnToken.Token]
 			if symToToken != core.NULL_ADDR {
 				yearnReset = append(yearnReset, yearnToken)
+				all = append(all, yearnToken.Token)
 			}
 		}
 		o.YearnTokens = yearnReset
@@ -67,10 +70,12 @@ func (o *OneInchOracle) Reset(net log.NETWORK) {
 			symToToken := o.symToAddr.Tokens[crvToken.Token]
 			if symToToken != core.NULL_ADDR {
 				crvReset = append(crvReset, crvToken)
+				all = append(all, crvToken.Token)
 			}
 		}
 		o.CrvTokens = crvReset
 	}
+	return all
 }
 
 var MAINNET_GMX = common.HexToAddress("0x00eee00eee00eee00eee00eee00eee00eee00eee")
@@ -78,8 +83,8 @@ var MAINNET_OP = common.HexToAddress("0x00fff00fff00fff00fff00fff00fff00fff00fff
 
 func (details OneInchOracle) getAllTokens() (addrs []common.Address) {
 	addrs = make([]common.Address, 0, len(details.symToAddr.Tokens))
-	for _, addr := range details.symToAddr.Tokens {
-		if !utils.Contains([]common.Address{MAINNET_GMX, MAINNET_OP}, addr) {
+	for sym, addr := range details.symToAddr.Tokens {
+		if !utils.Contains([]common.Address{MAINNET_GMX, MAINNET_OP}, addr) && utils.Contains(details.allSyms, sym) {
 			addrs = append(addrs, addr)
 		}
 	}
@@ -162,7 +167,7 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, details URLsAndRe
 
 	chainId := core.GetChainId(client)
 	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
-	calc.Reset(log.GetBaseNet(chainId))
+	calc.allSyms = calc.Reset(log.GetBaseNet(chainId))
 	details.resolve(client)
 	calc.extraurls = &details
 
