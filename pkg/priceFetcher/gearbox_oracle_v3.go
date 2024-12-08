@@ -159,6 +159,9 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 					obj.DataId = dataId
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 					obj.FeedToken = pOracle.feedToTicker[pf0]
+					if pf0.Hex() == "0x14497e822B70554537dB9950126461C23dC4f237" {
+						obj.FeedToken = common.HexToAddress("0x07299E4E806e4253727084c0493fFDf6fB2dBa3D")
+					}
 					//
 					if obj.FeedToken == core.NULL_ADDR {
 						log.Fatalf("pf0(%s) for composite %s dones't have known ticker token", pf0, feed)
