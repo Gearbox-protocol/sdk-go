@@ -183,7 +183,7 @@ var v3Map = AbiMap{
 var v310Map = AbiMap{
 	"CreditAccountCompressor": {ABI: creditAccountCompressor.CreditAccountCompressorABI},
 	"PoolCompressor":          {ABI: poolCompressor.PoolCompressorABI},
-	"AddressProviderv310":     {ABI: addrProviderv310.Addrv310ABI},
+	"AddressProviderv310":     {ABI: addrProviderv310.AddrProviderv310ABI},
 }
 var adapterMap = AbiMap{
 	//
