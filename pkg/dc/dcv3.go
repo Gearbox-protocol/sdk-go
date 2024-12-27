@@ -17,7 +17,7 @@ func getPoolDatav3(values dcv3.PoolData) PoolCallData {
 		TotalBorrowed:      (*core.BigInt)(values.TotalBorrowed),
 		// : values.//,
 		// CreditManagerDebtParams: values.CreditManagerDebtParams,
-		TotalAssets:      (*core.BigInt)(values.TotalAssets),
+		// TotalAssets:      (*core.BigInt)(values.TotalAssets),
 		TotalSupply:      (*core.BigInt)(values.TotalSupply),
 		SupplyRate:       (*core.BigInt)(values.SupplyRate),
 		BaseInterestRate: (*core.BigInt)(values.BaseInterestRate),

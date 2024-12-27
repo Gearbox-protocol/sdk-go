@@ -18,7 +18,7 @@ func getPoolDatav2(blockNum int64, data dcv2.PoolData) PoolCallData {
 		TotalBorrowed:      (*core.BigInt)(data.TotalBorrowed),
 		// TotalDebtLimit: ,
 		// CreditManagerDebtParams: ,
-		TotalAssets:        (*core.BigInt)(data.ExpectedLiquidity), // D_BY_US _expectedLiquidityLU + _calcBaseInterestAccrued() + _calcQuotaRevenueAccrued()
+		// TotalAssets:        (*core.BigInt)(data.ExpectedLiquidity), // D_BY_US _expectedLiquidityLU + _calcBaseInterestAccrued() + _calcQuotaRevenueAccrued()
 		TotalSupply:        (*core.BigInt)(new(big.Int).Add(data.AvailableLiquidity, data.TotalBorrowed)),
 		SupplyRate:         (*core.BigInt)(data.DepositAPYRAY),
 		BaseInterestRate:   (*core.BigInt)(data.BorrowAPYRAY),

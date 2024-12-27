@@ -30,7 +30,7 @@ func getPoolDataV1(data mainnet.DataTypesPoolData) PoolCallData {
 		ExpectedLiquidity:  (*core.BigInt)(data.ExpectedLiquidity),
 		TotalBorrowed:      (*core.BigInt)(data.TotalBorrowed),
 		//
-		TotalAssets: (*core.BigInt)(data.ExpectedLiquidity),                                        // D_BY_US _expectedLiquidityLU + _calcBaseInterestAccrued() + _calcQuotaRevenueAccrued()
+		// TotalAssets: (*core.BigInt)(data.ExpectedLiquidity),                                        // D_BY_US _expectedLiquidityLU + _calcBaseInterestAccrued() + _calcQuotaRevenueAccrued()
 		TotalSupply: (*core.BigInt)(new(big.Int).Add(data.AvailableLiquidity, data.TotalBorrowed)), // D_BY_US
 
 		//
