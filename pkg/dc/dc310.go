@@ -5,6 +5,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccountCompressor"
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/marketCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -13,7 +14,7 @@ import (
 
 // quotaValues poolCompressor.PoolQuotaKeeperState
 // quotaValues can be another param for getting quotas
-func getPoolDatav310(pool poolCompressor.PoolState) PoolCallData {
+func getPoolDatav310(pool marketCompressor.PoolState) PoolCallData {
 	return PoolCallData{
 		Addr:               pool.BaseParams.Addr,
 		Underlying:         pool.Underlying,
@@ -23,7 +24,7 @@ func getPoolDatav310(pool poolCompressor.PoolState) PoolCallData {
 		TotalBorrowed:      (*core.BigInt)(pool.TotalBorrowed),
 		// : pool.//,
 		// CreditManagerDebtParams: pool.CreditManagerDebtParams,
-		TotalAssets:      (*core.BigInt)(pool.TotalAssets),
+		// TotalAssets:      (*core.BigInt)(pool.TotalAssets),
 		TotalSupply:      (*core.BigInt)(pool.TotalSupply),
 		SupplyRate:       (*core.BigInt)(pool.SupplyRate),
 		BaseInterestRate: (*core.BigInt)(pool.BaseInterestRate),
@@ -38,7 +39,7 @@ func getPoolDatav310(pool poolCompressor.PoolState) PoolCallData {
 	}
 }
 
-func getCMDatav310(values poolCompressor.CreditManagerData) CMCallData {
+func getCMDatav310(values marketCompressor.CreditSuiteData) CMCallData {
 	return CMCallData{
 		Addr:       values.CreditManager.BaseParams.Addr,
 		Underlying: values.CreditManager.Underlying,

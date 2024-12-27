@@ -39,7 +39,7 @@ type PoolCallData struct {
 	TotalBorrowed      *core.BigInt   `json:"totalBorrowed"`
 	// TotalDebtLimit          *core.BigInt
 	// CreditManagerDebtParams []dcv3.CreditManagerDebtParams `json:"creditManagerDebtParams,omitempty"`
-	TotalAssets        *core.BigInt `json:"-"`
+	// TotalAssets        *core.BigInt `json:"-"`
 	TotalSupply        *core.BigInt `json:"-"`
 	SupplyRate         *core.BigInt `json:"depositAPY"`
 	BaseInterestRate   *core.BigInt `json:"baseBorrowRate"` // DC_CHANGED
