@@ -45,16 +45,19 @@ func (r *RSPriceOnDemandObj) convert(token common.Address) *RSPriceOnDemand {
 		pod:                priceOnDemand,
 	}
 }
+func getRedstoneUrl() string {
+	return utils.GetEnvOrDefault("REDSTONE_URL", "https://testnet.gearbox.foundation/redstone")
+}
 
 func getLatestPodSign(details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
-	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, details.DataId)
+	url := fmt.Sprintf("%s/%s/%d?dataFeeds=%s", getRedstoneUrl(), details.DataServiceId, details.SignersThreshold, details.DataId)
 	return getpodSign(url, "latest-"+details.DataId, -1)
 }
 func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
 	timestamp = tenthMillSec(timestamp) // due to node js
-	url := fmt.Sprintf("https://testnet.gearbox.foundation/redstone/%s/%d/%d?dataFeeds=%s", details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
+	url := fmt.Sprintf("%s/%s/%d/%d?dataFeeds=%s", getRedstoneUrl(), details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
 	// log.Info(url)
 	return getpodSign(url, "historic-"+details.DataId, timestamp)
 }
