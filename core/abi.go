@@ -12,6 +12,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccountCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfiguratorv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadev310Multicall"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
@@ -182,10 +183,11 @@ var v3Map = AbiMap{
 	"RedStone":             {ABI: redstone.RedstoneABI},
 }
 var v310Map = AbiMap{
-	"CreditAccountCompressor": {ABI: creditAccountCompressor.CreditAccountCompressorABI},
-	"PoolCompressor":          {ABI: poolCompressor.PoolCompressorABI},
-	"MarketCompressor":        {ABI: marketCompressor.MarketCompressorABI},
-	"AddressProviderv310":     {ABI: addrProviderv310.AddrProviderv310ABI},
+	"CreditAccountCompressor":   {ABI: creditAccountCompressor.CreditAccountCompressorABI},
+	"PoolCompressor":            {ABI: poolCompressor.PoolCompressorABI},
+	"MarketCompressor":          {ABI: marketCompressor.MarketCompressorABI},
+	"AddressProviderv310":       {ABI: addrProviderv310.AddrProviderv310ABI},
+	"CreditFacadev310Multicall": {ABI: creditFacadev310Multicall.CreditFacadev310MulticallABI},
 }
 var adapterMap = AbiMap{
 	//

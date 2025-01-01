@@ -16,6 +16,7 @@ type RedStonePF struct {
 	DataId           string         `json:"dataId"`
 	SignersThreshold int            `json:"signersThreshold"`
 	UnderlyingToken  common.Address `json:"token"`
+	Feed             common.Address `json:"feed"`
 }
 
 type SymTOAddrStore struct {

@@ -329,6 +329,7 @@ func (pOracle *GearboxOraclev3) GetCalls(ts int64) []multicall.Multicall2Call {
 				DataId:           feedInfo.DataId,
 				SignersThreshold: feedInfo.SignThreshold,
 				UnderlyingToken:  feedInfo.FeedToken,
+				Feed:             feedInfo.Feed,
 			})
 			data, err := updateABI.Pack("updatePrice", ans.CallData)
 			log.CheckFatal(err)
