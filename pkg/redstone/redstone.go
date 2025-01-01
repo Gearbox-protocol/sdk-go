@@ -10,7 +10,7 @@ import (
 	"time"
 
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
-	"github.com/Gearbox-protocol/sdk-go/artifacts/routerv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -93,7 +93,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, details core.RedStonePF) *big.Int {
 	}
 	price, fromWhere := r.getHistoricPrice(ts, details)
 	r.prices.Set(key, price)
-	log.Infof("RedStone price at %d for %s from %s is %d", ts, details.DataId, fromWhere, price)
+	log.Debugf("RedStone price at %d for %s from %s is %d", ts, details.DataId, fromWhere, price)
 	return price
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, details core.RedStonePF) (*big.Int, string) {
@@ -240,12 +240,12 @@ func (r *RedStoneMgr) getHistoricPodSign(ts int64, tokensNeeded []core.RedStoneP
 	return
 }
 
-func GetPriceOnDemandCalls(cf common.Address, pods []dcv3.PriceOnDemand) (calls []routerv3.MultiCall) {
+func GetPriceOnDemandCalls(cf common.Address, pods []dcv3.PriceOnDemand) (calls []multicall.Multicall2Call) {
 	abi := core.GetAbi("CreditFacadev3Multicall")
 	for _, pod := range pods {
 		data, err := abi.Pack("onDemandPriceUpdate", pod.Token, false, pod.CallData)
 		log.CheckFatal(err)
-		calls = append(calls, routerv3.MultiCall{
+		calls = append(calls, multicall.Multicall2Call{
 			Target:   cf,
 			CallData: data,
 		})

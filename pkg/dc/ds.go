@@ -51,6 +51,10 @@ func GetAccountDataFromDCCall(client core.ClientI, cfAddrv1 common.Address, bloc
 		return CreditAccountCallData{
 			CreditAccountInner: GetCreditAccountv310Inner(values),
 		}, nil
+	case *creditAccountCompressor.CreditAccountData:
+		return CreditAccountCallData{
+			CreditAccountInner: GetCreditAccountv310Inner(*values),
+		}, nil
 	case dcv3.CreditAccountData:
 		return getAccountDatav3(values), nil
 	case dcv2.CreditAccountData:
@@ -58,7 +62,7 @@ func GetAccountDataFromDCCall(client core.ClientI, cfAddrv1 common.Address, bloc
 	case mainnet.DataTypesCreditAccountDataExtended:
 		return getCreditAccountDatav1(client, cfAddrv1, blockNum, values)
 	default:
-		log.Fatalf("Can't process %s in accountData", reflect.TypeOf(data))
+		log.Fatalf("Can't process %v in accountData", reflect.TypeOf(data))
 	}
 	return CreditAccountCallData{}, nil
 }
