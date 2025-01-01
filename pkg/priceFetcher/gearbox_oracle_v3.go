@@ -45,6 +45,15 @@ func (pOracle GearboxOraclev3) HasReserveFeed(token string) bool {
 	return len(data) > 0
 }
 
+func (pOracle GearboxOraclev3) GetPullOracles() (ans []core.RedStonePF) {
+	for _, feed := range pOracle.feedToInfo {
+		if feed.Type == core.V3_REDSTONE_ORACLE {
+			ans = append(ans, feed.GetRedstonePF())
+		}
+	}
+	return
+}
+
 func (pOracle GearboxOraclev3) GetFeedAndType(token string, reserve bool) (typeAndBlock, error) {
 	data := pOracle.tokenToType[common.HexToAddress(token)][reserve]
 	if len(data) == 0 {
@@ -88,12 +97,17 @@ type FeedInfo struct {
 }
 
 func (info FeedInfo) GetRedstonePF() core.RedStonePF {
+	feed := info.Feed
+	if info.PF0 != core.NULL_ADDR {
+		feed = info.PF0
+	}
 	return core.RedStonePF{
 		Type:             info.Type,
 		DataServiceId:    "redstone-primary-prod",
 		DataId:           info.DataId,
 		SignersThreshold: info.SignThreshold,
 		UnderlyingToken:  info.FeedToken,
+		Feed:             feed,
 	}
 }
 

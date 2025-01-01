@@ -36,6 +36,8 @@ type GearboxOracleI interface {
 	GetFeedForBlock(token common.Address, blockNum int64) common.Address
 	HasReserveFeed(token string) bool
 	GetFeedAndType(token string, reserve bool) (typeAndBlock, error)
+	//
+	GetPullOracles() (ans []core.RedStonePF)
 }
 
 type GearboxOracle struct {
@@ -47,6 +49,10 @@ type GearboxOracle struct {
 	//
 	tokens []string
 	//
+}
+
+func (GearboxOracle) GetPullOracles() (ans []core.RedStonePF) {
+	return nil
 }
 
 func (GearboxOracle) GetFeedInfo(feed common.Address) *FeedInfo {
