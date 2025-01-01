@@ -17,6 +17,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/marketCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolQuotaKeeperv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
@@ -183,6 +184,7 @@ var v3Map = AbiMap{
 var v310Map = AbiMap{
 	"CreditAccountCompressor": {ABI: creditAccountCompressor.CreditAccountCompressorABI},
 	"PoolCompressor":          {ABI: poolCompressor.PoolCompressorABI},
+	"MarketCompressor":        {ABI: marketCompressor.MarketCompressorABI},
 	"AddressProviderv310":     {ABI: addrProviderv310.AddrProviderv310ABI},
 }
 var adapterMap = AbiMap{
