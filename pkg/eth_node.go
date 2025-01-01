@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/addrProviderv310"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -189,6 +190,7 @@ func getEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
 	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
 	return url
 }
+
 // dont use outside sdk-go, chainid should be of main network, not testnet
 func getEtherscanBlockNum(chainId int64, ts int64) (int64, error) {
 	etherscanAPI := utils.GetEnvOrDefault(fmt.Sprintf("%s_API_KEY", log.GetNetworkName(chainId)), "")
@@ -216,6 +218,7 @@ func getEtherscanBlockNum(chainId int64, ts int64) (int64, error) {
 	}
 	return blockNum, nil
 }
+
 // dont use outside sdk-go, chainid should be of main network, not testnet
 func getMoralisBlockNum(chainId int64, ts int64) (int64, error) {
 	moralis := utils.GetEnvOrDefault("MORALIS_API_KEY", "")
@@ -254,7 +257,6 @@ func getMoralisBlockNum(chainId int64, ts int64) (int64, error) {
 	return msg.Block, nil
 }
 
-
 func GetBlockNum(ts uint64, chainId int64) int64 {
 	network := log.GetBaseNet(chainId)
 	chainId = log.GetNetworkToChainId(network)
@@ -281,6 +283,43 @@ func GetBlockNum(ts uint64, chainId int64) int64 {
 		}
 		moralisErr = err
 	}
-	log.Warn( "for ts", ts, chainId, "blockNum is 0", errEtherScan, moralisErr)
+	log.Warn("for ts", ts, chainId, "blockNum is 0", errEtherScan, moralisErr)
 	return 0
+}
+
+func Initv310ContractHashMap(client core.ClientI, addressProvider common.Address) map[common.Hash]string {
+	con, err := addrProviderv310.NewAddrProviderv310(addressProvider, client)
+	log.CheckFatal(err)
+	contracts, err := con.GetAllSavedContracts(nil)
+	log.CheckFatal(err)
+
+	node := Node{Client: client}
+	txLogs, err := node.GetLogs(0, node.GetLatestBlockNumber(), []common.Address{addressProvider}, [][]common.Hash{})
+	log.CheckFatal(err)
+	log.Info("Init gearbox addresses: count", len(txLogs))
+	return createMap(contracts, txLogs)
+}
+
+func createMap(contracts []addrProviderv310.ContractValue, txLogs []types.Log) map[common.Hash]string {
+	var addrv310, _ = addrProviderv310.NewAddrProviderv310(core.NULL_ADDR, nil)
+	addrToContractHash := map[common.Address]common.Hash{}
+	for _, txLog := range txLogs {
+		if core.Topic("SetAddress(string,uint256,address)") == txLog.Topics[0] {
+			event, err := addrv310.ParseSetAddress(txLog)
+			log.CheckFatal(err)
+			addrToContractHash[event.Value] = event.Key
+		}
+	}
+	log.Infof("getAllContractsMap: %d, getAllContracts: %d", len(addrToContractHash), len(contracts))
+	//
+
+	hashToContractName := map[common.Hash]string{
+		common.HexToHash("0xd833762afa5298dc6d804f571e7b934fd54a0f7b926c90ff79912e7379744b31"): "ADDRESS_PROVIDER",
+	}
+	for _, contract := range contracts {
+		hash := addrToContractHash[contract.Value]
+		contractName := contract.Key
+		hashToContractName[hash] = contractName
+	}
+	return hashToContractName
 }
