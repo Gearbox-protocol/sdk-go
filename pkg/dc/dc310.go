@@ -41,8 +41,8 @@ func getPoolDatav310(pool marketCompressor.PoolState) PoolCallData {
 
 func getCMDatav310(values marketCompressor.CreditSuiteData) CMCallData {
 	return CMCallData{
-		Addr:       values.CreditManager.BaseParams.Addr,
-		Underlying: values.CreditManager.Underlying,
+		Addr: values.CreditManager.BaseParams.Addr,
+		// Underlying: values.CreditManager.Underlying,
 		// BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		//
 		MinDebt: (*core.BigInt)(values.CreditFacade.MinDebt),

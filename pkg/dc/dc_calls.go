@@ -56,7 +56,7 @@ type CMCallData struct {
 	// CfVersion                  *big.Int
 	// CreditFacade               common.Address
 	// CreditConfigurator         common.Address
-	Underlying common.Address
+	// Underlying common.Address
 	// Pool                       common.Address
 	// TotalDebt                  *big.Int
 	// TotalDebtLimit             *big.Int

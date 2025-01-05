@@ -40,8 +40,8 @@ func getPoolDatav2(blockNum int64, data dcv2.PoolData) PoolCallData {
 
 func getCMDatav2(values dcv2.CreditManagerData) CMCallData {
 	return CMCallData{
-		Addr:       values.Addr,
-		Underlying: values.Underlying,
+		Addr: values.Addr,
+		// Underlying: values.Underlying,
 		// BaseBorrowRate: (*core.BigInt)(values.BorrowRate),
 		//
 		MinDebt: (*core.BigInt)(values.MinAmount),
