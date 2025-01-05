@@ -59,7 +59,7 @@ func getCMDatav1(data mainnet.DataTypesCreditManagerData) CMCallData {
 		// 		CfVersion:
 		// CreditFacade:
 		// CreditConfigurator:
-		Underlying: data.UnderlyingToken,
+		// Underlying: data.UnderlyingToken,
 		// Pool:
 		// BaseBorrowRate: (*core.BigInt)(data.BorrowRate),
 		// TotalDebt

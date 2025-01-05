@@ -32,8 +32,8 @@ func getPoolDatav301(values dcv3.PoolData) PoolCallData {
 }
 func getCMDatav301(values dcv3.CreditManagerData) CMCallData {
 	return CMCallData{
-		Addr:       values.Addr,
-		Underlying: values.Underlying,
+		Addr: values.Addr,
+		// Underlying: values.Underlying,
 		// BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		//
 		MinDebt: (*core.BigInt)(values.MinDebt),
