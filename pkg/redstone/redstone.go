@@ -99,7 +99,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, details core.RedStonePF) *big.Int {
 func (r *RedStoneMgr) getHistoricPrice(ts int64, details core.RedStonePF) (*big.Int, string) {
 	price := r.getAPIPrice(ts, details, "redstone")
 	if price.Cmp(new(big.Int)) == 0 {
-		log.Warn("price from api for ", details.UnderlyingToken, " is 0")
+		// log.Warn("price from api for ", details.UnderlyingToken, " is 0")
 		ans := getHistoricPodSign(ts, details)[details.DataId]
 		if ans == nil {
 			log.Warnf("Failed to get podSign for token %s at timestamp %d", details.UnderlyingToken, ts)
