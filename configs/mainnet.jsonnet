@@ -297,6 +297,7 @@
     sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497',
     sUSDS: '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD',
     scrvUSD: '0x0655977FEb2f289A4aB78af67BAB0d17aAb84367',
+    beraSTONE: '0x97Ad75064b20fb2B2447feD4fa953bF7F007a706',
     aUSDC: '0xBcca60bB61934080951369a648Fb03DF4F96263C',
     aDAI: '0x028171bCA77440897B824Ca71D1c56caC55b68A3',
     aUSDT: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
@@ -755,6 +756,13 @@
       dataId: 'rsETH_FUNDAMENTAL',
       signersThreshold: 5,
       token: '0xf08D818be34C82cB5e3f33AC78F8268828764F17',
+    },
+    beraSTONE: {
+      type: 15,
+      dataServiceId: 'redstone-primary-prod',
+      dataId: 'beraETH_FUNDAMENTAL',
+      signersThreshold: 5,
+      token: '0x692072eE081c9Ded28d2CfD27513E578d895FD0d',
     },
   },
 }
