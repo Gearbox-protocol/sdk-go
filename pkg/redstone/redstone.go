@@ -97,7 +97,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, details core.RedStonePF) *big.Int {
 	return price
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, details core.RedStonePF) (*big.Int, string) {
-	price := r.getAPIPrice(ts, details, "redstone")
+	price := r.getAPIPrice(ts, details, "redstone", true)
 	if price.Cmp(new(big.Int)) == 0 {
 		// log.Warn("price from api for ", details.UnderlyingToken, " is 0")
 		ans := getHistoricPodSign(ts, details)[details.DataId]
@@ -117,18 +117,18 @@ func tenthMillSec(ts int64) int64 {
 }
 
 // https://api.docs.redstone.finance/methods/gethistoricalprice
-func (r *RedStoneMgr) getAPIPrice(ts int64, details core.RedStonePF, provider string) *big.Int {
+func (r *RedStoneMgr) getAPIPrice(ts int64, details core.RedStonePF, provider string, ignore bool) *big.Int {
 	url := fmt.Sprintf("https://api.redstone.finance/prices?symbol=%s&provider=%s&toTimestamp=%d&limit=1", details.DataId, provider, tenthMillSec(ts))
 	res, err := http.Get(url)
 	if err == nil && res.StatusCode == 403 { // from cloudflare
 		log.Info("sleeping in getAPIPrice at ", ts)
 		time.Sleep(1 * time.Minute)
-		return r.getAPIPrice(ts, details, provider)
+		return r.getAPIPrice(ts, details, provider, ignore)
 	} else if err != nil || res.StatusCode/100 != 2 {
 		if err == nil {
 			body, err2 := io.ReadAll(res.Body)
 			log.Warn(err, res.StatusCode, string(body), err2)
-		} else {
+		} else if !ignore {
 			log.Warn(err)
 		}
 		return new(big.Int)
@@ -146,7 +146,7 @@ func (r *RedStoneMgr) getAPIPrice(ts int64, details core.RedStonePF, provider st
 	if len(parsedResp) == 0 {
 		// log.Warn("empty response from redstone api", url, token, "provider: ",  provider)
 		if provider == "redstone" { // try on another provider
-			return r.getAPIPrice(ts, details, "redstone-primary-prod")
+			return r.getAPIPrice(ts, details, "redstone-primary-prod", ignore)
 		} else {
 			return new(big.Int)
 		}
