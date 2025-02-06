@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
+
 func toHex(calls []multicall.Multicall2Call) []string {
 	ans := []string{}
 	for _, call := range calls {
@@ -20,6 +21,7 @@ func toHex(calls []multicall.Multicall2Call) []string {
 	}
 	return ans
 }
+
 // make multicall
 func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
 	contract := getMultiCallContract(client)
@@ -59,10 +61,10 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 					strings.Contains(err.Error(), "timeout awaiting response headers") || // anvil
 					strings.Contains(err.Error(), "we can't execute this request") { // ankr
 					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize/2)
-				} else if strings.Contains(err.Error(), "Unknown block number") { // on alchemy in the trading-price
-					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize)
+					// } else if strings.Contains(err.Error(), "Unknown block number") { // on alchemy in the trading-price
+					// 	tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize)
 				} else {
-					log.Fatal(line, err, blockNum, toHex(calls) )
+					log.Fatal(line, err, blockNum, toHex(calls))
 				}
 			}
 			return tmpResult
