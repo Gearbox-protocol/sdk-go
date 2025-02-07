@@ -86,8 +86,8 @@ const (
 	TokenAllowedV2
 	LimitsUpdated
 	FeesUpdated
-	CreditFacadeUpgraded
-	NewConfigurator
+	CreditFacadeUpgraded // for v2 // SetCreditFacade for v3
+	NewConfigurator      // for v2 // SetCreditConfigurator for v3
 	LTUpdated
 	//
 	IncreaseDebtForbiddenModeChanged
@@ -105,4 +105,9 @@ const (
 	NewMaxCumulativeLoss
 	CumulativeLossReset
 	NewEmergencyLiquidationDiscount
+	NewTotalDebtLimit
+	//
+	SetTokenLiquidationThresholdRamp
+	SetBotList
+	SetBorrowingLimits
 )

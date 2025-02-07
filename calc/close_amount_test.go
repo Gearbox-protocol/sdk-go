@@ -18,8 +18,11 @@ func TestCalcCloseAmount(t *testing.T) {
 		core.NewVersion(2),
 		utils.StringToInt("2003445408514560318103"),
 		schemas.Liquidated,
-		utils.StringToInt("2000036753743938235"),
-		utils.StringToInt("1999999990917566710"),
+		&DebtDetails{
+			total:          utils.StringToInt("2000037121372201950"),
+			interest:       utils.StringToInt("36762826371525"),
+			borrowedAmount: utils.StringToInt("1999999990917566710"),
+		},
 	)
 	expectedAmounToPool := utils.StringToInt("42068945291663408312")
 	expectedRemainingFunds := utils.StringToInt("1861204192797168893884")

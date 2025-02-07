@@ -1,13 +1,23 @@
 package log
 
 import (
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var _amqpChannel *amqp.Channel
+var _amqpUrl string
+
+func Elapsed(what string) func() {
+	start := time.Now()
+	return func() {
+		InfoStackN(3, fmt.Sprintf("%s took %v", what, time.Since(start)))
+	}
+}
 
 // Service constructor
 func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName string) {
@@ -22,7 +32,12 @@ func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName
 		return
 	}
 	//
-	conn, err := amqp.Dial(amqpUrl)
+	_amqpUrl = amqpUrl
+	setChannel()
+}
+
+func setChannel() {
+	conn, err := amqp.Dial(_amqpUrl)
 	if err != nil {
 		Error(err, "Failed to connect to RabbitMQ")
 	}
@@ -34,37 +49,37 @@ func NewAMQPService(amqpEnable, amqpUrl string, logConfig LoggingConfig, appName
 	_amqpChannel = ch
 }
 
-func GetNetworkName(chainId int64) (name string) {
-	switch chainId {
-	case 42:
-		name = "KOVAN"
-	case 5:
-		name = "GOERLI"
-	case 1:
-		name = "MAINNET"
-	case 1337:
-		name = "TEST"
-	}
-	return
-}
-
-func send(important bool, message string) {
+func send(message string, alertType LEVEL, important ...bool) {
 	if _amqpChannel == nil {
 		return
 	}
-	err := _amqpChannel.Publish(
-		_logConfig.Exchange,                // exchange
-		GetNetworkName(_logConfig.ChainId), // routing key
-		false,                              // mandatory
-		false,                              // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(message),
-			Headers:     amqp.Table{"important": important},
-			AppId:       _logConfig.App,
-			// UserId:      _logConfig.Instance,
-		})
-	if err != nil {
-		log.Println("Cant sent notification", err)
+	routingKey := GetNetworkName(_logConfig.ChainId)
+	if _logConfig.ChainId == 7878 {
+		routingKey = "GOERLI"
+	}
+	for i := 0; i < 2; i++ {
+		err := _amqpChannel.Publish(
+			_logConfig.Exchange, // exchange
+			string(routingKey),  // routing key
+			false,               // mandatory
+			false,               // immediate
+			amqp.Publishing{
+				ContentType: "text/plain",
+				Body:        []byte(message),
+				Headers: amqp.Table{"important": func() bool {
+					if len(important) == 0 {
+						return false
+					}
+					return important[0]
+				}(), "type": int(alertType)},
+				AppId: _logConfig.App,
+				// UserId:      _logConfig.Instance,
+			})
+		if err != nil {
+			log.Println("Cant sent notification", err)
+			setChannel()
+		} else {
+			return
+		}
 	}
 }

@@ -37,6 +37,30 @@ var poolRewardGIP68 map[string]*big.Int = map[string]*big.Int{
 	"dwstETH": big.NewInt(0),
 	"dFRAX":   big.NewInt(0),
 }
+var poolRewardGIPNext map[string]*big.Int = map[string]*big.Int{
+	"dDAI":    big.NewInt(1142),
+	"dUSDC":   big.NewInt(1551),
+	"dWETH":   big.NewInt(2007),
+	"dWBTC":   big.NewInt(229),
+	"dwstETH": big.NewInt(0),
+	"dFRAX":   big.NewInt(0),
+}
+var poolRewardGIP85 map[string]*big.Int = map[string]*big.Int{
+	"dDAI":    big.NewInt(571),
+	"dUSDC":   big.NewInt(775),
+	"dWETH":   big.NewInt(0),
+	"dWBTC":   big.NewInt(0),
+	"dwstETH": big.NewInt(0),
+	"dFRAX":   big.NewInt(0),
+}
+var poolRewardv2Zero map[string]*big.Int = map[string]*big.Int{
+	"dDAI":    big.NewInt(0),
+	"dUSDC":   big.NewInt(0),
+	"dWETH":   big.NewInt(0),
+	"dWBTC":   big.NewInt(0),
+	"dwstETH": big.NewInt(0),
+	"dFRAX":   big.NewInt(0),
+}
 
 func init() {
 	for _, v := range poolRewardv2 {
@@ -51,6 +75,15 @@ func init() {
 	for _, v := range poolRewardGIP68 {
 		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
 	}
+	for _, v := range poolRewardGIPNext {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
+	for _, v := range poolRewardGIP85 {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
+	for _, v := range poolRewardv2Zero {
+		v.Mul(v, big.NewInt(1e16)) // actual reward is reward/100*(decimal of gear token)
+	}
 }
 
 type PoolRewardSnapshot struct {
@@ -60,7 +93,15 @@ type PoolRewardSnapshot struct {
 
 type PoolRewardSnapshots []PoolRewardSnapshot
 
-var MainnetPoolRewards = PoolRewardSnapshots{{poolRewardv2, 15820000}, {poolRewardv2GIP30, 15977000}, {poolRewardFRAX, 16720000}, {poolRewardGIP68, 17904775}}
+var MainnetPoolRewards = PoolRewardSnapshots{
+	{poolRewardv2, 15820000},
+	{poolRewardv2GIP30, 15977000},
+	{poolRewardFRAX, 16720000},
+	{poolRewardGIP68, 17904775},
+	{poolRewardGIPNext, 18815109},
+	{poolRewardGIP85, 18893500},
+	{poolRewardv2Zero, 18989500},
+}
 var GoerliPoolRewards = PoolRewardSnapshots{{poolRewardv2, 7694030}}
 
 func GetRewardPerToken(chainId int64, from, to int64) []PoolRewardSnapshot {

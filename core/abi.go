@@ -6,12 +6,20 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCL"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/aCLTrait"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/accountFactory"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/adaptersv3/savingMaker"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addressProvider"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/contractsRegister"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccount"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditConfiguratorv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/redstone"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/updatePriceFeed"
+	"github.com/Gearbox-protocol/sdk-go/log"
 
 	// v1
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFilter"
@@ -54,9 +62,9 @@ import (
 	// v3
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadev3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditManagerv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/poolv3"
 
 	//
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
@@ -65,12 +73,15 @@ var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\
 
 var curveBalanceABI = "[{\"name\":\"balances\",\"outputs\":[{\"type\":\"uint256\",\"name\":\"\"}],\"inputs\":[{\"type\":\"uint256\",\"name\":\"i\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"gas\":2943}]"
 
+var creditFacadev3MulticallABI = "[{\"type\":\"function\",\"name\":\"onDemandPriceUpdate\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"reserve\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"}]"
+
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
-		"Version":      versionABI,
-		"Pauser":       pauserABI,
-		"1InchOracle":  inchOracleABI,
-		"curveBalance": curveBalanceABI,
+		"Version":                 versionABI,
+		"Pauser":                  pauserABI,
+		"1InchOracle":             inchOracleABI,
+		"curveBalance":            curveBalanceABI,
+		"CreditFacadev3Multicall": creditFacadev3MulticallABI,
 	}
 	if data := abiMap[contractName]; data != "" {
 		return getABI(data)
@@ -151,8 +162,15 @@ var v2Map = AbiMap{
 	"MultiCall": {ABI: multicall.MulticallABI},
 }
 var v3Map = AbiMap{
-	"CreditManagerv3": {ABI: creditManagerv3.CreditManagerv3ABI},
-	"CreditFacadev3":  {ABI: creditFacadev3.CreditFacadev3ABI},
+	"CreditManagerv3":      {ABI: creditManagerv3.CreditManagerv3ABI},
+	"CreditFacadev3":       {ABI: creditFacadev3.CreditFacadev3ABI},
+	"CreditConfiguratorv3": {ABI: creditConfiguratorv3.CreditConfiguratorv3ABI},
+	"Poolv3":               {ABI: poolv3.Poolv3ABI},
+	"DataCompressorv3":     {ABI: dataCompressorv3.DataCompressorv3ABI},
+	"InchFarming":          {ABI: inchFarmingPool.InchFarmingPoolABI},
+	"PriceOraclev3":        {ABI: priceOraclev3.PriceOraclev3ABI},
+	"UpdatePriceFeed":      {ABI: updatePriceFeed.UpdatePriceFeedABI},
+	"RedStone":             {ABI: redstone.RedstoneABI},
 }
 var adapterMap = AbiMap{
 	//
@@ -177,6 +195,9 @@ var adapterMap = AbiMap{
 	// v3 pos for synctron
 	"NonFungiblePosManager": {ABI: nonFungiblePosManager.NonFungiblePosManagerABI},
 	"TokenDistributor":      {ABI: tokenDistributor.TokenDistributorABI},
+	//
+	//
+	"MakerDAI": {ABI: savingMaker.SavingMakerABI},
 }
 
 func getABI(data string) *abi.ABI {

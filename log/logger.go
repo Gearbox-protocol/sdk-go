@@ -22,19 +22,19 @@ func printf(severity LEVEL, msg string, args ...interface{}) string {
 	if severity < logLevel {
 		return ""
 	}
-	_log := fmt.Sprintf(severityFormat(toString(severity))+DetectFuncAtStackN(3)+msg, args...)
+	_log := fmt.Sprintf(severityFormat(severity.ToString())+DetectFuncAtStackN(3)+msg, args...)
 	if testLogModule == nil {
 		log.Println(_log)
 	} else {
 		testLogModule.Log(_log)
 	}
-	return fmt.Sprintf(severityFormat(toString(severity))+msg, args...)
+	return fmt.Sprintf(severityFormat(severity.ToString())+msg, args...)
 }
 func println(severity LEVEL, args ...interface{}) string {
 	if severity < logLevel {
 		return ""
 	}
-	return printlnStr(toString(severity), 4, args...)
+	return printlnStr(severity.ToString(), 4, args...)
 }
 func printlnStr(severity string, depth int, args ...interface{}) string {
 	_log := severityFormat(severity) + DetectFuncAtStackN(depth) + fmt.Sprintln(args...)
@@ -63,6 +63,12 @@ func Tracef(msg string, args ...interface{}) {
 func Trace(args ...interface{}) {
 	println(TRACE, args...)
 }
+func TraceAtN(depth int, args ...interface{}) {
+	if TRACE < logLevel {
+		return
+	}
+	printlnStr(TRACE.ToString(), depth, args...)
+}
 func Debugf(msg string, args ...interface{}) {
 	printf(DEBUG, msg, args...)
 }
@@ -72,13 +78,13 @@ func Debug(args ...interface{}) {
 
 func Warnf(msg string, args ...interface{}) {
 	if _log := printf(WARN, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, WARN)
 	}
 }
 
 func Warn(args ...interface{}) {
 	if _log := println(WARN, args...); _log != "" {
-		send(false, _log)
+		send(_log, WARN)
 	}
 }
 
@@ -102,20 +108,20 @@ func InfoStackN(n int, v ...interface{}) {
 
 func Errorf(msg string, args ...interface{}) {
 	if _log := printf(ERROR, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, ERROR)
 	}
 }
 
 func Error(args ...interface{}) {
 	if _log := println(ERROR, args...); _log != "" {
-		send(false, _log)
+		send(_log, ERROR)
 	}
 }
 
 func Fatalf(msg string, args ...interface{}) {
 	debug.PrintStack()
 	if _log := printf(FATAL, msg, args...); _log != "" {
-		send(false, _log)
+		send(_log, FATAL)
 	}
 	os.Exit(1)
 }
@@ -123,7 +129,7 @@ func Fatalf(msg string, args ...interface{}) {
 func Fatal(args ...interface{}) {
 	debug.PrintStack()
 	if _log := println(FATAL, args...); _log != "" {
-		send(false, _log)
+		send(_log, FATAL)
 	}
 	os.Exit(1)
 }
@@ -137,19 +143,19 @@ func CheckFatal(err error) {
 		} else {
 			testLogModule.Log(msg)
 		}
-		send(false, msg)
+		send(msg, FATAL)
 		os.Exit(1)
 	}
 }
 
 func AMQPMsgf(msg string, args ...interface{}) {
 	_log := printf(AMQP, msg, args...)
-	send(false, _log)
+	send(_log, AMQP)
 }
 
 func AMQPMsg(args ...interface{}) {
 	_log := println(AMQP, args...)
-	send(false, _log)
+	send(_log, AMQP)
 }
 
 // //
@@ -177,4 +183,7 @@ func DetectFuncAtStackN(n int) string {
 
 func WrapErrWithLine(err error) error {
 	return fmt.Errorf("%s: %v", DetectFuncAtStackN(2), err)
+}
+func WrapErrWithLineN(err error, n int) error {
+	return fmt.Errorf("%s: %v", DetectFuncAtStackN(n), err)
 }

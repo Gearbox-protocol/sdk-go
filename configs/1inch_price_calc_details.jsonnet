@@ -9,11 +9,20 @@
       price: 0,
     },
   ],
+  arbBaseTokens: [
+    'ARB',
+    'GMX',
+    'ezETH',
+    'USDe',
+  ],
+  optBaseTokens: [
+    'OP',
+  ],
   baseTokens: [
     'FRAX',
     'SUSD',
+    'crvUSD',
     'stETH',
-    'wstETH',
     'GUSD',
     'LUSD',
     'SNX',
@@ -34,6 +43,22 @@
     'WBTC',
     'USDT',
     'UNI',
+    //
+    'MKR',
+    // 'BLUR',
+    'RPL',
+    'APE',
+    'LDO',
+    'GHO',
+    //
+    'PENDLE',  // on arbitrum
+    'wstETH',
+    'rETH',
+    'cbETH',
+    //
+    'WLD',  // on optimism
+    // for gpointb arbitrum
+    'rsETH',
   ],
   yearnTokens: [
     {
@@ -55,6 +80,11 @@
     {
       token: 'yvCurve_stETH',
       underlying: 'steCRV',
+    },
+    {
+      token: 'sDAI',
+      isMaker: true,
+      underlying: 'DAI',
     },
   ],
   crvTokens: [

@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"time"
+
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -10,7 +12,6 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
@@ -96,7 +97,6 @@ func (c *Contract) DiscoverFirstLog() int64 {
 }
 
 func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
-
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(fromBlock),
 		ToBlock:   big.NewInt(toBlock),
@@ -108,9 +108,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 
 	logs, err := c.Client.FilterLogs(context.Background(), query)
 	if err != nil {
-		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
-			strings.Contains(err.Error(), core.LogFilterLenError) {
+		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 
 			log.Debugf("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
@@ -155,7 +153,6 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 }
 
 func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Hash) (int64, error) {
-
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(fromBlock),
 		ToBlock:   big.NewInt(toBlock),
@@ -166,11 +163,12 @@ func (c *Contract) FindLastLogBound(fromBlock, toBlock int64, topics []common.Ha
 			topics,
 		},
 	}
-	logs, err := c.Client.FilterLogs(context.Background(), query)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer func() { cancel() }()
+	//
+	logs, err := c.Client.FilterLogs(ctx, query)
 	if err != nil {
-		if strings.Contains(err.Error(), core.QueryMoreThan10000Error) ||
-			strings.Contains(err.Error(), core.NoderealFilterLogError) ||
-			strings.Contains(err.Error(), core.LogFilterLenError) {
+		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 			foundHigh, err := c.FindLastLogBound(middle, toBlock, topics)
 			if err != nil {
@@ -236,5 +234,6 @@ func (c *Contract) ParseEvent(eventName string, txLog *types.Log) (string, *core
 	data["_order"] = argNames
 	jsonData := core.Json(data)
 	jsonData.CheckSumAddress()
+	jsonData.QuoteBigInt()
 	return c.ABI.Events[eventName].Sig, &jsonData
 }

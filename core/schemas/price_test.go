@@ -9,14 +9,15 @@ import (
 
 func TestPriceFeedClone(t *testing.T) {
 	a := &PriceFeed{
-		BlockNumber:  23,
-		Feed:         "0x1111111111111111111111111111111111111111",
-		RoundId:      24,
-		IsPriceInUSD: true,
-		PriceBI:      (*core.BigInt)(big.NewInt(12345)),
-		Price:        .12345,
+		BlockNumber:     23,
+		Feed:            "0x1111111111111111111111111111111111111111",
+		RoundId:         24,
+		MergedPFVersion: MergedPFVersion(V2PF),
+		PriceBI:         (*core.BigInt)(big.NewInt(12345)),
+		Price:           .12345,
 	}
 	b := a.Clone()
+	(*a).MergedPFVersion = 0
 	if *a != *b {
 		t.Errorf("%+v's cloned copy is differet %+v", a, b)
 	}

@@ -76,7 +76,7 @@ func SubCoreAndInt(a *BigInt, b *big.Int) *BigInt {
 	if a != nil {
 		return (*BigInt)(new(big.Int).Sub(a.Convert(), b))
 	}
-	return NewBigInt((*BigInt)(b))
+	return (*BigInt)(new(big.Int).Neg(b))
 }
 
 func (z *BigInt) Scan(value interface{}) error {
@@ -105,7 +105,7 @@ func (z *BigInt) UnmarshalJSON(b []byte) error {
 	str := strings.Trim(string(b), "\"")
 	value, ok := new(big.Int).SetString(str, 10)
 	if !ok {
-		return fmt.Errorf("can unmarshal BigInt")
+		return fmt.Errorf("can unmarshal BigInt: %s", str)
 	}
 
 	*z = *(*BigInt)(value)

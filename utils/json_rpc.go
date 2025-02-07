@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 )
@@ -37,7 +38,7 @@ func JsonRPCMakeRequest(url string, body *JsonRPCRequestBody) (interface{}, erro
 	log.CheckFatal(err)
 	reader := bytes.NewReader(bodyBytes)
 	// make request
-	req, err := http.NewRequest(http.MethodPost, url, reader)
+	req, err := http.NewRequest(http.MethodPost, strings.Split(url, ",")[0], reader)
 	log.CheckFatal(err)
 	req.Header["Content-Type"] = []string{"application/json"}
 	// get response

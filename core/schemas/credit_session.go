@@ -6,15 +6,19 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 const (
 	Active = iota
 	Closed
 	Repaid
+	// status type for v2 liquidation is set after the call from tenderly is fetched
+	// status for v3 liquidation is set in the onLiquidateCreditAccount via expirationDate and based on the paused state of the credit manager
 	Liquidated
 	LiquidateExpired
 	LiquidatePaused
+	//
 )
 
 func AccountStatusToStr(id int) (string, error) {
@@ -65,6 +69,7 @@ type (
 	CreditSession struct {
 		ID             string                `gorm:"primaryKey" json:"sessionId"`
 		Status         int                   `json:"status"`
+		TeritaryStatus *core.Json            `gorm:"column:teritary_status"`
 		Borrower       string                `json:"borrower"`
 		CreditManager  string                `json:"creditManager"`
 		Account        string                `json:"account"`
@@ -87,6 +92,9 @@ type (
 		RemainingFunds *core.BigInt `gorm:"column:remaining_funds"`
 		// for v2 close accounts.
 		CloseTransfers *core.JsonFloatMap `gorm:"column:close_transfers" json:"-"`
+		//
+		EntryPrice float64 `gorm:"column:entry_price" json:"entryPrice,omitempty"`
+		ClosePrice float64 `gorm:"column:close_price" json:"closePrice,omitempty"`
 	}
 
 	CreditAccountData struct {
@@ -111,21 +119,29 @@ type (
 		Since                 int64
 	}
 	CreditSessionSnapshot struct {
-		ID               int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
-		BlockNum         int64        `gorm:"column:block_num" json:"blockNum"`
-		SessionId        string       `gorm:"column:session_id" json:"sessionId"`
-		BorrowedAmountBI *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
-		BorrowedAmount   float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
-		TotalValueBI     *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
-		TotalValue       float64      `gorm:"column:total_value" json:"totalValue"`
+		ID                      int64        `gorm:"primaryKey;autoincrement:true" json:"-"`
+		BlockNum                int64        `gorm:"column:block_num" json:"blockNum"`
+		SessionId               string       `gorm:"column:session_id" json:"sessionId"`
+		BorrowedAmountBI        *core.BigInt `gorm:"column:borrowed_amount_bi" json:"borrowedAmountBI"`
+		BorrowedAmount          float64      `gorm:"column:borrowed_amount" json:"borrowedAmount"`
+		ExtraQuotaAPY           float64      `gorm:"column:extra_quota_apy" json:"extraQuotaAPY"`
+		TotalValueBI            *core.BigInt `gorm:"column:total_value_bi" json:"totalValueBI"`
+		TotalValue              float64      `gorm:"column:total_value" json:"totalValue"`
+		CumulativeQuotaInterest *core.BigInt `gorm:"column:cum_quota_interest" json:"cumQuotaInterest,omitempty"`
+		QuotaFees               *core.BigInt `gorm:"column:quota_fees" json:"quotaFees,omitempty"`
 		// enabled can be false but amount is always non -zero
-		Balances               *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
-		Borrower               string                `gorm:"column:borrower" json:"borrower"`
-		CollateralInUSD        float64               `gorm:"column:collateral_usd" json:"collateralInUSD"`
-		CollateralInUnderlying float64               `gorm:"column:collateral_underlying" json:"collateralInUnderlying"`
-		СumulativeIndexAtOpen  *core.BigInt          `gorm:"column:cumulative_index" json:"cumulativeIndexAtOpen"`
-		HealthFactor           *core.BigInt          `gorm:"column:health_factor" json:"healthFactor"`
-		CM                     string                `json:"-" gorm:"-"`
+		Balances *core.DBBalanceFormat `gorm:"column:balances" json:"balance"`
+		Borrower string                `gorm:"column:borrower" json:"borrower"`
+		//
+		CollateralInUSD         float64             `gorm:"column:collateral_usd" json:"collateralInUSD"`
+		CollateralInUnderlying  float64             `gorm:"column:collateral_underlying" json:"collateralInUnderlying"`
+		Collateral              *core.JsonBigIntMap `gorm:"column:collateral" json:"-"`
+		InstCollteralUnderlying float64             `gorm:"column:inst_collateral_underlying" json:"instCollateralUnderlying"`
+		InstCollteralUSD        float64             `gorm:"column:inst_collateral_usd" json:"instCollateralUSD"`
+		//
+		СumulativeIndexAtOpen *core.BigInt `gorm:"column:cumulative_index" json:"cumulativeIndexAtOpen"`
+		HealthFactor          *core.BigInt `gorm:"column:health_factor" json:"healthFactor"`
+		CM                    string       `json:"-" gorm:"-"`
 	}
 	CreditSessionUpdate struct {
 		SessionId        string       `gorm:"column:id;primaryKey"`
@@ -138,4 +154,58 @@ type (
 
 func (CreditSessionUpdate) TableName() string {
 	return "credit_sessions"
+}
+
+func (ses CreditSession) secStatusMap() map[int64]int {
+	ans := map[int64]int{}
+	if ses.TeritaryStatus != nil && *ses.TeritaryStatus != nil {
+		secStatus := utils.ListOfInt64List((*ses.TeritaryStatus)["secStatus"])
+		for _, l := range secStatus {
+			ans[l[0]] = int(l[1])
+		}
+	}
+	return ans
+}
+
+func (ses CreditSession) StatusAt(blockNum int64) int {
+	if ses.ClosedAt == blockNum && ses.Status != Active {
+		return ses.Status
+	}
+	if ses.TeritaryStatus == nil {
+		return Active
+	}
+	secStatus := ses.secStatusMap()
+	if secStatus[blockNum] != 0 {
+		return secStatus[blockNum]
+	}
+	return Active
+}
+
+// in 10**27
+func QuotaBorrowRate(balances core.DBBalanceFormat, totalValue *core.BigInt) float64 {
+	if totalValue.Convert().Cmp(big.NewInt(0)) == 0 {
+		return 0
+	}
+	//
+	total := new(big.Float)
+	for _, balance := range balances {
+		if balance.IsQuoted && balance.Quota != nil {
+			total = new(big.Float).Add(
+				total,
+				new(big.Float).Mul(
+					utils.GetFloat64(balance.Quota.Convert(), 0),
+					big.NewFloat(float64(balance.QuotaRate)),
+				),
+			)
+		}
+	}
+	totalValueF := utils.GetFloat64(totalValue.Convert(), 0)
+	val, _ := new(big.Float).Quo(total, totalValueF).Float64()
+	return val
+}
+
+func QuotaBorrowRAY(extraQuotaAPY float64) *big.Int {
+	f := new(big.Float).Mul(big.NewFloat(extraQuotaAPY), utils.GetExpFloat(23))
+	val, _ := f.Int(nil)
+	return val
 }
