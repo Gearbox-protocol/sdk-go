@@ -138,8 +138,8 @@ func errorHandler(err error, mc *MutextedClient) bool {
 			//This request is not supported because your node is running with state pruning. Run with --pruning=archive.
 		} else if err.Error() == "header not found" { // makemulticall failed with this error in definder
 			mc.addSleepForSecs(15)
-		} else if strings.Contains(err.Error(), "EVM error FatalExternalError")  || 
-		 strings.Contains(err.Error(), "failed to get storage") {// anvil error
+		} else if strings.Contains(err.Error(), "EVM error FatalExternalError") ||
+			strings.Contains(err.Error(), "failed to get storage") { // anvil error
 			log.Trace("Trying on anvil error")
 			mc.addSleepForSecs(3)
 		} else if strings.Contains(err.Error(), "project ID does not have access to archive state") {
@@ -232,7 +232,7 @@ func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Bl
 		block, err := c.client.BlockByNumber(ctx, number)
 		if err != nil && (strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") || strings.Contains(strings.ToLower(err.Error()), "invalid transaction v, r, s values")) {
 			data, err := utils.JsonRPCMakeRequest(c.url, utils.GetJsonRPCRequestBody("eth_getBlockByNumber", fmt.Sprintf("0x%x", number), false))
-			if err != nil {
+			if err != nil || data == nil {
 				return nil, log.WrapErrWithLine(err)
 			}
 			ts := data.(map[string]interface{})["timestamp"]
