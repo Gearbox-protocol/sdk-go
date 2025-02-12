@@ -91,7 +91,7 @@ func GetCreditAccountv310(values CreditAccountv310) CreditAccountCallData {
 		CumulativeQuotaInterest: (*core.BigInt)(values.CumulativeQuotaInterest),
 		CreditAccountInner:      GetCreditAccountv310Inner(values.CreditAccountData),
 	}
-	data.Balances = convertv310ToBalance(values.Tokens, values)
+	convertv310ToBalance(&data.Balances, values)
 	return data
 }
 func GetCreditAccountv310Inner(values creditAccountCompressor.CreditAccountData) CreditAccountInner {
@@ -116,26 +116,24 @@ func GetCreditAccountv310Inner(values creditAccountCompressor.CreditAccountData)
 		//
 		// BaseBorrowRate: (*core.BigInt)(values.BaseBorrowRate),
 		// Since:    values.Since,
-		Balances: Convertv310BalWithoutQuotaIndex(values.Tokens),
+		Balances: Convertv310BalWithoutQuotaIndex(values.EnabledTokensMask, values.Tokens),
 	}
 }
 
-func convertv310ToBalance(balances []creditAccountCompressor.TokenInfo, values CreditAccountv310) (dcv2Balances []core.TokenBalanceCallData) {
-	ans := Convertv310BalWithoutQuotaIndex(balances)
-	for ind, entry := range ans {
+func convertv310ToBalance(balances *[]core.TokenBalanceCallData, values CreditAccountv310) {
+	for ind, entry := range *balances {
 		entry.QuotaIndexLU = (*core.BigInt)(values.QuotaCumIndexMap[entry.Token])
-		ans[ind] = entry
+		(*balances)[ind] = entry
 	}
-	return ans
 }
-func Convertv310BalWithoutQuotaIndex(balances []creditAccountCompressor.TokenInfo) (dcv2Balances []core.TokenBalanceCallData) {
+func Convertv310BalWithoutQuotaIndex(enabledMask *big.Int, balances []creditAccountCompressor.TokenInfo) (dcv2Balances []core.TokenBalanceCallData) {
 	for ind, balance := range balances {
 		dcv2Balances = append(dcv2Balances, core.TokenBalanceCallData{
 			Token: balance.Token.Hex(),
 			DBTokenBalance: core.DBTokenBalance{
 				BI:          (*core.BigInt)(balance.Balance),
-				IsForbidden: false, // is set on credit manager
-				IsEnabled:   true,  // is used by credit account
+				IsForbidden: false,                                                              // is set on credit manager
+				IsEnabled:   new(big.Int).And(balance.Mask, enabledMask).Cmp(new(big.Int)) != 0, // is used by credit account
 				IsQuoted:    balance.Quota != nil && balance.Quota.Cmp(new(big.Int)) > 0,
 				Quota:       (*core.BigInt)(balance.Quota),
 				// QuotaRate:    balance.QuotaRate,
