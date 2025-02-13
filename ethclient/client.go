@@ -100,6 +100,7 @@ func sleepFor429Error(msg string) int64 {
 		log.CheckFatal(err)
 		sleepFor = secs
 	}
+	log.Info("Ethclient: sleep", sleepFor)
 	return sleepFor
 }
 
