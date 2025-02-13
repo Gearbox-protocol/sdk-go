@@ -161,6 +161,9 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(token common.Address, feed co
 					_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)
 					//
 					obj.SignThreshold = signThreshold
+					if feed.Hex() == "0x7FB4bEe4a0a9291Def0EEE93F15393ABC7958888" {
+						dataId = "beraSTONE_FUNDAMENTAL"
+					}
 					obj.DataId = dataId
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 					obj.FeedToken = pOracle.feedToTicker[pf0]
