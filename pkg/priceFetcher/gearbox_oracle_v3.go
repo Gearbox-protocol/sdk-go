@@ -119,13 +119,13 @@ func RedstoneDetails(feed common.Address, client core.ClientI) (feedToken common
 	}()
 	return
 }
-func (pOracle *GearboxOraclev3) GetPF01AndFeedType(token common.Address, feed common.Address, blockNum int64, client core.ClientI) {
-	if val, ok := pOracle.feedToInfo[feed]; ok {
-		if val.Type == core.V3_REDSTONE_ORACLE && val.FeedToken != token && token != core.NULL_ADDR { // same redstone feed can be added for multiple tokens, use the latest one.
-			val.FeedToken = token
-		}
-		return
-	}
+func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI) {
+	// if val, ok := pOracle.feedToInfo[feed]; ok {
+	// 	if val.Type == core.V3_REDSTONE_ORACLE && val.FeedToken != token && token != core.NULL_ADDR { // same redstone feed can be added for multiple tokens, use the latest one.
+	// 		val.FeedToken = token
+	// 	}
+	// 	return
+	// }
 	fn := func(_feed common.Address, sig string) common.Address {
 		priceFeed0, err := core.CallFuncWithExtraBytes(client, sig, _feed, 0, []byte{}) // priceFeedType
 		if err != nil {
@@ -178,24 +178,24 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(token common.Address, feed co
 			}
 		} else if pfType == core.V3_PENDLE_PT_TWAP_ORACLE {
 			obj.PF0 = fn(feed, "741bef1a") // priceFeed
-			pOracle.GetPF01AndFeedType(core.NULL_ADDR, obj.PF0, blockNum, client)
+			pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client)
 			if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
 				obj.Type = core.V3_PULL_UNDERLYING_ORACLE
 			}
 		} else if pfType == core.V3_ERC4626_VAULT_ORACLE { // for stkUSDS on mainnet.
-			obj.PF0 = fn(feed, "741bef1a")  // priceFeed
-			lpToken := fn(feed, "5fcbd285") // lpToken
-			pOracle.GetPF01AndFeedType(lpToken, obj.PF0, blockNum, client)
+			obj.PF0 = fn(feed, "741bef1a") // priceFeed
+			// lpToken := fn(feed, "5fcbd285") // lpToken
+			pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client)
 			if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
 				obj.Type = core.V3_PULL_UNDERLYING_ORACLE
 			}
 		} else if pfType == core.V3_REDSTONE_ORACLE { // onChainToken is not directly used as the onChainToken returned for sUSDS (redstoneToken feed) is DAI,but should be sUSDS. bcz for DAI the feed in priceorcle is not the sUSDS redstone feed.
 			onChainToken, signThreshold, dataId := RedstoneDetails(feed, pOracle.Node.Client)
-			if token == core.NULL_ADDR {
-				token = onChainToken
-			}
+			// if token == core.NULL_ADDR {
+			// 	token = onChainToken
+			// }
 			//
-			obj.FeedToken = token
+			obj.FeedToken = onChainToken
 			obj.SignThreshold = signThreshold
 			obj.DataId = dataId
 			//
@@ -217,7 +217,8 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 	if pOracle.tokenToType[token] == nil {
 		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
 	}
-	pOracle.GetPF01AndFeedType(token, feed, blockNum, pOracle.Node.Client)
+	// pOracle.GetPF01AndFeedType(token, feed, blockNum, pOracle.Node.Client)
+	pOracle.GetPF01AndFeedType(feed, blockNum, pOracle.Node.Client)
 	//
 	info := pOracle.feedToInfo[feed]
 	pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], info.typeAndBlock)
