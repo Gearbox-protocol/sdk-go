@@ -3,6 +3,7 @@ package pkg
 import (
 	"context"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -60,14 +61,17 @@ func WsFetchBlockNumFrom(_ctx context.Context, syncedTill int64, wsProviders []s
 							ts = header.Time
 						} else {
 							header, err := wsClient.HeaderByNumber(context.Background(), big.NewInt(nextBlock))
-							log.CheckFatal(err)
+							if err != nil && strings.Contains(err.Error(), "Too Many Requests") {
+								headers, sub, wsClient = getHeaders(wsProviders)
+								continue
+							}
 							ts = header.Time
 						}
 					}
 					fn(nextBlock-interval+1, nextBlock, ts)
 					syncedTill = nextBlock
 				}
-			} else {
+			} else if latestBlockNum >= syncedTill {
 				syncedTill = latestBlockNum
 			}
 		}
