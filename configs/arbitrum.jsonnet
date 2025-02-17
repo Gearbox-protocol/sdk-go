@@ -101,10 +101,6 @@
     ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     SUSD: '0xA970AF1a584579B618be4d69aD6F73459D112F95',
   },
-  farmingPools: {
-    sdUSDCV3: '0xD0181a36B0566a8645B7eECFf2148adE7Ecf2BE9',
-    sdWETHV3: '0xf3b7994e4dA53E04155057Fd61dc501599d57877',
-  },
   ids: {
     cvx3Crv: 9,
     cvxcrvFRAX: 100,
