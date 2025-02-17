@@ -161,9 +161,6 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 					_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)
 					//
 					obj.SignThreshold = signThreshold
-					if feed.Hex() == "0x7FB4bEe4a0a9291Def0EEE93F15393ABC7958888" {
-						dataId = "beraSTONE_FUNDAMENTAL"
-					}
 					obj.DataId = dataId
 					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
 					obj.FeedToken = pOracle.feedToTicker[pf0]
@@ -199,6 +196,9 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 			obj.SignThreshold = signThreshold
 			obj.DataId = dataId
 			//
+		}
+		if obj.DataId == "beraETH_FUNDAMENTAL" {
+			obj.DataId = "beraSTONE_FUNDAMENTAL"
 		}
 		pOracle.feedToInfo[feed] = obj
 	} else {
