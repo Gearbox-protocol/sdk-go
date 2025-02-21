@@ -28,8 +28,11 @@ func rpcRrefixForDifferentProviders(network log.NETWORK) prefixs {
 	case log.MAINNET:
 		infura = "https://mainnet.infura.io"
 		alchemy = "eth-mainnet"
+	case log.SONIC:
+		infura = ""
+		alchemy = "sonic-mainnet"
 	}
-	if infura == "" || alchemy == "" {
+	if (infura == "" || alchemy == "") && network != log.SONIC {
 		log.Fatal("network not supported", network)
 	}
 	return prefixs{
@@ -48,6 +51,7 @@ func GetNetworkClient(urls string, toNetwork log.NETWORK) core.ClientI {
 			continue
 		}
 		// getNewClient
+		// SONIC_TEST
 		for _, fromNetwork := range []log.NETWORK{log.ARBITRUM, log.MAINNET, log.OPTIMISM} {
 			fromPrefixes := rpcRrefixForDifferentProviders(fromNetwork)
 			if strings.Contains(url, fromPrefixes.alchemy) {

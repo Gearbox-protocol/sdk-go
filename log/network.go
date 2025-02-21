@@ -45,6 +45,11 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://goerli.etherscan.io",
 			ChartUrl:    "https://charts.goerli.gearbox.fi",
 		}
+	case 146: // goerli
+		return NetworkUI{
+			ExplorerUrl: "https://sonicscan.org",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	}
 	return NetworkUI{}
 }
@@ -60,6 +65,7 @@ var ARBITRUM NETWORK = "ARBITRUM"
 var ARBTEST NETWORK = "ARBTEST"
 var OPTIMISM NETWORK = "OPTIMISM"
 var OPTTEST NETWORK = "OPTTEST"
+var SONIC NETWORK = "SONIC"
 
 func GetNetworkName(chainId int64) (name NETWORK) {
 	switch chainId {
@@ -81,10 +87,13 @@ func GetNetworkName(chainId int64) (name NETWORK) {
 		name = OPTIMISM
 	case 7879:
 		name = OPTTEST
+	case 146:
+		name = SONIC
 	}
 	return
 }
 
+// SONIC_TEST
 func GetBaseNet(chainId int64) NETWORK {
 	net := GetNetworkName(chainId)
 	if net == ANVIL || net == MAINNET {
@@ -95,6 +104,8 @@ func GetBaseNet(chainId int64) NETWORK {
 		net = MAINNET
 	} else if net == OPTTEST || net == OPTIMISM {
 		net = OPTIMISM
+	} else if net == SONIC {
+		net = SONIC
 	} else {
 		Fatal("base net not found", chainId)
 	}
@@ -114,6 +125,8 @@ func GetNetworkToChainId(net NETWORK) int64 {
 		return 7878
 	case OPTIMISM:
 		return 10
+	case SONIC:
+		return 146
 	default:
 		log.Fatal("network to chainid not found", net)
 	}
