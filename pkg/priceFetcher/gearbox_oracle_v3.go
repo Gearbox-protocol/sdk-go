@@ -168,6 +168,10 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 						obj.FeedToken = common.HexToAddress("0x07299E4E806e4253727084c0493fFDf6fB2dBa3D")
 					}
 					//
+					// SONIC_TEST
+					if obj.FeedToken == core.NULL_ADDR && core.GetBaseChainId(pOracle.Node.Client) == 146 {
+						obj.FeedToken = common.HexToAddress("0x56a5b6267d6b8de8ade88455b9342787e49e2f1a") // stS ticker token on sonic
+					}
 					if obj.FeedToken == core.NULL_ADDR {
 						log.Fatalf("pf0(%s) for composite %s dones't have known ticker token", pf0, feed)
 					}
