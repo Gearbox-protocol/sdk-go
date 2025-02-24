@@ -68,7 +68,7 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 	case log.OPTIMISM:
 		return "0x3761ca4bfacfcffc1b8034e69f19116dd6756726"
 	case log.SONIC:
-		return utils.GetEnvOrPanic("SONIC_ADDRESS_PROVIDER")
+		return "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B"
 	}
 	return ""
 }
