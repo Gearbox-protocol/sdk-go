@@ -47,6 +47,9 @@ func (t *TestClient) StorageAt(tx context.Context, account common.Address, key c
 func (t *TestClient) ChainID(ctx context.Context) (*big.Int, error) {
 	return big.NewInt(1337), nil
 }
+func (t *TestClient) BaseChainID(ctx context.Context) (*big.Int, error) {
+	return big.NewInt(1337), nil
+}
 func (t *TestClient) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
 	return types.NewBlock(&types.Header{Time: uint64(number.Int64()) * 86400},
 		[]*types.Transaction{},
