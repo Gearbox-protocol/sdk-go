@@ -100,8 +100,8 @@ func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
 type PriceSource string
 
 const (
-	SOURCE_CHAINLINK PriceSource = "chainlink"
-	SOURCE_SPOT      PriceSource = "spot"
+	SOURCE_SPOT    PriceSource = "spot"
+	SOURCE_GEARBOX PriceSource = "gearbox"
 )
 
 type TokenGroup struct {
