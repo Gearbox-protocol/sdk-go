@@ -55,8 +55,8 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 		}
 		client, err := ethclient.Dial(url)
 		log.CheckFatal(err)
-		_, err = core.CallFuncWithExtraBytes(client, "95d89b41", usdc, 0, nil) // symbol
-		if err == nil {
+		x, err := core.CallFuncWithExtraBytes(client, "95d89b41", usdc, 0, nil) // symbol
+		if err == nil && len(x) > 0 {
 			baseChainId = big.NewInt(netId)
 			break
 		}
