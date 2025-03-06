@@ -287,10 +287,11 @@ func GetBlockNum(ts uint64, chainId int64) int64 {
 	return 0
 }
 
-func Initv310ContractHashMap(client core.ClientI, addressProvider common.Address) map[common.Hash]string {
+// contract key hash to contract name
+func initv310ContractHashMap(client core.ClientI, addressProvider common.Address) map[common.Hash]string {
 	con, err := addrProviderv310.NewAddrProviderv310(addressProvider, client)
 	log.CheckFatal(err)
-	contracts, err := con.GetAllSavedContracts(nil)
+	contracts, err := con.GetAllEntries(nil) // hash and contract address
 	log.CheckFatal(err)
 
 	node := Node{Client: client}
@@ -300,11 +301,11 @@ func Initv310ContractHashMap(client core.ClientI, addressProvider common.Address
 	return createMap(contracts, txLogs)
 }
 
-func createMap(contracts []addrProviderv310.ContractValue, txLogs []types.Log) map[common.Hash]string {
+func createMap(contracts []addrProviderv310.AddressProviderEntry, txLogs []types.Log) map[common.Hash]string {
 	var addrv310, _ = addrProviderv310.NewAddrProviderv310(core.NULL_ADDR, nil)
 	addrToContractHash := map[common.Address]common.Hash{}
 	for _, txLog := range txLogs {
-		if core.Topic("SetAddress(string,uint256,address)") == txLog.Topics[0] {
+		if core.Topic("SetAddress(bytes32,uint256,address)") == txLog.Topics[0] {
 			event, err := addrv310.ParseSetAddress(txLog)
 			log.CheckFatal(err)
 			addrToContractHash[event.Value] = event.Key
@@ -318,7 +319,8 @@ func createMap(contracts []addrProviderv310.ContractValue, txLogs []types.Log) m
 	}
 	for _, contract := range contracts {
 		hash := addrToContractHash[contract.Value]
-		contractName := contract.Key
+		// contractName := contract.Key // string
+		contractName := strings.Trim(string(contract.Key[:]), "\x00") // byte32
 		hashToContractName[hash] = contractName
 	}
 	return hashToContractName
