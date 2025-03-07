@@ -20,6 +20,7 @@ type RedStonePF struct {
 
 type SymTOAddrStore struct {
 	Exchanges         map[string]common.Address `json:"exchanges"`
+	Names             map[string]string         `json:"names"`
 	Tokens            map[string]common.Address `json:"tokens"`
 	RedStone          map[Symbol]RedStonePF     `json:"redStone"`
 	CompositeRedStone map[Symbol]RedStonePF     `json:"compositeRedStone"`
@@ -78,6 +79,10 @@ func getAddrToSymbol(fileName string, opts map[string]bool) map[common.Address]S
 func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 	fileName := log.GetConfigFile(chainId)
 	return getSymToAddrStore(fileName)
+}
+func GetSymToNameByChainId(chainId int64, sym string) string {
+	fileName := log.GetConfigFile(chainId)
+	return getSymToAddrStore(fileName).Names[sym]
 }
 
 func GetTokenToSymbolByChainId(chainId int64) map[common.Address]Symbol {

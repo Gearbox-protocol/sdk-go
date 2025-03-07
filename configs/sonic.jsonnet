@@ -20,6 +20,20 @@
     GEAR: '0x0fDbce271bea0d9819034cd09021e0bBE94be3Fd',
     ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   },
+  names: {
+    USDC_e: 'USDC (Bridged)',
+    WETH: 'WETH',
+    wS: 'Wrapped Sonic',
+    stS: 'Beets Staked Sonic',
+    scUSD: 'Sonic USD',
+    bpt_rsb: 'Ringing Stable Beets',
+    bpt_sss: 'Staked Sonic Symphony',
+    BPT_scUSD_stS: 'Put A Ring On It',
+    BPT_USDCe_stS: 'Staked Sonic & Circle Concerto',
+    dwSV3: 'dwSV3',
+    dUSDC_eV3: 'dUSDC.eV3',
+    GEAR: 'GEAR',
+  },
   ids: {
     cvx3Crv: 9,
     cvxcrvFRAX: 100,
@@ -230,12 +244,6 @@
       signersThreshold: 5,
     },
     pzETH: {
-      type: 15,
-      dataServiceId: 'redstone-primary-prod',
-      dataId: 'wstETH',
-      signersThreshold: 5,
-    },
-    DVstETH: {
       type: 15,
       dataServiceId: 'redstone-primary-prod',
       dataId: 'wstETH',
