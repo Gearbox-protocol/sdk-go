@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type TradingPriceI interface {
@@ -21,7 +22,8 @@ type TradingPriceI interface {
 }
 
 type tokenI interface {
-	GetToken(token string) *schemas.Token
+	GetToken(token string) (*schemas.Token, error)
+	GetDecimals(token common.Address) int8
 }
 
 func toBigInt(collateral interface{}, decimals int8) *big.Int {
@@ -42,9 +44,9 @@ func toBigInt(collateral interface{}, decimals int8) *big.Int {
 func calculatePrice(store tokenI, tradingToken, baseToken string, tradingAmount, baseAmount *big.Int) float64 {
 	currentPrice := utils.GetFloat64Decimal(
 		new(big.Int).Quo(
-			utils.GetInt64(baseAmount, -store.GetToken(tradingToken).Decimals), // cBal is usdc
+			utils.GetInt64(baseAmount, -store.GetDecimals(common.HexToAddress(tradingToken))), // cBal is usdc
 			tradingAmount), // bBal is tradingToken
-		store.GetToken(baseToken).Decimals)
+		store.GetDecimals(common.HexToAddress(baseToken)))
 
 	return currentPrice
 }
@@ -86,7 +88,7 @@ func calcTradingPrice(chainId int64, store tokenI, session TradingPriceI, cBal *
 func CalcEntryPriceBySession(chainId int64, store tokenI, session TradingPriceI) float64 {
 	// collteral + borrowedAmount - underlyingTokenBal = cBal
 	cBal := new(big.Int).Add(
-		toBigInt(session.GetColExcludingEndToken(), store.GetToken(session.GetUnderlyingToken()).Decimals),
+		toBigInt(session.GetColExcludingEndToken(), store.GetDecimals(common.HexToAddress(session.GetUnderlyingToken()))),
 		session.GetBorrowedAmount(),
 	)
 	return calcTradingPrice(chainId, store, session, cBal, session.GetColInEndToken())

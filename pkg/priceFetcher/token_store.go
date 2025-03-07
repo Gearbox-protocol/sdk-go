@@ -1,6 +1,7 @@
 package priceFetcher
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
@@ -39,18 +40,18 @@ func (mdl TokensStore) GetTokens() (tokens []*schemas.Token) {
 	return
 }
 
-func (mdl TokensStore) GetToken(addr string) *schemas.Token {
+func (mdl TokensStore) GetToken(addr string) (*schemas.Token, error) {
 	return mdl.getToken(common.HexToAddress(addr))
 }
 
-func (mdl TokensStore) getToken(tokenAddr common.Address) *schemas.Token {
+func (mdl TokensStore) getToken(tokenAddr common.Address) (*schemas.Token, error) {
 	mdl.mu.RLock()
 	_, ok := mdl.tokens[tokenAddr]
 	mdl.mu.RUnlock()
 	if !ok {
 		token, err := schemas.NewToken(tokenAddr.Hex(), mdl.client)
 		if err != nil {
-			log.Fatalf("Err(%s) for token: %s", err, token.Address)
+			return nil, fmt.Errorf("Err(%s) for token: %s", err, token.Address)
 		}
 		mdl.mu.Lock()
 		mdl.tokens[tokenAddr] = token
@@ -58,15 +59,19 @@ func (mdl TokensStore) getToken(tokenAddr common.Address) *schemas.Token {
 	}
 	mdl.mu.RLock()
 	defer mdl.mu.RUnlock()
-	return mdl.tokens[tokenAddr]
+	return mdl.tokens[tokenAddr], nil
 }
 
 func (mdl TokensStore) GetDecimals(tokenAddr common.Address) int8 {
-	return mdl.getToken(tokenAddr).Decimals
+	x, err := mdl.getToken(tokenAddr)
+	log.CheckFatal(err)
+	return x.Decimals
 }
 
 func (mdl TokensStore) GetSymbol(tokenAddr common.Address) core.Symbol {
-	return core.Symbol(mdl.getToken(tokenAddr).Symbol)
+	x, err := mdl.getToken(tokenAddr)
+	log.CheckFatal(err)
+	return core.Symbol(x.Symbol)
 }
 
 func (mdl TokensStore) Exists(token common.Address) bool {
@@ -85,6 +90,7 @@ func (mdl TokensStore) getNotPresentAddrs(addrs []common.Address) (ans []common.
 	}
 	return
 }
+
 // if already has data on that token, doesn't fetch again
 func (mdl TokensStore) GetDecimalsForList(addrs []common.Address) {
 	mdl.mu.Lock()
