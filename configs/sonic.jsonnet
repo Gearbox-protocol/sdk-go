@@ -18,7 +18,7 @@
     dUSDC_eV3: '0x6F6bda069FB05baB5E83B22FbDb54CBdF33f78ee',
     dwSV3: '0xCf4d737C38ef2ac9C7bdb4DbbC954b1932EA4a40',
     GEAR: '0x0fDbce271bea0d9819034cd09021e0bBE94be3Fd',
-    ETH: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+    S: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   },
   names: {
     USDC_e: 'USDC (Bridged)',
