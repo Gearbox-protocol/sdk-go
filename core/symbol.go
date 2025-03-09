@@ -3,6 +3,7 @@ package core
 import (
 	"encoding/json"
 	"math/big"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum/common"
@@ -80,7 +81,34 @@ func GetSymToAddrByChainId(chainId int64) *SymTOAddrStore {
 	fileName := log.GetConfigFile(chainId)
 	return getSymToAddrStore(fileName)
 }
+
+const (
+	NORMAL = iota
+	WRAPPED_NATIVE
+	NATIVE
+)
+
+func GetType(chainId int64, sym string) int64 {
+	sym = strings.ToLower(sym)
+	if log.GetBaseNet(chainId) == log.SONIC {
+		if sym == "s" {
+			return NATIVE
+		} else if sym == "ws" {
+			return WRAPPED_NATIVE
+		}
+	} else if log.GetBaseNet(chainId) == log.MAINNET {
+		if sym == "eth" {
+			return NATIVE
+		} else if sym == "weth" {
+			return WRAPPED_NATIVE
+		}
+	}
+	return NORMAL
+}
 func GetSymToNameByChainId(chainId int64, sym string) string {
+	if GetType(chainId, sym) == NATIVE {
+		return sym
+	}
 	fileName := log.GetConfigFile(chainId)
 	return getSymToAddrStore(fileName).Names[sym]
 }
