@@ -3,10 +3,8 @@ package core
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"math/big"
 
-	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -79,18 +77,23 @@ func CallFuncGetAllData(client ClientI, sigStr string, to common.Address, blockN
 func GetAddress(client ClientI, field string, version int64) (common.Address, error) {
 	providerAddr := GetAddressProvider(GetChainId(client), NewVersion(300))
 	//
-	abi := GetAbi("AddressProviderv310")
-	data, err := abi.Pack("getAddressOrRevert", field, big.NewInt(version))
-	log.CheckFatal(err)
-	results := MakeMultiCall(client, 0, false, []multicall.Multicall2Call{{
-		Target:   common.HexToAddress(providerAddr),
-		CallData: data,
-	}})
-	value, ok := MulticallAnsAddress(results[0])
-	if !ok {
-		err = fmt.Errorf("can't get %s from addrProvider", field)
+	fbytes := []byte(field)
+	slot := make([]byte, 32)
+	//
+	copy(slot[:32], fbytes)
+	// hash := common.BytesToHash(big.NewInt(version).Bytes())
+	// // slot = append(slot, hash[:]...)
+	// log.Info(slot, hash, log.DetectFuncAtStackN(2))
+	//
+	// addr, err := CallFuncGetSingleValue(client, "170ecb17", common.HexToAddress(providerAddr), 0, slot) // getLatestMinorVersion
+	ver, err := CallFuncGetSingleValue(client, "dd3b014c", common.HexToAddress(providerAddr), 0, slot) // getLatestVersion
+	if err != nil {
+		return common.Address{}, err
 	}
-	return value, err
+
+	slot = append(slot, ver...)
+	addr, err := CallFuncGetSingleValue(client, "bbd6dd6b", common.HexToAddress(providerAddr), 0, slot) // getAddress // key and version
+	return common.BytesToAddress(addr), err
 }
 
 func GetChainId(client ClientI) int64 {
