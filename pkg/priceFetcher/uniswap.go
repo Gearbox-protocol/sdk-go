@@ -175,7 +175,7 @@ func (mdl *UNIFetcher) GetPrices(results []multicall.Multicall2Result, _ int64) 
 	//
 	var resultInd int
 	for _, token := range mdl.tokens {
-		tokenDecimals := mdl.decimalsStore.GetDecimals(common.HexToAddress(token))
+		tokenDecimals := mdl.decimalsStore.GetDecimals(token)
 		//
 		if mdl.UniPoolByToken[token].V2 != core.NULL_ADDR.Hex() {
 			mdl.setuniv2(results[resultInd], univ2, token, tokenDecimals) // uniswap v2 price

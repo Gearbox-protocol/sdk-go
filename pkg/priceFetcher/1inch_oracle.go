@@ -107,7 +107,7 @@ type YearnSpotPriceCalc struct {
 }
 
 type DecimalStoreI interface {
-	GetDecimals(tokenAddr common.Address) int8
+	GetDecimals(tokenAddr string) int8
 	GetDecimalsForList([]common.Address)
 }
 
@@ -318,7 +318,7 @@ func (calc OneInchOracle) USDC() string {
 // get the price from 1inch api for `token to usdc quote`
 func (calc OneInchOracle) getPriceForAPI(tokenSym string) *big.Int {
 	token := calc.symToAddr.Tokens[tokenSym]
-	decimals := calc.decimals.GetDecimals(token)
+	decimals := calc.decimals.GetDecimals(token.Hex())
 	url := fmt.Sprintf("https://api.1inch.io/v5.0/1/quote?fromTokenAddress=%s&toTokenAddress=%s&amount=%s",
 		token.Hex(),
 		calc.USDC(),
@@ -401,7 +401,7 @@ func (calc OneInchOracle) processBaseResults(results []multicall.Multicall2Resul
 			// for usdt = 18-6-2 = 10
 			// for wbtc = 18-8-2 = 8
 			// for gusd = 18-2-2= 14
-			normalizeDecimal := 18 - calc.decimals.GetDecimals(tokenAddr) - 2
+			normalizeDecimal := 18 - calc.decimals.GetDecimals(tokenAddr.Hex()) - 2
 			price = utils.GetInt64(price, normalizeDecimal)
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 		} else if calc.BaseTokens[ind] == "USDC" {
@@ -423,7 +423,7 @@ func (calc OneInchOracle) processSeparateBaseResults(results []multicall.Multica
 			// for gusd = 18-2-2= 14
 			var decimals int8 = 18
 			if !utils.Contains([]common.Address{MAINNET_GMX, MAINNET_OP}, tokenAddr) {
-				decimals = calc.decimals.GetDecimals(tokenAddr)
+				decimals = calc.decimals.GetDecimals(tokenAddr.Hex())
 			}
 			normalizeDecimal := 18 - decimals - 2
 			price = utils.GetInt64(price, normalizeDecimal)
@@ -463,7 +463,7 @@ func (calc OneInchOracle) processYearnResults(results []multicall.Multicall2Resu
 			underlyingAddr := calc.symToAddr.Tokens[calc.YearnTokens[ind].Underlying]
 			price := new(big.Int).Mul(pricePerShare, prices[underlyingAddr.Hex()].Convert())
 			prices[tokenAddr.Hex()] = (*core.BigInt)(utils.GetInt64(price,
-				calc.decimals.GetDecimals(tokenAddr))) // div by 10**d due to pricepershare decimals
+				calc.decimals.GetDecimals(tokenAddr.Hex()))) // div by 10**d due to pricepershare decimals
 		}
 	}
 }
@@ -535,7 +535,7 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 			//
 			underlyingValue := utils.GetInt64(
 				new(big.Int).Mul(prices[underlyingAddr.Hex()].Convert(), balanceOfPool),
-				calc.decimals.GetDecimals(underlyingAddr),
+				calc.decimals.GetDecimals(underlyingAddr.Hex()),
 			)
 
 			totalValue = new(big.Int).Add(totalValue, underlyingValue)
@@ -545,7 +545,7 @@ func (calc OneInchOracle) processCrvResults(results []multicall.Multicall2Result
 		totalSupplyData := results[ind]
 		if totalSupplyData.Success {
 			totalSupply := new(big.Int).SetBytes(totalSupplyData.ReturnData[:32])
-			totalValue := utils.GetInt64(totalValue, -1*calc.decimals.GetDecimals(tokenAddr))
+			totalValue := utils.GetInt64(totalValue, -1*calc.decimals.GetDecimals(tokenAddr.Hex()))
 			//
 			price := new(big.Int).Quo(totalValue, totalSupply)
 			prices[tokenAddr.Hex()] = (*core.BigInt)(price)
@@ -587,7 +587,7 @@ func (o *OneInchOracle) GetCurrentPriceAtBlockNum(blockNum int64, bal core.DBBal
 				// for usdt = 18-6-2 = 10
 				// for wbtc = 18-8-2 = 8
 				// for gusd = 18-2-2= 14
-				normalizeDecimal := 18 - o.decimals.GetDecimals(tokenAddr) - 2
+				normalizeDecimal := 18 - o.decimals.GetDecimals(tokenAddr.Hex()) - 2
 				price = utils.GetInt64(price, normalizeDecimal)
 				prices[tokenAddr.Hex()] = (*core.BigInt)(price)
 			} else if usdc == tokenAddr {

@@ -62,8 +62,8 @@ func (mdl TokensStore) getToken(tokenAddr common.Address) (*schemas.Token, error
 	return mdl.tokens[tokenAddr], nil
 }
 
-func (mdl TokensStore) GetDecimals(tokenAddr common.Address) int8 {
-	x, err := mdl.getToken(tokenAddr)
+func (mdl TokensStore) GetDecimals(addr string) int8 {
+	x, err := mdl.getToken(common.HexToAddress(addr))
 	log.CheckFatal(err)
 	return x.Decimals
 }

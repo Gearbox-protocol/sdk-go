@@ -417,10 +417,14 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 				prices[token] = utils.GetInt64(new(big.Int).Mul(price, wSPrice), info.DecimalsPF0)
 			} else if pOracle.GetFeedForETHBTC("WBTC", tokens.Tokens) == info.PF1 {
 				wbtcPrice := prices[wbtc]
-				if wbtcPrice == nil || info == nil || price == nil {
-					log.Warn(wbtcPrice, utils.ToJson(info), price)
+				if wbtcPrice == nil {
+					log.Warn("wbtc", wbtcPrice)
+					if utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
+						prices[token] = new(big.Int)
+					}
+				} else {
+					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbtcPrice), info.DecimalsPF0)
 				}
-				prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbtcPrice), info.DecimalsPF0)
 			} else {
 				log.Warn("composite redstone price feed 1 is not wS/wbtc", token, utils.ToJson(info))
 				prices[token] = new(big.Int)

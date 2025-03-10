@@ -39,9 +39,9 @@ func println(severity LEVEL, args ...interface{}) string {
 func printlnStr(severity string, depth int, args ...interface{}) string {
 	_log := severityFormat(severity) + DetectFuncAtStackN(depth) + fmt.Sprintln(args...)
 	if testLogModule == nil {
-		log.Printf(_log)
+		log.Print(_log)
 	} else {
-		testLogModule.Logf(_log)
+		testLogModule.Log(_log)
 	}
 	return severityFormat(severity) + fmt.Sprintln(args...)
 }
@@ -127,24 +127,44 @@ func Fatalf(msg string, args ...interface{}) {
 }
 
 func Fatal(args ...interface{}) {
+	fatal(false, args...)
+}
+func FatalRecover(args ...interface{}) {
+	fatal(true, args...)
+}
+func fatal(recover bool, args ...interface{}) {
 	debug.PrintStack()
-	if _log := println(FATAL, args...); _log != "" {
+	if _log := printlnStr(FATAL.ToString(), 4, args...); _log != "" {
 		send(_log, FATAL)
 	}
-	os.Exit(1)
+	if recover {
+		runtime.Goexit()
+	} else {
+		os.Exit(1)
+	}
 }
 
 func CheckFatal(err error) {
+	checkFatal(false, err)
+}
+func CheckFatalRecover(err error) {
+	checkFatal(true, err)
+}
+func checkFatal(recover bool, err error) {
 	if err != nil {
 		debug.PrintStack()
-		msg := "[Fatal]: " + DetectFuncAtStackN(2) + err.Error()
+		msg := "[Fatal]: " + DetectFuncAtStackN(3) + err.Error()
 		if testLogModule == nil {
 			log.Println(msg)
 		} else {
 			testLogModule.Log(msg)
 		}
 		send(msg, FATAL)
-		os.Exit(1)
+		if recover {
+			runtime.Goexit()
+		} else {
+			os.Exit(1)
+		}
 	}
 }
 

@@ -57,8 +57,11 @@ type store struct {
 func (s store) GetPriceOnBlock(cm string, token string, version core.VersionType, blockNums ...int64) *big.Int {
 	return s.Prices[version][token].Convert()
 }
-func (s store) GetToken(token string) *schemas.Token {
-	return s.Tokens[token]
+func (s store) GetToken(token string) (*schemas.Token, error) {
+	return s.Tokens[token], nil
+}
+func (s store) GetDecimals(token string) int8 {
+	return s.Tokens[token].Decimals
 }
 func (s store) GetLiqThreshold(_ uint64, cm, token string) *big.Int {
 	return s.LiqThresholds[cm][token]
