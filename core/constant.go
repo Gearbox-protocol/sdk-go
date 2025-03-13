@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"math/big"
 	"strings"
 
@@ -72,29 +71,29 @@ const RAY_DECIMALS int8 = 27
 
 var RAY *big.Int = utils.GetExpInt(RAY_DECIMALS)
 
+// if 300 return all versions
 func GetAddressProvider(chainId int64, version VersionType) string {
+	addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", "")
+	//
+	var s string
 	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
-		// if version == NewVersion(300) { // later when the v3 is switched to v3.1
-		// 	return "0x0000000000000000000000000000000000000310"
-		// }
-		v310Addr := "0x2b8f5e69c35c1aff4ccc71458ca26c2f313c3ed3"
-		if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
-			v310Addr = addr
-		}
-		if version == NewVersion(300) {
-			return v310Addr
-			// return "0x9ea7b04da02a5373317d745c1571c84aad03321d"
-		}
-		return fmt.Sprintf("0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,%s", v310Addr) // v31
+		s = "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d" // without v310
 	case log.ARBITRUM:
-		return "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
+		s = "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
 	case log.OPTIMISM:
-		return "0x3761ca4bfacfcffc1b8034e69f19116dd6756726"
+		s = "0x3761ca4bfacfcffc1b8034e69f19116dd6756726"
 	case log.SONIC:
-		return "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B"
+		s = "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B"
 	}
-	return ""
+	if addr != "" {
+		s += "," + addr
+	}
+	if version == NewVersion(300) {
+		splits := strings.Split(s, ",")
+		return splits[len(splits)-1]
+	}
+	return s
 }
 
 var WAD = utils.GetExpInt(18)
