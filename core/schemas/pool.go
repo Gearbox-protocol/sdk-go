@@ -57,6 +57,7 @@ type PoolInterestData struct {
 	BaseBorrowAPYBI      *core.BigInt `gorm:"column:base_borrow_apy_bi"`
 	CumulativeIndexRAY   *core.BigInt `gorm:"column:cumulative_index_ray"`
 	AvailableLiquidityBI *core.BigInt `gorm:"column:available_liquidity_bi"`
+	ExpectedLiqBI        *core.BigInt `gorm:"column:expected_liquidity_bi"`
 	BlockNum             int64        `gorm:"column:block_num"`
 	Address              string       `gorm:"column:pool"`
 	Timestamp            uint64       `gorm:"column:timestamp"`
@@ -66,6 +67,7 @@ type TvlSnapshots struct {
 	BlockNum           int64   `gorm:"column:block_num;primaryKey"`
 	AvailableLiquidity float64 `gorm:"column:available_liquidity"`
 	CATotalValue       float64 `gorm:"column:ca_total_value"`
+	ExpectedLiq        float64 `gorm:"column:expected_liq"`
 }
 
 func (TvlSnapshots) TableName() string {

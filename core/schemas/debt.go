@@ -53,9 +53,21 @@ func (CurrentDebt) TableName() string {
 	return "current_debts"
 }
 
+type LastSync struct {
+	Tvl  int64 `gorm:"column:tvl_block"`
+	Debt int64 `gorm:"column:debt_block"`
+}
+
+func (l LastSync) Min() int64 {
+	if l.Tvl < l.Debt {
+		return l.Tvl
+	}
+	return l.Debt
+}
+
 type DebtSync struct {
-	LastCalculatedAt int64 `gorm:"column:last_calculated_at"`
-	FieldSet         bool  `gorm:"column:field_set;primaryKey"`
+	LastSync
+	FieldSet bool `gorm:"column:field_set;primaryKey"`
 }
 
 func (DebtSync) TableName() string {
