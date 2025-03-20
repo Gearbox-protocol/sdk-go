@@ -53,16 +53,16 @@ func send(message string, alertType LEVEL, important ...bool) {
 	if _amqpChannel == nil {
 		return
 	}
-	routingKey := GetNetworkName(_logConfig.ChainId)
-	if _logConfig.ChainId == 7878 {
-		routingKey = "GOERLI"
+
+	if _logConfig.ROUTE_KEY == ANVIL {
+		_logConfig.ROUTE_KEY = "GOERLI"
 	}
 	for i := 0; i < 2; i++ {
 		err := _amqpChannel.Publish(
-			_logConfig.Exchange, // exchange
-			string(routingKey),  // routing key
-			false,               // mandatory
-			false,               // immediate
+			_logConfig.Exchange,          // exchange
+			string(_logConfig.ROUTE_KEY), // routing key
+			false,                        // mandatory
+			false,                        // immediate
 			amqp.Publishing{
 				ContentType: "text/plain",
 				Body:        []byte(message),

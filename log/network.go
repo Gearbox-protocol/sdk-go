@@ -2,7 +2,6 @@ package log
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -68,70 +67,73 @@ var OPTTEST NETWORK = "OPTTEST"
 var SONIC NETWORK = "SONIC"
 var SONICTEST NETWORK = "SONICTEST"
 
+var testnet = map[int64]struct {
+	net  NETWORK
+	base int64
+}{
+	42:   {KOVAN, 1},
+	5:    {GOERLI, 1},
+	1337: {TEST, 1},
+	7878: {ANVIL, 1},
+	7880: {ARBTEST, 42161},
+	7879: {OPTTEST, 10},
+	7882: {SONICTEST, 146},
+}
+var basenet = map[int64]struct {
+	net  NETWORK
+	test int64
+}{
+	1:     {MAINNET, 7878},
+	42161: {ARBITRUM, 7880},
+	10:    {OPTIMISM, 7879},
+	146:   {SONIC, 7882},
+}
+
 func GetNetworkName(chainId int64) (name NETWORK) {
-	switch chainId {
-	case 42:
-		name = KOVAN
-	case 5:
-		name = GOERLI
-	case 1:
-		name = MAINNET
-	case 1337:
-		name = TEST
-	case 7878:
-		name = ANVIL
-	case 42161:
-		name = ARBITRUM
-	case 7880:
-		name = ARBTEST
-	case 10:
-		name = OPTIMISM
-	case 7879:
-		name = OPTTEST
-	case 146:
-		name = SONIC
-	case 7882:
-		name = SONICTEST
+	if name, ok := testnet[chainId]; ok {
+		return name.net
 	}
+	if name, ok := basenet[chainId]; ok {
+		return name.net
+	}
+	Fatal("network not found", chainId)
 	return
 }
 
 func GetBaseNet(chainId int64) NETWORK {
-	net := GetNetworkName(chainId)
-	if net == ANVIL || net == MAINNET {
-		net = MAINNET
-	} else if net == ARBTEST || net == ARBITRUM {
-		net = ARBITRUM
-	} else if net == TEST {
-		net = MAINNET
-	} else if net == OPTTEST || net == OPTIMISM {
-		net = OPTIMISM
-	} else if net == SONIC || net == SONICTEST {
-		net = SONIC
-	} else {
-		Fatal("base net not found", chainId)
+	if name, ok := testnet[chainId]; ok {
+		chainId = name.base
 	}
-	return net
+	// get for base
+	if name, ok := basenet[chainId]; ok {
+		return name.net
+	}
+	Fatal("network not found", chainId)
+	return ""
 }
-func GetNetworkToChainId(net NETWORK) int64 {
-	switch net {
-	case MAINNET:
-		return 1
-	case KOVAN:
-		return 42
-	case GOERLI:
-		return 5
-	case ARBITRUM:
-		return 42161
-	case ANVIL:
-		return 7878
-	case OPTIMISM:
-		return 10
-	case SONIC:
-		return 146
-	default:
-		log.Fatal("network to chainid not found", net)
+func GetTestNet(chainId int64) NETWORK {
+	if name, ok := basenet[chainId]; ok {
+		chainId = name.test
 	}
+	// get for base
+	if name, ok := testnet[chainId]; ok {
+		return name.net
+	}
+	Fatal("network not found", chainId)
+	return ""
+}
+func GetNetworkToChainId(netname NETWORK) int64 {
+	for id, net := range testnet {
+		if net.net == netname {
+			return id
+		}
+	}
+	for id, net := range basenet {
+		if net.net == netname {
+			return id
+		}
+	}
+	Fatal("network not found", netname)
 	return 0
 }
 func GetConfigFile(chainId int64) string {

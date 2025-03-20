@@ -22,7 +22,7 @@ type LoggingConfig struct {
 	RiskSecret   string `json:"-"`
 	//
 	// for chain for risk msg
-	ChainId int64 `json:"chain"`
+	ROUTE_KEY NETWORK `json:"chain"`
 	appDetails
 }
 
