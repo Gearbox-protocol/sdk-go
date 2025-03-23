@@ -20,5 +20,5 @@ func InitLogging(appType string, chainId int64, cfg CommonEnvs, ethProvider stri
 		},
 		cfg.AppName,
 	)
-	AMQPMsg(appType + " started")
+	Warn(appType + " started")
 }
