@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 // Client defines typed wrappers for the Ethereum RPC API.
@@ -31,6 +32,7 @@ type Client struct {
 	noOfCalls *atomic.Int32
 	// this is the testnet id like 7878,7880
 	baseChainId int64
+	metrics     *prometheus.GaugeVec
 }
 
 func (c *Client) SetChainId(id int64) {
@@ -43,6 +45,25 @@ type MutextedClient struct {
 	_lockedTillTs int64
 	url           string
 }
+
+func (c *Client) PromInit(reg *prometheus.Registry) {
+	if c.metrics == nil {
+		c.metrics = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Name: "ethclient",
+			Help: "ethclient",
+		}, []string{"field", "line"})
+		reg.MustRegister(c.metrics)
+	}
+	c.metrics.Reset()
+}
+func (c *Client) getCoutner(funcName string, line string) {
+	if c.metrics != nil {
+		counter := c.metrics.With(prometheus.Labels{"field": funcName, "line": line})
+		counter.Inc()
+	}
+}
+
+//
 
 // it is also thread safe as thread with  has this client has locked the mutex on it.
 func (mc *MutextedClient) addSleepForSecs(sec int64) {
@@ -210,7 +231,7 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 		return big.NewInt(id), nil
 	}
 	// locks
-	v, err := getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) {
+	v, err := getDataViaRetry(rc, "", func(c *MutextedClient) (*big.Int, error) {
 		base, test, err := GetFlagAndTestChainId(c.url)
 		if base != nil && rc.baseChainId == 0 {
 			atomic.SwapInt64(&(rc.baseChainId), base.Int64())
@@ -225,11 +246,11 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 }
 
 func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Block, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Block, error) { return c.client.BlockByHash(ctx, hash) })
+	return getDataViaRetry(rc, "BlockByHash", func(c *MutextedClient) (*types.Block, error) { return c.client.BlockByHash(ctx, hash) })
 }
 
 func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Block, error) {
+	return getDataViaRetry(rc, "BlockByNumber", func(c *MutextedClient) (*types.Block, error) {
 		block, err := c.client.BlockByNumber(ctx, number)
 		if err != nil && (strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") || strings.Contains(strings.ToLower(err.Error()), "invalid transaction v, r, s values")) {
 			data, err := utils.JsonRPCMakeRequest(c.url, utils.GetJsonRPCRequestBody("eth_getBlockByNumber", fmt.Sprintf("0x%x", number), false))
@@ -248,117 +269,117 @@ func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Bl
 }
 
 func (rc *Client) BlockNumber(ctx context.Context) (uint64, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint64, error) { return c.client.BlockNumber(ctx) })
+	return getDataViaRetry(rc, "BlockNumber", func(c *MutextedClient) (uint64, error) { return c.client.BlockNumber(ctx) })
 }
 
 func (rc *Client) HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Header, error) { return c.client.HeaderByHash(ctx, hash) })
+	return getDataViaRetry(rc, "HeaderByHash", func(c *MutextedClient) (*types.Header, error) { return c.client.HeaderByHash(ctx, hash) })
 }
 
 func (rc *Client) HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Header, error) { return c.client.HeaderByNumber(ctx, number) })
+	return getDataViaRetry(rc, "HeaderByNumber", func(c *MutextedClient) (*types.Header, error) { return c.client.HeaderByNumber(ctx, number) })
 }
 
 func (rc *Client) TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (common.Address, error) {
+	return getDataViaRetry(rc, "TransactionSender", func(c *MutextedClient) (common.Address, error) {
 		return c.client.TransactionSender(ctx, tx, block, index)
 	})
 }
 
 // TransactionCount returns the total number of transactions in the given block.
 func (rc *Client) TransactionCount(ctx context.Context, blockHash common.Hash) (uint, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint, error) { return c.client.TransactionCount(ctx, blockHash) })
+	return getDataViaRetry(rc, "TransactionCount", func(c *MutextedClient) (uint, error) { return c.client.TransactionCount(ctx, blockHash) })
 }
 
 // TransactionInBlock returns a single transaction at index in the given block.
 func (rc *Client) TransactionInBlock(ctx context.Context, blockHash common.Hash, index uint) (*types.Transaction, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Transaction, error) {
+	return getDataViaRetry(rc, "TransactionInBlock", func(c *MutextedClient) (*types.Transaction, error) {
 		return c.client.TransactionInBlock(ctx, blockHash, index)
 	})
 }
 
 func (rc *Client) TransactionReceipt(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*types.Receipt, error) { return c.client.TransactionReceipt(ctx, txHash) })
+	return getDataViaRetry(rc, "TransactionReceipt", func(c *MutextedClient) (*types.Receipt, error) { return c.client.TransactionReceipt(ctx, txHash) })
 
 }
 
 func (rc *Client) SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*ethereum.SyncProgress, error) { return c.client.SyncProgress(ctx) })
+	return getDataViaRetry(rc, "SyncProgress", func(c *MutextedClient) (*ethereum.SyncProgress, error) { return c.client.SyncProgress(ctx) })
 
 }
 
 func (rc *Client) SubscribeNewHead(ctx context.Context, ch chan<- *types.Header) (ethereum.Subscription, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (ethereum.Subscription, error) { return c.client.SubscribeNewHead(ctx, ch) })
+	return getDataViaRetry(rc, "SubscribeNewHead", func(c *MutextedClient) (ethereum.Subscription, error) { return c.client.SubscribeNewHead(ctx, ch) })
 }
 
 func (rc *Client) NetworkID(ctx context.Context) (*big.Int, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) { return c.client.NetworkID(ctx) })
+	return getDataViaRetry(rc, "NetworkID", func(c *MutextedClient) (*big.Int, error) { return c.client.NetworkID(ctx) })
 }
 
 func (rc *Client) BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) { return c.client.BalanceAt(ctx, account, blockNumber) })
+	return getDataViaRetry(rc, "BalanceAt", func(c *MutextedClient) (*big.Int, error) { return c.client.BalanceAt(ctx, account, blockNumber) })
 }
 
 func (rc *Client) StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.StorageAt(ctx, account, key, blockNumber) })
+	return getDataViaRetry(rc, "StorageAt", func(c *MutextedClient) ([]byte, error) { return c.client.StorageAt(ctx, account, key, blockNumber) })
 }
 
 func (rc *Client) CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.CodeAt(ctx, account, blockNumber) })
+	return getDataViaRetry(rc, "CodeAt", func(c *MutextedClient) ([]byte, error) { return c.client.CodeAt(ctx, account, blockNumber) })
 }
 
 func (rc *Client) NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint64, error) { return c.client.NonceAt(ctx, account, blockNumber) })
+	return getDataViaRetry(rc, "NonceAt", func(c *MutextedClient) (uint64, error) { return c.client.NonceAt(ctx, account, blockNumber) })
 }
 
 func (rc *Client) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]types.Log, error) { return c.client.FilterLogs(ctx, q) })
+	return getDataViaRetry(rc, "FilterLogs", func(c *MutextedClient) ([]types.Log, error) { return c.client.FilterLogs(ctx, q) })
 }
 
 func (rc *Client) SubscribeFilterLogs(ctx context.Context, q ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (ethereum.Subscription, error) {
+	return getDataViaRetry(rc, "SubscribeFilterLogs", func(c *MutextedClient) (ethereum.Subscription, error) {
 		return c.client.SubscribeFilterLogs(ctx, q, ch)
 	})
 }
 
 func (rc *Client) PendingBalanceAt(ctx context.Context, account common.Address) (*big.Int, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) { return c.client.PendingBalanceAt(ctx, account) })
+	return getDataViaRetry(rc, "PendingBalanceAt", func(c *MutextedClient) (*big.Int, error) { return c.client.PendingBalanceAt(ctx, account) })
 }
 
 func (rc *Client) PendingStorageAt(ctx context.Context, account common.Address, key common.Hash) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.PendingStorageAt(ctx, account, key) })
+	return getDataViaRetry(rc, "PendingStorageAt", func(c *MutextedClient) ([]byte, error) { return c.client.PendingStorageAt(ctx, account, key) })
 }
 
 func (rc *Client) PendingCodeAt(ctx context.Context, account common.Address) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.PendingCodeAt(ctx, account) })
+	return getDataViaRetry(rc, "PendingCodeAt", func(c *MutextedClient) ([]byte, error) { return c.client.PendingCodeAt(ctx, account) })
 }
 
 func (rc *Client) PendingNonceAt(ctx context.Context, account common.Address) (uint64, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint64, error) { return c.client.PendingNonceAt(ctx, account) })
+	return getDataViaRetry(rc, "PendingNonceAt", func(c *MutextedClient) (uint64, error) { return c.client.PendingNonceAt(ctx, account) })
 }
 
 func (rc *Client) PendingTransactionCount(ctx context.Context) (uint, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint, error) { return c.client.PendingTransactionCount(ctx) })
+	return getDataViaRetry(rc, "PendingTransactionCount", func(c *MutextedClient) (uint, error) { return c.client.PendingTransactionCount(ctx) })
 }
 
 func (rc *Client) CallContract(ctx context.Context, msg ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.CallContract(ctx, msg, blockNumber) })
+	return getDataViaRetry(rc, "CallContract", func(c *MutextedClient) ([]byte, error) { return c.client.CallContract(ctx, msg, blockNumber) })
 }
 
 func (rc *Client) PendingCallContract(ctx context.Context, msg ethereum.CallMsg) ([]byte, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) ([]byte, error) { return c.client.PendingCallContract(ctx, msg) })
+	return getDataViaRetry(rc, "PendingCallContract", func(c *MutextedClient) ([]byte, error) { return c.client.PendingCallContract(ctx, msg) })
 }
 
 func (rc *Client) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) { return c.client.SuggestGasPrice(ctx) })
+	return getDataViaRetry(rc, "SuggestGasPrice", func(c *MutextedClient) (*big.Int, error) { return c.client.SuggestGasPrice(ctx) })
 }
 
 func (rc *Client) SuggestGasTipCap(ctx context.Context) (*big.Int, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (*big.Int, error) { return c.client.SuggestGasTipCap(ctx) })
+	return getDataViaRetry(rc, "SuggestGasTipCap", func(c *MutextedClient) (*big.Int, error) { return c.client.SuggestGasTipCap(ctx) })
 }
 
 func (rc *Client) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error) {
-	return getDataViaRetry(rc, func(c *MutextedClient) (uint64, error) { return c.client.EstimateGas(ctx, msg) })
+	return getDataViaRetry(rc, "EstimateGas", func(c *MutextedClient) (uint64, error) { return c.client.EstimateGas(ctx, msg) })
 }
 
 func (rc *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
@@ -429,9 +450,12 @@ func (r Req) print(args ...interface{}) {
 	log.TraceAtN(4, append(allArgs, args...)...)
 }
 
-func getDataViaRetry[T any](wrapperClient *Client, getData func(c *MutextedClient) (T, error)) (T, error) {
+func getDataViaRetry[T any](wrapperClient *Client, method string, getData func(c *MutextedClient) (T, error)) (T, error) {
 	ignoreClients := make(map[int]bool)
-
+	if method != "" {
+		line := log.DetectFuncAtStackN(4)
+		wrapperClient.getCoutner(method, line)
+	}
 	req := NewReq()
 	var errs utils.Errors
 	for {
