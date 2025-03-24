@@ -248,6 +248,7 @@ func (t *TestClient) CallContract(ctx context.Context, call ethereum.CallMsg, bl
 				})
 			case "f93f515b", // creditFilter
 				"f9aa028a", //creditConfigurator
+				"245a7bfc", // aggregator
 				"570a7af2", //poolService
 				"2495a599", //underlyingToken
 				"6f307dc3", //underlying

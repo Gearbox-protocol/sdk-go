@@ -173,6 +173,9 @@ func DetectFuncAtStackN(n int) string {
 	}
 	_, file, line, _ := runtime.Caller(n)
 	if ind := strings.IndexRune(file, '@'); ind == -1 {
+		if len(file) < cwdLen {
+			cwdLen = 0
+		}
 		return fmt.Sprintf(" %s:%d ", file[cwdLen:], line)
 	} else {
 		remainingPath := file[ind+1:]

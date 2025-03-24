@@ -51,14 +51,14 @@ func (c *Client) PromInit(reg *prometheus.Registry) {
 		c.metrics = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "ethclient",
 			Help: "ethclient",
-		}, []string{"field", "line"})
+		}, []string{"field", "line", "line2"})
 		reg.MustRegister(c.metrics)
 	}
 	c.metrics.Reset()
 }
-func (c *Client) getCoutner(funcName string, line string) {
+func (c *Client) getCoutner(funcName string, line string, line2 string) {
 	if c.metrics != nil {
-		counter := c.metrics.With(prometheus.Labels{"field": funcName, "line": line})
+		counter := c.metrics.With(prometheus.Labels{"field": funcName, "line": line, "line2": line2})
 		counter.Inc()
 	}
 }
@@ -453,8 +453,9 @@ func (r Req) print(args ...interface{}) {
 func getDataViaRetry[T any](wrapperClient *Client, method string, getData func(c *MutextedClient) (T, error)) (T, error) {
 	ignoreClients := make(map[int]bool)
 	if method != "" {
-		line := log.DetectFuncAtStackN(4)
-		wrapperClient.getCoutner(method, line)
+		line2 := log.DetectFuncAtStackN(6)
+		line1 := log.DetectFuncAtStackN(4)
+		wrapperClient.getCoutner(method, line1, line2)
 	}
 	req := NewReq()
 	var errs utils.Errors

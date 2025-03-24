@@ -93,7 +93,7 @@ func (r *RedStoneMgr) GetPrice(ts int64, details core.RedStonePF) *big.Int {
 	}
 	price, fromWhere := r.getHistoricPrice(ts, details)
 	r.prices.Set(key, price)
-	log.Infof("RedStone price at %d for %s from %s is %d", ts, details.DataId, fromWhere, price)
+	log.Debugf("RedStone price at %d for %s from %s is %d", ts, details.DataId, fromWhere, price)
 	return price
 }
 func (r *RedStoneMgr) getHistoricPrice(ts int64, details core.RedStonePF) (*big.Int, string) {

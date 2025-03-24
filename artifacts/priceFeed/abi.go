@@ -598,13 +598,9 @@ func (_PriceFeed *PriceFeedCallerSession) Owner() (common.Address, error) {
 // PhaseAggregators is a free data retrieval call binding the contract method 0xc1597304.
 //
 // Solidity: function phaseAggregators(uint16 ) view returns(address)
-func (_PriceFeed *PriceFeedCaller) PhaseAggregators(opts *bind.CallOpts, arg0 uint16, typo bool) (common.Address, error) {
+func (_PriceFeed *PriceFeedCaller) PhaseAggregators(opts *bind.CallOpts, arg0 uint16) (common.Address, error) {
 	var out []interface{}
-	field := "phaseAggregators"
-	if typo {
-		field = "phaseAggregator"
-	}
-	err := _PriceFeed.contract.Call(opts, &out, field, arg0)
+	err := _PriceFeed.contract.Call(opts, &out, "phaseAggregators", arg0)
 
 	if err != nil {
 		return *new(common.Address), err
@@ -619,15 +615,15 @@ func (_PriceFeed *PriceFeedCaller) PhaseAggregators(opts *bind.CallOpts, arg0 ui
 // PhaseAggregators is a free data retrieval call binding the contract method 0xc1597304.
 //
 // Solidity: function phaseAggregators(uint16 ) view returns(address)
-func (_PriceFeed *PriceFeedSession) PhaseAggregators(arg0 uint16, typo bool) (common.Address, error) {
-	return _PriceFeed.Contract.PhaseAggregators(&_PriceFeed.CallOpts, arg0, typo)
+func (_PriceFeed *PriceFeedSession) PhaseAggregators(arg0 uint16) (common.Address, error) {
+	return _PriceFeed.Contract.PhaseAggregators(&_PriceFeed.CallOpts, arg0)
 }
 
 // PhaseAggregators is a free data retrieval call binding the contract method 0xc1597304.
 //
 // Solidity: function phaseAggregators(uint16 ) view returns(address)
-func (_PriceFeed *PriceFeedCallerSession) PhaseAggregators(arg0 uint16, typo bool) (common.Address, error) {
-	return _PriceFeed.Contract.PhaseAggregators(&_PriceFeed.CallOpts, arg0, typo)
+func (_PriceFeed *PriceFeedCallerSession) PhaseAggregators(arg0 uint16) (common.Address, error) {
+	return _PriceFeed.Contract.PhaseAggregators(&_PriceFeed.CallOpts, arg0)
 }
 
 // PhaseId is a free data retrieval call binding the contract method 0x58303b10.
