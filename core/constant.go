@@ -3,6 +3,7 @@ package core
 import (
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
@@ -19,23 +20,33 @@ const AclhemyExceedError = "Your app has exceeded its compute units per second c
 const InfuraError = "query returned more than 113 results"
 const SECONDS_PER_YEAR = 86400 * 365
 
-func NoOfBlocksPerHr(client ClientI) int64 {
-	return NoOfBlocksPerMin(client) * 60
+func BlockPer(c int64, d time.Duration) int64 {
+	if d == time.Hour {
+		return blockPerMin(c) * 60
+	} else if d == time.Minute {
+		return blockPerMin(c)
+	}
+	log.Fatalf("unsupported duration %v", d)
+	return 0
 }
-func NoOfBlocksPerMin(client ClientI) int64 {
-	chainId := GetChainId(client)
-	switch log.GetBaseNet(chainId) {
+
+func blockPerMin(chainId int64) int64 {
+	net := log.GetBaseNet(chainId)
+	switch net {
 	case log.MAINNET:
 		return 5
 	case log.ARBITRUM:
-		return 240
+		return 4 * 60
+	case log.SONIC:
+		return 2 * 60
 	case log.OPTIMISM:
-		return 30
-
+		return 4 * 60
+	default:
+		log.Fatalf("unsupported chainId %d", chainId)
 	}
-	log.Fatal("block per min not set for chainId", chainId)
 	return 0
 }
+
 func EthLogErrorCheck(err error, client ClientI) bool {
 	if err != nil {
 		if strings.Contains(err.Error(), QueryMoreThan10000Error) ||
