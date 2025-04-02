@@ -33,23 +33,21 @@ type (
 	}
 )
 
-
-
-
 func (Block) TableName() string {
 	return "blocks"
 }
 
-type Relation struct {
-	Owner string `gorm:"column:owner"`
-	BlockNum int64 `gorm:"column:block_num"`
+type Relation struct { // only used for PoolOracle and MarketPool for v300 or more, for v1 or v2. we can from priceoracle via legacy.
+	Owner     string `gorm:"column:owner"`
+	BlockNum  int64  `gorm:"column:block_num"`
 	Dependent string `gorm:"column:dependent"`
-	Type string `gorm:"column:category"` 
+	Type      string `gorm:"column:category"`
 }
 
 func (Relation) TableName() string {
 	return "relations"
 }
+
 // v3
 
 func (b *Block) AddTokenLTRamp(details *schemas_v3.TokenLTRamp) {

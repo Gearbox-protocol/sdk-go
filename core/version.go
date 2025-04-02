@@ -16,9 +16,9 @@ import (
 var versionABI string = "[{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // if version is not set it is 1 else get from contract
-func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
+func FetchActualVersion(addr string, blockNum int64, client ClientI) int16 {
 	if common.HexToAddress(addr).Hex() == "0x39E6C2E1757ae4354087266E2C3EA9aC4257C1eb" { // bcz https://optimistic.etherscan.io/address/0x39E6C2E1757ae4354087266E2C3EA9aC4257C1eb#readContract has version as string
-		return NewVersion(1)
+		return 1
 	}
 	var opts *bind.CallOpts
 	if blockNum != 0 {
@@ -28,10 +28,14 @@ func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
 	var out []interface{}
 	err := contract.Call(opts, &out, "version")
 	if err != nil {
-		return NewVersion(1)
+		return 1
 	}
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	return NewVersion(int16(out0.Int64()))
+	return int16(out0.Int64())
+}
+func FetchVersion(addr string, blockNum int64, client ClientI) VersionType {
+	v := FetchActualVersion(addr, blockNum, client)
+	return NewVersion(v)
 }
 
 type VersionType struct {

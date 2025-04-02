@@ -89,7 +89,7 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 	var s string
 	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
-		s = "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d" // without v310
+		s = "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0xBaB2014Dd88223E168bA06911c06df638311a097" // without v310
 	case log.ARBITRUM:
 		s = "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af"
 	case log.OPTIMISM:
