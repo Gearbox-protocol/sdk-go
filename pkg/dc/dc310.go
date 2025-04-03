@@ -14,7 +14,7 @@ import (
 
 // quotaValues poolCompressor.PoolQuotaKeeperState
 // quotaValues can be another param for getting quotas
-func getPoolDatav310(pool marketCompressor.PoolState) PoolCallData {
+func getPoolDatav310(pool poolCompressor.PoolState) PoolCallData {
 	return PoolCallData{
 		Addr:               pool.BaseParams.Addr,
 		Underlying:         pool.Underlying,
@@ -96,6 +96,7 @@ func GetCreditAccountv310(values CreditAccountv310) CreditAccountCallData {
 }
 func GetCreditAccountv310Inner(values creditAccountCompressor.CreditAccountData) CreditAccountInner {
 	return CreditAccountInner{
+		IsSuccessful:   values.Success,
 		Addr:           values.CreditAccount,
 		CreditFacade:   values.CreditFacade,
 		Borrower:       values.Owner,

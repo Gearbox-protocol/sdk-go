@@ -42,6 +42,7 @@ type Relation struct { // only used for PoolOracle and MarketPool for v300 or mo
 	BlockNum  int64  `gorm:"column:block_num"`
 	Dependent string `gorm:"column:dependent"`
 	Type      string `gorm:"column:category"`
+	Id        int64  `gorm:"primaryKey;column:id"`
 }
 
 func (Relation) TableName() string {

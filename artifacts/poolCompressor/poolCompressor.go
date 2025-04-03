@@ -112,7 +112,7 @@ type RateKeeperState struct {
 
 // PoolCompressorMetaData contains all meta data concerning the PoolCompressor contract.
 var PoolCompressorMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"constructor\",\"inputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"contractType\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"gaugeSerializer\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getInterestRateModelState\",\"inputs\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structBaseState\",\"components\":[{\"name\":\"baseParams\",\"type\":\"tuple\",\"internalType\":\"structBaseParams\",\"components\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"version\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"contractType\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"serializedParams\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getLossPolicyState\",\"inputs\":[{\"name\":\"lossPolicy\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structBaseState\",\"components\":[{\"name\":\"baseParams\",\"type\":\"tuple\",\"internalType\":\"structBaseParams\",\"components\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"version\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"contractType\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"serializedParams\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPoolQuotaKeeperState\",\"inputs\":[{\"name\":\"pqk\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"tuple\",\"internalType\":\"structPoolQuotaKeeperState\",\"components\":[{\"name\":\"baseParams\",\"type\":\"tuple\",\"internalType\":\"structBaseParams\",\"components\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"version\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"contractType\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"serializedParams\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"rateKeeper\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"quotas\",\"type\":\"tuple[]\",\"internalType\":\"structQuotaTokenParams[]\",\"components\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"rate\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"cumulativeIndexLU\",\"type\":\"uint192\",\"internalType\":\"uint192\"},{\"name\":\"quotaIncreaseFee\",\"type\":\"uint16\",\"internalType\":\"uint16\"},{\"name\":\"totalQuoted\",\"type\":\"uint96\",\"internalType\":\"uint96\"},{\"name\":\"limit\",\"type\":\"uint96\",\"internalType\":\"uint96\"},{\"name\":\"isActive\",\"type\":\"bool\",\"internalType\":\"bool\"}]},{\"name\":\"creditManagers\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"lastQuotaRateUpdate\",\"type\":\"uint40\",\"internalType\":\"uint40\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPoolState\",\"inputs\":[{\"name\":\"pool\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"tuple\",\"internalType\":\"structPoolState\",\"components\":[{\"name\":\"baseParams\",\"type\":\"tuple\",\"internalType\":\"structBaseParams\",\"components\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"version\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"contractType\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"serializedParams\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"symbol\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"decimals\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"totalSupply\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"poolQuotaKeeper\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"interestRateModel\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"underlying\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"availableLiquidity\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"expectedLiquidity\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"baseInterestIndex\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"baseInterestRate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"dieselRate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"supplyRate\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"withdrawFee\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalBorrowed\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"totalDebtLimit\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"creditManagerDebtParams\",\"type\":\"tuple[]\",\"internalType\":\"structCreditManagerDebtParams[]\",\"components\":[{\"name\":\"creditManager\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"borrowed\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"limit\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"available\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"baseInterestIndexLU\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"expectedLiquidityLU\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"quotaRevenue\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"lastBaseInterestUpdate\",\"type\":\"uint40\",\"internalType\":\"uint40\"},{\"name\":\"lastQuotaRevenueUpdate\",\"type\":\"uint40\",\"internalType\":\"uint40\"},{\"name\":\"isPaused\",\"type\":\"bool\",\"internalType\":\"bool\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getRateKeeperState\",\"inputs\":[{\"name\":\"rateKeeper\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"tuple\",\"internalType\":\"structRateKeeperState\",\"components\":[{\"name\":\"baseParams\",\"type\":\"tuple\",\"internalType\":\"structBaseParams\",\"components\":[{\"name\":\"addr\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"version\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"contractType\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"serializedParams\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"rates\",\"type\":\"tuple[]\",\"internalType\":\"structRate[]\",\"components\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"rate\",\"type\":\"uint16\",\"internalType\":\"uint16\"}]}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"linearInterestRateModelSerializer\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"}]",
+	ABI: "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"contractType\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"interestRateModel\",\"type\":\"address\"}],\"name\":\"getInterestRateModelState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contractType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"serializedParams\",\"type\":\"bytes\"}],\"internalType\":\"structBaseParams\",\"name\":\"baseParams\",\"type\":\"tuple\"}],\"internalType\":\"structBaseState\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lossPolicy\",\"type\":\"address\"}],\"name\":\"getLossPolicyState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contractType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"serializedParams\",\"type\":\"bytes\"}],\"internalType\":\"structBaseParams\",\"name\":\"baseParams\",\"type\":\"tuple\"}],\"internalType\":\"structBaseState\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"quotaKeeper\",\"type\":\"address\"}],\"name\":\"getPoolQuotaKeeperState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contractType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"serializedParams\",\"type\":\"bytes\"}],\"internalType\":\"structBaseParams\",\"name\":\"baseParams\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"rateKeeper\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"rate\",\"type\":\"uint16\"},{\"internalType\":\"uint192\",\"name\":\"cumulativeIndexLU\",\"type\":\"uint192\"},{\"internalType\":\"uint16\",\"name\":\"quotaIncreaseFee\",\"type\":\"uint16\"},{\"internalType\":\"uint96\",\"name\":\"totalQuoted\",\"type\":\"uint96\"},{\"internalType\":\"uint96\",\"name\":\"limit\",\"type\":\"uint96\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"}],\"internalType\":\"structQuotaTokenParams[]\",\"name\":\"quotas\",\"type\":\"tuple[]\"},{\"internalType\":\"address[]\",\"name\":\"creditManagers\",\"type\":\"address[]\"},{\"internalType\":\"uint40\",\"name\":\"lastQuotaRateUpdate\",\"type\":\"uint40\"}],\"internalType\":\"structPoolQuotaKeeperState\",\"name\":\"result\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"}],\"name\":\"getPoolState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contractType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"serializedParams\",\"type\":\"bytes\"}],\"internalType\":\"structBaseParams\",\"name\":\"baseParams\",\"type\":\"tuple\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"decimals\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"totalSupply\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"poolQuotaKeeper\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"interestRateModel\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"underlying\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"availableLiquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"expectedLiquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseInterestIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseInterestRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dieselRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"supplyRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"withdrawFee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalBorrowed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalDebtLimit\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"creditManager\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"borrowed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"limit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"available\",\"type\":\"uint256\"}],\"internalType\":\"structCreditManagerDebtParams[]\",\"name\":\"creditManagerDebtParams\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"baseInterestIndexLU\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"expectedLiquidityLU\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"quotaRevenue\",\"type\":\"uint256\"},{\"internalType\":\"uint40\",\"name\":\"lastBaseInterestUpdate\",\"type\":\"uint40\"},{\"internalType\":\"uint40\",\"name\":\"lastQuotaRevenueUpdate\",\"type\":\"uint40\"},{\"internalType\":\"bool\",\"name\":\"isPaused\",\"type\":\"bool\"}],\"internalType\":\"structPoolState\",\"name\":\"result\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"rateKeeper\",\"type\":\"address\"}],\"name\":\"getRateKeeperState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"version\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"contractType\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"serializedParams\",\"type\":\"bytes\"}],\"internalType\":\"structBaseParams\",\"name\":\"baseParams\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"rate\",\"type\":\"uint16\"}],\"internalType\":\"structRate[]\",\"name\":\"rates\",\"type\":\"tuple[]\"}],\"internalType\":\"structRateKeeperState\",\"name\":\"result\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // PoolCompressorABI is the input ABI used to generate the binding from.
@@ -292,43 +292,12 @@ func (_PoolCompressor *PoolCompressorCallerSession) ContractType() ([32]byte, er
 	return _PoolCompressor.Contract.ContractType(&_PoolCompressor.CallOpts)
 }
 
-// GaugeSerializer is a free data retrieval call binding the contract method 0x930c54d7.
-//
-// Solidity: function gaugeSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorCaller) GaugeSerializer(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _PoolCompressor.contract.Call(opts, &out, "gaugeSerializer")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// GaugeSerializer is a free data retrieval call binding the contract method 0x930c54d7.
-//
-// Solidity: function gaugeSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorSession) GaugeSerializer() (common.Address, error) {
-	return _PoolCompressor.Contract.GaugeSerializer(&_PoolCompressor.CallOpts)
-}
-
-// GaugeSerializer is a free data retrieval call binding the contract method 0x930c54d7.
-//
-// Solidity: function gaugeSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorCallerSession) GaugeSerializer() (common.Address, error) {
-	return _PoolCompressor.Contract.GaugeSerializer(&_PoolCompressor.CallOpts)
-}
-
 // GetInterestRateModelState is a free data retrieval call binding the contract method 0xc6da210b.
 //
-// Solidity: function getInterestRateModelState(address addr) view returns(((address,uint256,bytes32,bytes)))
-func (_PoolCompressor *PoolCompressorCaller) GetInterestRateModelState(opts *bind.CallOpts, addr common.Address) (BaseState, error) {
+// Solidity: function getInterestRateModelState(address interestRateModel) view returns(((address,uint256,bytes32,bytes)))
+func (_PoolCompressor *PoolCompressorCaller) GetInterestRateModelState(opts *bind.CallOpts, interestRateModel common.Address) (BaseState, error) {
 	var out []interface{}
-	err := _PoolCompressor.contract.Call(opts, &out, "getInterestRateModelState", addr)
+	err := _PoolCompressor.contract.Call(opts, &out, "getInterestRateModelState", interestRateModel)
 
 	if err != nil {
 		return *new(BaseState), err
@@ -342,16 +311,16 @@ func (_PoolCompressor *PoolCompressorCaller) GetInterestRateModelState(opts *bin
 
 // GetInterestRateModelState is a free data retrieval call binding the contract method 0xc6da210b.
 //
-// Solidity: function getInterestRateModelState(address addr) view returns(((address,uint256,bytes32,bytes)))
-func (_PoolCompressor *PoolCompressorSession) GetInterestRateModelState(addr common.Address) (BaseState, error) {
-	return _PoolCompressor.Contract.GetInterestRateModelState(&_PoolCompressor.CallOpts, addr)
+// Solidity: function getInterestRateModelState(address interestRateModel) view returns(((address,uint256,bytes32,bytes)))
+func (_PoolCompressor *PoolCompressorSession) GetInterestRateModelState(interestRateModel common.Address) (BaseState, error) {
+	return _PoolCompressor.Contract.GetInterestRateModelState(&_PoolCompressor.CallOpts, interestRateModel)
 }
 
 // GetInterestRateModelState is a free data retrieval call binding the contract method 0xc6da210b.
 //
-// Solidity: function getInterestRateModelState(address addr) view returns(((address,uint256,bytes32,bytes)))
-func (_PoolCompressor *PoolCompressorCallerSession) GetInterestRateModelState(addr common.Address) (BaseState, error) {
-	return _PoolCompressor.Contract.GetInterestRateModelState(&_PoolCompressor.CallOpts, addr)
+// Solidity: function getInterestRateModelState(address interestRateModel) view returns(((address,uint256,bytes32,bytes)))
+func (_PoolCompressor *PoolCompressorCallerSession) GetInterestRateModelState(interestRateModel common.Address) (BaseState, error) {
+	return _PoolCompressor.Contract.GetInterestRateModelState(&_PoolCompressor.CallOpts, interestRateModel)
 }
 
 // GetLossPolicyState is a free data retrieval call binding the contract method 0x6776c3e5.
@@ -387,10 +356,10 @@ func (_PoolCompressor *PoolCompressorCallerSession) GetLossPolicyState(lossPolic
 
 // GetPoolQuotaKeeperState is a free data retrieval call binding the contract method 0x1927805d.
 //
-// Solidity: function getPoolQuotaKeeperState(address pqk) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
-func (_PoolCompressor *PoolCompressorCaller) GetPoolQuotaKeeperState(opts *bind.CallOpts, pqk common.Address) (PoolQuotaKeeperState, error) {
+// Solidity: function getPoolQuotaKeeperState(address quotaKeeper) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
+func (_PoolCompressor *PoolCompressorCaller) GetPoolQuotaKeeperState(opts *bind.CallOpts, quotaKeeper common.Address) (PoolQuotaKeeperState, error) {
 	var out []interface{}
-	err := _PoolCompressor.contract.Call(opts, &out, "getPoolQuotaKeeperState", pqk)
+	err := _PoolCompressor.contract.Call(opts, &out, "getPoolQuotaKeeperState", quotaKeeper)
 
 	if err != nil {
 		return *new(PoolQuotaKeeperState), err
@@ -404,16 +373,16 @@ func (_PoolCompressor *PoolCompressorCaller) GetPoolQuotaKeeperState(opts *bind.
 
 // GetPoolQuotaKeeperState is a free data retrieval call binding the contract method 0x1927805d.
 //
-// Solidity: function getPoolQuotaKeeperState(address pqk) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
-func (_PoolCompressor *PoolCompressorSession) GetPoolQuotaKeeperState(pqk common.Address) (PoolQuotaKeeperState, error) {
-	return _PoolCompressor.Contract.GetPoolQuotaKeeperState(&_PoolCompressor.CallOpts, pqk)
+// Solidity: function getPoolQuotaKeeperState(address quotaKeeper) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
+func (_PoolCompressor *PoolCompressorSession) GetPoolQuotaKeeperState(quotaKeeper common.Address) (PoolQuotaKeeperState, error) {
+	return _PoolCompressor.Contract.GetPoolQuotaKeeperState(&_PoolCompressor.CallOpts, quotaKeeper)
 }
 
 // GetPoolQuotaKeeperState is a free data retrieval call binding the contract method 0x1927805d.
 //
-// Solidity: function getPoolQuotaKeeperState(address pqk) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
-func (_PoolCompressor *PoolCompressorCallerSession) GetPoolQuotaKeeperState(pqk common.Address) (PoolQuotaKeeperState, error) {
-	return _PoolCompressor.Contract.GetPoolQuotaKeeperState(&_PoolCompressor.CallOpts, pqk)
+// Solidity: function getPoolQuotaKeeperState(address quotaKeeper) view returns(((address,uint256,bytes32,bytes),address,(address,uint16,uint192,uint16,uint96,uint96,bool)[],address[],uint40) result)
+func (_PoolCompressor *PoolCompressorCallerSession) GetPoolQuotaKeeperState(quotaKeeper common.Address) (PoolQuotaKeeperState, error) {
+	return _PoolCompressor.Contract.GetPoolQuotaKeeperState(&_PoolCompressor.CallOpts, quotaKeeper)
 }
 
 // GetPoolState is a free data retrieval call binding the contract method 0xec04205b.
@@ -476,37 +445,6 @@ func (_PoolCompressor *PoolCompressorSession) GetRateKeeperState(rateKeeper comm
 // Solidity: function getRateKeeperState(address rateKeeper) view returns(((address,uint256,bytes32,bytes),(address,uint16)[]) result)
 func (_PoolCompressor *PoolCompressorCallerSession) GetRateKeeperState(rateKeeper common.Address) (RateKeeperState, error) {
 	return _PoolCompressor.Contract.GetRateKeeperState(&_PoolCompressor.CallOpts, rateKeeper)
-}
-
-// LinearInterestRateModelSerializer is a free data retrieval call binding the contract method 0x88ccd638.
-//
-// Solidity: function linearInterestRateModelSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorCaller) LinearInterestRateModelSerializer(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _PoolCompressor.contract.Call(opts, &out, "linearInterestRateModelSerializer")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// LinearInterestRateModelSerializer is a free data retrieval call binding the contract method 0x88ccd638.
-//
-// Solidity: function linearInterestRateModelSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorSession) LinearInterestRateModelSerializer() (common.Address, error) {
-	return _PoolCompressor.Contract.LinearInterestRateModelSerializer(&_PoolCompressor.CallOpts)
-}
-
-// LinearInterestRateModelSerializer is a free data retrieval call binding the contract method 0x88ccd638.
-//
-// Solidity: function linearInterestRateModelSerializer() view returns(address)
-func (_PoolCompressor *PoolCompressorCallerSession) LinearInterestRateModelSerializer() (common.Address, error) {
-	return _PoolCompressor.Contract.LinearInterestRateModelSerializer(&_PoolCompressor.CallOpts)
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.

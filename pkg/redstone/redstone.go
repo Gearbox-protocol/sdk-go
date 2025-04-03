@@ -188,7 +188,7 @@ func (r *RedStoneMgr) GetPodSignWithRedstoneToken(ts int64, red core.RedStonePF)
 		fromWhere = "latest"
 		ans = getLatestPodSign(red)[red.DataId].convert(red.UnderlyingToken).pod
 	}
-	log.Infof("RedStone podSign at %d from %s", ts, fromWhere)
+	log.Debugf("RedStone podSign at %d from %s", ts, fromWhere)
 	return
 }
 
