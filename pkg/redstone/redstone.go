@@ -9,6 +9,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadev310Multicall"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -251,6 +253,38 @@ func GetPriceOnDemandCalls(cf common.Address, pods []dcv3.PriceOnDemand) (calls 
 		})
 	}
 	return
+}
+
+// if version 300, return pods with token and onDemandpriceUpdate for pricefeed with data.
+// if version 310,onDemandPriceUpdates with feed and data.
+func GetpodToCalls(version int16, cf common.Address, pods []dataCompressorv3.PriceOnDemand, redstones []core.RedStonePF) []multicall.Multicall2Call {
+	if version == 300 {
+		return GetPriceOnDemandCalls(cf, pods)
+	} else if version == 310 {
+		tokenToFeed := map[common.Address]common.Address{}
+		for _, e := range redstones {
+			tokenToFeed[e.UnderlyingToken] = e.Feed
+		}
+		callsToEncode := []creditFacadev310Multicall.PriceUpdate{}
+		for _, e := range pods {
+			callsToEncode = append(callsToEncode, creditFacadev310Multicall.PriceUpdate{
+				PriceFeed: tokenToFeed[e.Token],
+				Data:      e.CallData,
+			})
+		}
+		if len(callsToEncode) == 0 {
+			return nil
+		}
+		abi := core.GetAbi("CreditFacadev310Multicall")
+		data, err := abi.Pack("onDemandPriceUpdates", callsToEncode)
+		log.CheckFatal(err)
+		return []multicall.Multicall2Call{{
+			Target:   cf,
+			CallData: data,
+		}}
+	}
+	log.Fatal("version not supported", version)
+	return nil
 }
 
 func ReadBuffer(r io.ReadCloser) (*bytes.Buffer, string) {
