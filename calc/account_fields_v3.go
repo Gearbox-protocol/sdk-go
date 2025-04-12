@@ -108,14 +108,14 @@ func getCumIndexOfAccount(session AccountForCalcI) *big.Int {
 	return index
 }
 func (c Calculator) getDebtDetails(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16) *DebtDetails {
-	defer func() {
-		err := recover()
-		if err != nil {
-			log.Info(session.GetBorrowedAmount(), session.GetAddr(), getCumIndexOfAccount(session), poolDetails.GetCumIndexNow())
-			log.Info(poolDetails.GetPoolQuotaDetails(), utils.ToJson(session.GetBalances()))
-			log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
-		}
-	}()
+	// defer func() {
+	// 	err := recover()
+	// 	if err != nil {
+	// 		log.Info(session.GetBorrowedAmount(), session.GetAddr(), getCumIndexOfAccount(session), poolDetails.GetCumIndexNow())
+	// 		log.Info(poolDetails.GetPoolQuotaDetails(), utils.ToJson(session.GetBalances()))
+	// 		log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+	// 	}
+	// }()
 	borrowedAmount := session.GetBorrowedAmount()
 	baseInterestSinceUpdate := GetbaseInterest(poolDetails.GetCumIndexNow(), session)
 
