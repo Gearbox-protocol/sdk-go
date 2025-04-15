@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"runtime/debug"
 	"strconv"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -77,7 +78,8 @@ func SetJson(byteValue []byte, data interface{}) error {
 	// use number instead of encoding as float
 	d.UseNumber()
 	if err := d.Decode(&data); err != nil {
-		fmt.Println("error:", log.WrapErrWithLineN(err, 2))
+		debug.PrintStack()
+		log.Warn("error:", log.WrapErrWithLineN(err, 2))
 		return err
 	}
 	return nil
