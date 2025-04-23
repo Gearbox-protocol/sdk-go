@@ -17,6 +17,7 @@ const NoderealFilterLogError = "exceed maximum block range:"
 const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
 const AclhemyExceedError = "Your app has exceeded its compute units per second capacity"
+const Anvil10kError = "You can make eth_getLogs requests with up to a 10000 block range"
 const InfuraError = "query returned more than 113 results"
 const SECONDS_PER_YEAR = 86400 * 365
 
@@ -53,6 +54,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), NoderealFilterLogError) ||
 			strings.Contains(err.Error(), AnvilManagerError) ||
 			strings.Contains(err.Error(), AnkrRangeError) ||
+			strings.Contains(err.Error(), Anvil10kError) ||
 			strings.Contains(err.Error(), AclhemyExceedError) ||
 			strings.Contains(err.Error(), "exceed max topics") || // for anvil
 			strings.Contains(err.Error(), LogFilterLenError) ||
