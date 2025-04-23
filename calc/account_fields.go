@@ -6,11 +6,12 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 type TokenDetailsForCalcI interface {
-	GetToken(token string) *schemas.Token
+	GetToken(token string) (*schemas.Token, error)
 	GetPrices(underlyingToken string, version schemas.PFVersion, blockNums ...int64) *big.Int
 	GetLiqThreshold(ts uint64, cm, token string) *big.Int
 }
@@ -122,14 +123,16 @@ func (c Calculator) CalcAccountFields(ts uint64, blockNum int64,
 }
 
 func (c Calculator) convertToUSD(amount *big.Int, token string, version schemas.PFVersion, blockNum int64) *big.Int {
-	tokenDecimals := c.Store.GetToken(token).Decimals
+	tokenDecimals, err := c.Store.GetToken(token)
+	log.CheckFatal(err)
 	tokenPrice := c.Store.GetPrices(token, version, blockNum)
-	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals)
+	tokenValueInUSD := utils.GetInt64(new(big.Int).Mul(amount, tokenPrice), tokenDecimals.Decimals)
 	return tokenValueInUSD
 }
 func (c Calculator) convertFromUSD(amount *big.Int, underlyingToken string, pfVersion schemas.PFVersion, blockNum int64) *big.Int {
-	underlyingDecimals := c.Store.GetToken(underlyingToken).Decimals
+	underlyingDecimals, err := c.Store.GetToken(underlyingToken)
+	log.CheckFatal(err)
 	underlyingPrice := c.Store.GetPrices(underlyingToken, pfVersion, blockNum)
-	value := new(big.Int).Quo(utils.GetInt64(amount, -1*underlyingDecimals), underlyingPrice)
+	value := new(big.Int).Quo(utils.GetInt64(amount, -1*underlyingDecimals.Decimals), underlyingPrice)
 	return value
 }

@@ -57,8 +57,8 @@ type store struct {
 func (s store) GetPrices(token string, version schemas.PFVersion, blockNums ...int64) *big.Int {
 	return s.Prices[version][token].Convert()
 }
-func (s store) GetToken(token string) *schemas.Token {
-	return s.Tokens[token]
+func (s store) GetToken(token string) (*schemas.Token, error) {
+	return s.Tokens[token], nil
 }
 func (s store) GetLiqThreshold(_ uint64, cm, token string) *big.Int {
 	return s.LiqThresholds[cm][token]
