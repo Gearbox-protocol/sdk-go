@@ -49,6 +49,11 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://sonicscan.org",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
+	case 56, 7883: // goerli
+		return NetworkUI{
+			ExplorerUrl: "https://bscscan.com/",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	}
 	return NetworkUI{}
 }
@@ -66,6 +71,8 @@ var OPTIMISM NETWORK = "OPTIMISM"
 var OPTTEST NETWORK = "OPTTEST"
 var SONIC NETWORK = "SONIC"
 var SONICTEST NETWORK = "SONICTEST"
+var BNB NETWORK = "BNB"
+var BNBTEST NETWORK = "BNBTEST"
 
 var testnet = map[int64]struct {
 	net  NETWORK
@@ -78,6 +85,7 @@ var testnet = map[int64]struct {
 	7880: {ARBTEST, 42161},
 	7879: {OPTTEST, 10},
 	7882: {SONICTEST, 146},
+	7883: {BNBTEST, 56},
 }
 var basenet = map[int64]struct {
 	net  NETWORK
@@ -87,6 +95,7 @@ var basenet = map[int64]struct {
 	42161: {ARBITRUM, 7880},
 	10:    {OPTIMISM, 7879},
 	146:   {SONIC, 7882},
+	56:    {BNB, 7883},
 }
 
 func GetNetworkName(chainId int64) (name NETWORK) {
