@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const LogFilterLenError = "Log response size exceeded. You can make eth_getLogs requests with up to a 2K block range and no limit on the response size, or you can request any block range with a cap of 10K logs in the response."
+const LogFilterLenError = "Log response size exceeded. You can make eth_getLogs requests with up to" // previously it was 2k now 10k
 const QueryMoreThan10000Error = "query returned more than 10000 results"
 const LogFilterQueryTimeout = "Query timeout exceeded. Consider reducing your block range."
 const NoderealFilterLogError = "exceed maximum block range:"
