@@ -5,12 +5,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var _symbol map[common.Address]core.Symbol
-
 func IsWETH(client core.ClientI, underlying common.Address) bool {
-	if _symbol == nil {
-		chainId := core.GetChainId(client)
-		_symbol = core.GetTokenToSymbolByChainId(chainId)
-	}
-	return _symbol[underlying] == "WETH"
+	chainId := core.GetChainId(client)
+	expectedWETHAddr := core.GetToken(chainId, "WETH")
+	return underlying == expectedWETHAddr
 }

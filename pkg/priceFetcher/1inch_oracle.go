@@ -166,7 +166,7 @@ func New1InchOracle(client core.ClientI, tStore DecimalStoreI, details URLsAndRe
 	utils.SetJson([]byte(data), calc)
 
 	chainId := core.GetChainId(client)
-	calc.symToAddr = core.GetSymToAddrByChainId(chainId)
+	calc.symToAddr = core.GetSymToAddr(chainId)
 	calc.allSyms = calc.Reset(log.GetBaseNet(chainId))
 	details.resolve(client)
 	calc.extraurls = &details

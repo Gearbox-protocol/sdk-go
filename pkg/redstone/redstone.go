@@ -33,9 +33,9 @@ func (r redStoneDS) Get(token string, composite bool) core.RedStonePF {
 type RedStoneMgr struct {
 	chainId int64
 	//
-	lastPods       *core.MutexDS[string, *RSPriceOnDemand] // for liquidator, third-eye , gearbox
-	prices         *core.MutexDS[string, *big.Int]
-	redStoneTokens redStoneDS
+	lastPods *core.MutexDS[string, *RSPriceOnDemand] // for liquidator, third-eye , gearbox
+	prices   *core.MutexDS[string, *big.Int]
+	// redStoneTokens redStoneDS
 	//
 }
 
@@ -59,31 +59,31 @@ type RedStoneMgrI interface {
 func NewRedStoneMgr(client core.ClientI) RedStoneMgrI {
 	chainId := core.GetChainId(client)
 	//
-	redStoneTokens := map[string]core.RedStonePF{}
-	symToAddr := core.GetSymToAddrByChainId(chainId)
-	{ // redstone
-		pfs := core.GetRedStonePFByChainId(chainId)
-		for sym, details := range pfs {
-			address := symToAddr.Tokens[string(sym)]
-			details.UnderlyingToken = address
-			redStoneTokens[address.Hex()] = details
-		}
-	}
-	{ // composite redstone
-		pfs := core.GetCompositeRedStonePFByChainId(chainId)
-		for sym, details := range pfs {
-			address := symToAddr.Tokens[string(sym)].Hex()
-			redStoneTokens["Composite"+address] = details
-		}
-	}
+	// redStoneTokens := map[string]core.RedStonePF{}
+	// symToAddr := core.GetSymToAddrByChainId(chainId)
+	// { // redstone
+	// 	pfs := core.GetRedStonePFByChainId(chainId)
+	// 	for sym, details := range pfs {
+	// 		address := symToAddr.Tokens[string(sym)]
+	// 		details.UnderlyingToken = address
+	// 		redStoneTokens[address.Hex()] = details
+	// 	}
+	// }
+	// { // composite redstone
+	// 	pfs := core.GetCompositeRedStonePFByChainId(chainId)
+	// 	for sym, details := range pfs {
+	// 		address := symToAddr.Tokens[string(sym)].Hex()
+	// 		redStoneTokens["Composite"+address] = details
+	// 	}
+	// }
 	//
 	return &RedStoneMgr{
 		chainId:  chainId,
 		lastPods: core.NewMutexDS[string, *RSPriceOnDemand](),
 		prices:   core.NewMutexDS[string, *big.Int](),
-		redStoneTokens: redStoneDS{
-			data: redStoneTokens,
-		},
+		// redStoneTokens: redStoneDS{
+		// 	data: redStoneTokens,
+		// },
 	}
 }
 

@@ -10,20 +10,21 @@ import (
 
 var _addrToSym map[common.Address]core.Symbol
 
-func loadSymToAddrStore(chainId int64) map[common.Address]core.Symbol {
-	if _addrToSym == nil {
-		_addrToSym = core.GetTokenToSymbolByChainId(chainId)
-	}
-	return _addrToSym
-}
+// func loadSymToAddrStore(chainId int64) map[common.Address]core.Symbol {
+// 	if _addrToSym == nil {
+// 		_addrToSym = core.GetTokenToSymbolByChainId(chainId)
+// 	}
+// 	return _addrToSym
+// }
 
 func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, underlying string) (tradingToken, baseToken string) {
 	otherToken, _, ok := otherTokenAndItsBalance(bal, underlying)
 	if !ok {
 		return "", ""
 	}
-	syms := loadSymToAddrStore(chainId)
-	tradingToken, baseToken, ok  = tradingAndBase(syms, otherToken, underlying)
+	// syms := loadSymToAddrStore(chainId)
+	syms := map[common.Address]core.Symbol{}
+	tradingToken, baseToken, ok = tradingAndBase(syms, otherToken, underlying)
 	if !ok {
 		return "", ""
 	}
@@ -33,7 +34,7 @@ func TradingAndBaseTokens(chainId int64, bal core.DBBalanceFormat, underlying st
 // trading priority is higher than base
 func tradingAndBase(m map[common.Address]core.Symbol, a, b string) (trading, base string, ok bool) {
 	asym := m[common.HexToAddress(a)]
-	if asym  == "WETH" || asym == "WBTC" {
+	if asym == "WETH" || asym == "WBTC" {
 		asym = asym[1:]
 	}
 	bsym := m[common.HexToAddress(b)]

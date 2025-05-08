@@ -48,10 +48,9 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 
 	var baseChainId *big.Int = new(big.Int)
 	for _, netId := range []int64{146, 42161, 10, 1} { // fitst should be 146, as USDC_e address is not returning error
-		addrs := core.GetSymToAddrByChainId(netId)
-		usdc := addrs.Tokens["USDC"]
+		usdc := core.GetToken(netId, "USDC")
 		if netId == 146 {
-			usdc = addrs.Tokens["USDC_e"]
+			usdc = core.GetToken(netId, "USDC_e")
 		}
 		client, err := ethclient.Dial(url)
 		log.CheckFatal(err)

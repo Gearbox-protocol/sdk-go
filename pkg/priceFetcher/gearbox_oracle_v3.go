@@ -401,22 +401,20 @@ func (pOracle *GearboxOraclev3) GetPrices(ts int64, results []multicall.Multical
 }
 
 func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int) {
-	tokens := core.GetSymToAddrByChainId(core.GetChainId(pOracle.Node.Client))
-	weth, wbtc, wS := func() (string, string, string) {
-		return tokens.Tokens["WETH"].Hex(), tokens.Tokens["WBTC"].Hex(), tokens.Tokens["wS"].Hex()
+	chainId := core.GetChainId(pOracle.Node.Client)
+	// tokens := core.GetSymToAddrByChainId(core.GetChainId(pOracle.Node.Client))
+	weth, wbtc := func() (common.Address, common.Address) {
+		return core.GetToken(chainId, "WETH"), core.GetToken(chainId, "WBTC")
 	}()
 	for token, feed := range pOracle.tokenToFeed {
 		info := pOracle.GetFeedInfo(feed)
 		if info.Type == core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE {
 			price := pOracle.mgr.GetPrice(ts, info.GetRedstonePF())
-			if pOracle.GetFeedForETHBTC("WETH", tokens.Tokens) == info.PF1 {
-				wethPrice := prices[weth]
+			if pOracle.GetFeedForETHBTC("WETH", weth) == info.PF1 {
+				wethPrice := prices[weth.Hex()]
 				prices[token] = utils.GetInt64(new(big.Int).Mul(price, wethPrice), info.DecimalsPF0)
-			} else if pOracle.GetFeedForETHBTC("wS", tokens.Tokens) == info.PF1 {
-				wSPrice := prices[wS]
-				prices[token] = utils.GetInt64(new(big.Int).Mul(price, wSPrice), info.DecimalsPF0)
-			} else if pOracle.GetFeedForETHBTC("WBTC", tokens.Tokens) == info.PF1 {
-				wbtcPrice := prices[wbtc]
+			} else if pOracle.GetFeedForETHBTC("WBTC", wbtc) == info.PF1 {
+				wbtcPrice := prices[wbtc.Hex()]
 				if wbtcPrice == nil {
 					log.Warn("wbtc", wbtcPrice)
 					if utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
@@ -424,6 +422,16 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 					}
 				} else {
 					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbtcPrice), info.DecimalsPF0)
+				}
+			} else if log.SONIC == log.GetBaseNet(core.GetChainId(pOracle.Node.Client)) {
+				if wS := core.GetToken(chainId, "wS"); pOracle.GetFeedForETHBTC("wS", wS) == info.PF1 {
+					wSPrice := prices[wS.Hex()]
+					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wSPrice), info.DecimalsPF0)
+				}
+			} else if log.BNB == log.GetBaseNet(core.GetChainId(pOracle.Node.Client)) {
+				if wbnb := core.GetToken(chainId, "WBNB"); pOracle.GetFeedForETHBTC("WBNB", wbnb) == info.PF1 {
+					wbnbPrice := prices[wbnb.Hex()]
+					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbnbPrice), info.DecimalsPF0)
 				}
 			} else {
 				log.Warn("composite redstone price feed 1 is not wS/wbtc", token, utils.ToJson(info))
@@ -434,8 +442,8 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 	return
 }
 
-func (pOracle *GearboxOraclev3) GetFeedForETHBTC(sym string, tokens map[string]common.Address) common.Address {
-	token := tokens[sym]
+func (pOracle *GearboxOraclev3) GetFeedForETHBTC(sym string, token common.Address) common.Address {
+	// token := tokens[sym]
 	if token == core.NULL_ADDR { // for sonic
 		log.Debug("GetFeedForETHBTC feed not found for ", token, sym)
 		return core.NULL_ADDR

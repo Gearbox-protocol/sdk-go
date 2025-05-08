@@ -96,11 +96,11 @@ func (calc OneInchOracle) arbForMainnet(mainnetTs uint64, prices map[string]*cor
 }
 
 func (calc OneInchOracle) GetArbBaseCalls() (calls []multicall.Multicall2Call) {
-	symToAddr := core.GetSymToAddrByChainId(42161)
 	pfABI := core.GetAbi("1InchOracle")
+	syms := core.GetSymToAddr(42161)
 	for _, token := range calc.ArbBaseTokens {
-		tokenAddr := symToAddr.Tokens[token]
-		data, err := pfABI.Pack("getRate", tokenAddr, symToAddr.Tokens["USDC"], false)
+		tokenAddr := syms.Tokens[token]
+		data, err := pfABI.Pack("getRate", tokenAddr, core.GetToken(42161, "USDC"), false)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -129,11 +129,11 @@ func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*cor
 }
 
 func (calc OneInchOracle) GetOptBaseCalls() (calls []multicall.Multicall2Call) {
-	symToAddr := core.GetSymToAddrByChainId(10)
+	syms := core.GetSymToAddr(10)
 	pfABI := core.GetAbi("1InchOracle")
 	for _, token := range calc.OptBaseTokens {
-		tokenAddr := symToAddr.Tokens[token]
-		data, err := pfABI.Pack("getRate", tokenAddr, symToAddr.Tokens["USDC"], false)
+		tokenAddr := syms.Tokens[token]
+		data, err := pfABI.Pack("getRate", tokenAddr, core.GetToken(10, "USDC"), false)
 		if err != nil {
 			log.Fatal(err)
 		}
