@@ -17,6 +17,8 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dieselToken"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/eRC20"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/gearToken"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/globalAccountCompressor"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/globalmarketCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/inchFarmingPool"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/marketCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
@@ -186,6 +188,8 @@ var v310Map = AbiMap{
 	"CreditAccountCompressor":   {ABI: creditAccountCompressor.CreditAccountCompressorABI},
 	"PoolCompressor":            {ABI: poolCompressor.PoolCompressorABI},
 	"MarketCompressor":          {ABI: marketCompressor.MarketCompressorABI},
+	"GlobalMarketCompressor":    {ABI: globalmarketCompressor.MarketCompressorABI},
+	"GlobalAccountCompressor":   {ABI: globalAccountCompressor.GlobalAccountCompressorABI},
 	"AddressProviderv310":       {ABI: addrProviderv310.AddrProviderv310ABI},
 	"CreditFacadev310Multicall": {ABI: creditFacadev310Multicall.CreditFacadev310MulticallABI},
 }

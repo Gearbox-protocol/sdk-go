@@ -5,6 +5,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/creditAccountCompressor"
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/globalAccountCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/marketCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -143,4 +144,36 @@ func Convertv310BalWithoutQuotaIndex(enabledMask *big.Int, balances []creditAcco
 		})
 	}
 	return
+}
+
+func Convert(x *globalAccountCompressor.CreditAccountData) creditAccountCompressor.CreditAccountData {
+	return creditAccountCompressor.CreditAccountData{
+		CreditAccount:     x.CreditAccount,
+		CreditManager:     x.CreditManager,
+		CreditFacade:      x.CreditFacade,
+		Underlying:        x.Underlying,
+		Owner:             x.Owner,
+		ExpirationDate:    x.ExpirationDate,
+		EnabledTokensMask: x.EnabledTokensMask,
+		Debt:              x.Debt,
+		AccruedInterest:   x.AccruedInterest,
+		AccruedFees:       x.AccruedFees,
+		TotalDebtUSD:      x.TotalDebtUSD,
+		TotalValueUSD:     x.TotalValueUSD,
+		TwvUSD:            x.TwvUSD,
+		TotalValue:        x.TotalValue,
+		HealthFactor:      uint16(x.HealthFactor.Int64()),
+		Success:           x.Success,
+		Tokens: func() (ans []creditAccountCompressor.TokenInfo) {
+			for _, entry := range x.Tokens {
+				ans = append(ans, creditAccountCompressor.TokenInfo{
+					Token:   entry.Token,
+					Balance: entry.Balance,
+					Quota:   entry.Quota,
+					Mask:    entry.Mask,
+				})
+			}
+			return
+		}(),
+	}
 }
