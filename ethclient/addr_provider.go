@@ -39,7 +39,7 @@ func forkUrl(resp interface{}) string {
 	return resp.(map[string]interface{})["forkConfig"].(map[string]interface{})["forkUrl"].(string)
 }
 
-func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
+func GetBaseAndCurrentChainId(url string) (*big.Int, *big.Int, error) {
 	body := utils.GetJsonRPCRequestBody("anvil_nodeInfo")
 	_, err := utils.JsonRPCMakeRequest(url, body)
 	if err != nil {
@@ -64,6 +64,6 @@ func GetFlagAndTestChainId(url string) (*big.Int, *big.Int, error) {
 	if err != nil {
 		return baseChainId, nil, err
 	}
-	testChainId, err := client.ChainID(context.Background())
-	return baseChainId, testChainId, err
+	currentChainId, err := client.ChainID(context.Background())
+	return baseChainId, currentChainId, err
 }

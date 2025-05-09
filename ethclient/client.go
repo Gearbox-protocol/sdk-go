@@ -232,11 +232,11 @@ func (rc *Client) ChainID(ctx context.Context) (*big.Int, error) {
 	}
 	// locks
 	v, err := getDataViaRetry(rc, "", func(c *MutextedClient) (*big.Int, error) {
-		base, test, err := GetFlagAndTestChainId(c.url)
+		base, current, err := GetBaseAndCurrentChainId(c.url)
 		if base != nil && rc.baseChainId == 0 {
 			atomic.SwapInt64(&(rc.baseChainId), base.Int64())
 		}
-		return test, err
+		return current, err
 	})
 	//
 	if v != nil {

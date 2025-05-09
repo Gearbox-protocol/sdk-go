@@ -94,13 +94,20 @@ const (
 
 func GetType(chainId int64, sym string) int64 {
 	sym = strings.ToLower(sym)
-	if log.GetBaseNet(chainId) == log.SONIC {
+	switch log.GetBaseNet(chainId) {
+	case log.SONIC:
 		if sym == "s" {
 			return NATIVE
 		} else if sym == "ws" {
 			return WRAPPED_NATIVE
 		}
-	} else if log.GetBaseNet(chainId) == log.MAINNET {
+	case log.BNB:
+		if sym == "bnb" {
+			return NATIVE
+		} else if sym == "wbnb" {
+			return WRAPPED_NATIVE
+		}
+	case log.MAINNET:
 		if sym == "eth" {
 			return NATIVE
 		} else if sym == "weth" {
@@ -135,6 +142,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"USDC":  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
 			"GEAR":  common.HexToAddress("0xBa3335588D9403515223F109EdC4eB7269a9Ab5D"),
 			"stETH": common.HexToAddress("0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"),
+			"ETH":   common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
 			//
 			"GEARBOX_WETH_POOL":   common.HexToAddress("0xB03670c20F87f2169A7c4eBE35746007e9575901"),
 			"WETH_GATEWAY":        common.HexToAddress("0x4F952c4C5415B2609899AbDC2F8F352F600d14D6"),
@@ -156,6 +164,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			//
 			"WETH":   common.HexToAddress("0x50c42dEAcD8Fc9773493ED674b675bE577f2634b"),
 			"wS":     common.HexToAddress("0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38"),
+			"S":      common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
 			"USDC_e": common.HexToAddress("0x29219dd400f2Bf60E5a23d13Be72B486D4038894"),
 		},
 		log.OPTIMISM: {
@@ -167,6 +176,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"WBTC": common.HexToAddress("0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"),
 			"WETH": common.HexToAddress("0x2170Ed0880ac9A755fd29B2688956BD959F933F8"),
 			"WBNB": common.HexToAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"),
+			"BNB":  common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
 			"USDC": common.HexToAddress("0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"),
 		},
 	}
