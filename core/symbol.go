@@ -185,7 +185,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 		log.Fatalf("unsupported network %s", network)
 	}
 	if _, ok := tokens[network][token]; !ok {
-		log.Fatalf("unsupported token %s", token)
+		log.Fatalf("unsupported token %s %s", token, network)
 	}
 	return tokens[network][token]
 }

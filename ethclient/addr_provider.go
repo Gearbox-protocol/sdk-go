@@ -7,6 +7,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -48,9 +49,11 @@ func GetBaseAndCurrentChainId(url string) (*big.Int, *big.Int, error) {
 
 	var baseChainId *big.Int = new(big.Int)
 	for _, netId := range []int64{146, 42161, 10, 1} { // fitst should be 146, as USDC_e address is not returning error
-		usdc := core.GetToken(netId, "USDC")
+		var usdc common.Address
 		if netId == 146 {
 			usdc = core.GetToken(netId, "USDC_e")
+		} else {
+			usdc = core.GetToken(netId, "USDC")
 		}
 		client, err := ethclient.Dial(url)
 		log.CheckFatal(err)
