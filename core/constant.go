@@ -99,8 +99,10 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 	case log.SONIC:
 		s = "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B,0xBaB2014Dd88223E168bA06911c06df638311a097"
 	}
-	if addr != "" {
+	if addr != "" && s != "" {
 		s += "," + addr
+	} else if addr != "" {
+		s = addr
 	}
 	if version == NewVersion(300) {
 		splits := strings.Split(s, ",")

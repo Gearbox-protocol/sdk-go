@@ -9,6 +9,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -78,10 +79,10 @@ func getMultiCallAddr(chainId int64) string {
 	if log.GetBaseNet(chainId) == "ARBITRUM" {
 		return "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2"
 	}
-	if log.GetBaseNet(chainId) == "SONIC" || log.GetBaseNet(chainId) == "OPTIMISM" {
+	if utils.Contains([]log.NETWORK{log.SONIC, log.BNB, log.OPTIMISM}, log.GetBaseNet(chainId)) {
 		return "0xcA11bde05977b3631167028862bE2a173976CA11"
 	}
-	// on optimism and arbitrum
+	// on mainnet
 	return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
 }
 
