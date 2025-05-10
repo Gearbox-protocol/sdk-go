@@ -26,6 +26,11 @@ type LoggingConfig struct {
 	appDetails
 }
 
+func IsTestNet() bool {
+	chainId := GetNetworkToChainId(_logConfig.ROUTE_KEY)
+	baseNetwork := GetBaseNet(chainId)
+	return baseNetwork != _logConfig.ROUTE_KEY
+}
 func (cfg LoggingConfig) getRiskToken() string {
 	token := crypto.Keccak256Hash([]byte(cfg.App + cfg.Instance + cfg.RiskSecret))
 	return token.String()[2:]
