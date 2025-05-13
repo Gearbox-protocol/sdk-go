@@ -135,49 +135,78 @@ func GetType(chainId int64, sym string) int64 {
 // }
 
 func GetToken(chainId int64, token Symbol) common.Address {
-	tokens := map[log.NETWORK]map[Symbol]common.Address{
+	tokens := map[log.NETWORK]map[Symbol]string{
 		log.MAINNET: {
-			"WETH":  common.HexToAddress("0xC02aaA39b223FE8D0A0e6C6324aE7E56dB8f03d8"),
-			"WBTC":  common.HexToAddress("0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"),
-			"USDC":  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-			"GEAR":  common.HexToAddress("0xBa3335588D9403515223F109EdC4eB7269a9Ab5D"),
-			"stETH": common.HexToAddress("0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"),
-			"ETH":   common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+			// "WETH":  common.HexToAddress("0xC02aaA39b223FE8D0A0e6C6324aE7E56dB8f03d8"),
+			// "WBTC":  common.HexToAddress("0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"),
+			// "USDC":  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
+			// "GEAR":  common.HexToAddress("0xBa3335588D9403515223F109EdC4eB7269a9Ab5D"),
+			// "stETH": common.HexToAddress("0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"),
 			//
-			"GEARBOX_WETH_POOL":   common.HexToAddress("0xB03670c20F87f2169A7c4eBE35746007e9575901"),
-			"WETH_GATEWAY":        common.HexToAddress("0x4F952c4C5415B2609899AbDC2F8F352F600d14D6"),
-			"WSTETH_GATEWAY":      common.HexToAddress("0x5a97e3E43dCBFe620ccF7865739075f92E93F5E4"),
-			"GEARBOX_WSTETH_POOL": common.HexToAddress("0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286"),
-			"wstETH":              common.HexToAddress("0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"),
+			"ETH":   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+			"WETH":  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+			"DAI":   "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+			"USDC":  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+			"USDe":  "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+			"FRAX":  "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+			"GHO":   "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+			"rETH":  "0xae78736Cd615f374D3085123A210448E74Fc6393",
+			"ezETH": "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+			"weETH": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+			// "wstETH":  "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+			"stETH":   "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+			"WBTC":    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+			"USDS":    "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+			"eBTC":    "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642",
+			"LBTC":    "0x8236a87084f8B84306f72007F36F2618A5634494",
+			"solvBTC": "0xd9D920AA40f578ab794426F5C90F6C731D159DEf",
+			"pumpBTC": "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e",
+			//
+			"GEARBOX_WETH_POOL":   "0xB03670c20F87f2169A7c4eBE35746007e9575901",
+			"WETH_GATEWAY":        "0x4F952c4C5415B2609899AbDC2F8F352F600d14D6",
+			"WSTETH_GATEWAY":      "0x5a97e3E43dCBFe620ccF7865739075f92E93F5E4",
+			"GEARBOX_WSTETH_POOL": "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286",
+			"wstETH":              "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
 		},
 		log.ARBITRUM: {
-			"WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),
-			"WBTC": common.HexToAddress("0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"),
-			"USDC": common.HexToAddress("0xaf88d065e77c8cC2239327C5EDb3A432268e5831"),
+			// "WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),
+			// "WBTC": common.HexToAddress("0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"),
+			// "USDC": common.HexToAddress("0xaf88d065e77c8cC2239327C5EDb3A432268e5831"),
 			//
-			// "GEARBOX_WETH_POOL": common.HexToAddress("0xB03670c20F87f2169A7c4eBE35746007e9575901"),
-			// "WETH_GATEWAY":      common.HexToAddress("0x4F952c4C5415B2609899AbDC2F8F352F600d14D6"),
+			"WETH":   "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+			"DAI":    "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+			"USDC":   "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+			"USDT":   "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+			"rETH":   "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
+			"USDC_e": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+			"wstETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
 		},
 		log.SONIC: {
 			// "WBTC": common.HexToAddress("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"),
 			// "s": common.HexToAddress("0x50c42dEAcD8Fc9773493ED674b675bE577f2634b"),
 			//
-			"WETH":   common.HexToAddress("0x50c42dEAcD8Fc9773493ED674b675bE577f2634b"),
-			"wS":     common.HexToAddress("0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38"),
-			"S":      common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
-			"USDC_e": common.HexToAddress("0x29219dd400f2Bf60E5a23d13Be72B486D4038894"),
+			"WETH":   "0x50c42dEAcD8Fc9773493ED674b675bE577f2634b",
+			"wS":     "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38",
+			"S":      "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+			"USDC_e": "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
 		},
 		log.OPTIMISM: {
-			"WETH": common.HexToAddress("0x4200000000000000000000000000000000000006"),
-			"WBTC": common.HexToAddress("0x68f180fcCe6836688e9084f035309E29Bf0A2095"),
-			"USDC": common.HexToAddress("0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85"),
+			// "WETH": common.HexToAddress("0x4200000000000000000000000000000000000006"),
+			// "USDC": common.HexToAddress("0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85"),
+			"WBTC": "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
+			//
+			"WETH":   "0x4200000000000000000000000000000000000006",
+			"USDC":   "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+			"USDT":   "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+			"USDC_e": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+			"wstETH": "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
 		},
 		log.BNB: {
-			"WBTC": common.HexToAddress("0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"),
-			"WETH": common.HexToAddress("0x2170Ed0880ac9A755fd29B2688956BD959F933F8"),
-			"WBNB": common.HexToAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"),
-			"BNB":  common.HexToAddress("0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
-			"USDC": common.HexToAddress("0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"),
+			"WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+			"WETH": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+			"WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+			"BNB":  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+			"USDC": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
 		},
 	}
 	network := log.GetBaseNet(chainId)
@@ -187,7 +216,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 	if _, ok := tokens[network][token]; !ok {
 		log.Fatalf("unsupported token %s %s", token, network)
 	}
-	return tokens[network][token]
+	return common.HexToAddress(tokens[network][token])
 }
 
 func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
