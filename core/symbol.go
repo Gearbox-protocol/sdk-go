@@ -28,13 +28,13 @@ type SymTOAddrStore struct {
 	CompositeRedStone map[Symbol]RedStonePF     `json:"compositeRedStone"`
 }
 
-// func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
-// 	if _, ok := s.Tokens[string(sym)]; !ok {
-// 		// log.Fatal("can't get token", sym)
-// 		return "", false
-// 	}
-// 	return s.Tokens[string(sym)].Hex(), true
-// }
+func (s *SymTOAddrStore) getTokenAddr(sym Symbol) (string, bool) {
+	if _, ok := s.Tokens[string(sym)]; !ok {
+		// log.Fatal("can't get token", sym)
+		return "", false
+	}
+	return s.Tokens[string(sym)].Hex(), true
+}
 
 var _globalCopy = map[string]*SymTOAddrStore{}
 
@@ -167,6 +167,9 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"WSTETH_GATEWAY":      "0x5a97e3E43dCBFe620ccF7865739075f92E93F5E4",
 			"GEARBOX_WSTETH_POOL": "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286",
 			"wstETH":              "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+			// liquidator
+			"DOLA":                 "0x865377367054516e17014CcdED1e7d814EDC9ce4",
+			"AAVE_V3_LENDING_POOL": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 		},
 		log.ARBITRUM: {
 			// "WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),
@@ -259,48 +262,48 @@ func newTokenGroup() *TokenGroup {
 	}
 }
 
-// func GetTokenGroups(fileName string) *TokenGroup {
-// 	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
-// 	log.CheckFatal(err)
-// 	store := &tokenGroupWrapper{}
-// 	err = json.Unmarshal([]byte(data), store)
-// 	log.CheckFatal(err)
+func getTokenGroups(fileName string) *TokenGroup {
+	data, err := GetEmbeddedJsonnet(fileName, JsonnetImports{})
+	log.CheckFatal(err)
+	store := &tokenGroupWrapper{}
+	err = json.Unmarshal([]byte(data), store)
+	log.CheckFatal(err)
 
-// 	//
-// 	obj := newTokenGroup()
-// 	{
-// 		symToAddr := getSymToAddrStore(fileName)
-// 		for k, v := range store.Groups.CurvePools {
-// 			k, ok := symToAddr.getTokenAddr(k)
-// 			if ok {
-// 				obj.CurvePools[k] = v
-// 			}
-// 		}
-// 		for k, v := range store.Groups.BalancerTokens {
-// 			k, ok := symToAddr.getTokenAddr(k)
-// 			if ok {
-// 				obj.BalancerTokens[k] = v
-// 			}
-// 		}
-// 		for k, v := range store.Groups.ConvexCurveTokens {
-// 			k, ok := symToAddr.getTokenAddr(k)
-// 			v, ok2 := symToAddr.getTokenAddr(v)
-// 			if ok && ok2 {
-// 				obj.ConvexCurveTokens[k] = v
-// 			}
-// 		}
-// 		for k, v := range store.Groups.YearnCurveTokens {
-// 			k, ok := symToAddr.getTokenAddr(k)
-// 			v, ok2 := symToAddr.getTokenAddr(v)
-// 			if ok && ok2 {
-// 				obj.YearnCurveTokens[k] = v
-// 			}
-// 		}
-// 	}
-// 	return obj
-// }
+	//
+	obj := newTokenGroup()
+	{
+		symToAddr := getSymToAddrStore(fileName)
+		for k, v := range store.Groups.CurvePools {
+			k, ok := symToAddr.getTokenAddr(k)
+			if ok {
+				obj.CurvePools[k] = v
+			}
+		}
+		for k, v := range store.Groups.BalancerTokens {
+			k, ok := symToAddr.getTokenAddr(k)
+			if ok {
+				obj.BalancerTokens[k] = v
+			}
+		}
+		for k, v := range store.Groups.ConvexCurveTokens {
+			k, ok := symToAddr.getTokenAddr(k)
+			v, ok2 := symToAddr.getTokenAddr(v)
+			if ok && ok2 {
+				obj.ConvexCurveTokens[k] = v
+			}
+		}
+		for k, v := range store.Groups.YearnCurveTokens {
+			k, ok := symToAddr.getTokenAddr(k)
+			v, ok2 := symToAddr.getTokenAddr(v)
+			if ok && ok2 {
+				obj.YearnCurveTokens[k] = v
+			}
+		}
+	}
+	return obj
+}
 
-// func GetTokenGroupsByChainId(chainId int64) *TokenGroup {
-// 	fileName := log.GetConfigFile(chainId)
-// 	return GetTokenGroups(fileName)
-// }
+func GetTokenGroups(chainId int64) *TokenGroup {
+	fileName := log.GetConfigFile(chainId)
+	return getTokenGroups(fileName)
+}
