@@ -35,9 +35,10 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 	defer func() {
 		err := recover()
 		if err != nil {
-			log.Errorf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
 			if failure {
-				log.Fatalf("err: %s blockNum:%d ts:%d", err, blockNum, ts)
+				log.Fatalf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
+			} else {
+				log.Errorf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
 			}
 		}
 	}()

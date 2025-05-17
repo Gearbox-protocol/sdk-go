@@ -140,7 +140,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			// "WETH":  common.HexToAddress("0xC02aaA39b223FE8D0A0e6C6324aE7E56dB8f03d8"),
 			// "WBTC":  common.HexToAddress("0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"),
 			// "USDC":  common.HexToAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
-			// "GEAR":  common.HexToAddress("0xBa3335588D9403515223F109EdC4eB7269a9Ab5D"),
+			"GEAR": "0xBa3335588D9403515223F109EdC4eB7269a9Ab5D",
 			// "stETH": common.HexToAddress("0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"),
 			//
 			"ETH":   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
