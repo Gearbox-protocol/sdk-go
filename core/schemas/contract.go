@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -29,6 +30,14 @@ type Contract struct {
 	// VersionABI   abi.ABI      `gorm:"-" json:"-"`
 }
 
+var s = map[string]int64{
+	"0xcF64698AFF7E5f27A11dff868AF228653ba53be0": 13810899,  // mainnet
+	"0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af": 184650310, // arbitrum
+	"0x3761ca4bfacfcffc1b8034e69f19116dd6756726": 118410666, // optimism
+	"0x4b27b296273B72d7c7bfee1ACE93DC081467C41B": 9779380,   //s onic
+	"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804,  // bnb
+}
+
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
 	con := &Contract{
@@ -37,13 +46,17 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 		Address:      address,
 		Client:       client,
 	}
-	con.FirstLogAt = con.DiscoverFirstLog()
-	// for address provider discoveredAt is -1
 	if discoveredAt == -1 {
-		con.DiscoveredAt = con.FirstLogAt
-	} else {
-		con.DiscoveredAt = discoveredAt
+		discoveredAt = s[address]
 	}
+	if discoveredAt == 0 {
+		log.Fatal("discoveredAt is not set", address)
+	}
+	con.FirstLogAt = con.DiscoverFirstLog(discoveredAt)
+	if con.FirstLogAt == 0 && core.GetChainId(client) != 1337 { //don't updateif testnet
+		con.FirstLogAt = discoveredAt
+	}
+	con.DiscoveredAt = discoveredAt
 
 	return con
 }
@@ -80,15 +93,15 @@ func (c *Contract) GetDiscoveredAt() int64 {
 
 // Extras
 
-func (c *Contract) DiscoverFirstLog() int64 {
+func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 
 	// log.Debugf("Discovering first log of: %s\n", s.Address)
-	lastBlock, err := c.Client.BlockNumber(context.Background())
-	if err != nil {
-		log.Fatal("Cant get last block at discovery " + err.Error())
-	}
+	// lastBlock, err := c.Client.BlockNumber(context.Background())
+	// if err != nil {
+	// 	log.Fatal("Cant get last block at discovery " + err.Error())
+	// }
 
-	FirstLogAt, err := c.findFirstLogBound(1, int64(lastBlock))
+	FirstLogAt, err := c.findFirstLogBound(utils.Max(discoveredAt-100_000, 1), discoveredAt)
 	if err != nil {
 		log.Fatal(c.Address, err.Error())
 	}
@@ -113,25 +126,15 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 
 			log.Debugf("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
 			foundLow, err := c.findFirstLogBound(fromBlock, middle-1)
-			if err != nil && err.Error() != "no events found" {
+			if err != nil {
 				return 0, err
+			}
+			if foundLow != 0 {
+				return foundLow, nil
 			}
 
 			foundHigh, err := c.findFirstLogBound(middle, toBlock)
-			if err != nil && err.Error() != "no events found" && err.Error() != "Cant find any events" {
-				return 0, err
-			}
-
-			if foundLow == 0 && foundHigh == 0 {
-				return 0, fmt.Errorf("no events was found for the contract")
-			}
-
-			if foundLow == 0 {
-				return foundHigh, nil
-			}
-
-			return foundLow, nil
-
+			return foundHigh, err
 		}
 		return 0, err
 	}
@@ -143,10 +146,6 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 		if block < FirstLogAt || FirstLogAt == 0 {
 			FirstLogAt = block
 		}
-	}
-
-	if FirstLogAt == MaxUint {
-		return 0, fmt.Errorf("no events found")
 	}
 
 	return FirstLogAt, nil
