@@ -21,6 +21,9 @@ const Anvil10kError = "You can make eth_getLogs requests with up to a 10000 bloc
 const InfuraError = "query returned more than 113 results"
 const SECONDS_PER_YEAR = 86400 * 365
 
+var DrpcFreeTierError = "ranges over 10000 blocks are not supported on freetier"
+var DrpcError = "query exceeds max block range 100000"
+
 func BlockPer(c int64, d time.Duration) int64 {
 	if d == time.Hour {
 		return blockPerMin(c) * 60
@@ -61,6 +64,8 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), AclhemyExceedError) ||
 			strings.Contains(err.Error(), "exceed max topics") || // for anvil
 			strings.Contains(err.Error(), LogFilterLenError) ||
+			strings.Contains(err.Error(), DrpcError) ||
+			strings.Contains(err.Error(), DrpcFreeTierError) ||
 			strings.Contains(err.Error(), InfuraError) ||
 			(strings.Contains(err.Error(), "we can't execute this request") && GetChainId(client) == 42161) || // for arbitrum get logs for account Manager
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
