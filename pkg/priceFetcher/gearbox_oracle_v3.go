@@ -248,7 +248,7 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 func (pOracle GearboxOraclev3) GetPriceTokenTill(blockNum int64) {
 	txLogs, err := pOracle.Node.GetLogs(0, blockNum,
 		[]common.Address{common.HexToAddress(string(pOracle.Address))},
-		[][]common.Hash{pOracle.topics})
+		[][]common.Hash{pOracle.topics}, true)
 	log.CheckFatal(err)
 	// feedToTicker
 	for _, txLog := range txLogs {
@@ -416,7 +416,6 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 			} else if pOracle.GetFeedForETHBTC("WBTC", wbtc) == info.PF1 {
 				wbtcPrice := prices[wbtc.Hex()]
 				if wbtcPrice == nil {
-					log.Warn("wbtc", wbtcPrice)
 					if utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
 						prices[token] = new(big.Int)
 					}

@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"net/http"
+	"runtime/debug"
 	"sort"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addrProviderv310"
 	"github.com/Gearbox-protocol/sdk-go/core"
@@ -16,6 +14,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -24,7 +23,37 @@ type Node struct {
 	chainId int64
 }
 
-func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
+func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash, etherscanOnly ...bool) ([]types.Log, error) {
+	if fromBlock == 0 {
+		var minBlock int64 = math.MaxInt64
+		baseChainId := core.GetBaseChainId(lf.Client)
+		for _, addr := range addrs {
+			block, err := core.GetEtherscanFirstLog(baseChainId, addr)
+			if err != nil {
+				newBlock := lf.GetLatestBlockNumber() - 100_000
+				log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
+				block = newBlock
+			}
+			minBlock = utils.Min(minBlock, block)
+		}
+		fromBlock = minBlock
+		log.Info("GetLogs: fromBlock is 0, set to", fromBlock, addrs)
+		//
+		if len(etherscanOnly) > 0 && etherscanOnly[0] {
+			log.Info("GetLogs: logs using etherscan for single addr with no topic for", addrs[0].Hex())
+			baseChainId := core.GetBaseChainId(lf.Client)
+			logs, err := core.GetEtherscanLogs(baseChainId, addrs, toBlock, topics)
+			return logs, err
+		}
+		if addrs[0].Hex() == "0x50bA483272484fC5EEbE8676Dc87d814A11fAEf6" {
+			debug.PrintStack()
+			log.Info(len(topics))
+		}
+	}
+	return lf.getLogs(fromBlock, toBlock, addrs, topics)
+}
+
+func (lf Node) getLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
 	query := ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetInt64(fromBlock),
 		ToBlock:   new(big.Int).SetInt64(toBlock),
@@ -35,6 +64,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil && toBlock-fromBlock > 1 {
+		log.Debugf("GetLogs: fromBlock %d, toBlock %d", fromBlock, toBlock)
 		if core.EthLogErrorCheck(err, lf.Client) {
 			middle := (fromBlock + toBlock) / 2
 			if middle < fromBlock {
@@ -54,10 +84,6 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			return logs, nil
 		}
 	}
-	sort.SliceStable(logs, func(i, j int) bool {
-		return logs[i].BlockNumber < logs[j].BlockNumber ||
-			(logs[i].BlockNumber == logs[j].BlockNumber && logs[i].Index < logs[j].Index)
-	})
 	return logs, err
 }
 
@@ -174,117 +200,6 @@ func (lf Node) GetLogsForTransfer(queryFrom, queryTill int64, hexAddrs []common.
 			(logs[i].BlockNumber == logs[j].BlockNumber && logs[i].Index < logs[j].Index)
 	})
 	return logs, nil
-}
-
-func getEtherscanUrl(etherscanAPI string, chainId int64, ts int64) string {
-	url := "https://%s/api?module=block&action=getblocknobytime&timestamp=%d&closest=before&apikey=%s"
-	var suffix string
-	switch log.GetBaseNet(chainId) {
-	case log.MAINNET:
-		suffix = "api.etherscan.io"
-	case log.ARBITRUM:
-		suffix = "api.arbiscan.io"
-	case log.OPTIMISM:
-		suffix = "api-optimistic.etherscan.io"
-	}
-	url = fmt.Sprintf(url, suffix, ts, etherscanAPI)
-	return url
-}
-
-// dont use outside sdk-go, chainid should be of main network, not testnet
-func getEtherscanBlockNum(chainId int64, ts int64) (int64, error) {
-	etherscanAPI := utils.GetEnvOrDefault(fmt.Sprintf("%s_API_KEY", log.GetNetworkName(chainId)), "")
-	if etherscanAPI == "" {
-		log.Fatalf("%s_API_KEY can't be empty", log.GetNetworkName(chainId))
-	}
-
-	url := getEtherscanUrl(etherscanAPI, chainId, ts)
-	resp, err := http.Get(url)
-	if err != nil {
-		return 0, err
-	}
-	type respBody struct {
-		Status string `json:"status"`
-		Result string `json:"result"`
-	}
-	msg := &respBody{}
-	utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
-	if msg.Status != "1" {
-		return 0, fmt.Errorf("failed to get block num")
-	}
-	blockNum, err := strconv.ParseInt(msg.Result, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-	return blockNum, nil
-}
-
-// dont use outside sdk-go, chainid should be of main network, not testnet
-func getMoralisBlockNum(chainId int64, ts int64) (int64, error) {
-	moralis := utils.GetEnvOrDefault("MORALIS_API_KEY", "")
-	if moralis == "" {
-		return 0, fmt.Errorf("MORALIS_API_KEY not set")
-	}
-	//
-	var chain string
-	switch log.GetBaseNet(chainId) {
-	case log.MAINNET:
-		chain = "eth"
-	case log.ARBITRUM:
-		chain = "arbitrum"
-	case log.OPTIMISM:
-		chain = "optimism"
-	}
-	url := "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=%s&date=%d"
-	url = fmt.Sprintf(url, chain, ts)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return 0, err
-	}
-	req.Header.Set("accept", "application/json")
-	req.Header.Set("X-API-Key", moralis)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return 0, err
-	}
-	//s
-	type respBody struct {
-		Block int64 `json:"block"`
-	}
-	msg := &respBody{}
-	utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
-	return msg.Block, nil
-}
-
-func GetBlockNum(ts uint64, chainId int64) int64 {
-	network := log.GetBaseNet(chainId)
-	chainId = log.GetNetworkToChainId(network)
-	if ts == 0 {
-		log.Fatalf("ts can't be 0 for %d", chainId)
-	}
-	//
-	var errEtherScan error
-	{
-		for i := 0; i < 2; i++ {
-			blockNum, _err := getEtherscanBlockNum(chainId, int64(ts))
-			if _err == nil {
-				return blockNum
-			}
-			time.Sleep(5 * time.Second)
-			errEtherScan = _err
-		}
-	}
-	var moralisErr error
-	{
-		blockNum, err := getMoralisBlockNum(chainId, int64(ts))
-		if err == nil {
-			return blockNum
-		}
-		moralisErr = err
-	}
-	log.Warn("for ts", ts, chainId, "blockNum is 0", errEtherScan, moralisErr)
-	return 0
 }
 
 // contract key hash to contract name

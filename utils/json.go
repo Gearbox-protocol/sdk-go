@@ -22,17 +22,21 @@ func ReadFile(fileName string) ([]byte, error) {
 	return jsonFile, nil
 }
 
-// func ReadJsonAndSet(fileName string) []map[string]interface{} {
-// 	data := []map[string]interface{}{}
-// 	byteValue := ReadFile(fileName)
-// 	d := json.NewDecoder(bytes.NewReader(byteValue))
-// 	d.UseNumber()
-// 	if err := d.Decode(&data); err != nil {
-// 		fmt.Println("error:", err)
-// 	}
-// 	return data
-// }
-
+//	func ReadJsonAndSet(fileName string) []map[string]interface{} {
+//		data := []map[string]interface{}{}
+//		byteValue := ReadFile(fileName)
+//		d := json.NewDecoder(bytes.NewReader(byteValue))
+//		d.UseNumber()
+//		if err := d.Decode(&data); err != nil {
+//			fmt.Println("error:", err)
+//		}
+//		return data
+//	}
+func StringAndBuffer(reader io.Reader) (string, *bytes.Buffer) {
+	str := bytes.NewBuffer(nil)
+	str.ReadFrom(reader)
+	return str.String(), str
+}
 func ReadJsonAndSetInterface(fileName string, data interface{}) error {
 	_bytes, err := ReadFile(fileName)
 	if err != nil {

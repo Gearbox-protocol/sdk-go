@@ -22,6 +22,7 @@ const InfuraError = "query returned more than 113 results"
 const SECONDS_PER_YEAR = 86400 * 365
 
 var DrpcFreeTierError = "ranges over 10000 blocks are not supported on freetier"
+var RequestTimeoutDrpcFreeTierError = "Request timeout on the free tier"
 var DrpcError = "query exceeds max block range 100000"
 
 func BlockPer(c int64, d time.Duration) int64 {
@@ -66,6 +67,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), LogFilterLenError) ||
 			strings.Contains(err.Error(), DrpcError) ||
 			strings.Contains(err.Error(), DrpcFreeTierError) ||
+			strings.Contains(err.Error(), RequestTimeoutDrpcFreeTierError) ||
 			strings.Contains(err.Error(), InfuraError) ||
 			(strings.Contains(err.Error(), "we can't execute this request") && GetChainId(client) == 42161) || // for arbitrum get logs for account Manager
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
@@ -94,29 +96,84 @@ var RAY *big.Int = utils.GetExpInt(RAY_DECIMALS)
 
 // if 300 return all versions
 func GetAddressProvider(chainId int64, version VersionType) string {
-	addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", "")
+	addrProds := GetAddressProviderDS(chainId)
 	//
-	var s string
-	switch log.GetBaseNet(chainId) {
-	case log.MAINNET:
-		s = "0xcF64698AFF7E5f27A11dff868AF228653ba53be0,0x9ea7b04da02a5373317d745c1571c84aad03321d,0xBaB2014Dd88223E168bA06911c06df638311a097" // without v310
-	case log.ARBITRUM:
-		s = "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af,0xBaB2014Dd88223E168bA06911c06df638311a097"
-	case log.OPTIMISM:
-		s = "0x3761ca4bfacfcffc1b8034e69f19116dd6756726,0xBaB2014Dd88223E168bA06911c06df638311a097"
-	case log.SONIC:
-		s = "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B,0xBaB2014Dd88223E168bA06911c06df638311a097"
-	}
-	if addr != "" && s != "" {
-		s += "," + addr
-	} else if addr != "" {
-		s = addr
-	}
 	if version == NewVersion(300) {
-		splits := strings.Split(s, ",")
-		return splits[len(splits)-1]
+		return addrProds.Last()
 	}
-	return s
+	return addrProds.All()
 }
 
 var WAD = utils.GetExpInt(18)
+
+type addrProviderV struct {
+	Address string      `json:"address"`
+	Version VersionType `json:"version"`
+}
+
+type AddrProviderV struct {
+	x []addrProviderV
+}
+
+func (a AddrProviderV) check() {
+	if len(a.x) == 0 {
+		log.Fatal("Address provider is empty")
+	}
+}
+func (x AddrProviderV) First() string {
+	x.check()
+	return x.x[0].Address
+}
+func (x AddrProviderV) Last() string {
+	x.check()
+	if len(x.x) == 0 {
+		log.Fatal("Address provider is empty")
+	}
+	return x.x[len(x.x)-1].Address
+}
+func (x AddrProviderV) All() string {
+	x.check()
+	var sb strings.Builder
+	for i, v := range x.x {
+		if i > 0 {
+			sb.WriteString(",")
+		}
+		sb.WriteString(v.Address)
+	}
+	return sb.String()
+}
+
+func GetAddressProviderDS(chainId int64) AddrProviderV {
+	var addrProviders []addrProviderV
+	switch log.GetBaseNet(chainId) {
+	case log.MAINNET:
+		addrProviders = []addrProviderV{
+			{Address: "0xcF64698AFF7E5f27A11dff868AF228653ba53be0", Version: NewVersion(1)},
+			{Address: "0x9ea7b04da02a5373317d745c1571c84aad03321d", Version: NewVersion(300)},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+		}
+	case log.ARBITRUM:
+		addrProviders = []addrProviderV{
+			{Address: "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af", Version: NewVersion(300)},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+		}
+	case log.OPTIMISM:
+		addrProviders = []addrProviderV{
+			{Address: "0x3761ca4bfacfcffc1b8034e69f19116dd6756726", Version: NewVersion(300)},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+		}
+	case log.SONIC:
+		addrProviders = []addrProviderV{
+			{Address: "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B", Version: NewVersion(300)},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+		}
+	case log.BNB:
+		addrProviders = []addrProviderV{
+			{Address: "0xf7f0a609bfab9a0a98786951ef10e5fe26cc1e38", Version: NewVersion(300)},
+		}
+	}
+	if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
+		addrProviders = append(addrProviders, addrProviderV{Address: addr, Version: NewVersion(300)})
+	}
+	return AddrProviderV{addrProviders}
+}

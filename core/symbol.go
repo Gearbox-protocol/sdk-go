@@ -170,6 +170,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			// liquidator
 			"DOLA":                 "0x865377367054516e17014CcdED1e7d814EDC9ce4",
 			"AAVE_V3_LENDING_POOL": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+			"waEthLidowstETH":      "0x775F661b0bD1739349b9A2A3EF60be277c5d2D29",
 		},
 		log.ARBITRUM: {
 			// "WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),

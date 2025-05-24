@@ -100,6 +100,14 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// if err != nil {
 	// 	log.Fatal("Cant get last block at discovery " + err.Error())
 	// }
+	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
+		block, err := core.GetEtherscanFirstLog(core.GetBaseChainId(c.Client), common.HexToAddress(c.Address))
+		if err != nil {
+			log.Warnf("DiscoverFirstLog: GetEtherscanFirstLog for %s error: %s. Set to discoveredAt %d", c.Address, err, discoveredAt)
+			block = utils.Max(discoveredAt-100_000, 1)
+		}
+		return block
+	}
 
 	FirstLogAt, err := c.findFirstLogBound(utils.Max(discoveredAt-100_000, 1), discoveredAt)
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
-	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -86,7 +85,7 @@ func (calc OneInchOracle) arbForMainnet(mainnetTs uint64, prices map[string]*cor
 	if calc.extraurls.arbclient != nil {
 		defer utils.Elapsed("arbitrum price fetch")()
 		calls := calc.GetArbBaseCalls()
-		arbblock := pkg.GetBlockNum(mainnetTs, 42161)
+		arbblock := core.GetBlockNum(mainnetTs, 42161)
 		if arbblock == 0 {
 			return
 		}
@@ -119,7 +118,7 @@ func (calc OneInchOracle) optForMainnet(mainnetTs uint64, prices map[string]*cor
 	if calc.extraurls.optclient != nil {
 		defer utils.Elapsed("optimism price fetch")()
 		calls := calc.GetOptBaseCalls()
-		optblock := pkg.GetBlockNum(mainnetTs, 10)
+		optblock := core.GetBlockNum(mainnetTs, 10)
 		if optblock == 0 {
 			return
 		}
