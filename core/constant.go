@@ -177,3 +177,38 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 	}
 	return AddrProviderV{addrProviders}
 }
+
+func GetMarketConfigurators(chainId int64) []common.Address {
+	if market := utils.GetEnvOrDefault("MARKET_CONFIGURATORS", ""); market != "" {
+		var markets []common.Address
+		for _, addr := range strings.Split(market, ",") {
+			markets = append(markets, common.HexToAddress(addr))
+		}
+		return markets
+	}
+	switch log.GetBaseNet(chainId) { // check if supported
+	case log.MAINNET:
+		return []common.Address{
+			common.HexToAddress("0x354fe9f450F60b8547f88BE042E4A45b46128a06"),
+			common.HexToAddress("0x4d427D418342d8CE89a7634c3a402851978B680A"), // 30)0
+		}
+	case log.ARBITRUM:
+		return []common.Address{
+			common.HexToAddress("0x01023850b360b88de0d0f84015bbba1eba57fe7e"),
+		}
+	case log.OPTIMISM:
+		return []common.Address{
+			common.HexToAddress("0x2a15969CE5320868eb609680751cF8896DD92De5"),
+		}
+	case log.SONIC:
+		return []common.Address{
+			common.HexToAddress("0x8FFDd1F1433674516f83645a768E8900A2A5D076"),
+		}
+	case log.BNB:
+		return []common.Address{
+			common.HexToAddress("0x19037a281025b83fa37e3264b77af523ff87a3a4"),
+		}
+	}
+	log.Fatal("Market configurators not supported for chainId", chainId)
+	return nil
+}
