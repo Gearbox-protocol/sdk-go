@@ -160,7 +160,7 @@ func getEtherscanLogs(chainId int64, addr common.Address, toBlock int64) ([]type
 	}
 }
 func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		result, err := etherscanResultInner(url, addr...)
 		if err != nil && strings.Contains(err.Error(), "Max calls per sec rate limit reached") {
 			log.Debug("retrying due to", err)
@@ -190,7 +190,7 @@ func etherscanResultInner(url string, addr ...common.Address) (interface{}, erro
 		return 0, fmt.Errorf("failed to read etherscan response: %w", err)
 	}
 	if msg.Status != "1" {
-		if msg.Message == "No records found" && fmt.Sprintf("%v", addr) == "[]" {
+		if msg.Message == "No records found" && fmt.Sprintf("%v", msg.Result) == "[]" {
 			// no logs found, this is ok
 			return msg.Result, nil
 		}
