@@ -73,7 +73,7 @@ func getEtherscanFirstLog(chainId int64, addr common.Address) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	if arr, ok := result.([]interface{}); ok {
+	if arr, ok := result.([]interface{}); ok && len(arr) > 0 {
 		if entry, ok := arr[0].(map[string]interface{}); ok {
 			block := entry["blockNumber"]
 			blockNum, err := strconv.ParseInt(block.(string)[2:], 16, 64)
@@ -163,7 +163,7 @@ func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
 	for i := 0; i < 3; i++ {
 		result, err := etherscanResultInner(url, addr...)
 		if err != nil && strings.Contains(err.Error(), "Max calls per sec rate limit reached") {
-			log.Info("retrying due to", err)
+			log.Debug("retrying due to", err)
 			time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
 			continue
 		}
@@ -190,6 +190,10 @@ func etherscanResultInner(url string, addr ...common.Address) (interface{}, erro
 		return 0, fmt.Errorf("failed to read etherscan response: %w", err)
 	}
 	if msg.Status != "1" {
+		if msg.Message == "No records found" && fmt.Sprintf("%v", addr) == "[]" {
+			// no logs found, this is ok
+			return msg.Result, nil
+		}
 		return 0, fmt.Errorf("%v failed to get response from etherscan: %s, status: %s.Result: %v", addr, msg.Message, msg.Status, msg.Result)
 	}
 	return msg.Result, nil

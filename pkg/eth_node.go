@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"runtime/debug"
 	"sort"
 	"strings"
 
@@ -44,10 +43,6 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			baseChainId := core.GetBaseChainId(lf.Client)
 			logs, err := core.GetEtherscanLogs(baseChainId, addrs, toBlock, topics)
 			return logs, err
-		}
-		if addrs[0].Hex() == "0x50bA483272484fC5EEbE8676Dc87d814A11fAEf6" {
-			debug.PrintStack()
-			log.Info(len(topics))
 		}
 	}
 	return lf.getLogs(fromBlock, toBlock, addrs, topics)

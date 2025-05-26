@@ -174,7 +174,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 		},
 		log.ARBITRUM: {
 			// "WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),
-			// "WBTC": common.HexToAddress("0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"),
+			"WBTC": "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
 			// "USDC": common.HexToAddress("0xaf88d065e77c8cC2239327C5EDb3A432268e5831"),
 			//
 			"WETH":   "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
@@ -186,7 +186,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"wstETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
 		},
 		log.SONIC: {
-			// "WBTC": common.HexToAddress("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"),
+			"WBTC": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
 			// "s": common.HexToAddress("0x50c42dEAcD8Fc9773493ED674b675bE577f2634b"),
 			//
 			"WETH":   "0x50c42dEAcD8Fc9773493ED674b675bE577f2634b",

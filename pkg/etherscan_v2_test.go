@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetEtherscanLogs(t *testing.T) {
-	addr := []common.Address{common.HexToAddress("0x05eF8Da767687c0137aE143EB23883FcaD235ce7")}
+	addr := []common.Address{common.HexToAddress("0xE1836e82FfF8C179A69D940B9C950d19A50A31f9")}
 	tops := [][]common.Hash{{
 		core.Topic("SetQuotaIncreaseFee(address,uint16)"),
 		core.Topic("SetTokenLimit(address,uint96)"),
