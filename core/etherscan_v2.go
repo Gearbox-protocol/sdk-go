@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -159,6 +160,18 @@ func getEtherscanLogs(chainId int64, addr common.Address, toBlock int64) ([]type
 	}
 }
 func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
+	for i := 0; i < 3; i++ {
+		result, err := etherscanResultInner(url, addr...)
+		if err != nil && strings.Contains(err.Error(), "Max calls per sec rate limit reached") {
+			log.Info("retrying due to", err)
+			time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
+			continue
+		}
+		return result, err
+	}
+	return nil, fmt.Errorf("failed to get etherscan result after 3 attempts for %v", addr)
+}
+func etherscanResultInner(url string, addr ...common.Address) (interface{}, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
@@ -166,7 +179,6 @@ func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
 	type respBody struct {
 		Status  string      `json:"status"`
 		Message string      `json:"message"`
-		Error   string      `json:"error,omitempty"`
 		Result  interface{} `json:"result"`
 	}
 	msg := &respBody{}
@@ -177,11 +189,8 @@ func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed to read etherscan response: %w", err)
 	}
-	if msg.Error != "" {
-		return 0, fmt.Errorf("etherscan error: %s", msg.Error)
-	}
 	if msg.Status != "1" {
-		return 0, fmt.Errorf("failed to get response from etherscan: %s, status: %s", msg.Message, msg.Status)
+		return 0, fmt.Errorf("%v failed to get response from etherscan: %s, status: %s.Result: %v", addr, msg.Message, msg.Status, msg.Result)
 	}
 	return msg.Result, nil
 
