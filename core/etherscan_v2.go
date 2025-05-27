@@ -13,37 +13,47 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"golang.org/x/exp/rand"
 )
 
-func getEtherscanUrl(chainId int64) string {
+func getEtherscanUrl(chainId int64) []string {
 	etherscanAPI := utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "")
 	if etherscanAPI == "" {
 		log.Fatalf("ETHERSCAN_API_KEY can't be empty", log.GetNetworkName(chainId))
 	}
 	network := log.GetBaseNet(chainId)
 	chainId = log.GetNetworkToChainId(network)
-	url := "https://api.etherscan.io/v2/api?chainid=%d&apikey=%s"
-	url = fmt.Sprintf(url, chainId, etherscanAPI)
-	return url
-}
-func getEtherscanTsUrl(chainId int64, ts int64) string {
-	url := getEtherscanUrl(chainId)
-	return fmt.Sprintf(url+"&"+"module=block&action=getblocknobytime&timestamp=%d&closest=before", ts)
-}
-func getEtherscanLogUrl(chainId int64, addr common.Address, fromBlock int64) string {
-	url := getEtherscanUrl(chainId)
-	if fromBlock == 0 {
-		return fmt.Sprintf(url+"&"+"module=logs&action=getLogs&address=%s", addr.Hex())
-	} else {
-		return fmt.Sprintf(url+"&"+"module=logs&action=getLogs&address=%s&fromBlock=%d", addr.Hex(), fromBlock)
-
+	urls := []string{}
+	for _, api := range strings.Split(etherscanAPI, ",") {
+		url := "https://api.etherscan.io/v2/api?chainid=%d&apikey=%s"
+		url = fmt.Sprintf(url, chainId, api)
+		urls = append(urls, url)
 	}
+	return urls
+}
+func getEtherscanTsUrl(chainId int64, ts int64) []string {
+	urls := getEtherscanUrl(chainId)
+	for i, url := range urls {
+		urls[i] = fmt.Sprintf(url+"&"+"module=block&action=getblocknobytime&timestamp=%d&closest=before", ts)
+	}
+	return urls
+}
+func getEtherscanLogUrl(chainId int64, addr common.Address, fromBlock int64) []string {
+	urls := getEtherscanUrl(chainId)
+	for i, url := range urls {
+		if fromBlock == 0 {
+			urls[i] = fmt.Sprintf(url+"&"+"module=logs&action=getLogs&address=%s", addr.Hex())
+		} else {
+			urls[i] = fmt.Sprintf(url+"&"+"module=logs&action=getLogs&address=%s&fromBlock=%d", addr.Hex(), fromBlock)
+		}
+	}
+	return urls
 }
 
 // dont use outside sdk-go, chainid should be of main network, not testnet
 func getEtherscanBlockNum(chainId int64, ts int64) (int64, error) {
-	url := getEtherscanTsUrl(chainId, ts)
-	result, err := etherscanResult(url)
+	urls := getEtherscanTsUrl(chainId, ts)
+	result, err := etherscanResult(urls)
 	if err != nil {
 		return 0, err
 	}
@@ -68,8 +78,8 @@ func GetEtherscanFirstLog(chainId int64, addr common.Address) (int64, error) {
 	return block, nil
 }
 func getEtherscanFirstLog(chainId int64, addr common.Address) (int64, error) {
-	url := getEtherscanLogUrl(chainId, addr, 0)
-	result, err := etherscanResult(url)
+	urls := getEtherscanLogUrl(chainId, addr, 0)
+	result, err := etherscanResult(urls)
 	if err != nil {
 		return 0, err
 	}
@@ -159,10 +169,10 @@ func getEtherscanLogs(chainId int64, addr common.Address, toBlock int64) ([]type
 		}
 	}
 }
-func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
+func etherscanResult(url []string, addr ...common.Address) (interface{}, error) {
 	for i := 0; i < 10; i++ {
 		result, err := etherscanResultInner(url, addr...)
-		if err != nil && strings.Contains(err.Error(), "Max calls per sec rate limit reached") {
+		if err != nil && (strings.Contains(err.Error(), "Max calls per sec rate limit reached") || strings.Contains(err.Error(), "timeout or server too busy")) {
 			log.Debug("retrying due to", err)
 			time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
 			continue
@@ -171,7 +181,10 @@ func etherscanResult(url string, addr ...common.Address) (interface{}, error) {
 	}
 	return nil, fmt.Errorf("failed to get etherscan result after 3 attempts for %v", addr)
 }
-func etherscanResultInner(url string, addr ...common.Address) (interface{}, error) {
+func etherscanResultInner(urls []string, addr ...common.Address) (interface{}, error) {
+	// range over urls, try to get the result
+	url := urls[rand.Intn(len(urls))]
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
