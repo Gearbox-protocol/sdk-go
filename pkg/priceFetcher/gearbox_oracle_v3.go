@@ -449,6 +449,10 @@ func (pOracle *GearboxOraclev3) GetFeedForETHBTC(sym string, token common.Addres
 	}
 	feed := pOracle.GetFeed(token.Hex())
 	info := pOracle.GetFeedInfo(feed)
+	if info == nil {
+		log.Debug("GetFeedForETHBTC feed not found for ", token, sym)
+		return core.NULL_ADDR
+	}
 	if info.Type == core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE || info.Type == core.V3_COMPOSITE_ORACLE {
 		return info.PF1
 	}

@@ -186,7 +186,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"wstETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
 		},
 		log.SONIC: {
-			"WBTC": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+			"WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
 			// "s": common.HexToAddress("0x50c42dEAcD8Fc9773493ED674b675bE577f2634b"),
 			//
 			"WETH":   "0x50c42dEAcD8Fc9773493ED674b675bE577f2634b",
