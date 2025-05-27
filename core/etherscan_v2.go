@@ -16,31 +16,64 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-func getEtherscanUrl(chainId int64) []string {
+var _check bool
+
+func check() []string {
+
+	url := utils.GetEnvOrDefault("ETHERSCAN_PROXY_URL", "https://testnet.gearbox.foundation/etherscan/proxy")
+	urls := []string{url}
+	if _check {
+		return urls
+	}
+	x, err := http.Get(urls[0] + "/health")
+	if err != nil {
+		return nil
+	}
+	if x.StatusCode != 200 {
+		// log.Warnf("etherscan url %s is not working, status code: %d", urls[0], x.StatusCode)
+		return nil
+	}
+	_check = true
+	log.Info("Using etherscan proxy url", urls[0])
+	return urls
+}
+func getEtherscanUrl(chainId int64) (urls []string, proxy bool) {
+	if urls := check(); len(urls) > 0 {
+		return urls, true
+	}
+
 	etherscanAPI := utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "")
 	if etherscanAPI == "" {
 		log.Fatalf("ETHERSCAN_API_KEY can't be empty", log.GetNetworkName(chainId))
 	}
 	network := log.GetBaseNet(chainId)
 	chainId = log.GetNetworkToChainId(network)
-	urls := []string{}
+	urls = []string{}
 	for _, api := range strings.Split(etherscanAPI, ",") {
 		url := "https://api.etherscan.io/v2/api?chainid=%d&apikey=%s"
 		url = fmt.Sprintf(url, chainId, api)
 		urls = append(urls, url)
 	}
-	return urls
+	return urls, false
 }
 func getEtherscanTsUrl(chainId int64, ts int64) []string {
-	urls := getEtherscanUrl(chainId)
+	urls, proxy := getEtherscanUrl(chainId)
 	for i, url := range urls {
-		urls[i] = fmt.Sprintf(url+"&"+"module=block&action=getblocknobytime&timestamp=%d&closest=before", ts)
+		if proxy {
+			urls = append(urls, fmt.Sprintf(url+"/timestamp?chainId=%d&timestamp=%d", chainId, ts))
+		} else {
+			urls[i] = fmt.Sprintf(url+"&"+"module=block&action=getblocknobytime&timestamp=%d&closest=before", ts)
+		}
 	}
 	return urls
 }
 func getEtherscanLogUrl(chainId int64, addr common.Address, fromBlock int64) []string {
-	urls := getEtherscanUrl(chainId)
+	urls, proxy := getEtherscanUrl(chainId)
 	for i, url := range urls {
+		if proxy {
+			urls[i] = fmt.Sprintf(url+"/logs?chainId=%d&address=%s&fromBlock=%d", chainId, addr.Hex(), fromBlock)
+			continue
+		}
 		if fromBlock == 0 {
 			urls[i] = fmt.Sprintf(url+"&"+"module=logs&action=getLogs&address=%s", addr.Hex())
 		} else {
