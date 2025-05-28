@@ -228,12 +228,12 @@ func etherscanResultInner(urls []string, addr ...common.Address) (interface{}, e
 		Result  interface{} `json:"result"`
 	}
 	msg := &respBody{}
-	// str, buffer := utils.StringAndBuffer(resp.Body)
+	str, buffer := utils.StringAndBuffer(resp.Body)
 	// err = utils.ReadJsonReaderAndSetInterface(buffer, msg)
 
-	err = utils.ReadJsonReaderAndSetInterface(resp.Body, msg)
+	err = utils.ReadJsonReaderAndSetInterface(buffer, msg)
 	if err != nil {
-		return 0, fmt.Errorf("failed to read etherscan response: %w", err)
+		return 0, fmt.Errorf("failed to read etherscan response: %w, %s", err, str)
 	}
 	if msg.Status != "1" {
 		if msg.Message == "No records found" && fmt.Sprintf("%v", msg.Result) == "[]" {
