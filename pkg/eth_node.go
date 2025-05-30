@@ -42,7 +42,9 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			log.Info("GetLogs: logs using etherscan for single addr with no topic for", addrs[0].Hex())
 			baseChainId := core.GetBaseChainId(lf.Client)
 			logs, err := core.GetEtherscanLogs(baseChainId, addrs, toBlock, topics)
-			return logs, err
+			if !(len(logs) == 0 && err == nil) { // when there are no logs, and no error, this means check on rpc for logs
+				return logs, err
+			}
 		}
 	}
 	return lf.getLogs(fromBlock, toBlock, addrs, topics)
