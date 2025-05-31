@@ -62,6 +62,9 @@ func (t *TestClient) BlockNumber(ctx context.Context) (uint64, error) {
 	}
 	return uint64(t.blockNums[len(t.blockNums)-1]), nil
 }
+func (c *TestClient) GetUrl() string {
+	return ""
+}
 func topic(v string) common.Hash {
 	return crypto.Keccak256Hash([]byte(v))
 }
