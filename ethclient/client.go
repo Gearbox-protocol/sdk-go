@@ -119,6 +119,9 @@ func Dial(rawurl string) (*Client, error) {
 	}
 	return c, nil
 }
+func (c *Client) GetUrl() string {
+	return c.url
+}
 
 func sleepFor429Error(msg string) int64 {
 	re2, _ := regexp.Compile(`backoff_seconds":(\d+)`)

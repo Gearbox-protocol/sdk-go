@@ -9,6 +9,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/artifacts/addrProviderv310"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
@@ -22,7 +23,56 @@ type Node struct {
 	chainId int64
 }
 
+var _forkBlock int64
+
+// if url is anvil and the request to get fork block is successful, it returns the fork block number
+func getForkBlock(url string) (block int64) {
+	if _forkBlock != 0 {
+		return _forkBlock
+	}
+	if strings.Contains(url, "anvil.gearbox.foundation") || strings.Contains(url, "localhost") { // fork or anvil
+		body := utils.GetJsonRPCRequestBody("anvil_nodeInfo")
+		data, err := utils.JsonRPCMakeRequest(url, body)
+		if err != nil {
+			return
+		}
+		block = int64(data.(map[string]interface{})["forkConfig"].(map[string]interface{})["forkBlockNumber"].(float64))
+		_forkBlock = block
+		return
+		// log.Info(data)
+		// splits := strings.Split(url, "/")
+		// url = fmt.Sprintf("https://anvil.gearbox.foundation/api/forks/%s", splits[len(splits)-1])
+		// resp, err := http.Get(url)
+		// if err == nil {
+		// 	if resp.StatusCode/100 == 1 {
+		// 		defer resp.Body.Close()
+		// 		var forkBlock struct {
+		// 			ForkBlock struct {
+		// 				Number int64 `json:"number"`
+		// 			} `json:"forkBlock"`
+		// 		}
+		// 		err = utils.ReadJsonReaderAndSetInterface(resp.Body, &forkBlock)
+		// 		if err == nil {
+		// 			block = forkBlock.ForkBlock.Number
+		// 			_forkBlock = block
+		// 			return
+		// 		} else {
+		// 			log.Warnf("getForkBlock: error reading json from %s: %s", url, err)
+		// 		}
+		// 	} else {
+		// 		log.Warnf("getForkBlock: status code %d from %s", resp.StatusCode, url)
+		// 	}
+		// }
+	}
+	return math.MaxInt64
+}
+
+// fromBlock != 0, rpc is called from fromBlock to toBlock
+// fromBlock =0, and forkBlock != 0, rpc is called from forkBlock+1 to toBlock and etherscan is used for fromBlock to forkBlock
+// fromBlock =0 and forkBlock = math.MaxInt64, rpc is not called and etherscan is used for fromBlock to toBlock
 func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash, etherscanOnly ...bool) ([]types.Log, error) {
+	var splitBlock = fromBlock
+	var allLogs []types.Log
 	if fromBlock == 0 {
 		var minBlock int64 = math.MaxInt64
 		baseChainId := core.GetBaseChainId(lf.Client)
@@ -30,7 +80,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			block, err := core.GetEtherscanFirstLog(baseChainId, addr)
 			if err != nil {
 				newBlock := lf.GetLatestBlockNumber() - 100_000
-				// log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
+				log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
 				block = newBlock
 			}
 			minBlock = utils.Min(minBlock, block)
@@ -38,18 +88,31 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 		fromBlock = minBlock
 		// log.Info("GetLogs: fromBlock is 0, set to", fromBlock, addrs)
 		//
+
 		if len(etherscanOnly) > 0 && etherscanOnly[0] {
+			forkBlock := getForkBlock(lf.Client.(*ethclient.Client).GetUrl())
+			// fork block
+			forkBlock = utils.Min(forkBlock-1, toBlock) // if forkblock is less than toBlock use it for etherescan
+			splitBlock = forkBlock + 1                  // and set splitBlock to forkBlock + 1
+			//
 			baseChainId := core.GetBaseChainId(lf.Client)
-			logs, err := core.GetEtherscanLogs(baseChainId, addrs, toBlock, topics)
-			log.Info("GetLogs: logs using etherscan for single addr with no topic for", fromBlock, toBlock, addrs, len(logs), " fetched")
-			if !(len(logs) == 0 && err == nil) { // when there are no logs, and no error, this means check on rpc for logs
-				return logs, err
+			logs, err := core.GetEtherscanLogs(baseChainId, addrs, forkBlock, topics)
+			log.Info("GetLogs: logs using etherscan for single addr with no topic for", fromBlock, forkBlock, addrs, len(logs), " fetched")
+			if err != nil {
+				return nil, err
 			}
+			allLogs = append(allLogs, logs...)
 		}
 	}
-	logs, err := lf.getLogs(fromBlock, toBlock, addrs, topics)
-	log.Debugf("GetLogs: fromBlock %d, toBlock %d from rpc. %d", fromBlock, toBlock, len(logs))
-	return logs, err
+	if splitBlock <= toBlock {
+		txlogs, err := lf.getLogs(splitBlock, toBlock, addrs, topics)
+		log.Infof("GetLogs: fromBlock %d, toBlock %d from rpc. %d", splitBlock, toBlock, len(txlogs))
+		if err != nil {
+			return nil, err
+		}
+		allLogs = append(allLogs, txlogs...)
+	}
+	return allLogs, nil
 }
 
 func (lf Node) getLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
