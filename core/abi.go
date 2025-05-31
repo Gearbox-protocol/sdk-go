@@ -75,6 +75,7 @@ import (
 	//
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"srcToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"dstToken\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"useWrappers\",\"type\":\"bool\"}],\"name\":\"getRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"weightedRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
@@ -225,4 +226,35 @@ func getABI(data string) *abi.ABI {
 	abi, err := abi.JSON(strings.NewReader(data))
 	log.CheckFatal(err)
 	return &abi
+}
+
+func GetFees(client ClientI, cm common.Address, blockNum int64) *creditConfiguratorv3.CreditConfiguratorv3UpdateFees {
+	data, err := CallFuncGetAllData(client, "9af1d35a", cm, blockNum, nil) // getfees
+	log.CheckFatal(err)
+	cmabi := GetAbi("CreditManagerv3")
+	values, err := cmabi.Unpack("fees", data)
+	log.CheckFatal(err)
+	type feesDS struct {
+		FeeInterest                uint16
+		FeeLiquidation             uint16
+		LiquidationDiscount        uint16
+		FeeLiquidationExpired      uint16
+		LiquidationDiscountExpired uint16
+	}
+	log.Info(values)
+	feesEvent := feesDS{}
+	//
+	feesEvent.FeeInterest = *abi.ConvertType(values[0], new(uint16)).(*uint16)
+	feesEvent.FeeLiquidation = *abi.ConvertType(values[1], new(uint16)).(*uint16)
+	feesEvent.LiquidationDiscount = *abi.ConvertType(values[2], new(uint16)).(*uint16)
+	feesEvent.FeeLiquidationExpired = *abi.ConvertType(values[3], new(uint16)).(*uint16)
+	feesEvent.LiquidationDiscountExpired = *abi.ConvertType(values[4], new(uint16)).(*uint16)
+	//
+	return &creditConfiguratorv3.CreditConfiguratorv3UpdateFees{
+		FeeInterest:               feesEvent.FeeInterest,
+		FeeLiquidation:            feesEvent.FeeLiquidation,
+		LiquidationPremium:        10000 - feesEvent.LiquidationDiscount,
+		FeeLiquidationExpired:     feesEvent.FeeLiquidationExpired,
+		LiquidationPremiumExpired: 10000 - feesEvent.LiquidationDiscountExpired,
+	}
 }

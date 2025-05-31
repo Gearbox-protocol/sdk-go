@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -74,8 +75,8 @@ func CallFuncGetAllData(client ClientI, sigStr string, to common.Address, blockN
 	return bytes, err
 }
 
-func GetAddress(client ClientI, field string, version int64) (common.Address, error) {
-	providerAddr := GetAddressProvider(GetChainId(client), NewVersion(300))
+func GetAddress(client ClientI, field string) (common.Address, error) {
+	providerAddrs := GetAddressProviderDS(GetChainId(client)).MoreThanEq(310)
 	//
 	fbytes := []byte(field)
 	slot := make([]byte, 32)
@@ -86,14 +87,19 @@ func GetAddress(client ClientI, field string, version int64) (common.Address, er
 	// log.Info(slot, hash, log.DetectFuncAtStackN(2))
 	//
 	// addr, err := CallFuncGetSingleValue(client, "170ecb17", common.HexToAddress(providerAddr), 0, slot) // getLatestMinorVersion
-	ver, err := CallFuncGetSingleValue(client, "dd3b014c", common.HexToAddress(providerAddr), 0, slot) // getLatestVersion
-	if err != nil {
-		return common.Address{}, err
-	}
+	for _, providerAddr := range providerAddrs {
+		ver, err := CallFuncGetSingleValue(client, "dd3b014c", providerAddr, 0, slot) // getLatestVersion
+		if err != nil {
+			continue
+		}
 
-	slot = append(slot, ver...)
-	addr, err := CallFuncGetSingleValue(client, "bbd6dd6b", common.HexToAddress(providerAddr), 0, slot) // getAddress // key and version
-	return common.BytesToAddress(addr), err
+		slot := append(slot, ver...)
+		addr, err := CallFuncGetSingleValue(client, "bbd6dd6b", providerAddr, 0, slot) // getAddress // key and version
+		if err == nil {
+			return common.BytesToAddress(addr), err
+		}
+	}
+	return common.Address{}, fmt.Errorf("address not found for field %s", field)
 }
 
 func GetChainId(client ClientI) int64 {

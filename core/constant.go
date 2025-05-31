@@ -98,8 +98,8 @@ var RAY *big.Int = utils.GetExpInt(RAY_DECIMALS)
 func GetAddressProvider(chainId int64, version VersionType) string {
 	addrProds := GetAddressProviderDS(chainId)
 	//
-	if version == NewVersion(300) {
-		return addrProds.Last()
+	if version != NewVersion(1) {
+		log.Fatal("Address provider version is not supported, use 0 for all versions or 300 for latest")
 	}
 	return addrProds.All()
 }
@@ -107,8 +107,8 @@ func GetAddressProvider(chainId int64, version VersionType) string {
 var WAD = utils.GetExpInt(18)
 
 type addrProviderV struct {
-	Address string      `json:"address"`
-	Version VersionType `json:"version"`
+	Address string `json:"address"`
+	Version int64  `json:"version"`
 }
 
 type AddrProviderV struct {
@@ -120,17 +120,48 @@ func (a AddrProviderV) check() {
 		log.Fatal("Address provider is empty")
 	}
 }
-func (x AddrProviderV) First() string {
-	x.check()
-	return x.x[0].Address
-}
-func (x AddrProviderV) Last() string {
+
+// func (x AddrProviderV) First() string {
+// 	x.check()
+// 	return x.x[0].Address
+// }
+
+//	func (x AddrProviderV) First() string {
+//		x.check()
+//		return x.x[0].Address
+//	}
+func (x AddrProviderV) last() common.Address {
 	x.check()
 	if len(x.x) == 0 {
 		log.Fatal("Address provider is empty")
 	}
-	return x.x[len(x.x)-1].Address
+	return common.HexToAddress(x.x[len(x.x)-1].Address)
 }
+
+func (x AddrProviderV) MoreThanEq(vt int64) (ans []common.Address) {
+	if vt != 300 && vt != 310 {
+		log.Fatal("Address provider version is not supported, use 300 for latest or 310 for latest with more features")
+	}
+	x.check()
+	if len(x.x) == 0 {
+		log.Fatal("Address provider is empty")
+	}
+	// ans = []common.Address{}
+	for _, v := range x.x {
+		if v.Version >= vt {
+			ans = append(ans, common.HexToAddress(v.Address))
+		}
+	}
+	return ans
+}
+
+// Last returns the last address in the provider list, which is usually the latest version.
+func (x AddrProviderV) Liquidators() (ans []common.Address) {
+	return []common.Address{x.last()}
+
+	return x.MoreThanEq(310)
+}
+
 func (x AddrProviderV) All() string {
 	x.check()
 	var sb strings.Builder
@@ -148,32 +179,32 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 	switch log.GetBaseNet(chainId) {
 	case log.MAINNET:
 		addrProviders = []addrProviderV{
-			{Address: "0xcF64698AFF7E5f27A11dff868AF228653ba53be0", Version: NewVersion(1)},
-			{Address: "0x9ea7b04da02a5373317d745c1571c84aad03321d", Version: NewVersion(300)},
-			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+			{Address: "0xcF64698AFF7E5f27A11dff868AF228653ba53be0", Version: 1},
+			{Address: "0x9ea7b04da02a5373317d745c1571c84aad03321d", Version: 300},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: 310},
 		}
 	case log.ARBITRUM:
 		addrProviders = []addrProviderV{
-			{Address: "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af", Version: NewVersion(300)},
-			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+			{Address: "0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af", Version: 300},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: 310},
 		}
 	case log.OPTIMISM:
 		addrProviders = []addrProviderV{
-			{Address: "0x3761ca4bfacfcffc1b8034e69f19116dd6756726", Version: NewVersion(300)},
-			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+			{Address: "0x3761ca4bfacfcffc1b8034e69f19116dd6756726", Version: 300},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: 310},
 		}
 	case log.SONIC:
 		addrProviders = []addrProviderV{
-			{Address: "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B", Version: NewVersion(300)},
-			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: NewVersion(310)},
+			{Address: "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B", Version: 300},
+			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: 310},
 		}
 	case log.BNB:
 		addrProviders = []addrProviderV{
-			{Address: "0xf7f0a609bfab9a0a98786951ef10e5fe26cc1e38", Version: NewVersion(300)},
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
 		}
 	}
 	if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
-		addrProviders = append(addrProviders, addrProviderV{Address: addr, Version: NewVersion(300)})
+		addrProviders = append(addrProviders, addrProviderV{Address: addr, Version: 310})
 	}
 	return AddrProviderV{addrProviders}
 }

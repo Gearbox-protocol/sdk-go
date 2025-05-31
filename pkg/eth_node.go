@@ -30,24 +30,26 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 			block, err := core.GetEtherscanFirstLog(baseChainId, addr)
 			if err != nil {
 				newBlock := lf.GetLatestBlockNumber() - 100_000
-				log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
+				// log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
 				block = newBlock
 			}
 			minBlock = utils.Min(minBlock, block)
 		}
 		fromBlock = minBlock
-		log.Info("GetLogs: fromBlock is 0, set to", fromBlock, addrs)
+		// log.Info("GetLogs: fromBlock is 0, set to", fromBlock, addrs)
 		//
 		if len(etherscanOnly) > 0 && etherscanOnly[0] {
-			log.Info("GetLogs: logs using etherscan for single addr with no topic for", addrs[0].Hex())
 			baseChainId := core.GetBaseChainId(lf.Client)
 			logs, err := core.GetEtherscanLogs(baseChainId, addrs, toBlock, topics)
+			log.Info("GetLogs: logs using etherscan for single addr with no topic for", fromBlock, toBlock, addrs, len(logs), " fetched")
 			if !(len(logs) == 0 && err == nil) { // when there are no logs, and no error, this means check on rpc for logs
 				return logs, err
 			}
 		}
 	}
-	return lf.getLogs(fromBlock, toBlock, addrs, topics)
+	logs, err := lf.getLogs(fromBlock, toBlock, addrs, topics)
+	log.Debugf("GetLogs: fromBlock %d, toBlock %d from rpc. %d", fromBlock, toBlock, len(logs))
+	return logs, err
 }
 
 func (lf Node) getLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash) ([]types.Log, error) {
@@ -61,7 +63,6 @@ func (lf Node) getLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	var err error
 	logs, err = lf.Client.FilterLogs(context.Background(), query)
 	if err != nil && toBlock-fromBlock > 1 {
-		log.Debugf("GetLogs: fromBlock %d, toBlock %d", fromBlock, toBlock)
 		if core.EthLogErrorCheck(err, lf.Client) {
 			middle := (fromBlock + toBlock) / 2
 			if middle < fromBlock {
