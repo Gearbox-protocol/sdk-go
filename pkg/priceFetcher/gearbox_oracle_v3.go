@@ -71,7 +71,7 @@ func NewGearboxOraclev3(addr schemas.PriceOracleT, version core.VersionType, cli
 			},
 			topics: []common.Hash{
 				core.Topic("SetPriceFeed(address,address,uint32,bool,bool)"),   // main v3
-				core.Topic("SetPriceFeed(address,address,uint32,bool"),         // main v310
+				core.Topic("SetPriceFeed(address,address,uint32,bool)"),        // main v310
 				core.Topic("SetReservePriceFeed(address,address,uint32,bool)"), // reserve
 				core.Topic("SetReservePriceFeedStatus(address,bool)"),          // change
 			},

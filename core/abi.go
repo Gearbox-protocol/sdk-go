@@ -241,7 +241,6 @@ func GetFees(client ClientI, cm common.Address, blockNum int64) *creditConfigura
 		FeeLiquidationExpired      uint16
 		LiquidationDiscountExpired uint16
 	}
-	log.Info(values)
 	feesEvent := feesDS{}
 	//
 	feesEvent.FeeInterest = *abi.ConvertType(values[0], new(uint16)).(*uint16)
