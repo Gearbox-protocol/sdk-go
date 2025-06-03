@@ -29,7 +29,10 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 		for _, addr := range addrs {
 			block, err := core.GetEtherscanFirstLog(baseChainId, addr)
 			if err != nil {
-				newBlock := lf.GetLatestBlockNumber() - 100_000
+				var newBlock int64 = 1
+				if lf.GetLatestBlockNumber()-100_000 > 0 {
+					newBlock = lf.GetLatestBlockNumber() - 100_000
+				}
 				// log.Warnf("GetLogs: GetEtherscanFirstLog for %s error: %s. Set to latest-10k %d", addr.Hex(), err, newBlock)
 				block = newBlock
 			}
