@@ -95,7 +95,7 @@ func GetAddress(client ClientI, field string) (common.Address, error) {
 
 		slot := append(slot, ver...)
 		addr, err := CallFuncGetSingleValue(client, "bbd6dd6b", providerAddr, 0, slot) // getAddress // key and version
-		if err == nil {
+		if err == nil && common.BytesToAddress(addr) != NULL_ADDR {
 			return common.BytesToAddress(addr), err
 		}
 	}
