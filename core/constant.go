@@ -24,6 +24,7 @@ const SECONDS_PER_YEAR = 86400 * 365
 var DrpcFreeTierError = "ranges over 10000 blocks are not supported on freetier"
 var RequestTimeoutDrpcFreeTierError = "Request timeout on the free tier"
 var DrpcError = "query exceeds max block range 100000"
+var BlockRangeChainStackError = "Block range limit exceeded."
 
 func BlockPer(c int64, d time.Duration) int64 {
 	if d == time.Hour {
@@ -69,6 +70,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), DrpcFreeTierError) ||
 			strings.Contains(err.Error(), RequestTimeoutDrpcFreeTierError) ||
 			strings.Contains(err.Error(), InfuraError) ||
+			strings.Contains(err.Error(), BlockRangeChainStackError) ||
 			(strings.Contains(err.Error(), "we can't execute this request") && GetChainId(client) == 42161) || // for arbitrum get logs for account Manager
 			// failure: we can't execute this request range  192549019 192549555 tokenAddrs 32 accountHashes 6
 			strings.Contains(err.Error(), LogFilterQueryTimeout) {
