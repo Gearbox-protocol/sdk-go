@@ -11,6 +11,7 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
 	"github.com/Gearbox-protocol/sdk-go/calc"
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/core/schemas"
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
@@ -612,4 +613,33 @@ func GetTradingPriceFrom1Inch(prices map[string]*core.BigInt, tradingToken, base
 		return 0
 	}
 	return tradingPrice / basePrice
+}
+
+func GetPriceSpot(tradingToken *schemas.Token, usdc common.Address, client core.ClientI, blockNum int64) (*big.Int, error) {
+	{ // getting price via multicall
+		inchOracle := get1InchAddress(core.GetChainId(client))
+
+		pfABI := core.GetAbi("1InchOracle")
+		calls := []multicall.Multicall2Call{}
+		data, err := pfABI.Pack("getRate", common.HexToAddress(tradingToken.Address), usdc, false)
+		if err != nil {
+			return nil, err
+		}
+		calls = append(calls, multicall.Multicall2Call{
+			Target:   inchOracle,
+			CallData: data,
+		})
+		results := core.MakeMultiCall(client, blockNum, false, calls)
+		entry := results[0]
+		if entry.Success {
+			price := new(big.Int).SetBytes(entry.ReturnData)
+			// for usdt = 18-6-2 = 10
+			// for wbtc = 18-8-2 = 8
+			// for gusd = 18-2-2= 14
+			normalizeDecimal := 18 - tradingToken.Decimals - 2
+			price = utils.GetInt64(price, normalizeDecimal)
+			return price, nil
+		}
+	}
+	return nil, fmt.Errorf("failed to get price for %s", tradingToken.Symbol)
 }
