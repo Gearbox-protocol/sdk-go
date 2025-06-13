@@ -1,5 +1,7 @@
 package core
 
+import "github.com/Gearbox-protocol/sdk-go/log"
+
 // https://github.com/Gearbox-protocol/integrations-v2/tree/faa9cfd4921c62165782dcdc196ff5a0c0e6075d/contracts/oracles
 // https://github.com/Gearbox-protocol/oracles-v3/tree/2ac6d1ba1108df949222084791699d821096bc8c/contracts/oracles
 const (
@@ -25,8 +27,49 @@ const (
 	V3_PYTH_ORACLE
 	V3_MELLOW_LRT_ORACLE
 	V3_PENDLE_PT_TWAP_ORACLE
+
+	V3_EXTERNAL
 	//
 	V3_BACKEND_COMPOSITE_REDSTONE_ORACLE = 100
 	V3_BACKEND_GENERAL_ORACLE            = 101
 	V3_PULL_UNDERLYING_ORACLE            = 102
 )
+
+func GetContractTypeToPFType(x string) int64 {
+	switch x {
+	case "PRICE_FEED::BALANCER_STABLE":
+		return V3_BALANCER_STABLE_LP_ORACLE
+	case "PRICE_FEED::BALANCER_WEIGHTED":
+		return V3_BALANCER_WEIGHTED_LP_ORACLE
+	case "PRICE_FEED::BOUNDED":
+		return V3_BOUNDED_ORACLE
+	case "PRICE_FEED::COMPOSITE":
+		return V3_COMPOSITE_ORACLE
+	case "PRICE_FEED::CURVE_CRYPTO":
+		return V3_CURVE_CRYPTO_ORACLE
+	case "PRICE_FEED::CURVE_STABLE":
+		return V3_CURVE_3LP_ORACLE //
+	case "PRICE_FEED::CURVE_USD":
+		return V3_CURVE_USD_ORACLE
+	case "PRICE_FEED::ERC4626":
+		return V3_ERC4626_VAULT_ORACLE
+	case "PRICE_FEED::EXTERNAL":
+		return V3_EXTERNAL
+	case "PRICE_FEED::MELLOW_LRT":
+		return V3_MELLOW_LRT_ORACLE
+	case "PRICE_FEED::PENDLE_PT_TWAP":
+		return V3_PENDLE_PT_TWAP_ORACLE
+	case "PRICE_FEED::PYTH":
+		return V3_PYTH_ORACLE
+	case "PRICE_FEED::REDSTONE":
+		return V3_REDSTONE_ORACLE
+	case "PRICE_FEED::WSTETH":
+		return V3_WSTETH_ORACLE
+	case "PRICE_FEED::YEARN":
+		return V3_YEARN_ORACLE
+	case "PRICE_FEED::ZERO":
+		return V3_ZERO_ORACLE
+	}
+	log.Fatal("")
+	return 10000
+}

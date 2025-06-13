@@ -25,20 +25,30 @@ type Node struct {
 
 var _forkBlock int64
 
+func urlIsAnvil(url string) bool {
+	return strings.Contains(url, "anvil.gearbox.foundation") || strings.Contains(url, "localhost")
+}
+
 // if url is anvil and the request to get fork block is successful, it returns the fork block number
 func getForkBlock(url string) (block int64) {
 	if _forkBlock != 0 {
 		return _forkBlock
 	}
-	if strings.Contains(url, "anvil.gearbox.foundation") || strings.Contains(url, "localhost") { // fork or anvil
+	if urlIsAnvil(url) { // fork or anvil
 		body := utils.GetJsonRPCRequestBody("anvil_nodeInfo")
 		data, err := utils.JsonRPCMakeRequest(url, body)
 		if err != nil {
 			return
 		}
-		block = int64(data.(map[string]interface{})["forkConfig"].(map[string]interface{})["forkBlockNumber"].(float64))
-		_forkBlock = block
-		return
+		cfg := data.(map[string]interface{})["forkConfig"].(map[string]interface{})
+		if anvilUrl := cfg["forkUrl"].(string); urlIsAnvil(anvilUrl) {
+			log.Info("checking", anvilUrl)
+			return getForkBlock(anvilUrl)
+		} else {
+			_forkBlock = int64(cfg["forkBlockNumber"].(float64))
+			log.Info("Anvil fork block", _forkBlock, "from", url)
+			return _forkBlock
+		}
 	}
 	return math.MaxInt64
 }
@@ -85,7 +95,11 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 	}
 	if splitBlock <= toBlock {
 		txlogs, err := lf.getLogs(splitBlock, toBlock, addrs, topics)
-		log.Infof("GetLogs: fromBlock %d, toBlock %d from rpc. %d", splitBlock, toBlock, len(txlogs))
+		if splitBlock != fromBlock {
+			log.Infof("GetLogs: fromBlock %d, toBlock %d from rpc. %d", splitBlock, toBlock, len(txlogs))
+		} else {
+			log.Debugf("GetLogs: fromBlock %d, toBlock %d from rpc. %d", splitBlock, toBlock, len(txlogs))
+		}
 		if err != nil {
 			return nil, err
 		}
