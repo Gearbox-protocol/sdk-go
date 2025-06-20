@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/hex"
+	"fmt"
 	"math"
 	"math/big"
 	"strings"
@@ -24,6 +25,11 @@ func toHex(calls []multicall.Multicall2Call) []string {
 
 // make multicall
 func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) []multicall.Multicall2Result {
+	results, err := MakeMultiCallError(client, blockNum, successRequired, calls, params...)
+	log.CheckFatal(err)
+	return results
+}
+func MakeMultiCallError(client ClientI, blockNum int64, successRequired bool, calls []multicall.Multicall2Call, params ...int) ([]multicall.Multicall2Result, error) {
 	contract := getMultiCallContract(client)
 	opts := &bind.CallOpts{}
 	if blockNum != 0 {
@@ -50,7 +56,7 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 		}
 		line := log.DetectFuncAtStackN(2)
 		jobCalls := calls[callsInd:end]
-		sch.AddJob(func() []multicall.Multicall2Result {
+		sch.AddJob(func() ([]multicall.Multicall2Result, error) {
 			tmpResult, err := contract.TryAggregate(opts, successRequired, jobCalls)
 			if err != nil {
 				if strings.Contains(err.Error(), "OutOfGas") || // alchemy
@@ -60,14 +66,17 @@ func MakeMultiCall(client ClientI, blockNum int64, successRequired bool, calls [
 					strings.Contains(err.Error(), "intrinsic gas too low") || // arbitrum
 					strings.Contains(err.Error(), "timeout awaiting response headers") || // anvil
 					strings.Contains(err.Error(), "we can't execute this request") { // ankr
-					tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize/2)
+					tmpResult, err = MakeMultiCallError(client, blockNum, successRequired, jobCalls, defaultSize/2)
+					if err != nil {
+						return nil, err
+					}
 					// } else if strings.Contains(err.Error(), "Unknown block number") { // on alchemy in the trading-price
 					// 	tmpResult = MakeMultiCall(client, blockNum, successRequired, jobCalls, defaultSize)
 				} else {
-					log.Fatal(line, err, blockNum, toHex(calls))
+					return nil, fmt.Errorf("%s %s %d %s", line, err, blockNum, toHex(calls))
 				}
 			}
-			return tmpResult
+			return tmpResult, nil
 		})
 		callsInd += defaultSize
 	}
@@ -117,29 +126,33 @@ func NewMulticallScheduler(num int) MulticallScheduler {
 
 type MulticallJob struct {
 	jobId  int
-	result []multicall.Multicall2Result
+	result ([]multicall.Multicall2Result)
+	err    error
 }
 
-func (sch *MulticallScheduler) AddJob(fn func() []multicall.Multicall2Result) {
+func (sch *MulticallScheduler) AddJob(fn func() ([]multicall.Multicall2Result, error)) {
 	sch.curJobId++
 	jobId := sch.curJobId
 	sch.wg.Add(1)
 	go func() {
-		results := fn()
-		sch.ch <- MulticallJob{jobId: jobId, result: results}
+		results, err := fn()
+		sch.ch <- MulticallJob{jobId: jobId, result: results, err: err}
 		sch.wg.Done()
 	}()
 }
 
-func (sch MulticallScheduler) GetResult() (ans []multicall.Multicall2Result) {
+func (sch MulticallScheduler) GetResult() (ans []multicall.Multicall2Result, err error) {
 	sch.wg.Wait()
 	close(sch.ch)
-	jobs := map[int][]multicall.Multicall2Result{}
+	jobs := map[int]MulticallJob{}
 	for job := range sch.ch {
-		jobs[job.jobId] = job.result
+		jobs[job.jobId] = job
 	}
 	for i := 1; i <= sch.num; i++ {
-		ans = append(ans, jobs[i]...)
+		ans = append(ans, jobs[i].result...)
+		if jobs[i].err != nil {
+			return nil, fmt.Errorf("multicall job %d failed: %w", i, jobs[i].err)
+		}
 	}
 	return
 }
