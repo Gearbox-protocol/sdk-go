@@ -172,6 +172,9 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"AAVE_V3_LENDING_POOL": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 			"waEthLidowstETH":      "0x775F661b0bD1739349b9A2A3EF60be277c5d2D29",
 			"crvUSD":               "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+			//
+			"stkcvxRLUSDUSDC": "0x444FA0ffb033265591895b66c81c2e5fF606E097",
+			"beraSTONE":       "0x97Ad75064b20fb2B2447feD4fa953bF7F007a706",
 		},
 		log.ARBITRUM: {
 			// "WETH": common.HexToAddress("0x82af49447d8a07e3bd95bd0d56f35241523fbab1"),
