@@ -114,3 +114,12 @@ func GetBaseChainId(client ClientI) int64 {
 	log.CheckFatal(err)
 	return chainId.Int64()
 }
+
+func GetLatestBlockNumber(client ClientI) int64 {
+	latestBlockNum, err := client.BlockNumber(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+	blockNumToReturn := int64(latestBlockNum)
+	return blockNumToReturn
+}

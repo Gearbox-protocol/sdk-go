@@ -1,9 +1,12 @@
 package schemas
 
 import (
+	"math"
+	"strings"
 	"time"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/ethclient"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -48,9 +51,6 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 	}
 	if discoveredAt == -1 {
 		discoveredAt = s[address]
-	}
-	if discoveredAt == 0 {
-		log.Fatal("discoveredAt is not set", address)
 	}
 	con.FirstLogAt = con.DiscoverFirstLog(discoveredAt)
 	if con.FirstLogAt == 0 && core.GetChainId(client) != 1337 { //don't updateif testnet
@@ -100,11 +100,23 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// if err != nil {
 	// 	log.Fatal("Cant get last block at discovery " + err.Error())
 	// }
+	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 {
+		log.Fatal("discoveredAt is not set", c.Address)
+	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
 		block, err := core.GetEtherscanFirstLog(core.GetBaseChainId(c.Client), common.HexToAddress(c.Address))
 		if err != nil {
-			log.Warnf("DiscoverFirstLog: GetEtherscanFirstLog for %s error: %s. Set to discoveredAt %d", c.Address, err, discoveredAt)
-			block = utils.Max(discoveredAt-100_000, 1)
+			if strings.Contains(err.Error(), "failed to get first log block num") {
+				forkBlock := core.GetForkBlock(c.Client.(*ethclient.Client).GetUrl()) // update fork block
+				if forkBlock < math.MaxInt64 {
+					FirstLogAt, err := c.findFirstLogBound(forkBlock, core.GetLatestBlockNumber(c.Client))
+					if err != nil {
+						log.Fatal(c.Address, err.Error())
+					}
+					return FirstLogAt
+				}
+				log.Fatal(c.Address, "failed to get first log block num from etherscan", err.Error(), forkBlock)
+			}
 		}
 		return block
 	}

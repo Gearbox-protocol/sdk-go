@@ -23,36 +23,6 @@ type Node struct {
 	chainId int64
 }
 
-var _forkBlock int64
-
-func urlIsAnvil(url string) bool {
-	return strings.Contains(url, "anvil.gearbox.foundation") || strings.Contains(url, "localhost")
-}
-
-// if url is anvil and the request to get fork block is successful, it returns the fork block number
-func getForkBlock(url string) (block int64) {
-	if _forkBlock != 0 {
-		return _forkBlock
-	}
-	if urlIsAnvil(url) { // fork or anvil
-		body := utils.GetJsonRPCRequestBody("anvil_nodeInfo")
-		data, err := utils.JsonRPCMakeRequest(url, body)
-		if err != nil {
-			return
-		}
-		cfg := data.(map[string]interface{})["forkConfig"].(map[string]interface{})
-		if anvilUrl := cfg["forkUrl"].(string); urlIsAnvil(anvilUrl) {
-			log.Info("checking", anvilUrl)
-			return getForkBlock(anvilUrl)
-		} else {
-			_forkBlock = int64(cfg["forkBlockNumber"].(float64))
-			log.Info("Anvil fork block", _forkBlock, "from", url)
-			return _forkBlock
-		}
-	}
-	return math.MaxInt64
-}
-
 // fromBlock != 0, rpc is called from fromBlock to toBlock
 // fromBlock =0, and forkBlock != 0, rpc is called from forkBlock+1 to toBlock and etherscan is used for fromBlock to forkBlock
 // fromBlock =0 and forkBlock = math.MaxInt64, rpc is not called and etherscan is used for fromBlock to toBlock
@@ -79,7 +49,7 @@ func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 		//
 
 		if len(etherscanOnly) > 0 && etherscanOnly[0] {
-			forkBlock := getForkBlock(lf.Client.(*ethclient.Client).GetUrl())
+			forkBlock := core.GetForkBlock(lf.Client.(*ethclient.Client).GetUrl())
 			// fork block
 			forkBlock = utils.Min(forkBlock-1, toBlock) // if forkblock is less than toBlock use it for etherescan
 			splitBlock = forkBlock + 1                  // and set splitBlock to forkBlock + 1
@@ -143,12 +113,7 @@ func (lf Node) getLogs(fromBlock, toBlock int64, addrs []common.Address, topics 
 
 func (lf *Node) GetLatestBlockNumber() int64 {
 	lf.setChainId()
-	latestBlockNum, err := lf.Client.BlockNumber(context.TODO())
-	if err != nil {
-		log.Fatal(err)
-	}
-	blockNumToReturn := int64(latestBlockNum)
-	return blockNumToReturn
+	return core.GetLatestBlockNumber(lf.Client)
 }
 
 func (lf *Node) GetLatestFinalizedBlock(skipBlocks int64) int64 {
