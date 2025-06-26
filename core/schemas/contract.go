@@ -115,7 +115,8 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 					}
 					return FirstLogAt
 				}
-				log.Fatal(c.Address, "failed to get first log block num from etherscan", err.Error(), forkBlock)
+			} else {
+				log.Fatal(c.Address, "logs from etherscan, but still failed", err.Error())
 			}
 		}
 		return block
