@@ -184,6 +184,7 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 			{Address: "0xcF64698AFF7E5f27A11dff868AF228653ba53be0", Version: 1},
 			{Address: "0x9ea7b04da02a5373317d745c1571c84aad03321d", Version: 300},
 			{Address: "0xBaB2014Dd88223E168bA06911c06df638311a097", Version: 310},
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310}, // for wsteth 0xc168343C791D56
 		}
 	case log.ARBITRUM:
 		addrProviders = []addrProviderV{
@@ -225,6 +226,7 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 			common.HexToAddress("0x354fe9f450F60b8547f88BE042E4A45b46128a06"),
 			common.HexToAddress("0x4d427D418342d8CE89a7634c3a402851978B680A"), // 30)0
 			common.HexToAddress("0x3b56538833fc02f4f0e75609390f26ded0c32e42"), // 310 mc for tbtc
+			common.HexToAddress("0xc168343C791D56dD1Da4b4B8B0cc1C1EC1A16E6B"), // for wseth
 		}...)
 	case log.ARBITRUM:
 		markets = append(markets, []common.Address{
