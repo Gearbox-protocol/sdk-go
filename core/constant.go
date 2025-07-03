@@ -49,6 +49,8 @@ func blockPerMin(chainId int64) int64 {
 		return 4 * 60
 	case log.BNB:
 		return 30 // per min
+	case log.ETHERLINK:
+		return 20 // per variable rate 500 ms to 6 s
 	default:
 		// TODO: NEWNETWORK
 		log.Fatalf("unsupported chainId %d", chainId)
@@ -69,6 +71,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), DrpcError) ||
 			strings.Contains(err.Error(), DrpcFreeTierError) ||
 			strings.Contains(err.Error(), RequestTimeoutDrpcFreeTierError) ||
+			strings.Contains(err.Error(), "Cannot request logs over more than") ||
 			strings.Contains(err.Error(), InfuraError) ||
 			strings.Contains(err.Error(), BlockRangeChainStackError) ||
 			(strings.Contains(err.Error(), "we can't execute this request") && GetChainId(client) == 42161) || // for arbitrum get logs for account Manager

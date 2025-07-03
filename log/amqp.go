@@ -57,6 +57,12 @@ func send(message string, alertType LEVEL, important ...bool) {
 	if _logConfig.ROUTE_KEY == ANVIL {
 		_logConfig.ROUTE_KEY = "GOERLI"
 	}
+	if _logConfig.ROUTE_KEY == ETHERLINK {
+		_logConfig.ROUTE_KEY = "BNB"
+	}
+	if _logConfig.ROUTE_KEY == ETHERLINKTEST {
+		_logConfig.ROUTE_KEY = "BNBTEST"
+	}
 	for i := 0; i < 2; i++ {
 		err := _amqpChannel.Publish(
 			_logConfig.Exchange,          // exchange

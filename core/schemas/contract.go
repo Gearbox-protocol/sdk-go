@@ -33,12 +33,13 @@ type Contract struct {
 	// VersionABI   abi.ABI      `gorm:"-" json:"-"`
 }
 
-var s = map[string]int64{
-	"0xcF64698AFF7E5f27A11dff868AF228653ba53be0": 13810899,  // mainnet
-	"0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af": 184650310, // arbitrum
-	"0x3761ca4bfacfcffc1b8034e69f19116dd6756726": 118410666, // optimism
-	"0x4b27b296273B72d7c7bfee1ACE93DC081467C41B": 9779380,   //s onic
-	"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804,  // bnb
+var s = map[int64]map[string]int64{
+	1:     {"0xcF64698AFF7E5f27A11dff868AF228653ba53be0": 13810899},  // mainnet
+	42161: {"0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af": 184650310}, // arbitrum
+	10:    {"0x3761ca4bfacfcffc1b8034e69f19116dd6756726": 118410666}, // optimism
+	146:   {"0x4b27b296273B72d7c7bfee1ACE93DC081467C41B": 9779380},   // sonic
+	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
+	42793: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 16672969},  // etherlink
 }
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
@@ -50,7 +51,7 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 		Client:       client,
 	}
 	if discoveredAt == -1 {
-		discoveredAt = s[address]
+		discoveredAt = s[core.GetBaseChainId(client)][address]
 	}
 	con.FirstLogAt = con.DiscoverFirstLog(discoveredAt)
 	if con.FirstLogAt == 0 && core.GetChainId(client) != 1337 { //don't updateif testnet
@@ -100,7 +101,11 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// if err != nil {
 	// 	log.Fatal("Cant get last block at discovery " + err.Error())
 	// }
-	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 {
+	if core.GetBaseChainId(c.Client) == 42793 && discoveredAt == 0 && c.ContractName == "ContractRegister" {
+		discoveredAt = core.GetLatestBlockNumber(c.Client)
+
+	}
+	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 { // on etherlink there is no etherscan api
 		log.Fatal("discoveredAt is not set", c.Address)
 	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {

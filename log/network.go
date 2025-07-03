@@ -56,6 +56,11 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://bscscan.com/",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
+	case 42793, 7884: // etherlink
+		return NetworkUI{
+			ExplorerUrl: "https://explorer.etherlink.com/",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	}
 	return NetworkUI{}
 }
@@ -66,8 +71,8 @@ var KOVAN NETWORK = "KOVAN"
 var GOERLI NETWORK = "GOERLI"
 var MAINNET NETWORK = "MAINNET"
 var TEST NETWORK = "TEST"
-var ANVIL NETWORK = "ANVIL"
 var ARBITRUM NETWORK = "ARBITRUM"
+var ANVIL NETWORK = "ANVIL"
 var ARBTEST NETWORK = "ARBTEST"
 var OPTIMISM NETWORK = "OPTIMISM"
 var OPTTEST NETWORK = "OPTTEST"
@@ -75,6 +80,8 @@ var SONIC NETWORK = "SONIC"
 var SONICTEST NETWORK = "SONICTEST"
 var BNB NETWORK = "BNB"
 var BNBTEST NETWORK = "BNBTEST"
+var ETHERLINK NETWORK = "ETHERLINK"
+var ETHERLINKTEST NETWORK = "ETHERLINKTEST"
 
 var testnet = map[int64]struct {
 	net  NETWORK
@@ -90,8 +97,10 @@ var testnet = map[int64]struct {
 	// TODO: NEWNETWORK
 
 	7883: {BNBTEST, 56},
+	7884: {ETHERLINKTEST, 5427936},
+	// etherlink testnet
 }
-var basenet = map[int64]struct {
+var Basenet = map[int64]struct {
 	net  NETWORK
 	test int64
 }{
@@ -101,14 +110,15 @@ var basenet = map[int64]struct {
 	146:   {SONIC, 7882},
 	// TODO: NEWNETWORK
 
-	56: {BNB, 7883},
+	56:    {BNB, 7883},
+	42793: {ETHERLINK, 7884},
 }
 
 func GetNetworkName(chainId int64) (name NETWORK) {
 	if name, ok := testnet[chainId]; ok {
 		return name.net
 	}
-	if name, ok := basenet[chainId]; ok {
+	if name, ok := Basenet[chainId]; ok {
 		return name.net
 	}
 	Fatal("network not found", chainId)
@@ -120,14 +130,14 @@ func GetBaseNet(chainId int64) NETWORK {
 		chainId = name.base
 	}
 	// get for base
-	if name, ok := basenet[chainId]; ok {
+	if name, ok := Basenet[chainId]; ok {
 		return name.net
 	}
 	Fatal("network not found", chainId)
 	return ""
 }
 func GetTestNet(chainId int64) NETWORK {
-	if name, ok := basenet[chainId]; ok {
+	if name, ok := Basenet[chainId]; ok {
 		chainId = name.test
 	}
 	// get for base
@@ -143,7 +153,7 @@ func GetNetworkToChainId(netname NETWORK) int64 {
 			return id
 		}
 	}
-	for id, net := range basenet {
+	for id, net := range Basenet {
 		if net.net == netname {
 			return id
 		}

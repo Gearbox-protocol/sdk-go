@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/ethereum/go-ethereum"
@@ -113,6 +114,9 @@ func GetBaseChainId(client ClientI) int64 {
 	}).BaseChainID(context.TODO())
 	log.CheckFatal(err)
 	return chainId.Int64()
+}
+func IsTestnet(c ClientI) bool {
+	return strings.Contains(c.(interface{ GetUrl() string }).GetUrl(), "anvil.gearbox.foundation")
 }
 
 func GetLatestBlockNumber(client ClientI) int64 {

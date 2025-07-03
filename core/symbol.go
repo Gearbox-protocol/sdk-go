@@ -220,6 +220,14 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"USDT":                 "0x55d398326f99059fF775485246999027B3197955",
 			"AAVE_V3_LENDING_POOL": "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
 		},
+		log.ETHERLINK: {
+			"USDT":   "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
+			"mTBILL": "0xdd629e5241cbc5919847783e6c96b2de4754e438",
+			"WBTC":   "0xbfc94cd2b1e55999cfc7347a9313e88702b83d0f",
+			"WETH":   "0xfc24f770f94edbca6d6f885e12d4317320bcb401",
+			"USDC":   "0x796Ea11Fa2dD751eD01b53C372fFDB4AAa8f00F9",
+			"WXTZ":   "0xc9b53ab2679f573e480d01e0f49e2b5cfb7a3eab",
+		},
 	}
 	network := log.GetBaseNet(chainId)
 	if _, ok := tokens[network]; !ok {

@@ -40,6 +40,9 @@ func NewTestClient() *TestClient {
 		state:  NewStateManager(),
 	}
 }
+func (t *TestClient) GetUrl() string {
+	return "anvil.gearbox.foundation"
+}
 
 func (t *TestClient) StorageAt(tx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error) {
 	return nil, nil
