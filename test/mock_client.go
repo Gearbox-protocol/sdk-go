@@ -41,7 +41,7 @@ func NewTestClient() *TestClient {
 	}
 }
 func (t *TestClient) GetUrl() string {
-	return "anvil.gearbox.foundation"
+	return "test.gearbox.foundation" // TODO
 }
 
 func (t *TestClient) StorageAt(tx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error) {
@@ -64,9 +64,6 @@ func (t *TestClient) BlockNumber(ctx context.Context) (uint64, error) {
 		return 1, nil
 	}
 	return uint64(t.blockNums[len(t.blockNums)-1]), nil
-}
-func (c *TestClient) GetUrl() string {
-	return ""
 }
 func topic(v string) common.Hash {
 	return crypto.Keccak256Hash([]byte(v))

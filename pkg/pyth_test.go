@@ -1,0 +1,26 @@
+package pkg
+
+import "testing"
+
+func TestPyth(t *testing.T) {
+	id := "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a"
+	data, err := GetPrice(id, 1751628726)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if data.Price.String() != "99995525" {
+		t.Fatalf("expected price 99995525, got %s", data.Price.String())
+	}
+	if data.F != .99995525 {
+		t.Fatalf("expected float 0.99995525, got %f", data.F)
+	}
+	if data.Id != id {
+		t.Fatalf("expected id, got %s", data.Id)
+	}
+	if data.PublishTime == 0 {
+		t.Fatalf("expected publish time, got %d", data.PublishTime)
+	}
+	if len(data.Data) == 1472 {
+		t.Fatal("expected data length 1472, got", len(data.Data))
+	}
+}
