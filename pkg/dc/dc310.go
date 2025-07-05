@@ -147,6 +147,9 @@ func Convertv310BalWithoutQuotaIndex(enabledMask *big.Int, balances []creditAcco
 }
 
 func Convert(x *globalAccountCompressor.CreditAccountData) creditAccountCompressor.CreditAccountData {
+	if x.HealthFactor.Cmp(utils.GetExpInt(14)) > 0 { // new scale is 18
+		x.HealthFactor = utils.GetInt64(x.HealthFactor, 14)
+	}
 	return creditAccountCompressor.CreditAccountData{
 		CreditAccount:     x.CreditAccount,
 		CreditManager:     x.CreditManager,
