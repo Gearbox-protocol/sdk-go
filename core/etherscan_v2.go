@@ -202,17 +202,39 @@ func getEtherscanLogs(chainId int64, addr common.Address, toBlock int64) ([]type
 		}
 	}
 }
+
+func checkEtherscanToRepeat(err error) bool {
+	if err == nil {
+		return false
+	}
+	msgs := []string{
+		"Max calls per sec rate limit reached",
+		"failed to read etherscan response",
+		"timeout or server too busy",
+		"connection reset by peer",
+	}
+	for _, msg := range msgs {
+		if strings.Contains(err.Error(), msg) {
+			log.Info("Debug: retrying due to", err)
+			time.Sleep(20 * time.Second) // wait for 20 seconds before retrying
+			return true
+		}
+	}
+	return false
+}
 func etherscanResult(url []string, addr ...common.Address) (interface{}, error) {
 	for i := 0; i < 10; i++ {
 		result, err := etherscanResultInner(url, addr...)
-		if err != nil && (strings.Contains(err.Error(), "Max calls per sec rate limit reached") || strings.Contains(err.Error(), "timeout or server too busy")) {
-			log.Debug("retrying due to", err)
-			time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
+		if checkEtherscanToRepeat(err) {
 			continue
 		}
+		// if err != nil && (strings.Contains(err.Error(), "Max calls per sec rate limit reached") || strings.Contains(err.Error(), "timeout or server too busy")) {
+		// 	time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
+		// 	continue
+		// }
 		return result, err
 	}
-	return nil, fmt.Errorf("failed to get etherscan result after 3 attempts for %v", addr)
+	return nil, fmt.Errorf("failed to get etherscan result after 10 attempts for %v", addr)
 }
 func etherscanResultInner(urls []string, addr ...common.Address) (interface{}, error) {
 	// range over urls, try to get the result
@@ -233,14 +255,14 @@ func etherscanResultInner(urls []string, addr ...common.Address) (interface{}, e
 
 	err = utils.ReadJsonReaderAndSetInterface(buffer, msg)
 	if err != nil {
-		return 0, fmt.Errorf("failed to read etherscan response: %w, %s", err, str)
+		return 0, fmt.Errorf("etherscan json parsing failed: %w, %s", err, str)
 	}
 	if msg.Status != "1" {
 		if msg.Message == "No records found" && fmt.Sprintf("%v", msg.Result) == "[]" {
 			// no logs found, this is ok
 			return msg.Result, nil
 		}
-		return 0, fmt.Errorf("%v failed to get response from etherscan: %s, status: %s.Result: %v", addr, msg.Message, msg.Status, msg.Result)
+		return 0, fmt.Errorf("%v Response failed: %s, status: %s.Result: %v", addr, msg.Message, msg.Status, msg.Result)
 	}
 	return msg.Result, nil
 
