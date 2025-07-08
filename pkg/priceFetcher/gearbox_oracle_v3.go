@@ -45,6 +45,7 @@ func (pOracle GearboxOraclev3) HasReserveFeed(token string) bool {
 	return len(data) > 0
 }
 
+// only redstone oracles
 func (pOracle GearboxOraclev3) GetPullOracles() (ans []core.RedStonePF) {
 	for _, feed := range pOracle.feedToInfo {
 		if feed.Type == core.V3_REDSTONE_ORACLE {
@@ -91,9 +92,9 @@ type FeedInfo struct {
 	PF0           common.Address
 	PF1           common.Address
 	DecimalsPF0   int8
-	FeedToken     common.Address
-	SignThreshold int
-	DataId        string
+	FeedToken     common.Address // for redstone
+	SignThreshold int            // for redstone
+	DataId        string         // for redstone
 }
 
 func (info FeedInfo) GetRedstonePF() core.RedStonePF {
@@ -135,7 +136,7 @@ func RedstoneDetails(feed common.Address, client core.ClientI) (feedToken common
 	}()
 	return
 }
-func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI) {
+func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum int64, client core.ClientI, pythtoken common.Address) {
 	// if val, ok := pOracle.feedToInfo[feed]; ok {
 	// 	if val.Type == core.V3_REDSTONE_ORACLE && val.FeedToken != token && token != core.NULL_ADDR { // same redstone feed can be added for multiple tokens, use the latest one.
 	// 		val.FeedToken = token
@@ -149,88 +150,94 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 		}
 		return common.BytesToAddress(priceFeed0)
 	}
-	typeData, err := core.CallFuncGetSingleValue(client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
-	if err == nil {
-		pfType := int(new(big.Int).SetBytes(typeData).Int64())
-		obj := &FeedInfo{
-			typeAndBlock: typeAndBlock{
-				Type:     pfType,
-				BlockNum: blockNum,
-				Feed:     feed,
-			},
-		}
-		if pfType == core.V3_COMPOSITE_ORACLE {
-			//
-			pf0 := fn(feed, "385aee1b") // priceFeed0
-			pf1 := fn(feed, "ab0ca0e1") // priceFeed1
-			obj.PF0 = pf0
-			obj.PF1 = pf1
-			obj.DecimalsPF0 = func() int8 {
-				decimals, err := core.CallFuncGetSingleValue(client, "313ce567", pf0, 0, []byte{}) // decimals
-				log.CheckFatal(err)
-				return int8(new(big.Int).SetBytes(decimals).Int64())
-			}()
-			//
-			pf0Type, err := core.CallFuncGetSingleValue(client, "3fd0875f", pf0, 0, []byte{})
-			if err == nil {
-				if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
-					_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)
-					//
-					obj.SignThreshold = signThreshold
-					obj.DataId = dataId
-					obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
-					obj.FeedToken = pOracle.feedToTicker[pf0]
-					if pf0.Hex() == "0x14497e822B70554537dB9950126461C23dC4f237" {
-						obj.FeedToken = common.HexToAddress("0x07299E4E806e4253727084c0493fFDf6fB2dBa3D")
-					}
-					//
-					// SONIC_TEST
-					if obj.FeedToken == core.NULL_ADDR && core.GetBaseChainId(pOracle.Node.Client) == 146 {
-						obj.FeedToken = common.HexToAddress("0x56a5b6267d6b8de8ade88455b9342787e49e2f1a") // stS ticker token on sonic
-					}
-					if obj.FeedToken == core.NULL_ADDR {
-						log.Fatalf("pf0(%s) for composite %s dones't have known ticker token", pf0, feed)
-					}
+	//
+	pfType, err := core.GetGearboxPfType(client, feed.Hex(), "") // token is for logging purposes only.
+	log.CheckFatal(err)
+	obj := &FeedInfo{
+		typeAndBlock: typeAndBlock{
+			Type:     int(pfType),
+			BlockNum: blockNum,
+			Feed:     feed,
+		},
+	}
+	// typeData, err := core.CallFuncGetSingleValue(client, "3fd0875f", feed, 0, []byte{}) // priceFeedType
+	if pfType == core.V3_COMPOSITE_ORACLE {
+		//
+		pf0 := fn(feed, "385aee1b") // priceFeed0
+		pf1 := fn(feed, "ab0ca0e1") // priceFeed1
+		obj.PF0 = pf0
+		obj.PF1 = pf1
+		obj.DecimalsPF0 = func() int8 {
+			decimals, err := core.CallFuncGetSingleValue(client, "313ce567", pf0, 0, []byte{}) // decimals
+			log.CheckFatal(err)
+			return int8(new(big.Int).SetBytes(decimals).Int64())
+		}()
+		//
+		pf0Type, err := core.CallFuncGetSingleValue(client, "3fd0875f", pf0, 0, []byte{})
+		if err == nil {
+			if new(big.Int).SetBytes(pf0Type).Int64() == core.V3_REDSTONE_ORACLE {
+				_, signThreshold, dataId := RedstoneDetails(pf0, pOracle.Node.Client)
+				//
+				obj.SignThreshold = signThreshold
+				obj.DataId = dataId
+				obj.Type = core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE
+				obj.FeedToken = pOracle.feedToTicker[pf0]
+				if pf0.Hex() == "0x14497e822B70554537dB9950126461C23dC4f237" {
+					obj.FeedToken = common.HexToAddress("0x07299E4E806e4253727084c0493fFDf6fB2dBa3D")
+				}
+				//
+				// SONIC_TEST
+				if obj.FeedToken == core.NULL_ADDR && core.GetBaseChainId(pOracle.Node.Client) == 146 {
+					obj.FeedToken = common.HexToAddress("0x56a5b6267d6b8de8ade88455b9342787e49e2f1a") // stS ticker token on sonic
+				}
+				if obj.FeedToken == core.NULL_ADDR {
+					log.Fatalf("pf0(%s) for composite %s dones't have known ticker token", pf0, feed)
 				}
 			}
-		} else if pfType == core.V3_PENDLE_PT_TWAP_ORACLE {
-			obj.PF0 = fn(feed, "741bef1a") // priceFeed
-			pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client)
-			if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
-				obj.Type = core.V3_PULL_UNDERLYING_ORACLE
-			}
-		} else if pfType == core.V3_ERC4626_VAULT_ORACLE { // for stkUSDS on mainnet.
-			obj.PF0 = fn(feed, "741bef1a") // priceFeed
-			// lpToken := fn(feed, "5fcbd285") // lpToken
-			pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client)
-			if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
-				obj.Type = core.V3_PULL_UNDERLYING_ORACLE
-			}
-		} else if pfType == core.V3_REDSTONE_ORACLE { // onChainToken is not directly used as the onChainToken returned for sUSDS (redstoneToken feed) is DAI,but should be sUSDS. bcz for DAI the feed in priceorcle is not the sUSDS redstone feed.
-			onChainToken, signThreshold, dataId := RedstoneDetails(feed, pOracle.Node.Client)
-			// if token == core.NULL_ADDR {
-			// 	token = onChainToken
-			// }
-			//
-			obj.FeedToken = onChainToken
-			obj.SignThreshold = signThreshold
-			obj.DataId = dataId
-			//
 		}
-		if obj.DataId == "beraETH_FUNDAMENTAL" {
-			obj.DataId = "beraSTONE_FUNDAMENTAL"
+	} else if pfType == core.V3_PENDLE_PT_TWAP_ORACLE {
+		obj.PF0 = fn(feed, "741bef1a") // priceFeed
+		pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client, core.NULL_ADDR)
+		if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
+			obj.Type = core.V3_PULL_UNDERLYING_ORACLE
 		}
-		pOracle.feedToInfo[feed] = obj
-	} else {
-		obj := &FeedInfo{
+	} else if pfType == core.V3_ERC4626_VAULT_ORACLE { // for stkUSDS on mainnet.
+		obj.PF0 = fn(feed, "741bef1a") // priceFeed
+		// lpToken := fn(feed, "5fcbd285") // lpToken
+		pOracle.GetPF01AndFeedType(obj.PF0, blockNum, client, core.NULL_ADDR)
+		if utils.Contains([]int{core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE, core.V3_REDSTONE_ORACLE}, pOracle.GetFeedInfo(obj.PF0).Type) {
+			obj.Type = core.V3_PULL_UNDERLYING_ORACLE
+		}
+	} else if pfType == core.V3_REDSTONE_ORACLE { // onChainToken is not directly used as the onChainToken returned for sUSDS (redstoneToken feed) is DAI,but should be sUSDS. bcz for DAI the feed in priceorcle is not the sUSDS redstone feed.
+		onChainToken, signThreshold, dataId := RedstoneDetails(feed, pOracle.Node.Client)
+		// if token == core.NULL_ADDR {
+		// 	token = onChainToken
+		// }
+		//
+		obj.FeedToken = onChainToken
+		obj.SignThreshold = signThreshold
+		obj.DataId = dataId
+		//
+	} else if pfType == core.V3_PYTH_ORACLE { // external oracle
+		data, err := core.CallFuncGetSingleValue(client, "1999bb9e", feed, blockNum, nil) // dataId
+		log.CheckFatal(err)
+		obj.DataId = common.BytesToHash(data).Hex()
+		obj.FeedToken = pythtoken
+	} else if pfType == core.V3_CHAINLINK_ORACLE { // chainlink oracle
+		obj = &FeedInfo{
 			typeAndBlock: typeAndBlock{
 				Type:     core.V3_CHAINLINK_ORACLE,
 				BlockNum: blockNum,
 				Feed:     feed,
 			},
 		}
-		pOracle.feedToInfo[feed] = obj
+	} else {
+		return
 	}
+	if obj.DataId == "beraETH_FUNDAMENTAL" {
+		obj.DataId = "beraSTONE_FUNDAMENTAL"
+	}
+	pOracle.feedToInfo[feed] = obj
 }
 
 func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Address, token common.Address, reserve bool) {
@@ -238,7 +245,7 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
 	}
 	// pOracle.GetPF01AndFeedType(token, feed, blockNum, pOracle.Node.Client)
-	pOracle.GetPF01AndFeedType(feed, blockNum, pOracle.Node.Client)
+	pOracle.GetPF01AndFeedType(feed, blockNum, pOracle.Node.Client, token)
 	//
 	info := pOracle.feedToInfo[feed]
 	pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], info.typeAndBlock)
@@ -327,7 +334,7 @@ func (pOracle *GearboxOraclev3) GetFeedInfo(feed common.Address) *FeedInfo {
 
 func (pOracle *GearboxOraclev3) GetCalls(ts int64) []multicall.Multicall2Call {
 	poABI := core.GetAbi("YearnPriceFeed")
-	data, err := poABI.Pack("latestRoundData")
+	latestRunDataBytes, err := poABI.Pack("latestRoundData")
 	log.CheckFatal(err)
 	//
 	calls := make([]multicall.Multicall2Call, 0, len(pOracle.tokenToFeed))
@@ -338,10 +345,9 @@ func (pOracle *GearboxOraclev3) GetCalls(ts int64) []multicall.Multicall2Call {
 	for token, feed := range pOracle.tokenToFeed {
 		//
 		feedInfo := pOracle.GetFeedInfo(feed)
-		if utils.Contains([]int{core.V3_PULL_UNDERLYING_ORACLE, core.V3_REDSTONE_ORACLE, core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE}, feedInfo.Type) {
-			if feedInfo.Type == core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE {
-				continue
-			}
+		//
+		switch feedInfo.Type {
+		case core.V3_PULL_UNDERLYING_ORACLE, core.V3_REDSTONE_ORACLE:
 			if core.V3_PULL_UNDERLYING_ORACLE == feedInfo.Type {
 				feedInfo = pOracle.GetFeedInfo(feedInfo.PF0)
 			}
@@ -365,14 +371,24 @@ func (pOracle *GearboxOraclev3) GetCalls(ts int64) []multicall.Multicall2Call {
 				Target:   target,
 				CallData: data,
 			})
+		case core.V3_BACKEND_COMPOSITE_REDSTONE_ORACLE: // The belief here is that for these composite oracles, the underlying will be some redstone oracle which will already be registered in Gearbox and patched through other data.
+			continue
+		case core.V3_PYTH_ORACLE:
+			dataObj, err := pkg.GetPythPrice(feedInfo.DataId, ts)
+			log.CheckFatal(err)
+			data, err := updateABI.Pack("updatePrice", dataObj.Data)
+			log.CheckFatal(err)
+			pushPrices = append(pushPrices, multicall.Multicall2Call{
+				Target:   feed,
+				CallData: data,
+			})
 		}
 		tokens = append(tokens, token)
 		calls = append(calls, multicall.Multicall2Call{
 			Target:   feed,
-			CallData: data,
+			CallData: latestRunDataBytes,
 		})
 	}
-	_ = data
 	pOracle.tokens = tokens
 	return append(pushPrices, calls...)
 	// return calls
@@ -422,23 +438,30 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 				} else {
 					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbtcPrice), info.DecimalsPF0)
 				}
-			} else if log.SONIC == log.GetBaseNet(core.GetChainId(pOracle.Node.Client)) {
-				if wS := core.GetToken(chainId, "wS"); pOracle.GetFeedForETHBTC("wS", wS) == info.PF1 {
-					wSPrice := prices[wS.Hex()]
-					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wSPrice), info.DecimalsPF0)
-				}
-			} else if log.BNB == log.GetBaseNet(core.GetChainId(pOracle.Node.Client)) {
-				if wbnb := core.GetToken(chainId, "WBNB"); pOracle.GetFeedForETHBTC("WBNB", wbnb) == info.PF1 {
-					wbnbPrice := prices[wbnb.Hex()]
-					prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbnbPrice), info.DecimalsPF0)
-				}
 			} else {
-				log.Warn("composite redstone price feed 1 is not wS/wbtc", token, utils.ToJson(info))
-				prices[token] = new(big.Int)
+				switch log.GetBaseNet(core.GetChainId(pOracle.Node.Client)) {
+				case log.SONIC:
+					if wS := core.GetToken(chainId, "wS"); pOracle.GetFeedForETHBTC("wS", wS) == info.PF1 {
+						wSPrice := prices[wS.Hex()]
+						prices[token] = utils.GetInt64(new(big.Int).Mul(price, wSPrice), info.DecimalsPF0)
+					}
+				case log.ETHERLINK:
+					if WXTZ := core.GetToken(chainId, "WXTZ"); pOracle.GetFeedForETHBTC("WXTZ", WXTZ) == info.PF1 {
+						WXTZPrice := prices[WXTZ.Hex()]
+						prices[token] = utils.GetInt64(new(big.Int).Mul(price, WXTZPrice), info.DecimalsPF0)
+					}
+				case log.BNB:
+					if wbnb := core.GetToken(chainId, "WBNB"); pOracle.GetFeedForETHBTC("WBNB", wbnb) == info.PF1 {
+						wbnbPrice := prices[wbnb.Hex()]
+						prices[token] = utils.GetInt64(new(big.Int).Mul(price, wbnbPrice), info.DecimalsPF0)
+					}
+				default:
+					log.Warn("composite redstone price feed 1 is not wS/weth/wbtc", token, utils.ToJson(info))
+					prices[token] = new(big.Int)
+				}
 			}
 		}
 	}
-	return
 }
 
 func (pOracle *GearboxOraclev3) GetFeedForETHBTC(sym string, token common.Address) common.Address {

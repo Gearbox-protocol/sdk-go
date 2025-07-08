@@ -22,7 +22,7 @@ type PythData struct {
 	PublishTime int64
 }
 
-func GetPrice(ids string, ts ...int64) (*PythData, error) {
+func GetPythPrice(ids string, ts ...int64) (*PythData, error) {
 	if len(ts) > 0 {
 		return getHistoric(ids, ts[0])
 	}

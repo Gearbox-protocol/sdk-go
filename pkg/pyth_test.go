@@ -4,7 +4,7 @@ import "testing"
 
 func TestPyth(t *testing.T) {
 	id := "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a"
-	data, err := GetPrice(id, 1751628726)
+	data, err := GetPythPrice(id, 1751628726)
 	if err != nil {
 		t.Fatal(err)
 	}
