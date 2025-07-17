@@ -228,10 +228,6 @@ func etherscanResult(url []string, addr ...common.Address) (interface{}, error) 
 		if checkEtherscanToRepeat(err) {
 			continue
 		}
-		// if err != nil && (strings.Contains(err.Error(), "Max calls per sec rate limit reached") || strings.Contains(err.Error(), "timeout or server too busy")) {
-		// 	time.Sleep(20 * time.Second) // wait for 5 seconds before retrying
-		// 	continue
-		// }
 		return result, err
 	}
 	return nil, fmt.Errorf("failed to get etherscan result after 10 attempts for %v", addr)

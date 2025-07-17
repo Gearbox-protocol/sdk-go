@@ -246,6 +246,7 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 	case log.BNB:
 		markets = append(markets, []common.Address{
 			common.HexToAddress("0x19037a281025b83fa37e3264b77af523ff87a3a4"),
+			common.HexToAddress("0x92DC4Ee43e9B207e16FbF3fD1a6933563C0A0D35"),
 		}...)
 	}
 	// log.Fatal("Market configurators not supported for chainId", chainId)

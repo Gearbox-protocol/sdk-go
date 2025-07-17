@@ -56,3 +56,13 @@ func (ds *MutexDS[T, K]) Clear() {
 	defer ds.mu.Unlock()
 	ds.m = map[T]K{}
 }
+func (ds *MutexDS[T, K]) Update(key T, fn func(K) K) {
+	ds.mu.Lock()
+	defer ds.mu.Unlock()
+	ds.m[key] = fn(ds.m[key])
+}
+func (ds *MutexDS[T, K]) Read(key T, fn func(K)) {
+	ds.mu.RLock()
+	defer ds.mu.RUnlock()
+	fn(ds.m[key])
+}
