@@ -49,6 +49,15 @@ func setChannel() {
 	_amqpChannel = ch
 }
 
+func _contains(s []NETWORK, e NETWORK) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func send(message string, alertType LEVEL, important ...bool) {
 	if _amqpChannel == nil {
 		return
@@ -57,11 +66,11 @@ func send(message string, alertType LEVEL, important ...bool) {
 	if _logConfig.ROUTE_KEY == ANVIL {
 		_logConfig.ROUTE_KEY = "GOERLI"
 	}
-	if _logConfig.ROUTE_KEY == ETHERLINK {
-		_logConfig.ROUTE_KEY = "BNB"
+	if _contains([]NETWORK{ETHERLINK, LISK, HEMIBTC}, _logConfig.ROUTE_KEY) {
+		_logConfig.ROUTE_KEY = "PROD"
 	}
-	if _logConfig.ROUTE_KEY == ETHERLINKTEST {
-		_logConfig.ROUTE_KEY = "BNBTEST"
+	if _contains([]NETWORK{ETHERLINKTEST, LISKTEST, HEMIBTCTEST}, _logConfig.ROUTE_KEY) {
+		_logConfig.ROUTE_KEY = "TEST"
 	}
 	for i := 0; i < 2; i++ {
 		err := _amqpChannel.Publish(

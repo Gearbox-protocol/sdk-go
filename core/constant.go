@@ -51,6 +51,10 @@ func blockPerMin(chainId int64) int64 {
 		return 30 // per min
 	case log.ETHERLINK:
 		return 20 // per variable rate 500 ms to 6 s
+	case log.LISK:
+		return 30 // 2 per min https://blockscout.lisk.com/
+	case log.HEMIBTC: // 12 per min https://explorer.hemi.xyz/
+		return 5
 	default:
 		// TODO: NEWNETWORK
 		log.Fatalf("unsupported chainId %d", chainId)
@@ -208,6 +212,18 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 		addrProviders = []addrProviderV{
 			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
 		}
+	case log.ETHERLINK:
+		addrProviders = []addrProviderV{
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
+		}
+	case log.LISK:
+		addrProviders = []addrProviderV{
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
+		}
+	case log.HEMIBTC:
+		addrProviders = []addrProviderV{
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
+		}
 	}
 	if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
 		addrProviders = append(addrProviders, addrProviderV{Address: addr, Version: 310})
@@ -247,6 +263,14 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 		markets = append(markets, []common.Address{
 			common.HexToAddress("0x19037a281025b83fa37e3264b77af523ff87a3a4"),
 			common.HexToAddress("0x92DC4Ee43e9B207e16FbF3fD1a6933563C0A0D35"),
+		}...)
+	case log.LISK:
+		markets = append(markets, []common.Address{
+			common.HexToAddress("0x25778dbf0e56b7feb8358c4aa2f6f9e19a1c145a"),
+		}...)
+	case log.HEMIBTC:
+		markets = append(markets, []common.Address{
+			common.HexToAddress("0xc9961b8a0c763779690577f2c76962c086af2fe3"),
 		}...)
 	}
 	// log.Fatal("Market configurators not supported for chainId", chainId)

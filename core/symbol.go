@@ -107,6 +107,12 @@ func GetType(chainId int64, sym string) int64 {
 		} else if sym == "wbnb" {
 			return WRAPPED_NATIVE
 		}
+	case log.ETHERLINK:
+		if sym == "xyz" {
+			return NATIVE
+		} else if sym == "wxyz" {
+			return WRAPPED_NATIVE
+		}
 	case log.MAINNET:
 		if sym == "eth" {
 			return NATIVE
@@ -228,6 +234,17 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"USDC":                 "0x796Ea11Fa2dD751eD01b53C372fFDB4AAa8f00F9",
 			"WXTZ":                 "0xc9b53ab2679f573e480d01e0f49e2b5cfb7a3eab",
 			"AAVE_V3_LENDING_POOL": "0x3bD16D195786fb2F509f2E2D7F69920262EF114D",
+		},
+		log.LISK: {
+			"wstETH": "0x76D8de471F54aAA87784119c60Df1bbFc852C415",
+			"lskETH": "0x1b10E2270780858923cdBbC9B5423e29fffD1A44",
+			"WETH":   "0x4200000000000000000000000000000000000006",
+			"USDC.e": "0xf242275d3a6527d877f2c927a82d9b057609cc71",
+		},
+		log.HEMIBTC: {
+			"WETH":    "0x4200000000000000000000000000000000000006",
+			"hemiBTC": "0xAA40c0c7644e0b2B224509571e10ad20d9C4ef28",
+			"bfBTC":   "0x623F2774d9f27B59bc6b954544487532CE79d9DF",
 		},
 	}
 	network := log.GetBaseNet(chainId)

@@ -61,6 +61,16 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://explorer.etherlink.com/",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
+	case 1135, 7885: // lisk
+		return NetworkUI{
+			ExplorerUrl: "https://blockscout.lisk.com/",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
+	case 43111, 7886: // hemi
+		return NetworkUI{
+			ExplorerUrl: "https://explorer.hemi.xyz/",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	}
 	return NetworkUI{}
 }
@@ -74,14 +84,22 @@ var TEST NETWORK = "TEST"
 var ARBITRUM NETWORK = "ARBITRUM"
 var ANVIL NETWORK = "ANVIL"
 var ARBTEST NETWORK = "ARBTEST"
+
+// on cloudamqp for optimism
 var OPTIMISM NETWORK = "OPTIMISM"
 var OPTTEST NETWORK = "OPTTEST"
-var SONIC NETWORK = "SONIC"
+var SONIC NETWORK = "SONIC" // server with arbitrum
 var SONICTEST NETWORK = "SONICTEST"
-var BNB NETWORK = "BNB"
+var BNB NETWORK = "BNB" // server with arbitrum
 var BNBTEST NETWORK = "BNBTEST"
+
+// on common
 var ETHERLINK NETWORK = "ETHERLINK"
 var ETHERLINKTEST NETWORK = "ETHERLINKTEST"
+var LISK NETWORK = "LISK"
+var HEMIBTC NETWORK = "HEMIBTC"
+var LISKTEST NETWORK = "LISKTEST"
+var HEMIBTCTEST NETWORK = "HEMIBTCTEST"
 
 var testnet = map[int64]struct {
 	net  NETWORK
@@ -98,6 +116,8 @@ var testnet = map[int64]struct {
 
 	7883: {BNBTEST, 56},
 	7884: {ETHERLINKTEST, 5427936},
+	7885: {LISKTEST, 1135}, // lisk testnet
+	7886: {HEMIBTCTEST, 43111},
 	// etherlink testnet
 }
 var Basenet = map[int64]struct {
@@ -112,6 +132,8 @@ var Basenet = map[int64]struct {
 
 	56:    {BNB, 7883},
 	42793: {ETHERLINK, 7884},
+	1135:  {LISK, 7885}, // lisk mainnet
+	43111: {HEMIBTC, 7886},
 }
 
 func GetNetworkName(chainId int64) (name NETWORK) {
