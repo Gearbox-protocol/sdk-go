@@ -23,13 +23,17 @@ type Node struct {
 	chainId int64
 }
 
+// // ETHERSCAN_API_KEY enables  DiscoverFirstLog
+// ETHERSCAN_PROXY_URL is used for GetLogs if the server is disabled then use ETHERSCAN_API_KEY
+// ETHERSCAN_DISABLED != "", disable ETHERSCAN for getlogs
+
 // fromBlock != 0, rpc is called from fromBlock to toBlock
 // fromBlock =0, and forkBlock != 0, rpc is called from forkBlock+1 to toBlock and etherscan is used for fromBlock to forkBlock
 // fromBlock =0 and forkBlock = math.MaxInt64, rpc is not called and etherscan is used for fromBlock to toBlock
 func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash, etherscanOnly ...bool) ([]types.Log, error) {
 	var splitBlock = fromBlock
 	var allLogs []types.Log
-	if fromBlock == 0 {
+	if fromBlock == 0 && utils.GetEnvOrDefault("ETHERSCAN_DISABLED", "") == "" {
 		var minBlock int64 = math.MaxInt64
 		baseChainId := core.GetBaseChainId(lf.Client)
 		for _, addr := range addrs {

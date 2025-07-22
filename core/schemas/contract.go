@@ -93,7 +93,6 @@ func (c *Contract) GetDiscoveredAt() int64 {
 }
 
 // Extras
-
 func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 
 	// log.Debugf("Discovering first log of: %s\n", s.Address)
@@ -101,11 +100,13 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// if err != nil {
 	// 	log.Fatal("Cant get last block at discovery " + err.Error())
 	// }
-	if core.GetBaseChainId(c.Client) == 42793 && discoveredAt == 0 && c.ContractName == "ContractRegister" {
-		discoveredAt = core.GetLatestBlockNumber(c.Client)
+	// if core.GetBaseChainId(c.Client) == 42793 && discoveredAt == 0 && c.ContractName == "ContractRegister" {
+	// 	discoveredAt = core.GetLatestBlockNumber(c.Client)
 
-	}
-	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 { // on etherlink there is no etherscan api
+	// }
+	network := log.GetNetworkName(core.GetBaseChainId(c.Client))
+	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 &&
+		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC}, network) { // on etherlink there is no etherscan api
 		log.Fatal("discoveredAt is not set", c.Address)
 	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
@@ -127,7 +128,8 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 		return block
 	}
 
-	FirstLogAt, err := c.findFirstLogBound(utils.Max(discoveredAt-100_000, 1), discoveredAt)
+	// FirstLogAt, err := c.findFirstLogBound(utils.Max(discoveredAt-100_000, 1), discoveredAt)
+	FirstLogAt, err := c.findFirstLogBound(1, discoveredAt)
 	if err != nil {
 		log.Fatal(c.Address, err.Error())
 	}

@@ -242,10 +242,10 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 	switch log.GetBaseNet(chainId) { // check if supported
 	case log.MAINNET:
 		markets = append(markets, []common.Address{
-			common.HexToAddress("0x354fe9f450F60b8547f88BE042E4A45b46128a06"),
-			common.HexToAddress("0x4d427D418342d8CE89a7634c3a402851978B680A"), // 30)0
-			common.HexToAddress("0x3b56538833fc02f4f0e75609390f26ded0c32e42"), // 310 mc for tbtc
-			common.HexToAddress("0xc168343C791D56dD1Da4b4B8B0cc1C1EC1A16E6B"), // for wseth
+			common.HexToAddress("0x354fe9f450F60b8547f88BE042E4A45b46128a06"), // Labs
+			common.HexToAddress("0x4d427D418342d8CE89a7634c3a402851978B680A"), // 30)0 // K3
+			common.HexToAddress("0x3b56538833fc02f4f0e75609390f26ded0c32e42"), // 310 mc for tbtc // cp0x
+			common.HexToAddress("0xc168343C791D56dD1Da4b4B8B0cc1C1EC1A16E6B"), // for wseth // Re7
 		}...)
 	case log.ARBITRUM:
 		markets = append(markets, []common.Address{
