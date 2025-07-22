@@ -6,7 +6,6 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -32,16 +31,16 @@ func GetbaseInterest(poolCumIndexNow *big.Int, session AccountForCalcI) *big.Int
 // cumulative quota interest and quotafees increase on every updateQuota and decrase on decrease debt.
 
 func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blockNum int64, poolDetails PoolForCalcI, session AccountForCalcI, feeInterest uint16, failure bool) (calHF, calTotalValue, calThresholdValue *big.Int, debtDetails *DebtDetails, profile string) {
-	defer func() {
-		err := recover()
-		if err != nil {
-			if failure {
-				log.Fatalf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
-			} else {
-				log.Errorf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
-			}
-		}
-	}()
+	// defer func() {
+	// 	err := recover()
+	// 	if err != nil {
+	// 		if failure {
+	// 			log.Fatalf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
+	// 		} else {
+	// 			log.Errorf("err: %s blockNum:%d ts:%d. %s", err, blockNum, ts, session.GetAddr())
+	// 		}
+	// 	}
+	// }()
 	debtDetails = c.getDebtDetails(version, ts, blockNum, poolDetails, session, feeInterest)
 
 	underlying := poolDetails.GetUnderlying()
