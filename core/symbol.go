@@ -245,6 +245,7 @@ func GetToken(chainId int64, token Symbol) common.Address {
 			"WETH":    "0x4200000000000000000000000000000000000006",
 			"hemiBTC": "0xAA40c0c7644e0b2B224509571e10ad20d9C4ef28",
 			"bfBTC":   "0x623F2774d9f27B59bc6b954544487532CE79d9DF",
+			"USDC.e":  "0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA",
 		},
 	}
 	network := log.GetBaseNet(chainId)
