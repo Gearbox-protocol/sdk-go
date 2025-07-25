@@ -17,7 +17,7 @@ const NoderealFilterLogError = "exceed maximum block range:"
 const AnkrRangeError = "block range is too wide"
 const AnvilManagerError = "cannot_be_a_base"
 const AclhemyExceedError = "Your app has exceeded its compute units per second capacity"
-const Anvil10kError = "You can make eth_getLogs requests with up to a 10000 block range"
+const Anvil10kError = "You can make eth_getLogs requests with up"
 const InfuraError = "query returned more than 113 results"
 const SECONDS_PER_YEAR = 86400 * 365
 
