@@ -240,6 +240,9 @@ func etherscanResultInner(urls []string, addr ...common.Address) (interface{}, e
 	if err != nil {
 		return 0, err
 	}
+	if resp.StatusCode/100 != 2 {
+		return 0, fmt.Errorf("etherscan request failed: %s, status code: %d", url, resp.StatusCode)
+	}
 	type respBody struct {
 		Status  string      `json:"status"`
 		Message string      `json:"message"`

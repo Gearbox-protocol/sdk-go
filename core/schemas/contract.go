@@ -38,8 +38,9 @@ var s = map[int64]map[string]int64{
 	42161: {"0x7d04ecdb892ae074f03b5d0aba03796f90f3f2af": 184650310}, // arbitrum
 	10:    {"0x3761ca4bfacfcffc1b8034e69f19116dd6756726": 118410666}, // optimism
 	146:   {"0x4b27b296273B72d7c7bfee1ACE93DC081467C41B": 9779380},   // sonic
-	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
 	42793: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 16672969},  // etherlink
+	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
+	1135:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 18369936},  // lisk
 }
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
@@ -58,7 +59,6 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 		con.FirstLogAt = discoveredAt
 	}
 	con.DiscoveredAt = discoveredAt
-
 	return con
 }
 
@@ -129,7 +129,19 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	}
 
 	// FirstLogAt, err := c.findFirstLogBound(utils.Max(discoveredAt-100_000, 1), discoveredAt)
-	FirstLogAt, err := c.findFirstLogBound(1, discoveredAt)
+	latestBlock := core.GetLatestBlockNumber(c.Client)
+	var end int64 = utils.Min(discoveredAt+100_000, latestBlock)
+	if discoveredAt == 0 {
+		end = latestBlock
+	}
+	var start = discoveredAt
+	for _, data := range s[core.GetBaseChainId(c.Client)] {
+		if start == 0 {
+			start = data
+		}
+		start = utils.Min(start, data)
+	}
+	FirstLogAt, err := c.findFirstLogBound(start, end)
 	if err != nil {
 		log.Fatal(c.Address, err.Error())
 	}

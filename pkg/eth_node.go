@@ -33,7 +33,7 @@ type Node struct {
 func (lf Node) GetLogs(fromBlock, toBlock int64, addrs []common.Address, topics [][]common.Hash, etherscanOnly ...bool) ([]types.Log, error) {
 	var splitBlock = fromBlock
 	var allLogs []types.Log
-	if fromBlock == 0 && utils.GetEnvOrDefault("ETHERSCAN_DISABLED", "") == "" {
+	if fromBlock == 0 && utils.GetEnvOrDefault("ETHERSCAN_GETLOG_DISABLED", "") == "" {
 		var minBlock int64 = math.MaxInt64
 		baseChainId := core.GetBaseChainId(lf.Client)
 		for _, addr := range addrs {

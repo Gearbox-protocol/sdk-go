@@ -60,6 +60,9 @@ func CallFuncGetSingleValue(client ClientI, sigStr string, to common.Address, bl
 	return bytes, err
 }
 func CallFuncGetAllData(client ClientI, sigStr string, to common.Address, blockNum int64, extra []byte) ([]byte, error) {
+	if len(sigStr) > 2 && sigStr[:2] == "0x" {
+		sigStr = sigStr[2:]
+	}
 	data, err := hex.DecodeString(sigStr) // enabledTokens
 	log.CheckFatal(err)
 	data = append(data, extra...)
