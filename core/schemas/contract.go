@@ -41,6 +41,7 @@ var s = map[int64]map[string]int64{
 	42793: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 16672969},  // etherlink
 	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
 	1135:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 18369936},  // lisk
+	43111: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 2133492},   // lisk
 }
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {

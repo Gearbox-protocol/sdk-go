@@ -108,10 +108,16 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 				return 0, log.WrapErrWithLine(fmt.Errorf("%s %s priceFeedType failed: %s", oracle, token, err))
 			} else {
 				description = strings.ToLower(string(description))
-				if strings.Contains(description, "redstone") { // the oracles that don't have priceFeedType method,
+				if strings.Contains(description, "redstone") || // the oracles that don't have priceFeedType method,
+					GetBaseChainId(client) == 43111 ||
+					strings.Contains(description, "hemiBTC/USD") { // the oracles that don't have priceFeedType method,
+					if GetBaseChainId(client) == 43111 {
+						log.Warn("The oracle on HemiBTC has this description and is an external oracle.", description)
+					}
 					// // are outside redstne oracle and in control of redstone team to update regularly so can be treated as curve pf
 					return V3_EXTERNAL, nil
 				}
+				log.Info()
 				log.Fatal(oracle, token, "priceFeedType failed: ", description, err)
 			}
 		}
