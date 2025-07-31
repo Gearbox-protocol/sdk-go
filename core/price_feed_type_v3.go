@@ -38,6 +38,7 @@ const (
 	V3_PENDLE_PT_TWAP_ORACLE
 
 	V3_EXTERNAL
+
 	//
 	V3_BACKEND_COMPOSITE_REDSTONE_ORACLE = 100
 	V3_BACKEND_GENERAL_ORACLE            = 101
@@ -78,8 +79,10 @@ func GetContractTypeToPFType(x string) int64 {
 		return V3_YEARN_ORACLE
 	case "PRICE_FEED::ZERO":
 		return V3_ZERO_ORACLE
+	case "PRICE_FEED::CONSTANT":
+		return V3_YEARN_ORACLE
 	}
-	log.Fatal("")
+	log.Fatal(x)
 	return 10000
 }
 
@@ -112,7 +115,7 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 					GetBaseChainId(client) == 43111 ||
 					strings.Contains(description, "hemiBTC/USD") { // the oracles that don't have priceFeedType method,
 					if GetBaseChainId(client) == 43111 {
-						log.Warn("The oracle on HemiBTC has this description and is an external oracle.", description)
+						log.Warn("The oracle on HemiBTC. has this description and is an external oracle.", description)
 					}
 					// // are outside redstne oracle and in control of redstone team to update regularly so can be treated as curve pf
 					return V3_EXTERNAL, nil
