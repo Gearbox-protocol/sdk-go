@@ -83,8 +83,8 @@ type CreditAccountv310 struct {
 	QuotaCumIndexMap          map[string]*big.Int
 }
 
-func GetCreditAccountv310(values CreditAccountv310) CreditAccountCallData {
-	if values.CumulativeIndexLastUpdate == nil || values.CumulativeQuotaInterest == nil {
+func GetCreditAccountv310(values CreditAccountv310, disable ...bool) CreditAccountCallData {
+	if (values.CumulativeIndexLastUpdate == nil || values.CumulativeQuotaInterest == nil) && !(len(disable) > 0 && disable[0]) {
 		log.Fatal("other details not set.")
 	}
 	data := CreditAccountCallData{

@@ -191,7 +191,8 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 					obj.FeedToken = common.HexToAddress("0x56a5b6267d6b8de8ade88455b9342787e49e2f1a") // stS ticker token on sonic
 				}
 				if obj.FeedToken == core.NULL_ADDR {
-					log.Fatalf("pf0(%s) for composite %s dones't have known ticker token", pf0, feed)
+					log.Info(utils.ToJson(pOracle.feedToTicker))
+					log.Fatalf("pf0(%s) for composite %s dones't have known ticker token. priceoracle %s", pf0, feed, pOracle.Address)
 				}
 			}
 		}
@@ -231,8 +232,9 @@ func (pOracle *GearboxOraclev3) GetPF01AndFeedType(feed common.Address, blockNum
 				Feed:     feed,
 			},
 		}
-	} else {
-		return
+		// } else {
+		// 	log.Info(pfType)
+		// 	return
 	}
 	if obj.DataId == "beraETH_FUNDAMENTAL" {
 		obj.DataId = "beraSTONE_FUNDAMENTAL"
@@ -248,6 +250,9 @@ func (pOracle *GearboxOraclev3) addtokenToType(blockNum int64, feed common.Addre
 	pOracle.GetPF01AndFeedType(feed, blockNum, pOracle.Node.Client, token)
 	//
 	info := pOracle.feedToInfo[feed]
+	if pOracle.tokenToType[token] == nil {
+		pOracle.tokenToType[token] = map[bool][]typeAndBlock{}
+	}
 	pOracle.tokenToType[token][reserve] = append(pOracle.tokenToType[token][reserve], info.typeAndBlock)
 }
 
@@ -480,4 +485,56 @@ func (pOracle *GearboxOraclev3) GetFeedForETHBTC(sym string, token common.Addres
 		return info.PF1
 	}
 	return feed
+}
+
+func (pOracle GearboxOraclev3) AddTokens(tokens []common.Address) {
+	for _, token := range tokens {
+		if len(pOracle.tokenToType[token][false]) != 0 {
+			continue
+		}
+		hash := common.BytesToHash(token[:])
+		zero := common.HexToHash("0x0")
+		_v3Main, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(hash[:], zero[:]...)) // pricefeedraw
+		v3MainAddr := common.BytesToAddress(_v3Main)
+		if err != nil || v3MainAddr == core.NULL_ADDR {
+			pOracle.v310AddToken(token)
+		} else { // main and reserve
+			pOracle.tokenToFeed[token.Hex()] = v3MainAddr
+			pOracle.addtokenToType(0, v3MainAddr, token, false) // feed
+			one := common.HexToHash("0x1")
+			_v3Reserve, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(hash[:], one[:]...)) // pricefeedraw
+			v3ReserveAddr := common.BytesToAddress(_v3Reserve)
+			if err == nil && v3ReserveAddr == core.NULL_ADDR {
+				pOracle.addtokenToType(0, v3ReserveAddr, token, true)
+			}
+		}
+	}
+}
+
+func (pOracle GearboxOraclev3) v310AddToken(token common.Address) {
+	hash := common.BytesToHash(token[:])
+	// 9dcb511a
+	v3Main, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "9dcb511a", pOracle.Address.Hex(), 0, hash[:]) // pricefeedraw
+	v3MainAddr := common.BytesToAddress(v3Main)
+	if v3MainAddr != core.NULL_ADDR && err == nil {
+		pOracle.feedToTicker[v3MainAddr] = token // v3MainAddr is the feed address // same is the ticker token
+		pOracle.tokenToFeed[token.Hex()] = v3MainAddr
+		pOracle.addtokenToType(0, v3MainAddr, token, false) // feed
+	} else {
+		return
+	}
+	//
+	v3MReverse, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "7c70dd51", pOracle.Address.Hex(), 0, hash[:]) // pricefeedraw reserve
+	v3MReverseAddr := common.BytesToAddress(v3MReverse)
+	if v3MReverseAddr != core.NULL_ADDR && err == nil {
+		pOracle.addtokenToType(0, v3MReverseAddr, token, true) // feed
+	}
+}
+
+func (pOracle *GearboxOraclev3) LoadFeedToTicker(_feedToTicker map[string]string) {
+	feedToTicker := map[common.Address]common.Address{}
+	for feed, ticker := range _feedToTicker {
+		feedToTicker[common.HexToAddress(feed)] = common.HexToAddress(ticker)
+	}
+	pOracle.feedToTicker = feedToTicker
 }
