@@ -340,6 +340,6 @@ func getTokenGroups(fileName string) *TokenGroup {
 }
 
 func GetTokenGroups(chainId int64) *TokenGroup {
-	fileName := log.GetConfigFile(chainId)
-	return getTokenGroups(fileName)
+	// fileName := log.GetConfigFile(chainId)
+	return getTokenGroups("groups.jsonnet")
 }

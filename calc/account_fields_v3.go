@@ -62,7 +62,6 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 			}
 			//
 			tokenValueInUSD := c.convertToUSD(session.GetCM(), balance.BI.Convert(), token, version, blockNum)
-			// log.Info(ts, session.GetCM(), token, c.Store.GetLiqThreshold(ts, session.GetCM(), token))
 			tokenTwvValueInUSD := minBigInt(
 				new(big.Int).Quo(
 					new(big.Int).Mul(

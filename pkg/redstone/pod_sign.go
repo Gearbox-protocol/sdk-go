@@ -64,7 +64,7 @@ func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RS
 
 func getpodSign(url string, dataId string, timestamp int64) map[string]*RSPriceOnDemandObj {
 	res, err := http.Get(url)
-	log.Debug("Getting priceOnDemand", url)
+	// log.Info("Getting priceOnDemand", url)
 	if err != nil {
 		time.Sleep(10 * time.Second)
 		secondTryResp := getpodSign(url, dataId, timestamp)

@@ -492,23 +492,26 @@ func (pOracle GearboxOraclev3) AddTokens(tokens []common.Address) {
 		if len(pOracle.tokenToType[token][false]) != 0 {
 			continue
 		}
-		hash := common.BytesToHash(token[:])
+		tokenhash := common.BytesToHash(token[:])
 		zero := common.HexToHash("0x0")
-		_v3Main, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(hash[:], zero[:]...)) // pricefeedraw
+		_v3Main, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(tokenhash[:], zero[:]...)) // pricefeedraw
 		v3MainAddr := common.BytesToAddress(_v3Main)
 		if err != nil || v3MainAddr == core.NULL_ADDR {
 			pOracle.v310AddToken(token)
 		} else { // main and reserve
 			pOracle.tokenToFeed[token.Hex()] = v3MainAddr
+			// log.Info("set main", token)
 			pOracle.addtokenToType(0, v3MainAddr, token, false) // feed
 			one := common.HexToHash("0x1")
-			_v3Reserve, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(hash[:], one[:]...)) // pricefeedraw
+			_v3Reserve, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "ff299845", pOracle.Address.Hex(), 0, append(tokenhash[:], one[:]...)) // pricefeedraw
 			v3ReserveAddr := common.BytesToAddress(_v3Reserve)
-			if err == nil && v3ReserveAddr == core.NULL_ADDR {
+			// log.Info("set reserve", token, err, v3ReserveAddr.Hex())
+			if err == nil && v3ReserveAddr != core.NULL_ADDR {
 				pOracle.addtokenToType(0, v3ReserveAddr, token, true)
 			}
 		}
 	}
+	// log.Infof("%v", pOracle.tokenToType)
 }
 
 func (pOracle GearboxOraclev3) v310AddToken(token common.Address) {
