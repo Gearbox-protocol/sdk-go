@@ -414,7 +414,16 @@ func (pOracle *GearboxOraclev3) GetPrices(ts int64, results []multicall.Multical
 			answer := value[1].(*big.Int)
 			prices[pOracle.tokens[i]] = answer
 		} else {
-			log.Info(i, "failed token", pOracle.tokens[i], "failed feed", pOracle.tokenToFeed[pOracle.tokens[i]])
+			feed := pOracle.tokenToFeed[pOracle.tokens[i]]
+			info := pOracle.feedToInfo[feed]
+			if info.PF0 != core.NULL_ADDR {
+				priceData, err := core.CallFuncGetSingleValue(pOracle.Node.Client, "50d25bcd", info.PF0, 0, []byte{}) // priceFeed0
+				if err == nil {
+					prices[pOracle.tokens[i]] = new(big.Int).SetBytes(priceData)
+				} else {
+					log.Info("failed to get price for", pOracle.tokens[i], "feed's pf0", info.PF0, "err", err)
+				}
+			}
 		}
 	}
 	pOracle.AddCompsite(ts, prices)
