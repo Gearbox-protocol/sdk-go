@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"strings"
 
@@ -141,6 +142,11 @@ func GetType(chainId int64, sym string) int64 {
 // }
 
 func GetToken(chainId int64, token Symbol) common.Address {
+	addr, err := GetTokenWithError(chainId, token)
+	log.CheckFatal(err)
+	return addr
+}
+func GetTokenWithError(chainId int64, token Symbol) (common.Address, error) {
 	tokens := map[log.NETWORK]map[Symbol]string{
 		log.MAINNET: {
 			// "WETH":  common.HexToAddress("0xC02aaA39b223FE8D0A0e6C6324aE7E56dB8f03d8"),
@@ -250,12 +256,12 @@ func GetToken(chainId int64, token Symbol) common.Address {
 	}
 	network := log.GetBaseNet(chainId)
 	if _, ok := tokens[network]; !ok {
-		log.Fatalf("unsupported network %s", network)
+		return NULL_ADDR, fmt.Errorf("unsupported network %s", network)
 	}
 	if _, ok := tokens[network][token]; !ok {
-		log.Fatalf("unsupported token %s %s", token, network)
+		return NULL_ADDR, fmt.Errorf("unsupported token %s %s", token, network)
 	}
-	return common.HexToAddress(tokens[network][token])
+	return common.HexToAddress(tokens[network][token]), nil
 }
 
 func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {

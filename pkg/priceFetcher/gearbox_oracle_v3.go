@@ -434,7 +434,9 @@ func (pOracle *GearboxOraclev3) AddCompsite(ts int64, prices map[string]*big.Int
 	chainId := core.GetChainId(pOracle.Node.Client)
 	// tokens := core.GetSymToAddrByChainId(core.GetChainId(pOracle.Node.Client))
 	weth, wbtc := func() (common.Address, common.Address) {
-		return core.GetToken(chainId, "WETH"), core.GetToken(chainId, "WBTC")
+		a, _ := core.GetTokenWithError(chainId, "WETH")
+		b, _ := core.GetTokenWithError(chainId, "WBTC")
+		return a, b
 	}()
 	for token, feed := range pOracle.tokenToFeed {
 		info := pOracle.GetFeedInfo(feed)
