@@ -114,6 +114,7 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 				if strings.Contains(description, "redstone") || // the oracles that don't have priceFeedType method,
 					GetBaseChainId(client) == 43111 ||
 					strings.Contains(strings.ToLower(description), "aegis oracle") || // like "Aegis Oracle - chainlinkOracle", // 0x600f888a50c66bC39Ac83523EBdbba20Da984173 on ethereum.
+					strings.Contains(strings.ToLower(description), "aggregatorv3 interface") || // like "AggregatorV3 interface", // https://etherscan.io/address/0xf9C7c25FE58AAA494EE7ff1f6Cf0b70d7C7ce88c#readProxyContract
 					oracle == "0x2da05F177485264D432878D4A17d722bc64Db0EF" || // 0x2da05F177485264D432878D4A17d722bc64Db0EF on ethereum.
 					strings.Contains(description, "hemiBTC/USD") { // the oracles that don't have priceFeedType method,
 					if GetBaseChainId(client) == 43111 {
