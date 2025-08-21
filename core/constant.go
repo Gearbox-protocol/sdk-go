@@ -231,6 +231,13 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 	return AddrProviderV{addrProviders}
 }
 
+type MC struct {
+	Networks map[log.NETWORK][]struct {
+		Address     common.Address `json:"address"`
+		Description string         `json:"description"`
+	} `json:"networks"`
+}
+
 func GetMarketConfigurators(chainId int64) []common.Address {
 	var markets []common.Address
 	if market := utils.GetEnvOrDefault("MARKET_CONFIGURATORS", ""); market != "" {
@@ -239,42 +246,16 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 		}
 		// return markets
 	}
-	switch log.GetBaseNet(chainId) { // check if supported
-	case log.MAINNET:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x354fe9f450F60b8547f88BE042E4A45b46128a06"), // Labs // 0xBaB20
-			common.HexToAddress("0x4d427D418342d8CE89a7634c3a402851978B680A"), // 30)0 // K3 // 0xBaB20
-			common.HexToAddress("0x3b56538833fc02f4f0e75609390f26ded0c32e42"), // 310 mc for tbtc // cp0x // 0xF7f0
-			common.HexToAddress("0xc168343C791D56dD1Da4b4B8B0cc1C1EC1A16E6B"), // for wseth // Re7 0xF7f0
-			common.HexToAddress("0x7a133fbd01736fd076158307c9476cc3877f1af5"), // new mc. // 0xF7f0
-			common.HexToAddress("0x09d8305F49374AEA6A78aF6C996df2913e8f3b19"), // new mc. // 0xF7f0
-		}...)
-	case log.ARBITRUM:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x01023850b360b88de0d0f84015bbba1eba57fe7e"),
-		}...)
-	case log.OPTIMISM:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x2a15969CE5320868eb609680751cF8896DD92De5"),
-		}...)
-	case log.SONIC:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x8FFDd1F1433674516f83645a768E8900A2A5D076"),
-		}...)
-	case log.BNB:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x19037a281025b83fa37e3264b77af523ff87a3a4"),
-			common.HexToAddress("0x92DC4Ee43e9B207e16FbF3fD1a6933563C0A0D35"),
-		}...)
-	case log.LISK:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0x25778dbf0e56b7feb8358c4aa2f6f9e19a1c145a"),
-		}...)
-	case log.HEMIBTC:
-		markets = append(markets, []common.Address{
-			common.HexToAddress("0xc9961b8a0c763779690577f2c76962c086af2fe3"),
-		}...)
+	data, err := GetEmbeddedJsonnet("mc.jsonnet", JsonnetImports{})
+	log.CheckFatal(err)
+	ans := MC{}
+	err = utils.SetJson([]byte(data), &ans)
+	log.CheckFatal(err)
+	for _, x := range ans.Networks[log.GetBaseNet(chainId)] {
+		markets = append(markets, x.Address)
 	}
+	// switch log.GetBaseNet(chainId) { // check if supported
+	// }
 	// log.Fatal("Market configurators not supported for chainId", chainId)
 	return markets
 }
