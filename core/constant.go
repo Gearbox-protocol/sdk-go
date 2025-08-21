@@ -247,6 +247,7 @@ func GetMarketConfigurators(chainId int64) []common.Address {
 			common.HexToAddress("0x3b56538833fc02f4f0e75609390f26ded0c32e42"), // 310 mc for tbtc // cp0x // 0xF7f0
 			common.HexToAddress("0xc168343C791D56dD1Da4b4B8B0cc1C1EC1A16E6B"), // for wseth // Re7 0xF7f0
 			common.HexToAddress("0x7a133fbd01736fd076158307c9476cc3877f1af5"), // new mc. // 0xF7f0
+			common.HexToAddress("0x09d8305F49374AEA6A78aF6C996df2913e8f3b19"), // new mc. // 0xF7f0
 		}...)
 	case log.ARBITRUM:
 		markets = append(markets, []common.Address{
