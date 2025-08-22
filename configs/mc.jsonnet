@@ -58,6 +58,11 @@
       {
         "address": "0xc9961b8a0c763779690577f2c76962c086af2fe3"
       }
+    ],
+    "ETHERLINK": [
+      {
+        "address": "0x577424f0e6f50db668cc1bc76babb87e36732291",
+      }
     ]
   }
 }
