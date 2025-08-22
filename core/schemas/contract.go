@@ -53,7 +53,15 @@ func NewContract(address, contractName string, discoveredAt int64, client core.C
 		Client:       client,
 	}
 	if discoveredAt == -1 {
-		discoveredAt = s[core.GetBaseChainId(client)][address]
+		if core.GetBaseChainId(client) == 42793 {
+			if "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38" == address {
+				discoveredAt = s[core.GetBaseChainId(client)][address]
+			} else {
+				discoveredAt = 22699432
+			}
+		} else {
+			discoveredAt = s[core.GetBaseChainId(client)][address]
+		}
 	}
 	con.FirstLogAt = con.DiscoverFirstLog(discoveredAt)
 	if con.FirstLogAt == 0 && core.GetChainId(client) != 1337 { //don't updateif testnet
@@ -143,8 +151,14 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 		start = utils.Min(start, data)
 	}
 	if core.GetBaseChainId(c.Client) == 42793 {
+		if c.Address != "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38" {
+			start = utils.Max(22699432, start)
+		}
 		if c.Address == "0x20766A7BE771301b097B28d5288AA62Ee28bd641" {
 			return 22699432
+		}
+		if c.Address == "0x653e62A9Ef0e869F91Dc3D627B479592aA02eA75" {
+			return 23816978
 		}
 	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
@@ -170,7 +184,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 
-			log.Infof("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
+			log.Infof("FirstLog %s %d %d %d", c.Address, fromBlock, middle-1, toBlock)
 			foundLow, err := c.findFirstLogBound(fromBlock, middle-1)
 			if err != nil {
 				return 0, err

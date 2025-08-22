@@ -255,7 +255,9 @@ func (rc *Client) BlockByHash(ctx context.Context, hash common.Hash) (*types.Blo
 func (rc *Client) BlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error) {
 	return getDataViaRetry(rc, "BlockByNumber", func(c *MutextedClient) (*types.Block, error) {
 		block, err := c.client.BlockByNumber(ctx, number)
-		if err != nil && (strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") || strings.Contains(strings.ToLower(err.Error()), "invalid transaction v, r, s values")) {
+		if err != nil && (strings.Contains(strings.ToLower(err.Error()), "transaction type not supported") ||
+			strings.Contains(strings.ToLower(err.Error()), "invalid transaction v, r, s values") ||
+			strings.Contains(strings.ToLower(err.Error()), "server returned empty transaction list but block header indicates transactions")) { // etherlink
 			data, err := utils.JsonRPCMakeRequest(c.url, utils.GetJsonRPCRequestBody("eth_getBlockByNumber", fmt.Sprintf("0x%x", number), false))
 			if err != nil || data == nil {
 				return nil, log.WrapErrWithLine(err)

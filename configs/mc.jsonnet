@@ -61,7 +61,7 @@
     ],
     "ETHERLINK": [
       {
-        "address": "0x577424f0e6f50db668cc1bc76babb87e36732291",
+        "address": "0x577424f0e6f50db668cc1bc76babb87e36732291"
       }
     ]
   }
