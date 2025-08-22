@@ -70,6 +70,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), AnkrRangeError) ||
 			strings.Contains(err.Error(), Anvil10kError) ||
 			strings.Contains(err.Error(), AclhemyExceedError) ||
+			strings.Contains(err.Error(), "Block range is too large") ||
 			strings.Contains(err.Error(), "exceed max topics") || // for anvil
 			strings.Contains(err.Error(), LogFilterLenError) ||
 			strings.Contains(err.Error(), DrpcError) ||

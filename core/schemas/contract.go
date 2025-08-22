@@ -142,9 +142,14 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 		}
 		start = utils.Min(start, data)
 	}
+	if core.GetBaseChainId(c.Client) == 42793 {
+		if c.Address == "0x20766A7BE771301b097B28d5288AA62Ee28bd641" {
+			return 22699432
+		}
+	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
 	if err != nil {
-		log.Fatal(c.Address, err.Error())
+		log.Fatal(c.Address, err.Error(), start, end)
 	}
 
 	return FirstLogAt
@@ -165,7 +170,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 
-			log.Debugf("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
+			log.Infof("FirstLog %d %d %d", fromBlock, middle-1, toBlock)
 			foundLow, err := c.findFirstLogBound(fromBlock, middle-1)
 			if err != nil {
 				return 0, err

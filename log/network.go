@@ -115,7 +115,7 @@ var testnet = map[int64]struct {
 	// TODO: NEWNETWORK
 
 	7883: {BNBTEST, 56},
-	7884: {ETHERLINKTEST, 5427936},
+	7884: {ETHERLINKTEST, 42793},
 	7885: {LISKTEST, 1135}, // lisk testnet
 	7886: {HEMIBTCTEST, 43111},
 	// etherlink testnet
