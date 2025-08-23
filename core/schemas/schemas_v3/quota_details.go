@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -55,6 +56,7 @@ func (QuotaDetails) TableName() string {
 }
 
 func CalcAccruedQuotaInterest(ts uint64, token core.DBTokenBalance, poolQuota *QuotaDetails) *big.Int {
+	log.Info(utils.ToJson(poolQuota), ts, token.QuotaIndexLU)
 	numerator := new(big.Int).Sub(poolQuota.GetCumulativeIndexAt(ts), token.QuotaIndexLU.Convert())
 	numerator = new(big.Int).Mul(numerator, token.Quota.Convert())
 	return new(big.Int).Quo(numerator, core.RAY)

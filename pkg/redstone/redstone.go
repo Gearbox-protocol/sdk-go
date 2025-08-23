@@ -9,12 +9,13 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/Gearbox-protocol/sdk-go/artifacts/creditFacadev310Multicall"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	dcv3 "github.com/Gearbox-protocol/sdk-go/artifacts/dataCompressorv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/multicall"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/priceStore"
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/log"
+	"github.com/Gearbox-protocol/sdk-go/pkg"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -255,9 +256,15 @@ func GetPriceOnDemandCalls(cf common.Address, pods []dcv3.PriceOnDemand) (calls 
 	return
 }
 
+type PytDataWithFeed struct {
+	*pkg.PythData
+	Feed common.Address
+}
+
 // if version 300, return pods with token and onDemandpriceUpdate for pricefeed with data.
 // if version 310,onDemandPriceUpdates with feed and data.
-func GetpodToCalls(version int16, cf common.Address, pods []dataCompressorv3.PriceOnDemand, redstones []core.RedStonePF) []multicall.Multicall2Call {
+func GetpodToCalls(client core.ClientI, version int16, cf common.Address, pods []dataCompressorv3.PriceOnDemand, redstones []core.RedStonePF, pythPFs []PytDataWithFeed) []multicall.Multicall2Call {
+	log.Info(version)
 	if version == 300 {
 		return GetPriceOnDemandCalls(cf, pods)
 	} else if version == 310 {
@@ -265,21 +272,38 @@ func GetpodToCalls(version int16, cf common.Address, pods []dataCompressorv3.Pri
 		for _, e := range redstones {
 			tokenToFeed[e.UnderlyingToken] = e.Feed
 		}
-		callsToEncode := []creditFacadev310Multicall.PriceUpdate{}
+		priceStoreBytes, err := core.CallFuncGetSingleValue(client, "43ede910", cf, 0, nil)
+		log.CheckFatal(err)
+		callsToEncode := []priceStore.PriceUpdate{}
 		for _, e := range pods {
-			callsToEncode = append(callsToEncode, creditFacadev310Multicall.PriceUpdate{
+			callsToEncode = append(callsToEncode, priceStore.PriceUpdate{
 				PriceFeed: tokenToFeed[e.Token],
 				Data:      e.CallData,
+			})
+		}
+		// pythABI := core.GetAbi("PythOracle")
+		for _, e := range pythPFs {
+			pythYpdate := core.GetAbi("PythUpdate")
+			data, err := pythYpdate.Pack("priceUpdate", big.NewInt(e.PublishTime), e.Data)
+			log.CheckFatal(err)
+			// _ = data
+			// _x := common.BytesToHash(big.NewInt(e.PublishTime).Bytes())
+			// x := _x[:]
+			// x = append(x, e.Data...)
+			callsToEncode = append(callsToEncode, priceStore.PriceUpdate{
+				PriceFeed: e.Feed,
+				// Data:      x,
+				Data: data[4:],
 			})
 		}
 		if len(callsToEncode) == 0 {
 			return nil
 		}
-		abi := core.GetAbi("CreditFacadev310Multicall")
-		data, err := abi.Pack("onDemandPriceUpdates", callsToEncode)
+		abi := core.GetAbi("PriceStorev310")
+		data, err := abi.Pack("updatePrices", callsToEncode)
 		log.CheckFatal(err)
 		return []multicall.Multicall2Call{{
-			Target:   cf,
+			Target:   common.BytesToAddress(priceStoreBytes),
 			CallData: data,
 		}}
 	}

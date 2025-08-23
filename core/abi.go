@@ -24,6 +24,8 @@ import (
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolCompressor"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/poolQuotaKeeperv3"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/priceOraclev3"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/priceStore"
+	"github.com/Gearbox-protocol/sdk-go/artifacts/pyth"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/redstone"
 	"github.com/Gearbox-protocol/sdk-go/artifacts/updatePriceFeed"
 	"github.com/Gearbox-protocol/sdk-go/log"
@@ -83,6 +85,8 @@ var inchOracleABI = "[{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\
 var curveBalanceABI = "[{\"name\":\"balances\",\"outputs\":[{\"type\":\"uint256\",\"name\":\"\"}],\"inputs\":[{\"type\":\"uint256\",\"name\":\"i\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"gas\":2943}]"
 
 var creditFacadev3MulticallABI = "[{\"type\":\"function\",\"name\":\"onDemandPriceUpdate\",\"inputs\":[{\"name\":\"token\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"reserve\",\"type\":\"bool\",\"internalType\":\"bool\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"}]"
+
+var pythUpdateABI = "[{\"type\":\"function\",\"name\":\"priceUpdate\",\"inputs\":[{\"name\":\"token\",\"type\":\"uint256\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"}]"
 
 func GetAbi(contractName string) *abi.ABI {
 	abiMap := map[string]string{
@@ -193,6 +197,9 @@ var v310Map = AbiMap{
 	"GlobalAccountCompressor":   {ABI: globalAccountCompressor.GlobalAccountCompressorABI},
 	"AddressProviderv310":       {ABI: addrProviderv310.AddrProviderv310ABI},
 	"CreditFacadev310Multicall": {ABI: creditFacadev310Multicall.CreditFacadev310MulticallABI},
+	"PythOracle":                {ABI: pyth.PythABI},
+	"PriceStorev310":            {ABI: priceStore.PriceStoreABI},
+	"PythUpdate":                {ABI: pythUpdateABI},
 }
 var adapterMap = AbiMap{
 	//

@@ -158,7 +158,7 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 			return 22699432
 		}
 		if c.Address == "0x653e62A9Ef0e869F91Dc3D627B479592aA02eA75" {
-			return 23816978
+			return 22699432
 		}
 	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
