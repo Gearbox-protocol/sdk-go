@@ -264,7 +264,7 @@ type PytDataWithFeed struct {
 // if version 300, return pods with token and onDemandpriceUpdate for pricefeed with data.
 // if version 310,onDemandPriceUpdates with feed and data.
 func GetpodToCalls(client core.ClientI, version int16, cf common.Address, pods []dataCompressorv3.PriceOnDemand, redstones []core.RedStonePF, pythPFs []PytDataWithFeed) []multicall.Multicall2Call {
-	log.Info(version)
+	// log.Info(version)
 	if version == 300 {
 		return GetPriceOnDemandCalls(cf, pods)
 	} else if version == 310 {
