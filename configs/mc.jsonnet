@@ -63,6 +63,11 @@
       {
         "address": "0x577424f0e6f50db668cc1bc76babb87e36732291"
       }
+    ],
+    "PLASMA": [
+      {
+        "address": "0x7a133fbd01736fd076158307c9476cc3877f1af5"
+      }
     ]
   }
 }

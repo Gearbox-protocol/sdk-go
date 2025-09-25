@@ -101,6 +101,9 @@ var HEMIBTC NETWORK = "HEMIBTC"
 var LISKTEST NETWORK = "LISKTEST"
 var HEMIBTCTEST NETWORK = "HEMIBTCTEST"
 
+var PLASMA NETWORK = "PLASMA"
+var PLASMATEST NETWORK = "PLASMATEST"
+
 var testnet = map[int64]struct {
 	net  NETWORK
 	base int64
@@ -118,6 +121,7 @@ var testnet = map[int64]struct {
 	7884: {ETHERLINKTEST, 42793},
 	7885: {LISKTEST, 1135}, // lisk testnet
 	7886: {HEMIBTCTEST, 43111},
+	7887: {PLASMATEST, 9745},
 	// etherlink testnet
 }
 var Basenet = map[int64]struct {
@@ -134,6 +138,7 @@ var Basenet = map[int64]struct {
 	42793: {ETHERLINK, 7884},
 	1135:  {LISK, 7885}, // lisk mainnet
 	43111: {HEMIBTC, 7886},
+	9745:  {PLASMA, 7887},
 }
 
 func GetNetworkName(chainId int64) (name NETWORK) {

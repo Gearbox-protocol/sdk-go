@@ -120,6 +120,12 @@ func GetType(chainId int64, sym string) int64 {
 		} else if sym == "weth" {
 			return WRAPPED_NATIVE
 		}
+	case log.PLASMA:
+		if sym == "xpl" {
+			return NATIVE
+		} else if sym == "wxpl" {
+			return WRAPPED_NATIVE
+		}
 	}
 	return NORMAL
 }
@@ -252,6 +258,13 @@ func GetTokenWithError(chainId int64, token Symbol) (common.Address, error) {
 			"hemiBTC": "0xAA40c0c7644e0b2B224509571e10ad20d9C4ef28",
 			"bfBTC":   "0x623F2774d9f27B59bc6b954544487532CE79d9DF",
 			"USDC.e":  "0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA",
+		},
+		log.PLASMA: {
+			"WXPL":  "0x6100E367285b01F48D07953803A2d8dCA5D19873",
+			"USDT":  "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+			"USDe":  "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+			"XAUt0": "0x1B64B9025EEbb9A6239575dF9Ea4b9Ac46D4d193",
+			"sUSDe": "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2",
 		},
 	}
 	network := log.GetBaseNet(chainId)
