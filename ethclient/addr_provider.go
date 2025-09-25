@@ -55,6 +55,8 @@ func GetBaseAndCurrentChainId(url string) (*big.Int, *big.Int, error) {
 			usdc = core.GetToken(netId, "USDC.e")
 		} else if netId == 146 {
 			usdc = core.GetToken(netId, "USDC_e")
+		} else if netId == 9745 {
+			usdc = core.GetToken(netId, "USDT0")
 		} else {
 			usdc = core.GetToken(netId, "USDC")
 		}
