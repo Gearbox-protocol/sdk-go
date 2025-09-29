@@ -42,7 +42,10 @@ var s = map[int64]map[string]int64{
 	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
 	1135:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 18369936},  // lisk
 	43111: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 2133492},   // lisk
-	9745:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 670918},    // plasma
+	9745: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 670918,
+		"0xB1d8397bCb77018AE2EA47e210F86A7C03673414": 2160145,
+		"0x61F7f5875eC741Ed7321E7CDc70C7662C75c5a06": 2160145,
+	}, // plasma
 }
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {

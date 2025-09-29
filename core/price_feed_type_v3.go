@@ -120,6 +120,7 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 					oracle == "0x1989329b72C1C81E5460481671298A5a046f3B8E" || // on etherlink  mre7yield/usd
 					oracle == "0x2da05F177485264D432878D4A17d722bc64Db0EF" || // 0x2da05F177485264D432878D4A17d722bc64Db0EF on ethereum.
 					oracle == "0x31D211312D9cF5A67436517C324504ebd5BD50a0" || //  on etherlink. // https://explorer.etherlink.com/address/0x31D211312D9cF5A67436517C324504ebd5BD50a0
+					oracle == "0x51d947B18f546696c31d9a1c81B55d84e6d8e959" || //  on plasma. https://plasmascan.to/address/0x51d947B18f546696c31d9a1c81B55d84e6d8e959/contract/9745/readProxyContract
 					strings.Contains(description, "hemiBTC/USD") { // the oracles that don't have priceFeedType method,
 					if GetBaseChainId(client) == 43111 {
 						log.Warn("The oracle on HemiBTC. has this description and is an external oracle.", description)
