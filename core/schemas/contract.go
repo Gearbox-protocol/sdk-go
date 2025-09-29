@@ -42,6 +42,7 @@ var s = map[int64]map[string]int64{
 	56:    {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 48761804},  // bnb
 	1135:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 18369936},  // lisk
 	43111: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 2133492},   // lisk
+	9745:  {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 670918},    // plasma
 }
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
@@ -115,7 +116,7 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// }
 	network := log.GetNetworkName(core.GetBaseChainId(c.Client))
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 &&
-		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC}, network) { // on etherlink there is no etherscan api
+		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC, log.PLASMA}, network) { // on etherlink there is no etherscan api
 		log.Fatal("discoveredAt is not set", c.Address)
 	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
