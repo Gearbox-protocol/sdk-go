@@ -66,7 +66,7 @@ func send(message string, alertType LEVEL, important ...bool) {
 	if _logConfig.ROUTE_KEY == ANVIL {
 		_logConfig.ROUTE_KEY = "GOERLI"
 	}
-	if _contains([]NETWORK{ETHERLINK, LISK, HEMIBTC}, _logConfig.ROUTE_KEY) {
+	if _contains([]NETWORK{ETHERLINK, LISK, HEMIBTC, PLASMA}, _logConfig.ROUTE_KEY) {
 		_logConfig.ROUTE_KEY = "PROD"
 	}
 	if _contains([]NETWORK{ETHERLINKTEST, LISKTEST, HEMIBTCTEST}, _logConfig.ROUTE_KEY) {
