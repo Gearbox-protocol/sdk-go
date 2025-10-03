@@ -140,6 +140,19 @@ var Basenet = map[int64]struct {
 	43111: {HEMIBTC, 7886},
 	9745:  {PLASMA, 7887},
 }
+var BasenetToDB = map[int64]string{
+	1:     "v310",
+	42161: "gearbox_arb",
+	10:    "gearbox_opt",
+	146:   "gearbox_sonic",
+	// TODO: NEWNETWORK
+
+	56:    "gearbox_bnb",
+	42793: "gearbox_etherlink",
+	1135:  "gearbox_lisk",
+	43111: "gearbox_hemibtc",
+	9745:  "gearbox_plasma",
+}
 
 func GetNetworkName(chainId int64) (name NETWORK) {
 	if name, ok := testnet[chainId]; ok {
