@@ -70,6 +70,7 @@ type TvlSnapshots struct {
 	AvailableLiquidity float64 `gorm:"column:available_liquidity"`
 	CATotalValue       float64 `gorm:"column:ca_total_value"`
 	ExpectedLiq        float64 `gorm:"column:expected_liq"`
+	CATotalValueCalc   float64 `gorm:"column:ca_total_value_calc"`
 	Market             string  `gorm:"column:market;primaryKey"`
 }
 
