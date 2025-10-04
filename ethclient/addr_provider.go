@@ -51,11 +51,11 @@ func GetBaseAndCurrentChainId(url string) (*big.Int, *big.Int, error) {
 	// TODO: NEWNETWORK
 	for netId := range log.Basenet { // fitst should be 146, as USDC_e address is not returning error
 		var usdc common.Address
-		if netId == 1135 || netId == 43111 {
+		if netId == 1135 || netId == 43111 { // hemi and lisk
 			usdc = core.GetToken(netId, "USDC.e")
-		} else if netId == 146 {
+		} else if netId == 146 { // sonic
 			usdc = core.GetToken(netId, "USDC_e")
-		} else if netId == 9745 {
+		} else if netId == 9745 { // plasma
 			usdc = core.GetToken(netId, "USDT0")
 		} else {
 			usdc = core.GetToken(netId, "USDC")

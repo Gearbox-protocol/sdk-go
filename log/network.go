@@ -71,6 +71,11 @@ func NetworkUIUrl(chainId int64) NetworkUI {
 			ExplorerUrl: "https://explorer.hemi.xyz/",
 			ChartUrl:    "https://charts.gearbox.fi",
 		}
+	case 9745, 7887: // hemi
+		return NetworkUI{
+			ExplorerUrl: "https://plasmascan.to/",
+			ChartUrl:    "https://charts.gearbox.fi",
+		}
 	}
 	return NetworkUI{}
 }

@@ -80,7 +80,7 @@ func CallFuncGetAllData(client ClientI, sigStr string, to common.Address, blockN
 }
 
 func GetAddress(client ClientI, field string) (common.Address, error) {
-	providerAddrs := GetAddressProviderDS(GetChainId(client)).MoreThanEq(310)
+	providerAddrs := GetAddressProviderDS(GetBaseChainId(client)).MoreThanEq(310)
 	//
 	fbytes := []byte(field)
 	slot := make([]byte, 32)
