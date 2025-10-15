@@ -115,6 +115,7 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 					GetBaseChainId(client) == 43111 ||
 					strings.Contains(strings.ToLower(description), "aegis oracle") || // like "Aegis Oracle - chainlinkOracle", // 0x600f888a50c66bC39Ac83523EBdbba20Da984173 on ethereum.
 					strings.Contains(strings.ToLower(description), "aggregatorv3 interface") || // like "AggregatorV3 interface", // https://etherscan.io/address/0xf9C7c25FE58AAA494EE7ff1f6Cf0b70d7C7ce88c#readProxyContract
+					strings.Contains(strings.ToLower(description), "chainlink compatible adapter") || // https://etherscan.io/address/0xA4fd428191e263453BC802cFAD71A31DDDf74895#readContract
 					// (strings.ToLower(description[:3]) == "mre" && GetBaseChainId(client) == 42793) || // like mre oracle on etherelink https://explorer.etherlink.com/address/0xc5A45B22d7E9e1c1E2524bF53B42e89376B787dF?tab=contract proxy by https://explorer.etherlink.com/address/0xc5A45B22d7E9e1c1E2524bF53B42e89376B787dF
 					oracle == "0xc5A45B22d7E9e1c1E2524bF53B42e89376B787dF" || // on etherlink
 					oracle == "0x1989329b72C1C81E5460481671298A5a046f3B8E" || // on etherlink  mre7yield/usd
