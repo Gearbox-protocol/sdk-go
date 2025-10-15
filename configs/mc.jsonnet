@@ -24,6 +24,10 @@
       {
         "address": "0x09d8305F49374AEA6A78aF6C996df2913e8f3b19",
         "description": "new mc. // 0xF7f0"
+      },
+      {
+        "address": "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
+        "description": "kpk"
       }
     ],
     "ARBITRUM": [
