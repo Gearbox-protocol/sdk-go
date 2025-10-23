@@ -95,7 +95,7 @@ func getHistoric(ids string, ts int64) (*PythData, error) {
 	data := pythBody{}
 	err := core.GetUrlWithDebug(url, &data)
 	if err.IsError() {
-		return nil, fmt.Errorf("failed to get latest price from Pyth: %s", err)
+		return nil, fmt.Errorf("failed to get latest price from Pyth: %s. %s", err, url)
 	}
 	return data.Convert(ids)
 }
