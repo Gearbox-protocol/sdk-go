@@ -73,7 +73,7 @@ var s = map[int64]map[string]int64{
 	// "0x61F7f5875eC741Ed7321E7CDc70C7662C75c5a06": 2160145,
 	// plasma
 }
-var deploymentdates = map[int64][]int64{9745: {670918, 2999860, 4032124}}
+var deploymentdates = map[int64][]int64{9745: {670918, 1820915, 2999860, 4032124}}
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
@@ -193,10 +193,6 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 		if c.Address == "0x653e62A9Ef0e869F91Dc3D627B479592aA02eA75" {
 			return 22699432
 		}
-	} else if core.GetBaseChainId(c.Client) == 9745 {
-		if c.Address != "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38" {
-			start = utils.Min(1820915, discoveredAt) // after the address this is the min fristlog
-		}
 	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
 	if err != nil {
@@ -221,7 +217,7 @@ func (c *Contract) findFirstLogBound(fromBlock, toBlock int64) (int64, error) {
 		if core.EthLogErrorCheck(err, c.Client) {
 			middle := (fromBlock + toBlock) / 2
 
-			log.Infof("FirstLog %s %d %d %d", c.Address, fromBlock, middle-1, toBlock)
+			log.Infof("FirstLog for %s from %d, mid %d, to %d", c.Address, fromBlock, middle-1, toBlock)
 			foundLow, err := c.findFirstLogBound(fromBlock, middle-1)
 			if err != nil {
 				return 0, err
