@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gearbox-protocol/sdk-go/core"
 	"github.com/Gearbox-protocol/sdk-go/core/schemas/schemas_v3"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -62,6 +63,9 @@ func (c Calculator) CalcAccountFieldsv3(version core.VersionType, ts uint64, blo
 			}
 			//
 			tokenValueInUSD := c.convertToUSD(session.GetCM(), balance.BI.Convert(), token, version, blockNum)
+			if c.Store.GetLiqThreshold(ts, session.GetCM(), token) == nil {
+				log.Info(session.GetCM(), token)
+			}
 			tokenTwvValueInUSD := minBigInt(
 				new(big.Int).Quo(
 					new(big.Int).Mul(
