@@ -5,11 +5,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
 type UrlDebug struct {
 	ApiError     error
+	url          string
 	StatusCode   int
 	JsonParseErr error
 	Body         string
@@ -25,6 +27,8 @@ func (d UrlDebug) String() (s string) {
 	if d.JsonParseErr != nil {
 		s += fmt.Sprintf("JsonParseErr: %v\n", d.JsonParseErr)
 		return
+	} else {
+		s += fmt.Sprintf("Body: %s\n. url: %s", d.Body, d.url)
 	}
 	if d.DecodeError != nil {
 		s += fmt.Sprintf("DecodeError: %v\n", d.DecodeError)
@@ -38,8 +42,9 @@ func (d UrlDebug) IsError() bool {
 }
 
 func GetUrlWithDebug(url string, data interface{}) UrlDebug {
+	log.Info(url)
 	resp, err := http.Get(url)
-	debug := UrlDebug{ApiError: err}
+	debug := UrlDebug{ApiError: err, url: url}
 	if err != nil {
 		return debug
 	}
@@ -47,12 +52,13 @@ func GetUrlWithDebug(url string, data interface{}) UrlDebug {
 	debug.StatusCode = resp.StatusCode
 	if resp.StatusCode/100 != 2 {
 		defer resp.Body.Close()
-		bs, jsonParseStr := io.ReadAll(resp.Body)
-		debug.JsonParseErr = jsonParseStr
-		if jsonParseStr == nil {
+		bs, jsonParseErr := io.ReadAll(resp.Body)
+		debug.JsonParseErr = jsonParseErr
+		if jsonParseErr == nil {
 			debug.Body = string(bs)
 		}
 	}
+	log.Info(utils.ToJson(debug))
 	debug.DecodeError = utils.ReadJsonReaderAndSetInterface(resp.Body, data)
 	return debug
 }

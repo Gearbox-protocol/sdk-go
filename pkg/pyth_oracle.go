@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
+	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -24,6 +25,16 @@ type PythData struct {
 
 func GetPythPrice(ids string, ts ...int64) (*PythData, error) {
 	if len(ts) > 0 {
+		if ts[0] >= 1761836699 && ids == "0xaf2a90410d6fdcaad452c6081fb7ec26cd6bffbe18b6dbc894f310e6e49585ee" {
+			x := big.NewInt(0)
+			return &PythData{
+				Price:       (*core.BigInt)(x),
+				F:           0,
+				Data:        []byte{},
+				Id:          ids,
+				PublishTime: 0,
+			}, nil
+		}
 		return getHistoric(ids, ts[0])
 	}
 	return getLatest(ids)
@@ -95,7 +106,14 @@ func getHistoric(ids string, ts int64) (*PythData, error) {
 	data := pythBody{}
 	err := core.GetUrlWithDebug(url, &data)
 	if err.IsError() {
-		return nil, fmt.Errorf("failed to get latest price from Pyth: %s. %s", err, url)
+		if err.StatusCode == 404 && utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
+			url := fmt.Sprintf("https://testnet.gearbox.foundation/etherscan/proxy/any?id=%s&timestamp=%d", ids, ts)
+			log.Info("Using etherscan proxy for pyth", url)
+			err = core.GetUrlWithDebug(url, &data)
+		}
+		if err.IsError() { // message rewritten in proxy is also error.
+			return nil, fmt.Errorf("failed to get latest price from Pyth: %s. %s", err, url)
+		}
 	}
 	return data.Convert(ids)
 }
