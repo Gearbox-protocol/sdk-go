@@ -279,6 +279,7 @@ func GetTokenWithError(chainId int64, token Symbol) (common.Address, error) {
 			"WMON":  "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
 			"USDT0": "0xe7cd86e13AC4309349F30B3435a9d337750fC82D",
 			"USDC":  "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+			"WETH":  "0xEE8c0E9f1BFFb4Eb878d8f15f368A02a35481242",
 		},
 	}
 	network := log.GetBaseNet(chainId)

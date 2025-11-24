@@ -72,9 +72,16 @@ var s = map[int64]map[string]int64{
 		"0xC0fE79990D6b6372EE4700bC8FaC03bd0DB5FFcf": 2999860}, // "0xB1d8397bCb77018AE2EA47e210F86A7C03673414": 2160145,
 	// "0x61F7f5875eC741Ed7321E7CDc70C7662C75c5a06": 2160145,
 	// plasma
-	143: {"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 34650265},
+	143: {
+		"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 34650265,
+		"0x239eA964C11D783962f553bFd2A34A65a0F66541": 37114642,
+		"0x77609FA5169D5Ef611f73c00D29BF07cD42294Cb": 37273079,
+	},
 }
-var deploymentdates = map[int64][]int64{9745: {670918, 1820915, 2999860, 4032124}}
+var deploymentdates = map[int64][]int64{9745: {670918, 1820915, 2999860, 4032124},
+	143:   {34650265, 37114642},
+	42793: {16672969, 22699432},
+}
 
 func NewContract(address, contractName string, discoveredAt int64, client core.ClientI) *Contract {
 
@@ -177,22 +184,12 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	if discoveredAt == 0 {
 		end = latestBlock
 	}
+	log.Info(discoveredAt, c.Address)
 	var start = discoveredAt
 	// get the deployment date , currently only for plasma
 	for _, b := range deploymentdates[core.GetBaseChainId(c.Client)] {
 		if discoveredAt > b {
 			start = b
-		}
-	}
-	if core.GetBaseChainId(c.Client) == 42793 {
-		if c.Address != "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38" {
-			start = utils.Max(22699432, start)
-		}
-		if c.Address == "0x20766A7BE771301b097B28d5288AA62Ee28bd641" {
-			return 22699432
-		}
-		if c.Address == "0x653e62A9Ef0e869F91Dc3D627B479592aA02eA75" {
-			return 22699432
 		}
 	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
