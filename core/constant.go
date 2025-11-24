@@ -43,6 +43,8 @@ func blockPerMin(chainId int64) int64 {
 		return 5
 	case log.PLASMA:
 		return 60 // per sec 1
+	case log.MONAD:
+		return 6 * 64 // per sec 6.4 per sec
 	case log.ARBITRUM:
 		return 4 * 60
 	case log.SONIC:
@@ -228,6 +230,10 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
 		}
 	case log.PLASMA:
+		addrProviders = []addrProviderV{
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
+		}
+	case log.MONAD:
 		addrProviders = []addrProviderV{
 			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
 		}

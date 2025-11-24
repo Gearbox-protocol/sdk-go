@@ -58,7 +58,7 @@ func GetBaseAndCurrentChainId(url string) (*big.Int, *big.Int, error) {
 		} else if netId == 9745 { // plasma
 			usdc = core.GetToken(netId, "USDT0")
 		} else {
-			usdc = core.GetToken(netId, "USDC")
+			usdc = core.GetToken(netId, "USDC") // for optimism, arbitrum, etherum, monad, bnb, and etherlink
 		}
 		client, err := ethclient.Dial(url)
 		log.CheckFatal(err)

@@ -80,6 +80,16 @@
         "address": "0x4bce62622be621ce036691de98afcab0e41a77a3",
          "description": "Edge UltraYield"
       }
+    ],
+    "MONAD": [
+      {
+        "address": "0x16956912813ab9a38d95730b52a8cf53e860a7c5",
+        "description": "Tulipa",
+      },
+      {
+        "address": "0x7c6ee1bf9c1eb3ee55bdbdc1e8d0317aab718e0a",
+        "description": "Edge UltraYield",
+      }
     ]
   }
 }
