@@ -237,6 +237,11 @@ func GetAddressProviderDS(chainId int64) AddrProviderV {
 		addrProviders = []addrProviderV{
 			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
 		}
+	case log.SOMNIA:
+		addrProviders = []addrProviderV{
+			{Address: "0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38", Version: 310},
+		}
+
 	}
 	if addr := utils.GetEnvOrDefault("ADDRESS_PROVIDER", ""); addr != "" {
 		addrProviders = append(addrProviders, addrProviderV{Address: addr, Version: 310})

@@ -77,6 +77,9 @@ var s = map[int64]map[string]int64{
 		"0x239eA964C11D783962f553bFd2A34A65a0F66541": 37114642,
 		"0x77609FA5169D5Ef611f73c00D29BF07cD42294Cb": 37273079,
 	},
+	5031: {
+		"0xF7f0a609BfAb9a0A98786951ef10e5FE26cC1E38": 147687418,
+	},
 }
 var deploymentdates = map[int64][]int64{9745: {670918, 1820915, 2999860, 4032124},
 	143:   {34650265, 37114642},
@@ -156,7 +159,7 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// }
 	network := log.GetNetworkName(core.GetBaseChainId(c.Client))
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 &&
-		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC, log.PLASMA, log.ETHERLINK, log.MONAD}, network) { // on etherlink there is no etherscan api
+		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC, log.PLASMA, log.SOMNIA, log.ETHERLINK, log.MONAD}, network) { // on etherlink there is no etherscan api
 		log.Fatal("discoveredAt is not set and can't use etherscan for getting etherscan", c.Address)
 	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
@@ -184,7 +187,6 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	if discoveredAt == 0 {
 		end = latestBlock
 	}
-	log.Info(discoveredAt, c.Address)
 	var start = discoveredAt
 	// get the deployment date , currently only for plasma
 	for _, b := range deploymentdates[core.GetBaseChainId(c.Client)] {

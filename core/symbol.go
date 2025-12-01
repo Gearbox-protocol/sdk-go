@@ -132,6 +132,12 @@ func GetType(chainId int64, sym string) int64 {
 		} else if sym == "wmon" {
 			return WRAPPED_NATIVE
 		}
+	case log.MONAD:
+		if sym == "somi" {
+			return NATIVE
+		} else if sym == "wsomi" {
+			return WRAPPED_NATIVE
+		}
 	}
 	return NORMAL
 }
@@ -280,6 +286,12 @@ func GetTokenWithError(chainId int64, token Symbol) (common.Address, error) {
 			"USDT0": "0xe7cd86e13AC4309349F30B3435a9d337750fC82D",
 			"USDC":  "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
 			"WETH":  "0xEE8c0E9f1BFFb4Eb878d8f15f368A02a35481242",
+		},
+		log.SOMNIA: {
+			"WSOMI":  "0x046EDe9564A72571df6F5e44d0405360c0f4dCab",
+			"WETH":   "0x936Ab8C674bcb567CD5dEB85D8A216494704E9D8",
+			"USDT":   "0x67B302E35Aef5EEE8c32D934F5856869EF428330",
+			"USDC.e": "0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00",
 		},
 	}
 	network := log.GetBaseNet(chainId)

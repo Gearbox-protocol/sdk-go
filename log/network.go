@@ -112,6 +112,9 @@ var PLASMATEST NETWORK = "PLASMATEST"
 var MONAD NETWORK = "MONAD"
 var MONADTEST NETWORK = "MONADTEST"
 
+var SOMNIA NETWORK = "SOMNIA"
+var SOMNIATEST NETWORK = "SOMNIATEST"
+
 var testnet = map[int64]struct {
 	net  NETWORK
 	base int64
@@ -131,6 +134,7 @@ var testnet = map[int64]struct {
 	7886: {HEMIBTCTEST, 43111},
 	7887: {PLASMATEST, 9745},
 	7888: {MONADTEST, 143},
+	7889: {SOMNIATEST, 5031},
 	// etherlink testnet
 }
 var Basenet = map[int64]struct {
@@ -149,6 +153,7 @@ var Basenet = map[int64]struct {
 	43111: {HEMIBTC, 7886},
 	9745:  {PLASMA, 7887},
 	143:   {MONAD, 7888},
+	5031:  {SOMNIA, 7889},
 }
 var BasenetToDB = map[int64]string{
 	1:     "v310",
@@ -163,6 +168,7 @@ var BasenetToDB = map[int64]string{
 	43111: "gearbox_hemibtc",
 	9745:  "gearbox_plasma",
 	143:   "gearbox_monad",
+	5031:  "gearbox_somnia",
 }
 
 func GetNetworkName(chainId int64) (name NETWORK) {

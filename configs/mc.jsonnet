@@ -90,6 +90,12 @@
         "address": "0x7c6ee1bf9c1eb3ee55bdbdc1e8d0317aab718e0a",
         "description": "Edge UltraYield",
       }
+    ],
+    "SOMNIA": [
+      {
+        "address": "0x1ca8b92aa7233a9f8f7ba031ac45c878141adff0",
+        "description": "Invariant Group",
+      }
     ]
   }
 }
