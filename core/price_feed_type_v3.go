@@ -122,6 +122,8 @@ func GetGearboxPfType(client ClientI, oracle string, token string) (int64, error
 					oracle == "0x2da05F177485264D432878D4A17d722bc64Db0EF" || // 0x2da05F177485264D432878D4A17d722bc64Db0EF on ethereum.
 					oracle == "0x31D211312D9cF5A67436517C324504ebd5BD50a0" || //  on etherlink. // https://explorer.etherlink.com/address/0x31D211312D9cF5A67436517C324504ebd5BD50a0
 					oracle == "0x51d947B18f546696c31d9a1c81B55d84e6d8e959" || //  on plasma. https://plasmascan.to/address/0x51d947B18f546696c31d9a1c81B55d84e6d8e959/contract/9745/readProxyContract
+					oracle == "0x5D4266f4DD721c1cD8367FEb23E4940d17C83C93" || //  on somnia. https://explorer.somnia.network/address/0x5D4266f4DD721c1cD8367FEb23E4940d17C83C93?tab=read_write_contract
+					oracle == "0x1f5f46B0DABEf8806a1f33772522ED683Ba64E27" || //  on somnia. https://explorer.somnia.network/address/0x046EDe9564A72571df6F5e44d0405360c0f4dCab?tab=read_write_contract
 					strings.Contains(description, "hemiBTC/USD") { // the oracles that don't have priceFeedType method,
 					if GetBaseChainId(client) == 43111 {
 						log.Warn("The oracle on HemiBTC. has this description and is an external oracle.", description)

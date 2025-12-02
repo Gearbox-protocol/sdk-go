@@ -59,6 +59,8 @@ func blockPerMin(chainId int64) int64 {
 		return 30 // 2 per min https://blockscout.lisk.com/
 	case log.HEMIBTC: // 12 per min https://explorer.hemi.xyz/
 		return 5
+	case log.SOMNIA: // 12 per min https://explorer.hemi.xyz/
+		return 600 //per min
 	default:
 		// TODO: NEWNETWORK
 		log.Fatalf("unsupported chainId %d", chainId)
@@ -79,6 +81,7 @@ func EthLogErrorCheck(err error, client ClientI) bool {
 			strings.Contains(err.Error(), LogFilterLenError) ||
 			strings.Contains(err.Error(), DrpcError) ||
 			strings.Contains(err.Error(), DrpcFreeTierError) ||
+			strings.Contains(err.Error(), "block range exceeds") ||
 			strings.Contains(err.Error(), RequestTimeoutDrpcFreeTierError) ||
 			strings.Contains(err.Error(), "Cannot request logs over more than") ||
 			strings.Contains(err.Error(), InfuraError) ||

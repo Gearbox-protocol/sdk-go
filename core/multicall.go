@@ -90,7 +90,10 @@ func getMultiCallAddr(chainId int64) string {
 	if log.GetBaseNet(chainId) == log.MAINNET {
 		return "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
 	}
-	// []log.NETWORK{log.SONIC, log.BNB, log.OPTIMISM} ETHERLINK, LISK, HEMIBTC, MONAD
+	if log.GetBaseNet(chainId) == log.SOMNIA {
+		return "0x5e44F178E8cF9B2F5409B6f18ce936aB817C5a11"
+	}
+	// []log.NETWORK{log.SONIC, log.BNB, log.OPTIMISM} ETHERLINK, LISK, HEMIBTC, MONAD, SOMNIA
 	return "0xcA11bde05977b3631167028862bE2a173976CA11"
 }
 
