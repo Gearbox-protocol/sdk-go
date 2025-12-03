@@ -56,6 +56,10 @@
          {
             "address": "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
             "description": "kpk"
+         },
+         {
+            "address": "0x9dddd1b9ce0ac8aa0c80e4ec141600b9bf0101c3",
+            "description": "edge ultrayield"
          }
       ],
       "MONAD": [
@@ -71,6 +75,10 @@
       "OPTIMISM": [
          {
             "address": "0x2a15969CE5320868eb609680751cF8896DD92De5"
+         },
+         {
+            "address": "0x9dddd1b9ce0ac8aa0c80e4ec141600b9bf0101c3",
+            "description": "edge ultrayield"
          }
       ],
       "PLASMA": [
@@ -84,6 +92,10 @@
          {
             "address": "0x4bce62622be621ce036691de98afcab0e41a77a3",
             "description": "Edge UltraYield"
+         },
+         {
+            "address": "0x9655f82b585b11cee8a05576ed8efcf755cec04b",
+            "description": "TelosC"
          }
       ],
       "SOMNIA": [
