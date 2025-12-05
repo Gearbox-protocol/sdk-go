@@ -52,22 +52,26 @@ func getRedstoneUrl() string {
 func getLatestPodSign(details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
 	url := fmt.Sprintf("%s/%s/%d?dataFeeds=%s", getRedstoneUrl(), details.DataServiceId, details.SignersThreshold, details.DataId)
-	return getpodSign(url, "latest-"+details.DataId, -1)
+	return getpodSign(url, "latest-"+details.DataId, -1, 0)
 }
 func getHistoricPodSign(timestamp int64, details core.RedStonePF) map[string]*RSPriceOnDemandObj {
 	// prod/aave/1
 	timestamp = tenthMillSec(timestamp) // due to node js
 	url := fmt.Sprintf("%s/%s/%d/%d?dataFeeds=%s", getRedstoneUrl(), details.DataServiceId, details.SignersThreshold, timestamp, details.DataId)
 	// log.Info(url)
-	return getpodSign(url, "historic-"+details.DataId, timestamp)
+	return getpodSign(url, "historic-"+details.DataId, timestamp, 0)
 }
 
-func getpodSign(url string, dataId string, timestamp int64) map[string]*RSPriceOnDemandObj {
+func getpodSign(url string, dataId string, timestamp int64, retryCount int64) map[string]*RSPriceOnDemandObj {
 	res, err := http.Get(url)
 	// log.Info("Getting priceOnDemand", url)
 	if err != nil {
+		log.Warn(err)
 		time.Sleep(10 * time.Second)
-		secondTryResp := getpodSign(url, dataId, timestamp)
+		if retryCount >= 1 {
+			return nil
+		}
+		secondTryResp := getpodSign(url, dataId, timestamp, retryCount+1)
 		if secondTryResp == nil {
 			log.Warnf("For dataId %s , redStone failed with err(%v) ts: %d, url: %s", dataId, err, timestamp, url)
 		}
