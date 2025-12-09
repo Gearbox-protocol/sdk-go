@@ -161,7 +161,7 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 	// }
 	network := log.GetNetworkName(core.GetBaseChainId(c.Client))
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") == "" && discoveredAt == 0 &&
-		!utils.Contains([]log.NETWORK{log.ETHERLINK, log.LISK, log.HEMIBTC, log.PLASMA, log.SOMNIA, log.ETHERLINK, log.MONAD}, network) { // on etherlink there is no etherscan api
+		!utils.Contains([]log.NETWORK{log.OPTIMISM, log.ETHERLINK, log.LISK, log.HEMIBTC, log.PLASMA, log.SOMNIA, log.ETHERLINK, log.MONAD}, network) { // on etherlink there is no etherscan api
 		log.Fatal("discoveredAt is not set and can't use etherscan for getting etherscan", c.Address)
 	}
 	if utils.GetEnvOrDefault("ETHERSCAN_API_KEY", "") != "" {
@@ -195,6 +195,9 @@ func (c *Contract) DiscoverFirstLog(discoveredAt int64) int64 {
 		if discoveredAt > b {
 			start = b
 		}
+	}
+	if network == log.MONAD && discoveredAt >= 40730000 {
+		start = discoveredAt - 200
 	}
 	FirstLogAt, err := c.findFirstLogBound(start, end)
 	if err != nil {
