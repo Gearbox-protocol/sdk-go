@@ -107,7 +107,7 @@ func getHistoric(ids string, ts int64) (*PythData, error) {
 	err := core.GetUrlWithDebug(url, &data)
 	if err.IsError() {
 		if err.StatusCode == 404 && utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
-			url := fmt.Sprintf("https://testnet.gearbox.foundation/etherscan/proxy/any?id=%s&timestamp=%d", ids, ts)
+			url := fmt.Sprintf("http://84.247.174.187:41001/proxy/any?id=%s&timestamp=%d", ids, ts) // dns resolution failing?
 			log.Info("Using etherscan proxy for pyth", url)
 			err = core.GetUrlWithDebug(url, &data)
 		}

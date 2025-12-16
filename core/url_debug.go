@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 )
 
@@ -42,8 +42,11 @@ func (d UrlDebug) IsError() bool {
 }
 
 func GetUrlWithDebug(url string, data interface{}) UrlDebug {
-	log.Info(url)
-	resp, err := http.Get(url)
+	client := &http.Client{
+		Transport: LoggingRoundTripper{Proxied: http.DefaultTransport},
+	}
+	resp, err := client.Get(url)
+	//
 	debug := UrlDebug{ApiError: err, url: url}
 	if err != nil {
 		return debug
@@ -58,7 +61,39 @@ func GetUrlWithDebug(url string, data interface{}) UrlDebug {
 			debug.Body = string(bs)
 		}
 	}
-	log.Info(utils.ToJson(debug))
 	debug.DecodeError = utils.ReadJsonReaderAndSetInterface(resp.Body, data)
 	return debug
+}
+
+type LoggingRoundTripper struct {
+	Proxied http.RoundTripper
+}
+
+func (lrt LoggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Dump the request
+	dumpReq, err := httputil.DumpRequestOut(req, true) // 'true' includes the body
+	if err != nil {
+		fmt.Printf("ERROR dumping request: %v\n", err)
+	} else {
+		fmt.Printf("REQUEST:\n%s\n", dumpReq)
+	}
+
+	// Send the request
+	res, err := lrt.Proxied.RoundTrip(req)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return nil, err
+	}
+
+	// Dump the response
+	dumpResp, err := httputil.DumpResponse(res, true) // 'true' includes the body
+	if err != nil {
+		fmt.Printf("ERROR dumping response: %v\n", err)
+	} else {
+		// Note: Dumping the response body here consumes the body stream.
+		// To allow the original http.Client to use the body later, we need to handle it.
+		fmt.Printf("RESULT:\n%s\n", dumpResp)
+	}
+
+	return res, nil
 }
