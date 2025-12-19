@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Gearbox-protocol/sdk-go/core"
-	"github.com/Gearbox-protocol/sdk-go/log"
 	"github.com/Gearbox-protocol/sdk-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -106,9 +105,9 @@ func getHistoric(ids string, ts int64) (*PythData, error) {
 	data := pythBody{}
 	err := core.GetUrlWithDebug(url, &data)
 	if err.IsError() {
-		if err.StatusCode == 404 && utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" {
-			url := fmt.Sprintf("http://84.247.174.187:41001/proxy/any?id=%s&timestamp=%d", ids, ts) // dns resolution failing?
-			log.Info("Using etherscan proxy for pyth", url)
+		if utils.GetEnvOrDefault("OPTIMISTIC_LIQUIDATION", "") == "1" || err.Body == "Update data not found" {
+			ts = ts - 100
+			url = fmt.Sprintf("%s/v2/updates/price/%d?ids[]=%s", pythUrl, ts-100*5, ids)
 			err = core.GetUrlWithDebug(url, &data)
 		}
 		if err.IsError() { // message rewritten in proxy is also error.

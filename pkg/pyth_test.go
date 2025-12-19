@@ -1,6 +1,8 @@
 package pkg
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestPyth(t *testing.T) {
 	id := "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a"
@@ -44,5 +46,36 @@ func TestPyth2(t *testing.T) {
 	}
 	if len(data.Data) == 2622 {
 		t.Fatal("expected data length 1472, got", len(data.Data))
+	}
+}
+
+// package core
+
+// import (
+// 	"testing"
+// )
+
+// type pythBody struct {
+// 	Binary struct {
+// 		Data []string `json:"data"`
+// 	} `json:"binary"`
+// 	Parsed []struct {
+// 		Price struct {
+// 			Price       string `json:"price"`
+// 			Expo        int8   `json:"expo"`
+// 			PublishTime int64  `json:"publish_time"`
+// 		} `json:"price"`
+// 		Id string `json:"id"`
+// 	} `json:"parsed"`
+// }
+
+func TestUrlDebug(t *testing.T) {
+	// data := pythBody{}
+	ids := "0x9554b381f1e1d12f5e2baa6a9c802114284df21ced6c90490c565d1334e72c94"
+	var ts int64 = 1766139920
+	_, err := getHistoric(ids, ts)
+	// t.Log(data)
+	if err != nil {
+		t.Fatal(err)
 	}
 }

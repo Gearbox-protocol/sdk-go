@@ -43,7 +43,7 @@ func (d UrlDebug) IsError() bool {
 
 func GetUrlWithDebug(url string, data interface{}) UrlDebug {
 	client := &http.Client{
-		Transport: LoggingRoundTripper{Proxied: http.DefaultTransport},
+		// Transport: LoggingRoundTripper{Proxied: http.DefaultTransport},
 	}
 	resp, err := client.Get(url)
 	//
