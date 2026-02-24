@@ -32,6 +32,10 @@
       {
         "address": "0x9dddd1b9ce0ac8aa0c80e4ec141600b9bf0101c3",
         "description": "edge ultrayield"
+      },
+      {
+        "address": "0x601067eba24bb5b558a184fc082525637e96a42d",
+        "description": "Gami Labs",
       }
     ],
     "ARBITRUM": [
