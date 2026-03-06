@@ -48,6 +48,7 @@ type PriceFeed struct {
 	RoundId int64        `gorm:"column:round_id" json:"roundId"`
 	PriceBI *core.BigInt `gorm:"column:price_bi" json:"priceBI"`
 	Price   float64      `gorm:"column:price" json:"price"`
+	Source  string       `gorm:"column:source" json:"source"`
 }
 
 func (pf PriceFeed) String() string {
