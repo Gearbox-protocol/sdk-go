@@ -316,8 +316,9 @@ func GetDecimals(client ClientI, addr common.Address, blockNum int64) int8 {
 type PriceSource string
 
 const (
-	SOURCE_SPOT    PriceSource = "spot"
-	SOURCE_GEARBOX PriceSource = "gearbox"
+	SOURCE_SPOT     PriceSource = "spot"
+	SOURCE_GEARBOX  PriceSource = "gearbox"
+	SOURCE_COMBINED PriceSource = "combined"
 )
 
 type TokenGroup struct {
